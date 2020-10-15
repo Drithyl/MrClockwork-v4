@@ -1,0 +1,535 @@
+{
+    "CHANGE_CURRENT_TIMER":
+    {
+        "name": "timer [x]",
+        "isEnabled": true,
+        "gameTypesSupported": ["dom5"],
+        "argumentsRequiredInfo": ["`3d20h30m`, with your own numbers, or a single integer for hours (`0` to pause). If you add a + sign in front of the new timer, the amount will get added to the timer, instead of replaced."],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "TIMER",
+        "argumentRegexpArray": ["\\+?(0|(\\d+|\\d+d(ay)?|\\d+h(our)?|\\d+m(inute)?))$"],
+        "channelRequiredToInvoke": "game",
+        "helpText": "Used to change the timer of the current turn only. Can take a combination of days/hours/minutes, or a single number for hours. Can only be used by the organizer or higher permissions."
+    },
+
+    "CHANGE_DEFAULT_TIMER":
+    {
+        "name": "dtimer [x]",
+        "isEnabled": true,
+        "gameTypesSupported": ["dom5"],
+        "argumentsRequiredInfo": ["`3d20h30m`, with your own numbers, or a single integer for hours (`0` to pause). If you add a + sign in front of the new timer, the amount will get added to the timer, instead of replaced."],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "DTIMER",
+        "argumentRegexpArray": ["\\+?(0|(\\d+|\\d+d(ay)?|\\d+h(our)?|\\d+m(inute)?))$"],
+        "channelRequiredToInvoke": "game",
+        "helpText": "Used to change the global timer (NOT the current turn's). Can take a combination of days/hours/minutes, or a single number for hours. Can only be used by the organizer or higher permissions."
+    },
+
+    "CHANGE_PLAYER_PREFERENCES":
+    {
+        "name": "preferences",
+        "isEnabled": true,
+        "gameTypesSupported": ["dom5"],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "PREFERENCES",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "any",
+        "helpText": "Displays the preferences menu of the game hosted in this channel by sending you a PM (Private Message), or your global preferences if in another channel. In that menu you will find options to set turn reminders and automated turn backups."
+    },
+
+    "CHANGE_SETTINGS":
+    {
+        "name": "settings",
+        "isEnabled": true,
+        "gameTypesSupported": ["dom5"],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "SETTINGS",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "game",
+        "helpText": "Allows the organizer of a game to change its settings if the game hasn't started yet."
+    },
+
+    "CHECK_CURRENT_TIMER":
+    {
+        "name": "timer",
+        "isEnabled": true,
+        "gameTypesSupported": ["dom5"],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "TIMER",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "game",
+        "helpText": "Print the timer left on this game's current turn."
+    },
+
+    "CHECK_DEFAULT_TIMER":
+    {
+        "name": "dtimer",
+        "isEnabled": true,
+        "gameTypesSupported": ["dom5"],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "DTIMER",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "game",
+        "helpText": "Print the global timer of this game."
+    },
+
+    "CLAIM_PRETENDER":
+    {
+        "name": "claim",
+        "isEnabled": true,
+        "gameTypesSupported": ["dom5"],
+        "argumentsRequiredInfo": ["A number that matches the pretender's index displayed"],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "CLAIM",
+        "argumentRegexpArray": ["\\d+"],
+        "channelRequiredToInvoke": "game",
+        "helpText": "Claims a submitted pretender as yours for this game, which will give you access to advanced features like getting turn backups or turn reminders."
+    },
+
+    "CREATE_GAME_CHANNEL":
+    {
+        "name": "channel",
+        "isEnabled": true,
+        "gameTypesSupported": [],
+        "argumentsRequiredInfo": ["A channel name"],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "CHANNEL",
+        "argumentRegexpArray": ["^[ !@#$%^&*()+\\-=\\[\\]{};':\"\\\\|,.<>\/?]{3,32}$"],
+        "channelRequiredToInvoke": "guild",
+        "helpText": "Creates a game channel so you can first discuss things with other players before actually hosting a game. You must specify the name of the channel as the first argument of the command."
+    },
+
+    "DELETE_GAME":
+    {
+        "name": "delete",
+        "isEnabled": true,
+        "gameTypesSupported": ["dom5"],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "DELETE",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "game",
+        "helpText": "Permanently deletes the game hosted in this channel."
+    },
+
+    "DEPLOY_BOT":
+    {
+        "name": "deploy",
+        "isEnabled": true,
+        "gameTypesSupported": [],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "DEPLOY",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "guild",
+        "helpText": "Only useable by the guild's owner. This is the first command that must be used after the bot is added to a guild, so that it can deploy the necessary categories and roles. It can be used again to re-create missing categories and roles."
+    },
+
+    "DISPLAY_SUBMITTED_PRETENDERS":
+    {
+        "name": "pretenders",
+        "isEnabled": true,
+        "gameTypesSupported": ["dom5"],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "PRETENDERS",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "game",
+        "helpText": "Displays a list of submitted pretenders in the game hosted in the channel. You can then claim a pretender, unclaim it, remove it or designate a substitute for it."
+    },
+
+    "GET_CURRENT_TURN_FILE":
+    {
+        "name": "turnfile",
+        "isEnabled": true,
+        "gameTypesSupported": ["dom5"],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "TURNFILE",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "game",
+        "helpText": "Requests the claimed nation's current turn file."
+    },
+
+    "GET_DOM5_MAPS_ON_SERVER":
+    {
+        "name": "dom5maps",
+        "isEnabled": true,
+        "gameTypesSupported": [],
+        "argumentsRequiredInfo": ["`A server's name`"],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "DOM5MAPS",
+        "argumentRegexpArray": ["\\w+"],
+        "channelRequiredToInvoke": "any",
+        "helpText": "Prints a list of the Dominions 5 maps available on the given server."
+    },
+
+    "GET_DOM5_MODS_ON_SERVER":
+    {
+        "name": "dom5mods",
+        "isEnabled": true,
+        "gameTypesSupported": [],
+        "argumentsRequiredInfo": ["`A server's name`"],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "DOM5MODS",
+        "argumentRegexpArray": ["\\w+"],
+        "channelRequiredToInvoke": "any",
+        "helpText": "Prints a list of the Dominions 5 mods available on the given server."
+    },
+
+    "GET_DOM5_NATIONS":
+    {
+        "name": "dom5nations",
+        "isEnabled": true,
+        "gameTypesSupported": [],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "DOM5NATIONS",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "any",
+        "helpText": "Prints a list of all the Dominions 5's nations and their nation numbers and filenames."
+    },
+
+    "GET_DOM5_SCORES":
+    {
+        "name": "scores",
+        "isEnabled": true,
+        "gameTypesSupported": ["dom5"],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "SCORES",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "game",
+        "helpText": "Requests the current turn's scores file. Only available for games with visible scoregraphs, or games which have ended."
+    },
+
+    "GET_GAME_INFO":
+    {
+        "name": "info",
+        "isEnabled": true,
+        "gameTypesSupported": ["dom5"],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "INFO",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "game",
+        "helpText": "Prints this game's information and settings."
+    },
+
+    "GET_LIST_OF_HOSTED_GAMES":
+    {
+        "name": "games",
+        "isEnabled": true,
+        "gameTypesSupported": [],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "GAMES",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "any",
+        "helpText": "Prints a list of all hosted games in this Discord guild, or all games if the command is sent by DM."
+    },
+
+    "GET_LIST_OF_UNDONE_TURNS":
+    {
+        "name": "undone",
+        "isEnabled": true,
+        "gameTypesSupported": ["dom5"],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "UNDONE",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "game",
+        "helpText": "Prints a list nations whose turns' are undone or unfinished."
+    },
+
+    "GET_LIST_OF_FREE_HOSTING_SLOTS":
+    {
+        "name": "capacity",
+        "isEnabled": true,
+        "gameTypesSupported": [],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "CAPACITY",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "any",
+        "helpText": "Prints the list of servers with the number of free hosting slots in each."
+    },
+
+    "GET_PATREON_LINK":
+    {
+        "name": "patreon",
+        "isEnabled": true,
+        "gameTypesSupported": [],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "PATREON",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "any",
+        "helpText": "Prints a link to the Patreon for those who wish to support the project. Thank you!"
+    },
+
+    "GET_SETTING_VALUE_ACROSS_GAMES":
+    {
+        "name": "values",
+        "isEnabled": true,
+        "gameTypesSupported": [],
+        "argumentsRequiredInfo": ["`A setting key`"],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "VALUES",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "dm",
+        "helpText": "[Dev Only] Receive a list of the values of a setting currently in use in every Dominions game."
+    },
+
+    "HELP":
+    {
+        "name": "help",
+        "isEnabled": true,
+        "gameTypesSupported": [],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "HELP",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "any",
+        "helpText": "Print a list of the available commands."
+    },
+
+    "HOST_DOM5_GAME":
+    {
+        "name": "host",
+        "isEnabled": true,
+        "gameTypesSupported": [],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "HOST$",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "guild",
+        "helpText": "Starts the process to host a Dominions 5 game. You will be asked a series of settings by DM to configure it."
+    },
+
+    "HOST_DOM5_GAME_WEB":
+    {
+        "name": "host_web",
+        "isEnabled": true,
+        "gameTypesSupported": [],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "HOST_WEB$",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "guild",
+        "helpText": "Starts the process to host a Dominions 5 game using the website interface. You will be able to configure it through an HTML form."
+    },
+
+    "KILL_GAME_PROCESS":
+    {
+        "name": "kill",
+        "isEnabled": true,
+        "gameTypesSupported": [],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "KILL",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "game",
+        "helpText": "Shuts down a game's process. Useful to relaunch it to fix common errors. Does not delete anything."
+    },
+
+    "LAUNCH_GAME_PROCESS":
+    {
+        "name": "launch",
+        "isEnabled": true,
+        "gameTypesSupported": [],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "LAUNCH",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "game",
+        "helpText": "Launches a game's process."
+    },
+
+    "POST_NEWS":
+    {
+        "name": "post",
+        "isEnabled": true,
+        "gameTypesSupported": [],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "POST",
+        "argumentRegexpArray": [".+"],
+        "ignoreArgumentSpaces": true,
+        "channelRequiredToInvoke": "dm",
+        "helpText": "[Dev Only] Posts a message across all clockwork_news channels in all the Discord guilds where the bot is present."
+    },
+
+    "REMOVE_PRETENDER":
+    {
+        "name": "remove",
+        "isEnabled": true,
+        "gameTypesSupported": ["dom5"],
+        "argumentsRequiredInfo": ["A number that matches the pretender's index displayed"],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "REMOVE",
+        "argumentRegexpArray": ["\\d+"],
+        "channelRequiredToInvoke": "game",
+        "helpText": "Removes a submitted pretender for this game."
+    },
+
+    "REPLACE_BOT_ROLE":
+    {
+        "name": "replace",
+        "isEnabled": true,
+        "gameTypesSupported": [],
+        "argumentsRequiredInfo": ["The bot's role name or id to be replaced", "The new role's name or id"],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "REPLACE",
+        "argumentRegexpArray": ["\\w+", "\\w+"],
+        "channelRequiredToInvoke": "any",
+        "helpText": "Replaces one of the basic bot roles created for this Discord guild by a different existing role. Useful if the guild already has a trusted role for members and doesn't want to use the bot's Trusted role, for example."
+    },
+
+    "RESTABLISH_GAME":
+    {
+        "name": "restablish",
+        "isEnabled": true,
+        "gameTypesSupported": ["dom5"],
+        "argumentsRequiredInfo": ["A game's name"],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "RESTABLISH",
+        "argumentRegexpArray": ["^[ !@#$%^&*()+\\-=\\[\\]{};':\"\\\\|,.<>\/?]{3,32}$"],
+        "channelRequiredToInvoke": "any",
+        "helpText": "Restablishes a game's deleted channel and/or role."
+    },
+
+    "RESTART_GAME":
+    {
+        "name": "restart",
+        "isEnabled": true,
+        "gameTypesSupported": ["dom5"],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "RESTART",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "game",
+        "helpText": "Restarts a game and goes back to turn 0, in the pretender submission lobby."
+    },
+
+    "ROLL_DICE":
+    {
+        "name": "[x]d[y]",
+        "isEnabled": true,
+        "gameTypesSupported": [],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "(\\d+d?\\d*\\+?\\+?)+",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "any",
+        "helpText": "Rolls dice. Several dice can be chained together, i.e. `5d6+10d10`. Adding a `+` after a dice expression will make them explosive, i.e. `5d6++10d10+`."
+    },
+
+    "ROLLBACK_TURN":
+    {
+        "name": "rollback",
+        "isEnabled": true,
+        "gameTypesSupported": ["dom5"],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "ROLLBACK",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "game",
+        "helpText": "Rollbacks the game to the previous turn. This cannot be undone. Only a couple rollbacks are available at a time, depending on the server's size."
+    },
+
+    "START_GAME":
+    {
+        "name": "start",
+        "isEnabled": true,
+        "gameTypesSupported": ["dom5"],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "START",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "game",
+        "helpText": "Starts the game with the submitted pretenders. Generating the map and/or starts may take from a few minutes to 20 or more, depending on the size of the game and the server."
+    },
+
+    "SUBSCRIBE_TO_GAME":
+    {
+        "name": "subscribe",
+        "isEnabled": true,
+        "gameTypesSupported": ["dom5"],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "SUBSCRIBE",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "game",
+        "helpText": "Assigns you the role of a game so you can be pinged when new turns or timer changes occur. Claiming a pretender assigns it automatically."
+    },
+
+    "SUBSTITUTE_PLAYER":
+    {
+        "name": "sub",
+        "isEnabled": true,
+        "gameTypesSupported": ["dom5"],
+        "argumentsRequiredInfo": ["A number that matches the pretender's index displayed", "A mention to the player who will be taking over"],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "SUB",
+        "argumentRegexpArray": ["\\d+", "@\\.+"],
+        "channelRequiredToInvoke": "game",
+        "helpText": "Transfers the claim on a pretender to another player."
+    },
+
+    "UNCLAIM_PRETENDER":
+    {
+        "name": "unclaim",
+        "isEnabled": true,
+        "gameTypesSupported": ["dom5"],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "UNCLAIM",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "game",
+        "helpText": "Removes your claim from your submitted pretender."
+    },
+
+    "UNSUBSCRIBE_FROM_GAME":
+    {
+        "name": "unsubscribe",
+        "isEnabled": true,
+        "gameTypesSupported": ["dom5"],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "UNSUBSCRIBE",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "game",
+        "helpText": "Removes the role of a game from you. Unclaiming/removing your pretender does so automatically."
+    },
+
+    "UPDATE_HELP_CHANNELS":
+    {
+        "name": "updatehelp",
+        "isEnabled": true,
+        "gameTypesSupported": [],
+        "argumentsRequiredInfo": ["A guild ID, if only one channel requires updating."],
+        "optionalArguments": 1,
+        "regexpRequiredToInvoke": "UPDATEHELP",
+        "argumentRegexpArray": ["\\w+"],
+        "channelRequiredToInvoke": "dm",
+        "helpText": "[Dev Only] Re-writes the help information on the guild's help channel, to update it to the latest changes (i.e. new commands, changes in wordings, etc.)."
+    },
+
+    "UPLOAD_FILE_TO_SERVER":
+    {
+        "name": "upload",
+        "isEnabled": true,
+        "gameTypesSupported": [],
+        "argumentsRequiredInfo": ["a server's name", "mod/map (the type of files you're uploading)", "a google drive file ID or link"],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "UPLOAD",
+        "argumentRegexpArray": ["\\w+", "((MOD)|MAP)", "(https?:\\/\\/)?(drive.google.com)?(/file/d/)?(/drive/folders/)?(/open\\?id=)?([a-z0-9\\-_]+)(\\/?\\??.+)?"],
+        "channelRequiredToInvoke": "any",
+        "helpText": "Allows you to upload a map or a mod to the server through google drive. To use it, you must specify the server's name, whether the package is a mod or map, and then add the google drive file sharing link at the end of the command (which can be found when you right click a file on the drive website and click on Get Shareable Link). The package must be a .zip file containing the mod or map as is meant to be extracted into the mods or maps folder. If files with the same name exist in the server, they will be overwritten if they are mod image files, but .dm and map-related files will *not* be overwritten so as to not have an impact on ongoing games using that mod or map. To upload an updated version of a mod, just make sure you change the name to add the version number to it so it does not conflict. You can upload more than one map and mod in the same zipfile, just make sure they are all zipped in the same structure in which it'll be extracted to the maps or mods folder."
+    }
+}

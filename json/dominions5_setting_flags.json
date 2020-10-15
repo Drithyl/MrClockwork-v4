@@ -1,0 +1,37 @@
+{
+    "EARLY_AGE": 1,
+    "MIDDLE_AGE": 2,
+    "LATE_AGE": 3,
+
+    "VERY_EASY_RESEARCH_SPEED": 0,
+    "EASY_RESEARCH_SPEED": 1,
+    "NORMAL_RESEARCH_SPEED": 2,
+    "HARD_RESEARCH_SPEED": 3,
+    "VERY_HARD_RESEARCH_SPEED": 4,
+
+    "COMMON_EVENTS": 1,
+    "RARE_EVENTS": 2,
+
+    "NO_STORY_EVENTS": 0,
+    "MINOR_STORY_EVENTS_ONLY": 1,
+    "FULL_STORY_EVENTS": 2,
+
+    "NO_SCOREGRAPHS": 0,
+    "INVISIBLE_SCOREGRAPHS": 1,
+    "VISIBLE_SCOREGRAPHS": 2,
+
+    "NO_GOING_AI": 0,
+    "EASY_PLAYER_AI": 1,
+    "NORMAL_PLAYER_AI": 2,
+    "DIFFICULT_PLAYER_AI": 3,
+    "MIGHTY_PLAYER_AI": 4,
+    "MASTER_PLAYER_AI": 5,
+    "IMPOSSIBLE_PLAYER_AI": 6,
+
+    "EASY_AI": "easy",
+    "NORMAL_AI": "normal",
+    "DIFFICULT_AI": "difficult",
+    "MIGHTY_AI": "mighty",
+    "MASTER_AI": "master",
+    "IMPOSSIBLE_AI": "impossible"
+}

@@ -1,0 +1,291 @@
+/* Reset default margins and paddings */
+* {
+    padding: 0px;
+    margin: 0px;
+}
+
+/* COLOR SCHEME */
+
+    /* Main background color */
+    body {
+        background: #5D5C61;
+    }
+
+    /* Smaller headlines used in the news cards */
+    h5 {
+        color: #003166;
+    }
+
+    /* Headlines used as picture footers */
+    h6 {
+        color: #003166;
+    }
+
+    /* News cards footer text */
+    small {
+        color: #003166;
+    }
+
+    /* Footer padding and color */
+    footer {
+        background: #046062;
+    }
+
+    /* Header containing banner and navbar */
+    .page_header {
+        background-image: linear-gradient(#123, #123C69);
+    }
+
+    /* The columns around the main section are buffers, unify the colour of all. These are not shown on small screens */
+    .buffer_left {
+        background-image: linear-gradient(to right, #7395AE, #7394BF);
+    }
+
+    /* The columns around the main section are buffers, unify the colour of all. These are not shown on small screens */
+    .buffer_right {
+        background-image: linear-gradient(to left, #7395AE, #7394BF);
+    }
+
+    /* Main section and footer both share this colour */
+    .section {
+        background: #557A95;
+    }
+
+    /* Top bar modal color */
+    .modal-content {
+        background: #557A95;
+    }
+
+    /* Body modal color */
+    .modal-body {
+        background: #7394BF;
+    }
+
+    /* Color of staff cards in our_staff */
+    .staff_card {
+        background: #719181;
+    }
+
+    /* Color of news cards */
+    .card.flex-row {
+        background: #719181;
+    }
+
+    /* Color of key facts in staff cards */
+    .list-group-item {
+        background: #719181;
+    }
+
+    /* Color of links within the footer */
+    .footer_link {
+        color: #003166;
+    }
+
+/**** COLOR SCHEME END ****/
+
+/* Titles used mainly in the index and about waterpolo sections */
+h1 {
+    font-size: 34px;
+    font-family: "Arial Black", Gadget, sans-serif;
+}
+
+/* Subtitles mainly used in the index and about waterpolo sections */
+h2 {
+    font-size: 24px;
+    font-family: "Arial Black", Gadget, sans-serif; 
+}
+
+/* Smaller headlines used in the news cards */
+h5 {
+    font-family: "Arial Black", Gadget, sans-serif;
+}
+
+/* Footer headlines used as picture footers */
+h6 {
+    font-size: 10x;
+}
+
+/* General text style */
+p, span {
+    
+    text-align: justify;
+    font-family: Tahoma, Geneva, sans-serif;
+}
+
+/* Alignment and margins for unordered lists used in staff cards and about waterpolo section */
+ul {
+    text-align: start;
+    margin-left: 5%;
+}
+
+/* Footer padding and color */
+footer {
+    padding-top: 1%;
+    padding-bottom: 1%;
+}
+
+/* Main section is the center space showing the actual content in each webpage */
+.main_section {
+    padding: 2%;
+}
+
+.nav-item {
+    display: flex;
+    justify-content: center;  
+    flex-direction: column;
+    margin: 1%;
+}
+
+/* Any headlines which require to be centered */
+.headline {
+    margin: 3%;
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* Text meant to be displayed under images */
+.img_footer {
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* Some extra paddings and margins for better vibility */
+.card-img-top {
+    padding: 1%;
+}
+
+.card.flex-row {
+    margin: 3%;
+}
+
+.card-block {
+    margin-bottom: 2%;
+}
+
+.card-footer {
+    margin-top: 1%;
+}
+
+.staff_card {
+    margin: 2%;
+}
+
+.video_embed_div {
+    margin-bottom: 2%;
+}
+
+/* Turn mouse cursor to a pointer over gallery images to indicate that they can be clicked to open the modal */
+.gallery_item {
+    cursor: pointer;
+}
+
+/* Helper class */
+.side_padding {
+    margin-left: 3%;
+    margin-right: 3%;
+}
+
+/* helper to center text vertically or horizontally */
+.text-h-centered {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.text-v-centered {  
+    display: flex;
+    justify-content: center;  
+    flex-direction: column;
+}
+
+/* helper to center images horizontally */
+.centered-ele {
+
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center; 
+}
+
+/* flex container for easy alignment of inside elements */
+.flex_container_row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+/* flex container for easy alignment of inside elements in vertical direction */
+.flex_container_col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* flex container for easy alignment of inside elements */
+.flex_justify_start {
+    justify-content: start;
+}
+
+.margin_right_sm {
+    margin-right: 3%;
+}
+
+.margin_right_xs {
+    margin-right: 2%;
+}
+
+/* Responsive media query for big screens */
+@media screen and (min-width: 601px) {
+    p, span {
+        font-size: 16px;
+    }
+    
+    h1 {
+        font-size: 32px;
+    }
+    
+    h2 {
+        font-size: 24px;
+    }
+    
+    h5 {
+        font-size: 18px;
+    }
+    
+    h6 {
+        font-size: 14px;
+    }
+
+    .main_container {
+        max-width: 90%;
+    }
+
+    .main_section {
+        max-width: 100%;
+    }
+}
+
+/* Responsive media query for small screens, also swaps the main container to occupy as much width as possible for more space */
+@media screen and (max-width: 601px) {
+    p, span {
+        font-size: 14px;
+    }
+    
+    h1 {
+        font-size: 20px;
+    }
+    
+    h2 {
+        font-size: 16px;
+    }
+    
+    h5 {
+        font-size: 14px;
+    }
+    
+    h6 {
+        font-size: 12px;
+    }
+
+    .main_container {
+        max-width: 100%;
+    }
+}

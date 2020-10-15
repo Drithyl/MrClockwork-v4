@@ -1,0 +1,50 @@
+
+
+{
+  "loginToken": "afhjsakbgasEGsdsrh4NzM3.XuVwAg._tAjRa_t3t3wet_A_Aggdsd54",
+
+  "commandPrefix": "!",
+
+  "hostServerConnectionPort": 3000,
+
+  "pathToLogs": "C:/Bot/logs",
+  "pathToGameData": "C:/Bot/game_data",
+  "pathToGuildData": "C:/Bot/guild_data",
+  "pathToPlayerGameData": "C:/Bot/player_game_data",
+  "pathToPlayerGamePreferences": "C:/Bot/player_game_preferences",
+  "pathToGlobalPreferences": "C:/Bot/global_preferences",
+
+  "pathToGameDataBackup": "C:/Bot/game_data_backup",
+  "pathToGuildDataBackup": "C:/Bot/guild_data_backup",
+  "pathToPlayerGameDataBackup": "C:/Bot/player_game_data_backup",
+  "pathToPlayerGamePreferencesBackup": "C:/Bot/player_game_preferences_backup",
+  "pathToGlobalPreferencesBackup": "C:/Bot/global_preferences_backup",
+
+  "tmpDir": "C:/Bot/tmp",
+  "pathToDom4Exe": "C:/SteamLibrary/steamapps/common/Dominions4/Dominions4.exe",
+  "pathToDom5Exe": "C:/SteamLibrary/steamapps/common/Dominions5/Dominions5.exe",
+
+  "gameMasterRoleName": "GameMaster",
+  "blitzerRoleName": "Blitzer",
+  "trustedRoleName": "Trusted",
+
+  "newsChannelName": "clockwork_news",
+  "helpChannelName": "clockwork_help",
+  "blitzGeneralChannelName": "bot_blitz_general",
+  "recruitingCategoryName": "Bot Open Games",
+  "gameCategoryName": "Bot Ongoing Games",
+  "blitzRecruitingCategoryName": "Bot Open Blitzes",
+  "blitzCategoryName": "Bot Ongoing Blitzes",
+
+  "masterOwner": "123456789876566666",
+  "bot": "123456789876566666",
+  "msToDeleteUnstartedBlitzes": 3600000,
+  "turnCheckInterval": 30000,
+
+  "dom5GameTypeName": "dom5",
+
+  "devIds": [
+    "123456789876566666",
+    "123456789876566666"
+  ]
+}
