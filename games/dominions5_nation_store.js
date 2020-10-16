@@ -17,7 +17,7 @@ exports.getNation = (identifier) =>
     }
 
     return null;
-}
+};
 
 exports.getNationInEra = (identifier, era) => 
 {
@@ -35,7 +35,7 @@ exports.getNationInEra = (identifier, era) =>
     }
 
     return null;
-}
+};
 
 exports.getEaNations = () => nationObjects.filter((nationObject) => nationObject.getNationEraAsNumber === 1);
 exports.getMaNations = () => nationObjects.filter((nationObject) => nationObject.getNationEraAsNumber === 2);

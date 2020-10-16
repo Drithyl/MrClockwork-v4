@@ -21,7 +21,7 @@ function GameSettings(parentGame)
     {
         _settingObjectsArray.forEach((settingObject) =>
         {
-            doSomething(settingObject, settingObject.getKey())
+            doSomething(settingObject, settingObject.getKey());
         });
     };
 
@@ -117,4 +117,4 @@ function validateSettingObjectOrThrow(settingObject)
     assert.isFunctionOrThrow(settingObject.getName);
     assert.isFunctionOrThrow(settingObject.getPrompt);
     assert.isFunctionOrThrow(settingObject.translateValueToCmdFlag);
-};
+}

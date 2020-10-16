@@ -25,7 +25,7 @@ function StoryEvents()
         if (value == dom5SettingFlags.FULL_STORY_EVENTS)
             return "Full";
 
-        else return "Invalid value"
+        else return "Invalid value";
     };
     
     this.setValue = (input) =>
@@ -48,10 +48,10 @@ function StoryEvents()
         var value = this.getValue();
     
         if (value ===  dom5SettingFlags.NO_STORY_EVENTS)
-            return ["--nostoryevents"]
+            return ["--nostoryevents"];
     
         else if (value === dom5SettingFlags.MINOR_STORY_EVENTS_ONLY)
-            return ["--storyevents"]
+            return ["--storyevents"];
     
         else return [`--allstoryevents`];
     };

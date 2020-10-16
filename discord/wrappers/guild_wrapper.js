@@ -51,7 +51,7 @@ function GuildWrapper(discordJsGuildObject)
 
     return _clearChannel(helpChannel)
     .then(() => messenger.send(helpChannel, updatedHelpString));
-  }
+  };
 
   this.deployBot = () => guildStore.deployBotOnGuild(this.getId());
 

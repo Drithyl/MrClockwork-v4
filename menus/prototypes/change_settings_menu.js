@@ -52,7 +52,7 @@ function createSettingsMenu(member, game)
     setting.name,
     displaySelectedSetting.bind(null, setting, game),
     changeSettingHandler
-  )});
+  );});
 
   console.log("Created.");
   return navigator;
@@ -78,7 +78,7 @@ function selectSettingHandler(instance, selectedSettingInput)
 
 function changeSettingHandler(instance, newSettingValue)
 {
-  let changedValue
+  let changedValue;
   let member = instance.member;
   let game = instance.data.game;
   let selectedSetting = instance.data.selectedSetting;

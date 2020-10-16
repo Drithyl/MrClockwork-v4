@@ -81,7 +81,7 @@ function Mods(parentGameObject)
 
         return _parentGame.emitPromiseToHostServer("VERIFY_MODS", modFilenames)
         .then(() => Promise.resolve(modFilenames));
-    };
+    }
 }
 
 //sets the base object to be instanced from the GameSetting

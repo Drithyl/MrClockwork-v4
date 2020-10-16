@@ -121,7 +121,7 @@ function Dominions5Game()
     {
         const dataPackage = _createGameDataPackage();
 
-        return _emitMessageToServer("rollback", dataPackage)
+        return _emitMessageToServer("rollback", dataPackage);
     };
 
     _gameObject.startUpdating = (interval) => _intervalFunctionId = setInterval(_currentTimer.updateTimer, interval);

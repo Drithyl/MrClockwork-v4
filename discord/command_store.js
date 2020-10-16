@@ -1,5 +1,5 @@
 
-const rw = require("../reader_writer.js");;
+const rw = require("../reader_writer.js");
 const RangeError = require("../errors/custom_errors.js").RangeError;
 const commandFilesDirectoryPath = `${__dirname}/command_modules`;
 

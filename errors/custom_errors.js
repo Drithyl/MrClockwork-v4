@@ -8,7 +8,7 @@ exports.InstanceOfError = class InstanceOfError extends Error
     super(message);
     this.name = "InstanceOfError";
   }
-}
+};
 
 exports.InvalidPathError = class InvalidPathError extends Error
 {
@@ -17,7 +17,7 @@ exports.InvalidPathError = class InvalidPathError extends Error
     super(message);
     this.name = "InvalidPathError";
   }
-}
+};
 
 exports.LengthError = class LengthError extends Error
 {
@@ -26,7 +26,7 @@ exports.LengthError = class LengthError extends Error
     super(message);
     this.name = "LengthError";
   }
-}
+};
 
 exports.PermissionsError = class PermissionsError extends Error
 {
@@ -35,7 +35,7 @@ exports.PermissionsError = class PermissionsError extends Error
     super(message);
     this.name = "PermissionsError";
   }
-}
+};
 
 exports.RangeError = class RangeError extends Error
 {
@@ -44,7 +44,7 @@ exports.RangeError = class RangeError extends Error
     super(message);
     this.name = "RangeError";
   }
-}
+};
 
 exports.SemanticError = class SemanticError extends Error
 {
@@ -53,7 +53,7 @@ exports.SemanticError = class SemanticError extends Error
     super(message);
     this.name = "SemanticError";
   }
-}
+};
 
 exports.SocketResponseError = class SocketResponseError extends Error
 {
@@ -62,7 +62,7 @@ exports.SocketResponseError = class SocketResponseError extends Error
     super(message);
     this.name = "SocketResponseError";
   }
-}
+};
 
 exports.StdError = class StdError extends Error
 {
@@ -71,7 +71,7 @@ exports.StdError = class StdError extends Error
     super(message);
     this.name = "StdError";
   }
-}
+};
 
 exports.TimeoutError = class TimeoutError extends Error
 {
@@ -80,7 +80,7 @@ exports.TimeoutError = class TimeoutError extends Error
     super(message);
     this.name = "TimeoutError";
   }
-}
+};
 
 exports.TypeError = class TypeError extends Error
 {
@@ -89,4 +89,4 @@ exports.TypeError = class TypeError extends Error
     super(message);
     this.name = "TypeError";
   }
-}
+};

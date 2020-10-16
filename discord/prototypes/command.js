@@ -33,7 +33,7 @@ function DiscordCommand(commandDataObject)
         var formatedHelp = `-------------------\n\n**${config.commandPrefix}${this.getName()}**\n\n${helpString}\n\n`;
 
         formatedHelp += `\`Where can it be used?:\` ${this.getChannelRequiredToInvoke()} channel\n\n`;
-        formatedHelp += `\`Arguments:\` `
+        formatedHelp += `\`Arguments:\` `;
 
         if (this.areArgumentsRequired() === false)
             formatedHelp += "No arguments required.\n";

@@ -13,4 +13,4 @@
 
     this.getDisplayText = () => _displayText;
     this.invokeBehaviour = (...args) => _behaviour(...args);
-  };
+  }

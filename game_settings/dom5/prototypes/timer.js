@@ -41,7 +41,7 @@ function TimerSetting()
         _matchAndAssign(timer, input, /(\d+)\s*m/i, "minutes");
 
         return timer;
-    };
+    }
 
     this.fromJSON = (value) =>
     {

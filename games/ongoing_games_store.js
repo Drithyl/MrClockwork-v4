@@ -21,7 +21,7 @@ exports.loadAll = function()
         var loadedGame = gameFactory.loadGame(gameJSONDataPath);
         exports.addOngoingGame(loadedGame);
     });
-}
+};
 
 exports.getGameDataForHostServer = function(hostServer)
 {
@@ -35,28 +35,28 @@ exports.getGameDataForHostServer = function(hostServer)
     });
 
     return dataPack;
-}
+};
 
 exports.getNbrOfGamesOnServer = function(hostServer)
 {
     return _getOngoingGamesByServer(hostServer).length;
-}
+};
 
 exports.addOngoingGame = function(game)
 {
     assert.isInstanceOfPrototypeOrThrow(game, Game);
     _ongoingGamesByName[game.getName()] = game;
-}
+};
 
 exports.getOngoingGameByName = function(nameToFind) 
 {
     return _findGameByName(nameToFind); 
-}
+};
 
 exports.hasOngoingGameByName = function(nameToFind) 
 {
     return _findGameByName(nameToFind) != null; 
-}
+};
 
 exports.isNameAvailable = function(name)
 {
@@ -66,11 +66,11 @@ exports.isNameAvailable = function(name)
 exports.getOngoingGameByChannel = function(channelId) 
 {
     return _findGameByChannel(channelId); 
-}
+};
 exports.channelHasOngoingGame = function(channelId) 
 {
     return _findGameByChannel(channelId) != null; 
-}
+};
 
 exports.getArrayOfGames = function()
 {
@@ -83,7 +83,7 @@ exports.getArrayOfGames = function()
     }
 
     return arr;
-}
+};
 
 exports.forEachGame = function(fnToApply)
 {
@@ -94,7 +94,7 @@ exports.forEachGame = function(fnToApply)
         let game = _ongoingGamesByName[name];
         fnToApply(game, name);
     }
-}
+};
 
 function _getOngoingGamesByServer(hostServer) 
 { 

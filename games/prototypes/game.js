@@ -95,7 +95,7 @@ function Game()
         if (_hostServer == null)
             return false;
 
-        else return _hostServer.isOnline()
+        else return _hostServer.isOnline();
     };
 
     this.emitPromiseToHostServer = (...args) => _hostServer.emitPromise(...args);
@@ -189,12 +189,12 @@ function Game()
         var organizer = guild.getGuildMemberWrapperById(jsonData.organizerId);
         var channel = guild.getChannelById(jsonData.channelId);
         var role = guild.getRoleById(jsonData.roleId);
-        var server = hostServerStore.getHostServerById(jsonData.serverId)
+        var server = hostServerStore.getHostServerById(jsonData.serverId);
 
         this.setGuild(guild);
         this.setOrganizer(organizer);
         this.setChannel(channel);
-        this.setRole(role)
+        this.setRole(role);
         this.setName(jsonData.name);
         this.setPort(jsonData.port);
         this.setServer(server);

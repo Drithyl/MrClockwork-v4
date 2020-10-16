@@ -25,7 +25,7 @@ function Scoregraphs()
         if (value == dom5SettingFlags.VISIBLE_SCOREGRAPHS)
             return "Always visible";
 
-        else return "Invalid value"
+        else return "Invalid value";
     };
     
     this.setValue = (input) =>

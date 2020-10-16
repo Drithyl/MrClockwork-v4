@@ -48,7 +48,7 @@ function Name()
             throw new SemanticError(`Invalid value format for the game's name.`);
 
         return input;
-    };
+    }
 }
 
 //sets the base object to be instanced from the GameSetting

@@ -62,7 +62,7 @@ module.exports.startChangePlayerPreferencesMenu = function(commandContext)
 module.exports.removeActiveInstance = function(memberId)
 {
   deleteInstance(memberId);
-}
+};
 
 module.exports.finish = function(userId)
 {
@@ -97,7 +97,7 @@ module.exports.getUsersMenuType = function(userId)
   }
 
   else return null;
-}
+};
 
 module.exports.hasHostingInstanceWithGameNameReserved = (name) =>
 {

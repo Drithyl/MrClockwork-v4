@@ -112,7 +112,7 @@ exports.setRoutes = (expressApp) =>
         .catch((err) => 
         {
             console.log(err);
-            res.send(`Error occurred when creating the game: ${err.message}`)
+            res.send(`Error occurred when creating the game: ${err.message}`);
         });
     });
 

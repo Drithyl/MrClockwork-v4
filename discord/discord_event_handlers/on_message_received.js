@@ -31,7 +31,7 @@ function _onMessageReceived(discordJsMessage)
 
             catch(err)
             {
-                _handleCommandError(messageWrapper, err)
+                _handleCommandError(messageWrapper, err);
             }
         }
     }
@@ -45,7 +45,7 @@ function _onMessageReceived(discordJsMessage)
 
         catch(err)
         {
-            _handleCommandError(messageWrapper, err)
+            _handleCommandError(messageWrapper, err);
         }
         
     }

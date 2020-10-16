@@ -17,5 +17,5 @@ function GetPatreonLinkCommand()
 
 function _behaviour(commandContext)
 {
-    return commandContext.respondToCommand(`If you are considering contributing to the project, you can read more information and do so here: https://www.patreon.com/MrClockwork. Thank you!`)
+    return commandContext.respondToCommand(`If you are considering contributing to the project, you can read more information and do so here: https://www.patreon.com/MrClockwork. Thank you!`);
 }

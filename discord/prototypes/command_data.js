@@ -15,7 +15,7 @@ function CommandData(commandName)
 
   catch(err) 
   {
-    err.message = `Error with command key ${commandName}: ${err.message}`
+    err.message = `Error with command key ${commandName}: ${err.message}`;
     throw err;
   }
 

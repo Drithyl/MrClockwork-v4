@@ -13,7 +13,7 @@ const hostServerStore = require("./servers/host_server_store.js");
 
 
 //Begin initialization
-return discord.startDiscordIntegration()
+discord.startDiscordIntegration()
 .then(() =>
 {
   console.log("Finished Discord integration.");
@@ -32,11 +32,11 @@ return discord.startDiscordIntegration()
 .then(() => 
 {
   console.log(`Listening for connections on port ${config.hostServerConnectionPort}.`);
-  return timeEventsEmitter.startCounting()
+  return timeEventsEmitter.startCounting();
 })
 .then(() => 
 {
-  console.log("Initialized successfully.")
+  console.log("Initialized successfully.");
 })
 .catch((err) => 
 {
