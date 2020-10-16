@@ -1,0 +1,30 @@
+{
+    "env": {
+        "node": true,
+        "es6": true
+    },
+    "overrides":[
+        {
+            "files": "./client/**/*.js",
+            "env":{
+                "browser": true,
+                "node": false,
+                "jquery": true
+            },
+            "rules": {
+                "no-unused-vars": "off"
+            },
+            "globals": {
+                "Handlebars":"readonly"
+            }
+        }
+    ],
+    "extends": ["eslint:recommended"],
+    "parserOptions": {
+        "ecmaVersion": 12
+    },
+    "rules": {
+        "semi": ["error", "always"],
+        "require-await":"error"
+    }
+}
