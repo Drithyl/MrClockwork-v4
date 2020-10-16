@@ -1,5 +1,4 @@
 {
-    "plugins": ["@typescript-eslint"],
     "env": {
         "node": true,
         "es6": true
@@ -18,32 +17,14 @@
             "globals": {
                 "Handlebars":"readonly"
             }
-        },
-        {
-            "files":"./src/**/*",
-            "plugins": ["@typescript-eslint"],
-            "parser": "@typescript-eslint/parser",
-            "parserOptions": {
-              "project": "tsconfig.json"
-            },
-            "extends": [
-                "eslint:recommended",
-                "plugin:@typescript-eslint/recommended"],
-            "rules": {
-                "@typescript-eslint/no-floating-promises": "error",
-                "@typescript-eslint/no-explicit-any": "off",
-                "@typescript-eslint/explicit-module-boundary-types": "off",
-                "@typescript-eslint/no-var-requires": "off",
-                "@typescript-eslint/no-non-null-assertion": "off",
-                "@typescript-eslint/no-unused-vars": "off",
-                "@typescript-eslint/no-empty-function": "warn"
-            }
         }
     ],
     "extends": ["eslint:recommended"],
+    "parserOptions": {
+        "ecmaVersion": 12
+    },
     "rules": {
         "semi": ["error", "always"],
-        "require-await":"error",
-        "no-mixed-spaces-and-tabs": ["warn", "smart-tabs"]
+        "require-await":"error"
     }
 }
