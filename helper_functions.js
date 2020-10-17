@@ -43,27 +43,6 @@ function extendPrototypes()
       return array.forEachPromise(asyncFn);
     }
   });
-
-  //find the total times that a check passes. An example use would be to
-  //find the total number of online games in a game list, as such:
-  //games.total( function(game) {return game.isOnline;});
-  Object.defineProperty(Object.prototype, "getNumberOfValidChecks",
-  {
-    value: function(testFn)
-    {
-      var total = 0;
-  
-      for (var key in this)
-      {
-        if (testFn(this[key]) === true)
-        {
-          total++;
-        }
-      }
-  
-      return total;
-    }
-  });
   
   Object.defineProperty(Object.prototype, "convertToArray",
   {
@@ -79,16 +58,6 @@ function extendPrototypes()
       return arr;
     }
   });
-
-  Number.isFloat = function(n)
-  {
-    return Number(n) === n && n % 1 !== 0;
-  };
-
-  String.prototype.capitalize = function()
-  {
-    return this.charAt(0).toUpperCase() + this.slice(1);
-  };
 
   //Spaces out evenly an item. If the width is set to 50, the entire string
   //will have 50 characters, as long as the item is less than 50.

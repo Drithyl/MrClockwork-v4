@@ -1,5 +1,5 @@
 //Extend functionality of basic types with a few methods
-require("./prototype_functions.js").extendPrototypes();
+require("./helper_functions.js").extendPrototypes();
 
 
 //import the modules required for initialization
