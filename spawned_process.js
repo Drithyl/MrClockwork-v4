@@ -7,8 +7,8 @@ module.exports = SpawnedProcess;
 function SpawnedProcess(exePath, args)
 {
     assert.isStringOrThrow(exePath);
-    assert.isArrayOrThrow(args);
     assert.isValidPathOrThrow(exePath);
+    assert.isArrayOrThrow(args);
 
     const _process = spawn(exePath, args);
     _process.stderr.setEncoding("utf8");
@@ -33,13 +33,13 @@ function SpawnedProcess(exePath, args)
     this.onStdioExited = (doThis) => _process.on("close", (code, signal) =>
     {
         if (signal == null)
-        doThis(code);
+            doThis(code);
     });
 
     this.onStdioTerminated = (doThis) => _process.on("close", (code, signal) =>
     {
         if (code == null)
-        doThis(signal);
+            doThis(signal);
     });
 
     this.onStderrData = (doThis) => _process.stderr.on("data", (data) => doThis(data));
