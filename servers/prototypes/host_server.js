@@ -1,6 +1,5 @@
 
 const assert = require("../../asserter.js");
-const SocketWrapper = require("./socket_wrapper.js");
 const ongoingGamesStore = require("../../games/ongoing_games_store");
 const trustedServerData = require("../../config/trusted_server_data.json");
 
@@ -41,9 +40,9 @@ function HostServer(id)
 
     this.isOnline = () => _isOnline;
     
-    this.setOnline = (ioSocket, capacity) =>
+    this.setOnline = (socketWrapper, capacity) =>
     {
-        _socketWrapper = new SocketWrapper(ioSocket);
+        _socketWrapper = socketWrapper;
         _capacity = capacity;
         _isOnline = true;
     };

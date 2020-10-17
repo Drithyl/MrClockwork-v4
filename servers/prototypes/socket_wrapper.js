@@ -8,6 +8,8 @@ function SocketWrapper(socketIoObject)
 {
     const _socketIoObject = socketIoObject;
 
+    this.getId = () => _socketIoObject.id;
+
     this.onDisconnect = (fnToCall) => _socketIoObject.on("disconnect", () => fnToCall(this));
 
     this.emit = (trigger, data) => _socketIoObject.emit(trigger, data);
