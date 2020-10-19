@@ -1,4 +1,5 @@
 
+const TimeLeft = require("./time_left.js");
 const assert = require("../../asserter.js");
 const SpawnedProcess = require("../../spawned_process.js");
 
@@ -35,17 +36,12 @@ function Dominions5TcpQuery(tcpQueryResponse)
 {
     assert.isStringOrThrow(tcpQueryResponse);
 
-    const _name = parseGameName(tcpQueryResponse);
-    const _status = parseStatus(tcpQueryResponse);
-    const _turnNumber = parseTurnNumber(tcpQueryResponse);
-    const _msLeft = parseMsLeft(tcpQueryResponse);
-    const _players = parsePlayers(tcpQueryResponse);
-
-    this.getGameName = () => _name;
-    this.getStatus = () => _status;
-    this.getTurnNumber = () => _turnNumber;
-    this.getMsLeft = () => _msLeft;
-    this.getPlayers = () => _players;
+    this.name = parseGameName(tcpQueryResponse);
+    this.status = parseStatus(tcpQueryResponse);
+    this.turnNumber = parseTurnNumber(tcpQueryResponse);
+    this.msLeft = parseMsLeft(tcpQueryResponse);
+    this.timeLeft = new TimeLeft(this.msLeft);
+    this.players = parsePlayers(tcpQueryResponse);
 }
 
 function verifyTcpQueryResponse(tcpQueryResponse)

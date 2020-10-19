@@ -1,12 +1,14 @@
 
+//TODO: Might not be needed!
+
 const assert = require("../../asserter.js");
-const Timer = require("../../time_left_prototype.js");
+const TimeLeft = require("./time_left.js");
 const queryDominions5Game = require("./dominions5_tcp_query.js");
 const TimerSetting = require("../../game_settings/dom5/prototypes/timer.js");
 
 module.exports = Dominions5CurrentTimer;
 
-function Dominions5CurrentTimer(msLeft, currentTurnNumber = 0)
+function Dominions5CurrentTimer()
 {
     var _lastKnownTurnNumber = 0;
     var _lastKnownMsLeftForNewTurn = 0;
@@ -73,22 +75,22 @@ function Dominions5CurrentTimer(msLeft, currentTurnNumber = 0)
 
     this.printTimeLeft = () =>
     {
-        const lastKnownTimeLeft = new Timer(_lastKnownMsLeftForNewTurn);
-        const lastCheck = new Timer(_lastCheckDateInMs);
+        const lastKnownTimeLeft = new TimeLeft(_lastKnownMsLeftForNewTurn);
+        const lastCheck = new TimeLeft(_lastCheckDateInMs);
 
         return commandContext.respondToCommand(`It is turn ${_lastKnownTurnNumber}. There are ${lastKnownTimeLeft.printTimeLeft()} (last checked ${lastCheck.printTimeLeftShort()} ago).`);
     };
 
     this.printDefaultTimer = () =>
     {
-        const defaultTimer = new Timer(_timerSettingObject.getValue());
+        const defaultTimer = new TimeLeft(_timerSettingObject.getValue());
 
         return commandContext.respondToCommand(`The default timer is ${defaultTimer.printTimeLeft}.`);
     };
 
     this.printTimeLeftShort = () =>
     {
-        const lastKnownTimeLeft = new Timer(_lastKnownMsLeftForNewTurn);
+        const lastKnownTimeLeft = new TimeLeft(_lastKnownMsLeftForNewTurn);
         
         return commandContext.respondToCommand(lastKnownTimeLeft.printTimeLeftShort());
     };

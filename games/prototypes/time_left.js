@@ -1,6 +1,6 @@
 
-const assert = require("./asserter.js");
-const SemanticError = require("./errors/custom_errors.js").SemanticError;
+const assert = require("../../asserter.js");
+const SemanticError = require("../../errors/custom_errors.js").SemanticError;
 
 const MS_IN_A_SECOND = 1000;
 const MS_IN_A_MINUTE = 60000;
@@ -11,9 +11,9 @@ const hoursLeftRegExp = /\d+h(our)?s?/i;
 const minutesLeftRegExp = /\d+m(inute)?s?/i;
 const secondsLeftRegExp = /\d+s(econd)?s?/i;
 
-module.exports = Timer;
+module.exports = TimeLeft;
 
-function Timer(ms)
+function TimeLeft(ms)
 {
   assert.isIntegerOrThrow(ms);
 

@@ -2,6 +2,7 @@
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
+const queryGame = require("../../games/prototypes/dominions5_tcp_query.js");
 
 const commandData = new CommandData("CHECK_CURRENT_TIMER");
 
@@ -24,8 +25,13 @@ function CheckCurrentTimerCommand()
 function _behaviour(commandContext)
 {
     const gameObject = commandContext.getGameTargetedByCommand();
-    const currentTimerObject = gameObject.getCurrentTimerObject();
-    const timeLeftAsString = currentTimerObject.printTimeLeft();
+    
+    return queryGame(gameObject)
+    .then((tcpQuery) =>
+    {
+        const timeLeft = tcpQuery.timeLeft;
+        const printedTimeLeft = timeLeft.printTimeLeft();
 
-    return commandContext.respondToCommand(timeLeftAsString);
+        return commandContext.respondToCommand(printedTimeLeft);
+    });
 }
