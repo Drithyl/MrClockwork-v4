@@ -27,7 +27,7 @@ function _behaviour(commandContext)
     var formattedListAsString;
     var game = commandContext.getGameTargetedByCommand();
     
-    game.getSubmittedPretenders()
+    game.fetchSubmittedPretenders()
     .then((listAsArray) => 
     {
         formattedListAsString = _formatSubmittedPretenderList(listAsArray);

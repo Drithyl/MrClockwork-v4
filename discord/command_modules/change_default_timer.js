@@ -1,8 +1,8 @@
 
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
+const Timer = require("../../games/prototypes/time_left.js");
 const commandPermissions = require("../command_permissions.js");
-const Timer = require("../../time_left_prototype");
 
 const commandData = new CommandData("CHANGE_CURRENT_TIMER");
 

@@ -93,7 +93,7 @@ function TimeLeft(ms)
   }
 }
 
-Timer.parseTimeLeftToMs = (timeLeftAsString) =>
+TimeLeft.parseTimeLeftToMs = (timeLeftAsString) =>
 {
   assert.isStringOrThrow(timeLeftAsString);
 
