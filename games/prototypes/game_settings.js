@@ -57,10 +57,14 @@ function GameSettings(parentGame)
 
         this.forEachSettingObject((settingObject) =>
         {
-            var flag = settingObject.translateValueToCmdFlag();
+            const key = settingObject.getKey();
+            const flag = settingObject.translateValueToCmdFlag();
 
-            flags = flags.concat(flag);
+            if (key !== "name")
+                flags = flags.concat(flag);
         });
+
+        flags.push(_parentGame.getName());
 
         return flags;
     };
