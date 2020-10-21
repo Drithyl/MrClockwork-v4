@@ -10,6 +10,7 @@ const expressServer = require("./servers/express_server.js");
 const gamesStore = require("./games/ongoing_games_store.js");
 const timeEventsEmitter = require("./time_events_emitter.js");
 const hostServerStore = require("./servers/host_server_store.js");
+const playerFileStore = require("./player_data/player_file_store.js");
 
 
 //Begin initialization
@@ -24,9 +25,14 @@ discord.startDiscordIntegration()
   console.log("Finished Populating server store.");
   return Promise.resolve(gamesStore.loadAll());
 })
+.then(() =>
+{
+    console.log("Games loaded.");
+    return playerFileStore.populate();
+})
 .then(() => 
 {
-  console.log("Games loaded.");
+  console.log("Player data loaded.");
   return expressServer.startListeningOnPort(config.hostServerConnectionPort);
 })
 .then(() => 

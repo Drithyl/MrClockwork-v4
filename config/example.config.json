@@ -10,15 +10,11 @@
   "pathToLogs": "C:/Bot/logs",
   "pathToGameData": "C:/Bot/game_data",
   "pathToGuildData": "C:/Bot/guild_data",
-  "pathToPlayerGameData": "C:/Bot/player_game_data",
-  "pathToPlayerGamePreferences": "C:/Bot/player_game_preferences",
-  "pathToGlobalPreferences": "C:/Bot/global_preferences",
+  "pathToPlayerData": "C:/Bot/player_data",
 
   "pathToGameDataBackup": "C:/Bot/game_data_backup",
   "pathToGuildDataBackup": "C:/Bot/guild_data_backup",
-  "pathToPlayerGameDataBackup": "C:/Bot/player_game_data_backup",
-  "pathToPlayerGamePreferencesBackup": "C:/Bot/player_game_preferences_backup",
-  "pathToGlobalPreferencesBackup": "C:/Bot/global_preferences_backup",
+  "pathToPlayerDataBackup": "C:/Bot/player_data_backup",
 
   "tmpDir": "C:/Bot/tmp",
   "pathToDom4Exe": "C:/SteamLibrary/steamapps/common/Dominions4/Dominions4.exe",

@@ -18,7 +18,7 @@ exports.isCommandInvoked = (commandContext) =>
 
         if (command.isInvoked(commandContext) === true)
         {
-            console.log("Command was invoked!");
+            console.log(`Command ${command.getName()} was invoked!`);
             return true;
         }
     }
@@ -75,8 +75,9 @@ function _getCommandObjectsAsArray(commandPrototypesArray)
 
     commandPrototypesArray.forEach((CommandPrototype) =>
     {
-        console.log("Created new command");
-        arr.push(new CommandPrototype());
+        const commandObject = new CommandPrototype();
+        arr.push(commandObject);
+        console.log(`Command object ${commandObject.getName()} created.`);
     });
 
     return arr;
