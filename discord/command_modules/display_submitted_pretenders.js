@@ -24,34 +24,32 @@ function DisplaySubmittedPretendersCommand()
 
 function _behaviour(commandContext)
 {
-    var formattedListAsString;
+    var formattedListAsString = "";
     var game = commandContext.getGameTargetedByCommand();
     
-    game.fetchSubmittedPretenders()
+    return game.fetchSubmittedPretenders()
     .then((listAsArray) => 
     {
-        formattedListAsString = _formatSubmittedPretenderList(listAsArray);
-        commandContext.respondToCommand(formattedListAsString);
+        listAsArray.forEach((submittedPretender, index) => 
+        {
+            formattedListAsString += `${index}. ${_formatSubmittedPretenderLine(submittedPretender, commandContext)}`;
+        });
+
+        commandContext.respondToCommand(formattedListAsString.toBox());
     });
 }
 
-function _formatSubmittedPretenderList(listAsArray)
+function _formatSubmittedPretenderLine(submittedPretender, commandContext)
 {
-    var formattedListAsString = "";
+    const nationFilename = submittedPretender.filename;
+    const fullNationName = submittedPretender.fullName;
+    const guildWrapper = commandContext.getGuildWrapper();
+    const game = commandContext.getGameTargetedByCommand();
+    const pretenderOwnerId = game.getPlayerControllingNationInGame(nationFilename);
+    const pretenderOwnerMember = guildWrapper.getGuildMemberWrapperById(pretenderOwnerId);
 
-    listAsArray.forEach((submittedPretender, index) => 
-        formattedListAsString += `${index}. ${_formatSubmittedPretenderLine(submittedPretender)}`);
-
-    return formattedListAsString;
-}
-
-function _formatSubmittedPretenderLine(submittedPretender)
-{
-    var fullNationName = submittedPretender.getFullNationName();
-    var pretenderOwner = submittedPretender.getOwnerUsername();
-
-    if (submittedPretender.isClaimed() === true)
-        return `${fullNationName.width(40)} ${pretenderOwner}\n`;
+    if (pretenderOwnerId != null)
+        return `${fullNationName.width(40)} ${pretenderOwnerMember.getUsername()}\n`;
 
     else
         return `${fullNationName}\n`;
