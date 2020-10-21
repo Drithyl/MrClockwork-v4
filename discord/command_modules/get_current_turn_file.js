@@ -2,6 +2,7 @@
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
+const playerFileStore = require("../../player_data/player_file_store.js");
 
 const commandData = new CommandData("GET_CURRENT_TURN_FILE");
 
@@ -26,12 +27,32 @@ function GetCurrentTurnFileCommand()
 
 function _behaviour(commandContext)
 {
-    var gameObject = commandContext.getGameTargetedByCommand();
-    var gameName = gameObject.getName();
-    var messageString = `Attached is your current turn file for ${gameName}.`;
-    var playerId = commandContext.getCommandSenderId();
-    var currentTurnNumber = gameObject.getCurrentTurnNumber();
-    
-    return gameObject.getCurrentTurnFileOfPlayer(playerId)
-    .then((turnFile) => commandContext.respondToCommand(messageString, turnFile, `${gameName} Turn ${currentTurnNumber}.2h`));
+    const turnFileAttachments = [];
+    const gameObject = commandContext.getGameTargetedByCommand();
+    const currentTurnNumber = gameObject.getCurrentTurnNumber();
+    const gameName = gameObject.getName();
+
+    const playerId = commandContext.getCommandSenderId();
+    const playerFile = playerFileStore.getPlayerFile(playerId);
+    const playerGameData = playerFile.getGameData(_gameObject.getName());
+    const controlledNations = playerGameData.getNationsControlledByPlayer();
+
+    const messageString = `${gameName}'s turn ${currentTurnNumber}:`;
+
+    return controlledNations.forEachPromise((nation, index, nextPromise) =>
+    {
+        const filename = nation.getTurnFilename();
+
+        return gameObject.getNationTurnFile(filename)
+        .then((turnFileBuffer) => 
+        {
+            turnFileAttachments.push({ 
+                attachment: turnFileBuffer, 
+                name: `${filename}_Turn_${currentTurnNumber}.2h`
+            });
+
+            return nextPromise();
+        });
+    })
+    .then(() => commandContext.respondToCommand(messageString, { files: turnFileAttachments }));
 }

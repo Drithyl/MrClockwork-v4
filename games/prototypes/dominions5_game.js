@@ -21,7 +21,7 @@ function Dominions5Game()
 
     _gameObject.fetchStatusDump = () => _emitMessageToServer("GET_STATUS_DUMP");
     _gameObject.fetchScoreDumpBuffer = () => _emitMessageToServer("GET_SCORE_DUMP");
-    _gameObject.fetchSubmittedPretenders = () => _emitMessageToServer("GET_SUBMITTED_PRETENDERS");
+    _gameObject.fetchSubmittedNationStatus = () => _emitMessageToServer("GET_SUBMITTED_PRETENDERS");
     _gameObject.fetchNationTurnFile = (nationFilename) => _emitMessageToServer("GET_NATION_TURN_FILE", {nationFilename});
 
     _gameObject.deleteGameSavefiles = () => _emitMessageToServer("DELETE_GAME_SAVE_FILES");
@@ -75,14 +75,13 @@ function Dominions5Game()
     _gameObject.getScoresFile = () =>
     {
         const dataPackage = _createGameDataPackage();
-
-        return _emitMessageToServer("getScoreDumpBuffer", dataPackage);
+        return _emitMessageToServer("GET_SCORE_DUMP", dataPackage);
     };
 
-    _gameObject.getCurrentTurnFileOfPlayer = (playerId) =>
+    _gameObject.getNationTurnFile = (nationFilename) =>
     {
-        //TODO: determine how to identify which nation a player uses
-        //Where is player data stored?
+        const dataPackage = Object.assign(_createGameDataPackage(), { nationFilename });
+        return _emitMessageToServer("GET_TURN_FILE", dataPackage);
     };
 
     _gameObject.isPlayerOwnerOfPretender = (playerId, nationIdentifier) =>

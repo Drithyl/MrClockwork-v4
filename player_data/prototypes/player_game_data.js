@@ -1,6 +1,7 @@
 
 const assert = require("../../asserter.js");
 const DominionsPreferences = require("./dominions_preferences.js");
+const dom5NationStore = require("../../games/dominions5_nation_store.js");
 const dominions5NationStore = require("../../games/dominions5_nation_store.js");
 
 module.exports = PlayerGameData;
@@ -12,31 +13,35 @@ function PlayerGameData(playerId, gameName)
 
     const _playerId = playerId;
     const _gameName = gameName;
-    const _controlledNationIdentifiers = [];
+    const _controlledNations = [];
     var _dominionsPreferences = new DominionsPreferences(playerId, gameName);
 
     this.getPlayerId = () => _playerId;
     this.getGameName = () => _gameName;
 
-    this.addControlledNation = (nationIdentifier) =>
+    this.addControlledNation = (nationFilename) =>
     {
-        if (dominions5NationStore.isValidNationIdentifier(nationIdentifier) === false)
+        if (dominions5NationStore.isValidNationIdentifier(nationFilename) === false)
             throw new SemanticError(`Invalid nation identifier at index ${i}.`);
 
-        _controlledNationIdentifiers.push(nationIdentifier);
+        _controlledNations.push(dom5NationStore.getNation(nationFilename));
     };
 
-    this.removePlayerControlOfNation = (nationIdentifier) =>
+    this.removePlayerControlOfNation = (nationFilename) =>
     {
-        for (var i = _controlledNationIdentifiers.length - 1; i >= 0; i--)
-            if (_controlledNationIdentifiers[i] == nationIdentifier)
-                _controlledNationIdentifiers.splice(i, 1);
+        for (var i = _controlledNations.length - 1; i >= 0; i--)
+            if (_controlledNations[i].getTurnFilename() == nationFilename)
+                _controlledNations.splice(i, 1);
     };
 
-    this.isNationControlledByPlayer = (nationIdentifier) => 
+    this.isNationControlledByPlayer = (nationFilename) => 
     {
-        const identifier = nationIdentifier.toString().toLowerCase();
-        return _controlledNationFilenames.includes(identifier);
+        return _controlledNations.find((nation) => nation.getTurnFilename() === nationFilename) != null;
+    };
+
+    this.getNationsControlledByPlayer = () => 
+    {
+        return [..._controlledNations];
     };
 
     this.getDominionsPreferences = () => _dominionsPreferences;
@@ -48,11 +53,15 @@ function PlayerGameData(playerId, gameName)
 
     this.toJSON = () =>
     {
+        const nationFilenames = [];
+
+        _controlledNations.forEach((nation) => nationFilenames.push(nation.getTurnFilename()));
+
         return {
             playerId: _playerId,
             gameName: _gameName,
             preferences: _dominionsPreferences.toJSON(),
-            controlledNations: _controlledNationIdentifiers
+            controlledNations: nationFilenames
         };
     };
 }
@@ -63,7 +72,11 @@ PlayerGameData.loadFromJSON = (jsonData) =>
     const dominionsPreferences = DominionsPreferences.loadFromJSON(jsonData.preferences);
 
     gameData.setDominionsPreferences(dominionsPreferences);
-    jsonData.controlledNations.forEach((nationIdentifier) => gameData.addControlledNation(nationIdentifier));
+    jsonData.controlledNations.forEach((nationFilename) => 
+    {
+        const nationObject = dom5NationStore.getNation(nationFilename);
+        gameData.addControlledNation(nationObject);
+    });
 
     return gameData;
 };

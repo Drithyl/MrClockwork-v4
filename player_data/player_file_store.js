@@ -74,6 +74,11 @@ exports.hasPlayerFile = (playerId) =>
     return _getPlayerFile(playerId) != null;
 };
 
+exports.getPlayerFile = (playerId) =>
+{
+    return _getPlayerFile(playerId);
+};
+
 
 exports.isPlayerReceivingScoresGlobal = (playerId) =>
 {

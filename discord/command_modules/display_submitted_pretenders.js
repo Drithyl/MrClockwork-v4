@@ -27,7 +27,7 @@ function _behaviour(commandContext)
     var formattedListAsString = "";
     var game = commandContext.getGameTargetedByCommand();
     
-    return game.fetchSubmittedPretenders()
+    return game.fetchSubmittedNationStatus()
     .then((listAsArray) => 
     {
         listAsArray.forEach((submittedPretender, index) => 
