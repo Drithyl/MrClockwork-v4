@@ -39,7 +39,7 @@ function _createMessageOptionsObject(options)
 {
   var optionsObject = {};
   var wrapper = _formatWrapper(options.prepend, options.append);
-  var attachment = _formatAttachment(options.fileBuffer, options.filename);
+  var attachment = _formatAttachment(options.files);
 
   if (wrapper != null)
     Object.assign(optionsObject, wrapper);
@@ -79,37 +79,23 @@ function _formatWrapper(prepend, append)
   return wrapperObject;
 }
 
-function _formatAttachment(files, filenames)
+function _formatAttachment(files)
 {
   let attachment = null;
 
   if (Array.isArray(files) === false && files != null)
   {
-    attachment = {files: [{attachment: files}]};
-
-    if (filenames == null)
-    {
-      attachment.files[0].name = "attachment";
-    }
-
-    //since files is not an array but a single file, then filenames is a single name too
-    else attachment.files[0].name = filenames;
+    attachment = {
+        files: [{
+            attachment: files.attachment, name: files.filename
+        }]
+    };
   }
 
+  /** Files must be an array of objects that include the format 
+   * {attachment: Buffer, name: string} */
   else if (files != null)
-  {
-    attachment = {files: []};
-
-    files.forEach((file, i) =>
-    {
-      if (filenames[i] == null)
-      {
-        attachment.files.push({attachment: file, name: "attachment"});
-      }
-
-      else attachment.files.push({attachment: file, name: filenames[i]});
-    });
-  }
+    attachment = files;
 
   return attachment;
 }
