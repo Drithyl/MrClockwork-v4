@@ -47,15 +47,19 @@ function isTimerAddedToDefaultTimer(newTimerAsString)
 
 function addTimeToGameDefaultTimer(newTimerAsString, gameObject)
 {
-    var newTimerStripped = newTimerAsString.replace(/\+/, "");
-    var newTimerInMs = Timer.parseTimeLeftToMs(newTimerStripped);
+    const newTimerStripped = newTimerAsString.replace(/\+/, "");
+    const addedTimeLeft = Timer.parseTimeLeftToMs(newTimerStripped);
 
-    return gameObject.addTimeToDefaultTimer(newTimerInMs);
+    const settingsObject = gameObject.getSettingsObject();
+    const timerSetting = settingsObject.getTimerSetting();
+    const timeLeft = timerSetting.getValue();
+
+    return gameObject.emitPromiseToServer("CHANGE_DEFAULT_TIMER", { timer: timeLeft.getMsLeft() + addedTimeLeft.getMsLeft() });
 }
 
 function changeDefaultTimerForGame(newTimerAsString, gameObject)
 {
-    var newTimerInMs = Timer.parseTimeLeftToMs(newTimerAsString);
+    const addedTimeLeft = Timer.parseTimeLeftToMs(newTimerAsString);
 
-    return gameObject.changeDefaultTimer(newTimerInMs);
+    return gameObject.changeDefaultTimer("CHANGE_DEFAULT_TIMER", { timer: addedTimeLeft.getMsLeft() });
 }

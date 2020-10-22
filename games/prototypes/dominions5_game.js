@@ -16,84 +16,15 @@ function Dominions5Game()
     _gameObject.setSettingsObject(new Dominions5Settings(_gameObject));
 
     _gameObject.getGameType = () => config.dom5GameTypeName;
-    _gameObject.getCurrentTimerObject = () => _currentTimer;
     _gameObject.getDataPackage = () => _createGameDataPackage();
-
-    _gameObject.fetchStatusDump = () => _emitMessageToServer("GET_STATUS_DUMP");
-    _gameObject.fetchScoreDumpBuffer = () => _emitMessageToServer("GET_SCORE_DUMP");
-    _gameObject.fetchSubmittedNationStatus = () => _emitMessageToServer("GET_SUBMITTED_PRETENDERS");
-    _gameObject.fetchNationTurnFile = (nationFilename) => _emitMessageToServer("GET_NATION_TURN_FILE", {nationFilename});
-
-    _gameObject.deleteGameSavefiles = () => _emitMessageToServer("DELETE_GAME_SAVE_FILES");
-
-    _gameObject.launchProcess = () =>
-    {
-        const dataPackage = _createGameDataPackage();
-
-        return _emitMessageToServer("LAUNCH_GAME", dataPackage);
-    };
-
-    _gameObject.killProcess = () =>
-    {
-        const dataPackage = _createGameDataPackage();
-
-        return _emitMessageToServer("KILL_GAME", dataPackage);
-    };
-
-    _gameObject.changeCurrentTimer = (ms) =>
-    {
-        const dataPackage = _createGameDataPackage();
-        dataPackage.timer = ms;
-
-        return _emitMessageToServer("changeCurrentTimer", dataPackage);
-    };
-
-    _gameObject.addTimeToCurrentTimer = (ms) =>
-    {
-        const dataPackage = _createGameDataPackage();
-        dataPackage.timer = ms + _currentTimer.getLastKnownMsLeft();
-
-        return _emitMessageToServer("changeCurrentTimer", dataPackage);
-    };
-
-    _gameObject.changeDefaultTimer = (ms) =>
-    {
-        const dataPackage = _createGameDataPackage();
-        dataPackage.timer = ms;
-
-        return _emitMessageToServer("changeDefaultTimer", dataPackage);
-    };
-
-    _gameObject.addTimeToDefaultTimer = (ms) =>
-    {
-        const dataPackage = _createGameDataPackage();
-        dataPackage.timer = ms + _currentTimer.getDefaultTimerInMs();
-
-        return _emitMessageToServer("changeCurrentTimer", dataPackage);
-    };
-
-    _gameObject.getScoresFile = () =>
-    {
-        const dataPackage = _createGameDataPackage();
-        return _emitMessageToServer("GET_SCORE_DUMP", dataPackage);
-    };
-
-    _gameObject.getNationTurnFile = (nationFilename) =>
-    {
-        const dataPackage = Object.assign(_createGameDataPackage(), { nationFilename });
-        return _emitMessageToServer("GET_TURN_FILE", dataPackage);
-    };
-
-    _gameObject.isPlayerOwnerOfPretender = (playerId, nationIdentifier) =>
-    {
-        return playerFileStore.isPlayerInGameControllingNation(playerId, _gameObject.getName(), nationIdentifier);
-    };
-
     _gameObject.getPlayerControllingNationInGame = (nationIdentifier) =>
     {
         const controllerId = playerFileStore.getPlayerIdInGameControllingNation(_gameObject.getName(), nationIdentifier);
         return controllerId;
     };
+    
+    _gameObject.isPlayerOwnerOfPretender = (playerId, nationIdentifier) => playerFileStore.isPlayerInGameControllingNation(playerId, _gameObject.getName(), nationIdentifier);
+    _gameObject.claimNation = (playerId, nationFilename) => playerFileStore.addPlayerControlledNationInGame(playerId, nationFilename, _gameObject.getName());
 
     _gameObject.removePretender = (nameOfNation) =>
     {
@@ -105,42 +36,19 @@ function Dominions5Game()
 
     };
 
-    _gameObject.startGame = () =>
-    {
-        const dataPackage = _createGameDataPackage();
-
-        return _emitMessageToServer("startGame", dataPackage);
-    };
-
-    _gameObject.restartGame = () =>
-    {
-        const dataPackage = _createGameDataPackage();
-
-        return _emitMessageToServer("restartGame", dataPackage)
-        .then(() =>
-        {
-            /*TODO: set hasStarted to false*/
-        });
-    };
-
-    _gameObject.rollbackTurn = () =>
-    {
-        const dataPackage = _createGameDataPackage();
-
-        return _emitMessageToServer("rollback", dataPackage);
-    };
+    _gameObject.fetchStatusDump = () => _gameObject.emitPromiseToServer("GET_STATUS_DUMP");
 
     _gameObject.startUpdating = (interval) => _intervalFunctionId = setInterval(_currentTimer.updateTimer, interval);
     _gameObject.stopUpdating = () => clearInterval(_intervalFunctionId);
 
-    function _emitMessageToServer(message, dataObjectToSend)
+    _gameObject.emitPromiseToServer = (message, additionalDataObjectToSend) =>
     {
-        const gameName = _gameObject.getName();
         const server = _gameObject.getServer();
-        const dataPackage = Object.assign({name: gameName}, dataObjectToSend);
+        const dataPackage = _createGameDataPackage();
+        Object.assign(dataPackage, additionalDataObjectToSend);
 
         return server.emitPromise(message, dataPackage);
-    }
+    };
 
     function _createGameDataPackage()
     {
@@ -155,29 +63,6 @@ function Dominions5Game()
 
         return dataPackage;
     }
-
-    function _validatePretenders()
-    {
-        //TODO: Is this really needed?
-    }
-
-    _currentTimer.setNewTurnHandler = () =>
-    {
-        //TODO: announce new turn to channel
-        //send stales to host
-        //send score files to players
-        //send turn backup to players
-    };
-
-    _currentTimer.setNewHourHandler = () =>
-    {
-        //TODO
-    };
-
-    _currentTimer.setLastHourHandler = () =>
-    {
-        //TODO: announce last hour to channel
-    };
 
     return _gameObject;
 }

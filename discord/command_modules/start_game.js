@@ -27,7 +27,7 @@ function _behaviour(commandContext)
 {
     const targetedGame = commandContext.getGameTargetedByCommand();
 
-    return targetedGame.startGame()
+    return targetedGame.emitPromiseToServer("START_GAME")
     .then(() => commandContext.respondToCommand(`The game has started setup process. Depending on the map and players, it may take a significant amount of time.`))
     .catch((err) => commandContext.respondToCommand(`An error occurred:\n\n${err.message}`));
 }

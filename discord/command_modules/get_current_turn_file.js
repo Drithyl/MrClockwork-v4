@@ -41,9 +41,9 @@ function _behaviour(commandContext)
 
     return controlledNations.forEachPromise((nation, index, nextPromise) =>
     {
-        const filename = nation.getTurnFilename();
+        const nationFilename = nation.getFilename();
 
-        return gameObject.getNationTurnFile(filename)
+        return gameObject.emitPromiseToServer("GET_NATION_TURN_FILE", { nationFilename })
         .then((turnFileBuffer) => 
         {
             turnFileAttachments.push({ 

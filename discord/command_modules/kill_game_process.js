@@ -28,7 +28,7 @@ function _behaviour(commandContext)
     const targetedGame = commandContext.getGameTargetedByCommand();
 
     return commandContext.respondToCommand(`Killing process...`)
-    .then(() => targetedGame.killProcess())
+    .then(() => targetedGame.emitPromiseToServer("KILL_GAME"))
     .then(() => commandContext.respondToCommand(`The process has been killed.`))
     .catch((err) => commandContext.respondToCommand(`An error occurred:\n\n${err.message}`));
 }

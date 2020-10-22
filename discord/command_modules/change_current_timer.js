@@ -48,14 +48,15 @@ function isTimerAddedToCurrentTimer(newTimerAsString)
 function addTimeToGame(newTimerAsString, gameObject)
 {
     var newTimerStripped = newTimerAsString.replace(/\+/, "");
-    var newTimerInMs = Timer.parseTimeLeftToMs(newTimerStripped);
+    var addedTimeLeft = Timer.parseTimeLeftToMs(newTimerStripped);
 
-    return gameObject.addTimeToCurrentTimer(newTimerInMs);
+    return gameObject.emitPromiseToServer("CHECK_TIMER")
+    .then((msLeft) => gameObject.emitPromiseToServer("CHANGE_CURRENT_TIMER", { timer: msLeft + addedTimeLeft.getMsLeft() }));
 }
 
 function changeTimerForGame(newTimerAsString, gameObject)
 {
-    var newTimerInMs = Timer.parseTimeLeftToMs(newTimerAsString);
+    var addedTimeLeft = Timer.parseTimeLeftToMs(newTimerAsString);
 
-    return gameObject.changeCurrentTimer(newTimerInMs);
+    return gameObject.emitPromiseToServer("CHANGE_CURRENT_TIMER", { timer: addedTimeLeft.getMsLeft() });
 }

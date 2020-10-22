@@ -43,5 +43,5 @@ function deleteGame(commandContext)
 {
     var gameObject = commandContext.getGameTargetedByCommand();
 
-    return gameObject.delete();
+    return gameObject.emitPromiseToServer("DELETE_GAME_SAVE_FILES");
 }
