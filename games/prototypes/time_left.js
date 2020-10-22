@@ -76,6 +76,8 @@ function TimeLeft(ms)
     return str;
   };
 
+  this.toJSON = () => this.getMsLeft();
+
   function _update(msLeftNow)
   {
     _ms = msLeftNow;
@@ -93,7 +95,7 @@ function TimeLeft(ms)
   }
 }
 
-TimeLeft.parseTimeLeftToMs = (timeLeftAsString) =>
+TimeLeft.fromStringInput = (timeLeftAsString) =>
 {
   assert.isStringOrThrow(timeLeftAsString);
 
@@ -115,7 +117,7 @@ TimeLeft.parseTimeLeftToMs = (timeLeftAsString) =>
   var seconds = extractNumberFromMatch(secondsMatch);
   var totalMs = (days * MS_IN_A_DAY) + (hours * MS_IN_AN_HOUR) + (minutes * MS_IN_A_MINUTE) + (seconds * MS_IN_A_SECOND);
   
-  return totalMs;
+  return new TimeLeft(totalMs);
 };
 
 function msToSeconds(ms)
