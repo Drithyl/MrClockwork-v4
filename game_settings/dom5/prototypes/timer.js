@@ -1,6 +1,6 @@
 
+const TimeLeft = require("../../../games/prototypes/time_left.js");
 const GameSetting = require("../../prototypes/game_setting.js");
-const SemanticError = require("../../../errors/custom_errors.js").SemanticError;
 
 const key = "timer";
 
@@ -26,50 +26,23 @@ function TimerSetting()
         _value = validatedValue;
     };
 
-    function _validateInputFormatOrThrow(input)
+    this.fromJSON = (msLeft) =>
     {
-        var timer = {};
+        const timeLeft = new TimeLeft(0);
 
-        if (TimerSetting.prototype.isExpectedFormat(input) === false)
-            throw new SemanticError(`Invalid value format for timer. Make sure the hours are less than 24 and that minutes are less than 60.`);
+        if (isNaN(+msLeft) === true)
+            throw new Error(`Expected number; got ${msLeft}`);
 
-        if (/^\d+$/.test(input) === true)
-            return +input;
+        timeLeft.update(+msLeft);
 
-        _matchAndAssign(timer, input, /(\d+)\s*d/i, "days");
-        _matchAndAssign(timer, input, /(\d+)\s*h/i, "hours");
-        _matchAndAssign(timer, input, /(\d+)\s*m/i, "minutes");
-
-        return timer;
-    }
-
-    this.fromJSON = (value) =>
-    {
-        if (typeof value !== "object")
-            throw new Error(`Expected object; got ${value}`);
-
-        for (var timeframe in value)
-        {
-            var numberOfTime = value[timeframe];
-
-            if (typeof timeframe !== "string")
-                throw new Error(`Expected string; got ${timeframe}`);
-
-            if (Number.isInteger(numberOfTime) === false)
-                throw new Error(`Expected integer; got ${numberOfTime}`);
-
-            if (numberOfTime < 0)
-                value[timeframe] = 0;
-        }
-
-        _value = value;
+        _value = timeLeft;
     };
 
     this.translateValueToCmdFlag = () =>
     {
-        var value = this.getValue();
-        var hours = (value.days * 24) + value.hours;
-        var minutes = value.minutes;
+        const timeLeft = this.getValue();
+        const hoursLeft = timeLeft.getDaysLeft() * 24 + timeLeft.getHoursLeft();
+        const minutesLeft = timeLeft.getMinutesLeft();
     
         if (value == null || value == 0)
             return [];
@@ -77,17 +50,14 @@ function TimerSetting()
         if (hours + minutes <= 0)
             return [];
     
-        return [`--hours`,  (value.days * 24) + value.hours, `--minutes`, value.minutes];
+        return [`--hours`,  hoursLeft, `--minutes`, minutesLeft];
     };
 
-    function _matchAndAssign(object, input, matchRegexp, key)
+    function _validateInputFormatOrThrow(input)
     {
-        var match = input.match(matchRegexp);
+        const timeLeft = TimeLeft.fromStringInput(input);
 
-        if (match == null)
-            object[key] = 0;
-
-        else object[key] = +match[0].replace(/[^\d+]/g, "");
+        return timeLeft;
     }
 }
 
