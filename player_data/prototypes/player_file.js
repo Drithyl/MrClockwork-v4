@@ -21,15 +21,17 @@ function PlayerFile(playerId)
 
     this.hasGameData = (gameName) => _arrayOfGameData.find((gameData) => gameData.getName() === gameName) != null;
     this.getGameData = (gameName) => _arrayOfGameData.find((gameData) => gameData.getName() === gameName);
-    this.addGameData = (newGameData) =>
+    this.addGameData = (gameName) =>
     {
-        assert.isInstanceOfPrototypeOrThrow(newGameData, PlayerGameData);
+        const newGameData = new PlayerGameData(_playerId, gameName);
 
         _arrayOfGameData.forEach((gameData, index) =>
         {
             if (gameData.getName() === newGameData.getName())
                 _arrayOfGameData.splice(index, 1, newGameData);
         });
+
+        return newGameData;
     };
 
     this.toJSON = () =>

@@ -196,37 +196,49 @@ exports.removePlayerReminderAtHourMarkInGame = (playerId, gameName, hourMark) =>
 };
 
 
-exports.isPlayerInGameControllingNation = (playerId, gameName, nationIdentifier) =>
+exports.isPlayerInGameControllingNation = (playerId, gameName, nationFilename) =>
 {
     const gameData = _getGameData(playerId, gameName);
-    return gameData.isNationControlledByPlayer(nationIdentifier);
+    return gameData.isNationControlledByPlayer(nationFilename);
 };
 
-exports.getPlayerIdInGameControllingNation = (gameName, nationIdentifier) =>
+exports.getPlayerIdInGameControllingNation = (gameName, nationFilename) =>
 {
     for (var playerId in _playerFileStore)
     {
         const gameData = _getGameData(playerId, gameName);
 
-        if (gameData.isNationControlledByPlayer(player, nationIdentifier) === true)
+        if (gameData.isNationControlledByPlayer(player, nationFilename) === true)
             return playerId;
     }
 
     return null;
 };
 
-exports.addPlayerControlledNationInGame = (playerId, nationIdentifier, gameName) =>
+exports.addPlayerControlledNationInGame = (playerId, nationFilename, gameName) =>
 {
-    const gameData = _getGameData(playerId, gameName);
-    return gameData.addControlledNation(nationIdentifier);
+    const playerFile = _createEmptyPlayerFileIfNoneExists(playerId);
+    var gameData = _getGameData(playerId, gameName);
+
+    if (gameData == null)
+        gameData = playerFile.addGameData(gameName);
+
+    return gameData.addControlledNation(nationFilename);
 };
 
-exports.removePlayerControlOfNationInGame = (playerId, nationIdentifier, gameName) =>
+exports.removePlayerControlOfNationInGame = (playerId, nationFilename, gameName) =>
 {
     const gameData = _getGameData(playerId, gameName);
-    return gameData.removePlayerControlOfNation(nationIdentifier);
+    return gameData.removePlayerControlOfNation(nationFilename);
 };
 
+function _createEmptyPlayerFileIfNoneExists(playerId)
+{
+    if (exports.hasPlayerFile(playerId) === false)
+        exports.addPlayerFile(playerId);
+
+    return _getPlayerFile(playerId);
+}
 
 function _getPlayerFile(playerId)
 {

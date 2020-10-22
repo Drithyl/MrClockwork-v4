@@ -24,19 +24,20 @@ function PlayerGameData(playerId, gameName)
         if (dominions5NationStore.isValidNationIdentifier(nationFilename) === false)
             throw new SemanticError(`Invalid nation identifier at index ${i}.`);
 
-        _controlledNations.push(dom5NationStore.getNation(nationFilename));
+        if (this.isNationControlledByPlayer(nationFilename) === false)
+            _controlledNations.push(dom5NationStore.getNation(nationFilename));
     };
 
     this.removePlayerControlOfNation = (nationFilename) =>
     {
         for (var i = _controlledNations.length - 1; i >= 0; i--)
-            if (_controlledNations[i].getTurnFilename() == nationFilename)
+            if (_controlledNations[i].getFilename() == nationFilename)
                 _controlledNations.splice(i, 1);
     };
 
     this.isNationControlledByPlayer = (nationFilename) => 
     {
-        return _controlledNations.find((nation) => nation.getTurnFilename() === nationFilename) != null;
+        return _controlledNations.find((nation) => nation.getFilename() === nationFilename) != null;
     };
 
     this.getNationsControlledByPlayer = () => 
@@ -55,7 +56,7 @@ function PlayerGameData(playerId, gameName)
     {
         const nationFilenames = [];
 
-        _controlledNations.forEach((nation) => nationFilenames.push(nation.getTurnFilename()));
+        _controlledNations.forEach((nation) => nationFilenames.push(nation.getFilename()));
 
         return {
             playerId: _playerId,
