@@ -2,6 +2,7 @@
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
+const dominions5NationStore = require("../../games/dominions5_nation_store.js");
 
 const commandData = new CommandData("UNCLAIM_PRETENDER");
 
@@ -33,10 +34,8 @@ function _behaviour(commandContext)
     const gameObject = commandContext.getGameTargetedByCommand();
     const commandArguments = commandContext.getCommandArgumentsArray();
     const nameOfNationToBeUnclaimed = commandArguments[0];
+    const nationObject = dominions5NationStore.getNation(nameOfNationToBeUnclaimed);
 
-    //TODO: check nation name/filename here, with the dom5 nation JSON data?
-
-    return gameObject.unclaimPretender(nameOfNationToBeUnclaimed)
-    .then(() => commandContext.respondToCommand(`Pretender was unclaimed.`))
-    .catch((err) => commandContext.respondToCommand(`Error occurred when unclaiming pretender:\n\n${err.message}`));
+    return gameObject.removeControlOfNation(nationObject.getFilename())
+    .then(() => commandContext.respondToCommand(`Pretender was unclaimed.`));
 }

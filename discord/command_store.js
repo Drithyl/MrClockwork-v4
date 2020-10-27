@@ -34,7 +34,8 @@ exports.invokeCommand = (commandContext) =>
         var command = commandStore[i];
 
         if (command.isInvoked(commandContext) === true)
-            return command.invoke(commandContext);
+            return command.invoke(commandContext)
+            .catch((err) => Promise.reject(err));
     }
 };
 

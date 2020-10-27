@@ -90,53 +90,57 @@ function DiscordCommand(commandDataObject)
 
     this.invoke = (commandContext) =>
     {
-        if (this.areSilentRequirementsMet(commandContext) === false)
-            return Promise.resolve();
-
-        return Promise.resolve(this.validateRequirementsOrThrow(commandContext))
-        .then(() => _runCommand(commandContext));
-    };
-
-    this.areSilentRequirementsMet = (commandContext) =>
-    {
-        for (var i = 0; i < _silentRequirementsArray.length; i++)
+        return new Promise((resolve, reject) =>
         {
-            var checkFn = _silentRequirementsArray[i];
-
-            try
+            _checkSilentRequirementsAreMet(commandContext)
+            .then((areRequirementsMet) => 
             {
-                if (checkFn(commandContext) === false)
-                {
-                    console.log("Silent requirement not met!");
-                    return false;
-                }
-                    
-            }
+                //Silently stop command execution
+                if (areRequirementsMet === false)
+                    resolve();
 
-            catch(err) 
-            {
-                console.log("Silent requirement not met!");
-                return false;
-            }
-        }
-
-        console.log("Silent requirements met!");
-        return true;
+                else
+                    return _validateRequirementsOrThrow(commandContext);
+            })
+            .then(() => _runCommand(commandContext))
+            .then(() => resolve())
+            .catch((err) => reject(err));
+        });
     };
 
-    this.validateRequirementsOrThrow = (commandContext) => 
+    function _checkSilentRequirementsAreMet(commandContext)
     {
-        _data.validateArgumentsSentOrThrow(commandContext);
-        _validateRequirementsOrThrow(commandContext);
-    };
+        return _silentRequirementsArray.forEachPromise((requirementCheck, index, nextPromise) =>
+        {
+            //Wrap check in a promise, as some are sync and some are async
+            return Promise.resolve(requirementCheck(commandContext))
+            .then(() => nextPromise())
+            .catch((err) => 
+            {
+                console.log(`Silent requirements not met, check ${requirementCheck} failed!`);
+                Promise.resolve(false);
+            });
+        })
+        .then(() =>
+        {
+            console.log("Silent requirements met!");
+            return Promise.resolve(true);
+        });
+    }
 
     function _validateRequirementsOrThrow(commandContext)
     {
-        for (var i = 0; i < _requirementsArray.length; i++)
+        return Promise.resolve(_data.validateArgumentsSentOrThrow(commandContext))
+        .then(() =>
         {
-            var checkRequirementOrThrow = _requirementsArray[i];
-            checkRequirementOrThrow(commandContext);
-        }
+            return _requirementsArray.forEachPromise((requirementCheck, index, nextPromise) =>
+            {
+                //Wrap check in a promise, as some are sync and some are async
+                return Promise.resolve(requirementCheck(commandContext))
+                .then(() => nextPromise())
+                .catch((err) => Promise.reject(err));
+            });
+        });
     }
 
     function _isCommandUsedInValidChannel(commandContext)

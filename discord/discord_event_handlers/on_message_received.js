@@ -67,7 +67,7 @@ function _handleCommandError(messageWrapper, err)
 
     else
     {
-        console.log(err);
+        console.log(`Handle command error`, err);
         return messageWrapper.respond(`Error occurred: ${err.message}`);
     }
 }

@@ -87,7 +87,7 @@ function Game()
     
     this.isOnlineCheck = () => 
     {
-        return this.emitPromiseToHostServer("ONLINE_CHECK", this.getPort());
+        return this.emitPromiseToServerSuper("ONLINE_CHECK", this.getPort());
     };
 
     this.isServerOnline = () => 

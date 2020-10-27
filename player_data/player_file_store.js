@@ -223,13 +223,24 @@ exports.addPlayerControlledNationInGame = (playerId, nationFilename, gameName) =
     if (gameData == null)
         gameData = playerFile.addGameData(gameName);
 
-    return gameData.addControlledNation(nationFilename);
+    gameData.addControlledNation(nationFilename);
 };
 
-exports.removePlayerControlOfNationInGame = (playerId, nationFilename, gameName) =>
+exports.removePlayerControlOfNationInGame = (nationFilename, gameName) =>
 {
-    const gameData = _getGameData(playerId, gameName);
-    return gameData.removePlayerControlOfNation(nationFilename);
+    _playerFileStore.forEachPromise((file, playerId, nextPromise) =>
+    {
+        const gameData = file.getGameData(gameName);
+        
+        if (gameData.isNationControlledByPlayer(nationFilename) === true)
+        {
+            gameData.removePlayerControlOfNation(nationFilename);
+            return exports.savePlayerFile(playerId)
+            .then(() => nextPromise());
+        }
+
+        else return nextPromise();
+    });
 };
 
 function _createEmptyPlayerFileIfNoneExists(playerId)

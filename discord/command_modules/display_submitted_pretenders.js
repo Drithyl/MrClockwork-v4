@@ -32,7 +32,7 @@ function _behaviour(commandContext)
     {
         listAsArray.forEach((submittedPretender, index) => 
         {
-            formattedListAsString += `${index}. ${_formatSubmittedPretenderLine(submittedPretender, commandContext)}`;
+            formattedListAsString += `${submittedPretender.nationNbr}. ${_formatSubmittedPretenderLine(submittedPretender, commandContext)}`;
         });
 
         commandContext.respondToCommand(formattedListAsString.toBox());

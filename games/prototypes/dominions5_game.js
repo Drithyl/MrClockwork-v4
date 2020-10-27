@@ -3,9 +3,7 @@ const Game = require("./game.js");
 const config = require("../../config/config.json");
 const Dominions5Settings = require("./dominions5_settings.js");
 const dominions5TcpQuery = require("./dominions5_tcp_query.js");
-const Dominions5CurrentTimer = require("./dominions5_current_timer.js");
 const playerFileStore = require("../../player_data/player_file_store.js");
-const { query } = require("express");
 
 module.exports = Dominions5Game;
 
@@ -14,7 +12,6 @@ function Dominions5Game()
     var _intervalFunctionId;
     var _lastKnownMsToNewTurn;
     const _gameObject = new Game();
-    const _currentTimer = new Dominions5CurrentTimer();
 
     _gameObject.setSettingsObject(new Dominions5Settings(_gameObject));
 
@@ -27,17 +24,19 @@ function Dominions5Game()
         return controllerId;
     };
     
-    _gameObject.isPlayerOwnerOfPretender = (playerId, nationIdentifier) => playerFileStore.isPlayerInGameControllingNation(playerId, _gameObject.getName(), nationIdentifier);
-    _gameObject.claimNation = (playerId, nationFilename) => playerFileStore.addPlayerControlledNationInGame(playerId, nationFilename, _gameObject.getName());
+    _gameObject.isPlayerControllingNation = (playerId, nationIdentifier) => playerFileStore.isPlayerInGameControllingNation(playerId, _gameObject.getName(), nationIdentifier);
 
-    _gameObject.removePretender = (nameOfNation) =>
+    _gameObject.claimNation = (playerId, nationFilename) => 
     {
-
+        playerFileStore.addPlayerControlledNationInGame(playerId, nationFilename, _gameObject.getName());
+        return playerFileStore.savePlayerFile(playerId);
     };
 
-    _gameObject.substitutePlayer = (nameOfNation, idOfNewPlayer) =>
+    _gameObject.removeControlOfNation = (nationFilename) => playerFileStore.removePlayerControlOfNationInGame(nationFilename, _gameObject.getName());
+    _gameObject.substitutePlayerControllingNation = (idOfNewPlayer, nationFilename) =>
     {
-
+        return _gameObject.removeControlOfNation(nationFilename)
+        .then(() => _gameObject.claimNation(idOfNewPlayer, nationFilename));
     };
 
     _gameObject.fetchStatusDump = () => _gameObject.emitPromiseToServer("GET_STATUS_DUMP");
@@ -55,7 +54,7 @@ function Dominions5Game()
         {
             if (tcpQuery.isInLobby() === false)
                 _lastKnownMsToNewTurn = tcpQuery.msLeft;
-                
+
             return Promise.resolve(tcpQuery);
         });
     };

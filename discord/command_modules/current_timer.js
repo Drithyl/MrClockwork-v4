@@ -16,6 +16,7 @@ function CurrentTimerCommand()
 
     currentTimerCommand.addRequirements(
         commandPermissions.assertMemberIsTrusted,
+        commandPermissions.assertGameIsOnline,
         commandPermissions.assertCommandIsUsedInGameChannel
     );
 

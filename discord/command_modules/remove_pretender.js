@@ -37,10 +37,11 @@ function _behaviour(commandContext)
 {
     const gameObject = commandContext.getGameTargetedByCommand();
     const nameOfNationToBeRemoved = extractNationNameArgument(commandContext);
+    const nationObject = dominions5NationStore.getNation(nameOfNationToBeRemoved);
 
-    return gameObject.removePretender(nameOfNationToBeRemoved)
-    .then(() => commandContext.respondToCommand(`Pretender was removed.`))
-    .catch((err) => commandContext.respondToCommand(`Error occurred when removing pretender:\n\n${err.message}`));
+    return gameObject.emitPromiseToServer("REMOVE_NATION", { nationFilename: nationObject.getFilename() })
+    .then(() => gameObject.removeControlOfNation(nameOfNationToBeRemoved))
+    .then(() => commandContext.respondToCommand(`Pretender was removed.`));
 }
 
 function assertNationNameExists(commandContext)
@@ -62,7 +63,7 @@ function assertMemberIsOwnerOfPretender(commandContext)
     const nameOfNationToBeRemoved = commandArguments[0];
     const playerGuildMemberWrapper = commandContext.getSenderGuildMemberWrapper();
 
-    if (gameObject.isPlayerOwnerOfPretender(playerGuildMemberWrapper, nameOfNationToBeRemoved) === false)
+    if (gameObject.isPlayerControllingNation(playerGuildMemberWrapper, nameOfNationToBeRemoved) === false)
         throw new Error(`You are not the owner of this nation.`);
 }
 

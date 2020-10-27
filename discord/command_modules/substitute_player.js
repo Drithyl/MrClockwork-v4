@@ -37,10 +37,10 @@ function _behaviour(commandContext)
     const gameObject = commandContext.getGameTargetedByCommand();
     const nameOfNation = extractNationNameArgument(commandContext);
     const idOfNewPlayer = extractIdOfNewPlayerArgument(commandContext);
+    const nationObject = dominions5NationStore.getNation(nameOfNation);
 
-    return gameObject.substitutePlayer(nameOfNation, idOfNewPlayer)
-    .then(() => commandContext.respondToCommand(`Player was replaced.`))
-    .catch((err) => commandContext.respondToCommand(`Error occurred:\n\n${err.message}`));
+    return gameObject.substitutePlayerControllingNation(idOfNewPlayer, nationObject.getFilename())
+    .then(() => commandContext.respondToCommand(`Player was replaced.`));
 }
 
 function assertNationNameExists(commandContext)
@@ -62,7 +62,7 @@ function assertMemberIsOwnerOfPretender(commandContext)
     const nameOfNationToBeReplaced = commandArguments[0];
     const playerGuildMemberWrapper = commandContext.getSenderGuildMemberWrapper();
 
-    if (gameObject.isPlayerOwnerOfPretender(playerGuildMemberWrapper, nameOfNationToBeReplaced) === false)
+    if (gameObject.isPlayerControllingNation(playerGuildMemberWrapper, nameOfNationToBeReplaced) === false)
         throw new Error(`You are not the owner of this nation.`);
 }
 
