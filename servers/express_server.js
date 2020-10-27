@@ -36,7 +36,10 @@ function _requestServerData(socketWrapper)
             return console.log("Socket sent no data; ignoring.");
 
         if (_hostServerStore.hasHostServerById(requestedData.id) === false)
-            return console.log(`Unrecognized server id ${requestedData.id}`);
+        {
+            console.log(`Unrecognized server id ${requestedData.id}; closing socket.`);
+            return socketWrapper.close();
+        }
 
         console.log(`Received recognized server's data. Instantiating HostServer object.`);
         hostServer = _hostServerStore.getHostServerById(requestedData.id);

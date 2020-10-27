@@ -2,18 +2,22 @@
 const Game = require("./game.js");
 const config = require("../../config/config.json");
 const Dominions5Settings = require("./dominions5_settings.js");
+const dominions5TcpQuery = require("./dominions5_tcp_query.js");
 const Dominions5CurrentTimer = require("./dominions5_current_timer.js");
 const playerFileStore = require("../../player_data/player_file_store.js");
+const { query } = require("express");
 
 module.exports = Dominions5Game;
 
 function Dominions5Game()
 {
+    var _intervalFunctionId;
+    var _lastKnownMsToNewTurn;
     const _gameObject = new Game();
     const _currentTimer = new Dominions5CurrentTimer();
-    var _intervalFunctionId;
 
     _gameObject.setSettingsObject(new Dominions5Settings(_gameObject));
+
 
     _gameObject.getGameType = () => config.dom5GameTypeName;
     _gameObject.getDataPackage = () => _createGameDataPackage();
@@ -38,16 +42,49 @@ function Dominions5Game()
 
     _gameObject.fetchStatusDump = () => _gameObject.emitPromiseToServer("GET_STATUS_DUMP");
 
-    _gameObject.startUpdating = (interval) => _intervalFunctionId = setInterval(_currentTimer.updateTimer, interval);
+    _gameObject.checkIfGameStarted = () => 
+    {
+        return dominions5TcpQuery(_gameObject)
+        .then((tcpQuery) => Promise.resolve(tcpQuery.isInLobby()));
+    };
+
+    _gameObject.updateLastKnownTimer = () => 
+    {
+        return dominions5TcpQuery(_gameObject)
+        .then((tcpQuery) =>
+        {
+            if (tcpQuery.isInLobby() === false)
+                _lastKnownMsToNewTurn = tcpQuery.msLeft;
+                
+            return Promise.resolve(tcpQuery);
+        });
+    };
+
     _gameObject.stopUpdating = () => clearInterval(_intervalFunctionId);
 
     _gameObject.emitPromiseToServer = (message, additionalDataObjectToSend) =>
     {
-        const server = _gameObject.getServer();
         const dataPackage = _createGameDataPackage();
         Object.assign(dataPackage, additionalDataObjectToSend);
 
-        return server.emitPromise(message, dataPackage);
+        return _gameObject.emitPromiseToServerSuper(message, dataPackage);
+    };
+
+    _gameObject.loadJSONData = (jsonData) =>
+    {
+        _gameObject.loadJSONDataSuper(jsonData);
+
+        if (jsonData.lastKnownMsToNewTurn >= 0)
+            _lastKnownMsToNewTurn = jsonData.lastKnownMsToNewTurn;
+
+        return _gameObject;
+    };
+
+    _gameObject.toJSON = () =>
+    {
+        const jsonData = _gameObject.toJSONSuper();
+        jsonData.lastKnownMsToNewTurn = _lastKnownMsToNewTurn;
+        return jsonData;
     };
 
     function _createGameDataPackage()

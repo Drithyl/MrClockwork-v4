@@ -44,10 +44,10 @@ function TimerSetting()
         const hoursLeft = timeLeft.getDaysLeft() * 24 + timeLeft.getHoursLeft();
         const minutesLeft = timeLeft.getMinutesLeft();
     
-        if (value == null || value == 0)
+        if (timeLeft == null || timeLeft == 0)
             return [];
     
-        if (hours + minutes <= 0)
+        if (hoursLeft + minutesLeft <= 0)
             return [];
     
         return [`--hours`,  hoursLeft, `--minutes`, minutesLeft];

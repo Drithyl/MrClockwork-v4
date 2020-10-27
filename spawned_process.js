@@ -13,8 +13,6 @@ function SpawnedProcess(exePath, args)
     const _process = spawn(exePath, args);
     _process.stderr.setEncoding("utf8");
     _process.stdout.setEncoding("utf8");
-    _process.stdio.setEncoding("utf8");
-    _process.stdin.setEncoding("utf8");
 
     this.onError = (doThis) => _process.on("error", (error) => doThis(error));
     
@@ -47,10 +45,4 @@ function SpawnedProcess(exePath, args)
 
     this.onStdoutData = (doThis) => _process.stdout.on("data", (data) => doThis(data));
     this.onStdoutError = (doThis) => _process.stdout.on("error", (error) => doThis(error));
-
-    this.onStdioData = (doThis) => _process.stdio.on("data", (data) => doThis(data));
-    this.onStdioError = (doThis) => _process.stdio.on("error", (error) => doThis(error));
-
-    this.onStdinData = (doThis) => _process.stdin.on("data", (data) => doThis(data));
-    this.onStdinError = (doThis) => _process.stdin.on("error", (error) => doThis(error));
 }

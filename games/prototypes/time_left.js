@@ -40,9 +40,6 @@ function TimeLeft(ms)
     let minutes = this.getMinutesLeft();
     let seconds = this.getSecondsLeft();
 
-    if (_isPaused)
-      return "Paused.";
-
     if (days > 0)
       str += days + " day(s), ";
 
@@ -55,6 +52,9 @@ function TimeLeft(ms)
     if (seconds > 0)
       str += seconds + " second(s) ";
 
+    if (/, $/i.test(str) === true)
+        return str.replace(/, $/i, "");
+
     return str;
   };
 
@@ -65,9 +65,6 @@ function TimeLeft(ms)
     let hours = this.getHoursLeft();
     let minutes = this.getMinutesLeft();
     let seconds = this.getSecondsLeft();
-
-    if (_isPaused)
-      return "Paused";
 
     str += (days < 10) ? `0${days}` : days;
     str += (hours < 10) ? `:0${hours}` : `:${hours}`;
@@ -82,16 +79,16 @@ function TimeLeft(ms)
   {
     _ms = msLeftNow;
 
-    _days = msToDays(msLeftNow);
+    _days = _msToDays(msLeftNow);
     msLeftNow -= _days * MS_IN_A_DAY;
 
-    _hours = msToHours(msLeftNow);
+    _hours = _msToHours(msLeftNow);
     msLeftNow -= _hours * MS_IN_AN_HOUR;
 
-    _minutes = msToMinutes(msLeftNow);
+    _minutes = _msToMinutes(msLeftNow);
     msLeftNow -= _minutes * MS_IN_A_MINUTE;
 
-    _seconds = msToSeconds(msLeftNow);
+    _seconds = _msToSeconds(msLeftNow);
   }
 }
 
@@ -101,51 +98,51 @@ TimeLeft.fromStringInput = (timeLeftAsString) =>
 
   //treat straight numbers as hours
   if (assert.isInteger(+timeLeftAsString) === true)
-    return +timeLeftAsString * MS_IN_AN_HOUR;
+    return new TimeLeft(+timeLeftAsString * MS_IN_AN_HOUR);
 
-  else if (isStringInRightFormat(timeLeftAsString) === false)
+  else if (_isStringInRightFormat(timeLeftAsString) === false)
     throw new SemanticError(`Invalid time format.`);
 
-  var daysMatch = input.match(daysLeftRegExp);
-  var hoursMatch = input.match(hoursLeftRegExp);
-  var minutesMatch = input.match(minutesLeftRegExp);
-  var secondsMatch = input.match(secondsLeftRegExp);
+  var daysMatch = timeLeftAsString.match(daysLeftRegExp);
+  var hoursMatch = timeLeftAsString.match(hoursLeftRegExp);
+  var minutesMatch = timeLeftAsString.match(minutesLeftRegExp);
+  var secondsMatch = timeLeftAsString.match(secondsLeftRegExp);
 
-  var days = extractNumberFromMatch(daysMatch);
-  var hours = extractNumberFromMatch(hoursMatch);
-  var minutes = extractNumberFromMatch(minutesMatch);
-  var seconds = extractNumberFromMatch(secondsMatch);
+  var days = _extractNumberFromMatch(daysMatch);
+  var hours = _extractNumberFromMatch(hoursMatch);
+  var minutes = _extractNumberFromMatch(minutesMatch);
+  var seconds = _extractNumberFromMatch(secondsMatch);
   var totalMs = (days * MS_IN_A_DAY) + (hours * MS_IN_AN_HOUR) + (minutes * MS_IN_A_MINUTE) + (seconds * MS_IN_A_SECOND);
   
   return new TimeLeft(totalMs);
 };
 
-function msToSeconds(ms)
+function _msToSeconds(ms)
 {
   return Math.floor(ms/MS_IN_A_SECOND);
 }
 
-function msToMinutes(ms)
+function _msToMinutes(ms)
 {
   return Math.floor(ms/MS_IN_A_MINUTE);
 }
 
-function msToHours(ms)
+function _msToHours(ms)
 {
   return Math.floor(ms/MS_IN_AN_HOUR);
 }
 
-function msToDays(ms)
+function _msToDays(ms)
 {
   return Math.floor(ms/MS_IN_A_DAY);
 }
 
-function isStringInRightFormat(timeLeftAsString)
+function _isStringInRightFormat(timeLeftAsString)
 {
   return daysLeftRegExp.test(timeLeftAsString) || hoursLeftRegExp.test(timeLeftAsString) || minutesLeftRegExp.test(timeLeftAsString) || secondsLeftRegExp(timeLeftAsString);
 }
 
-function extractNumberFromMatch(stringMatchResult)
+function _extractNumberFromMatch(stringMatchResult)
 {
-  (stringMatchResult != null) ? +stringMatchResult[0].replace(/\D/g, "") : 0;
+  return (stringMatchResult != null) ? +stringMatchResult[0].replace(/\D/g, "") : 0;
 }

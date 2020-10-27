@@ -10,6 +10,8 @@ function SocketWrapper(socketIoObject)
 
     this.getId = () => _socketIoObject.id;
 
+    this.close = () => _socketIoObject.close();
+
     this.onDisconnect = (fnToCall) => _socketIoObject.on("disconnect", () => fnToCall(this));
 
     this.emit = (trigger, data) => _socketIoObject.emit(trigger, data);
@@ -52,4 +54,10 @@ function SocketWrapper(socketIoObject)
             });
         });
     };
+
+    this.listenTo("GAME_ERROR", (data) => console.log(`${data.gameName}: reported game error: ${data.error}`));
+    this.listenTo("STDIO_CLOSED", (data) => console.log(`${data.gameName}: stdio closed with code ${data.code}`));
+    this.listenTo("STDIO_DATA", (data) => console.log(`${data.gameName}: ${data.type} data received: ${data.data}`));
+    this.listenTo("STDIO_ERROR", (data) => console.log(`${data.gameName}: ${data.type} ERROR received: ${data.error}`));
+    this.listenTo("NEW_TURN", (data) => console.log(`${data.gameName}: New turn!`));
 }

@@ -70,7 +70,8 @@ function HostServer(id)
     this.sendGameData = () =>
     {
         var gameData = ongoingGamesStore.getGameDataForHostServer(this);
-        return this.emitPromise("GAME_DATA", gameData);
+        return this.emitPromise("GAME_DATA", gameData)
+        .catch((err) => Promise.reject(err));
     };
 
     this.reserveGameSlot = () =>

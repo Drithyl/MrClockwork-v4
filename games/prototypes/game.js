@@ -98,8 +98,8 @@ function Game()
         else return _hostServer.isOnline();
     };
 
-    this.emitPromiseToHostServer = (...args) => _hostServer.emitPromise(...args);
-    this.listenToMessageFromHostServer = (...args) => _hostServer.listenTo(...args);
+    this.emitPromiseToServerSuper = (message, dataPackage) => _hostServer.emitPromise(message, dataPackage);
+    this.listenToServer = (trigger, handler) => _hostServer.listenTo(trigger, handler);
 
     this.getDiscordGuildWrapper = () => _guildWrapper;
     this.getOrganizerMemberWrapper = () => _organizerWrapper;
@@ -173,7 +173,7 @@ function Game()
         });
     };
 
-    this.loadJSONData = (jsonData) =>
+    this.loadJSONDataSuper = (jsonData) =>
     {
         assert.isObjectOrThrow(jsonData);
         assert.isObjectOrThrow(jsonData.settings);
@@ -204,7 +204,7 @@ function Game()
         return this;
     };
 
-    this.toJSON = () =>
+    this.toJSONSuper = () =>
     {
         var jsonObject = {};
         jsonObject.name = this.getName();

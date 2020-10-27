@@ -1,28 +1,28 @@
 {
-    "CHANGE_CURRENT_TIMER":
+    "CURRENT_TIMER":
     {
         "name": "timer [x]",
         "isEnabled": true,
         "gameTypesSupported": ["dom5"],
         "argumentsRequiredInfo": ["`3d20h30m`, with your own numbers, or a single integer for hours (`0` to pause). If you add a + sign in front of the new timer, the amount will get added to the timer, instead of replaced."],
-        "optionalArguments": 0,
+        "optionalArguments": 1,
         "regexpRequiredToInvoke": "TIMER",
         "argumentRegexpArray": ["\\+?(0|(\\d+|\\d+d(ay)?|\\d+h(our)?|\\d+m(inute)?))$"],
         "channelRequiredToInvoke": "game",
-        "helpText": "Used to change the timer of the current turn only. Can take a combination of days/hours/minutes, or a single number for hours. Can only be used by the organizer or higher permissions."
+        "helpText": "Used to either check (when used without arguments) or change the timer of the current turn. Can take a combination of days/hours/minutes, or a single number for hours. Can only be used by the organizer or higher permissions."
     },
 
-    "CHANGE_DEFAULT_TIMER":
+    "DEFAULT_TIMER":
     {
         "name": "dtimer [x]",
         "isEnabled": true,
         "gameTypesSupported": ["dom5"],
         "argumentsRequiredInfo": ["`3d20h30m`, with your own numbers, or a single integer for hours (`0` to pause). If you add a + sign in front of the new timer, the amount will get added to the timer, instead of replaced."],
-        "optionalArguments": 0,
+        "optionalArguments": 1,
         "regexpRequiredToInvoke": "DTIMER",
         "argumentRegexpArray": ["\\+?(0|(\\d+|\\d+d(ay)?|\\d+h(our)?|\\d+m(inute)?))$"],
         "channelRequiredToInvoke": "game",
-        "helpText": "Used to change the global timer (NOT the current turn's). Can take a combination of days/hours/minutes, or a single number for hours. Can only be used by the organizer or higher permissions."
+        "helpText": "Used to either check (when used without arguments) or change the global timer of the game. Can take a combination of days/hours/minutes, or a single number for hours. Can only be used by the organizer or higher permissions."
     },
 
     "CHANGE_PLAYER_PREFERENCES":
@@ -49,32 +49,6 @@
         "argumentRegexpArray": [],
         "channelRequiredToInvoke": "game",
         "helpText": "Allows the organizer of a game to change its settings if the game hasn't started yet."
-    },
-
-    "CHECK_CURRENT_TIMER":
-    {
-        "name": "timer",
-        "isEnabled": true,
-        "gameTypesSupported": ["dom5"],
-        "argumentsRequiredInfo": [],
-        "optionalArguments": 0,
-        "regexpRequiredToInvoke": "TIMER",
-        "argumentRegexpArray": [],
-        "channelRequiredToInvoke": "game",
-        "helpText": "Print the timer left on this game's current turn."
-    },
-
-    "CHECK_DEFAULT_TIMER":
-    {
-        "name": "dtimer",
-        "isEnabled": true,
-        "gameTypesSupported": ["dom5"],
-        "argumentsRequiredInfo": [],
-        "optionalArguments": 0,
-        "regexpRequiredToInvoke": "DTIMER",
-        "argumentRegexpArray": [],
-        "channelRequiredToInvoke": "game",
-        "helpText": "Print the global timer of this game."
     },
 
     "CLAIM_PRETENDER":
