@@ -16,6 +16,8 @@ function StartGameCommand()
     startGameCommand.addRequirements(
         commandPermissions.assertCommandIsUsedInGameChannel,
         commandPermissions.assertServerIsOnline,
+        commandPermissions.assertGameIsOnline,
+        commandPermissions.assertGameHasNotStarted,
         commandPermissions.assertMemberIsTrusted,
         commandPermissions.assertMemberIsOrganizer
     );
@@ -28,6 +30,6 @@ function _behaviour(commandContext)
     const targetedGame = commandContext.getGameTargetedByCommand();
 
     return targetedGame.emitPromiseToServer("START_GAME")
-    .then(() => commandContext.respondToCommand(`The game has started setup process. Depending on the map and players, it may take a significant amount of time.`))
+    .then(() => commandContext.respondToCommand(`The game will start the setup process in a minute. Depending on the map and players, it may take a significant amount of time.`))
     .catch((err) => commandContext.respondToCommand(`An error occurred:\n\n${err.message}`));
 }

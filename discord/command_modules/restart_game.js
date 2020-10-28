@@ -16,6 +16,7 @@ function RestartGameCommand()
     restartGameCommand.addRequirements(
         commandPermissions.assertCommandIsUsedInGameChannel,
         commandPermissions.assertServerIsOnline,
+        commandPermissions.assertGameIsOnline,
         commandPermissions.assertMemberIsTrusted,
         commandPermissions.assertMemberIsOrganizer
     );

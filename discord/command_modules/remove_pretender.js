@@ -37,9 +37,10 @@ function _behaviour(commandContext)
     const gameObject = commandContext.getGameTargetedByCommand();
     const nameOfNationToBeRemoved = extractNationNameArgument(commandContext);
     const nationObject = dominions5NationStore.getNation(nameOfNationToBeRemoved);
+    const nationFilename = nationObject.getFilename();
 
-    return gameObject.emitPromiseToServer("REMOVE_NATION", { nationFilename: nationObject.getFilename() })
-    .then(() => gameObject.removeControlOfNation(nameOfNationToBeRemoved))
+    return gameObject.emitPromiseToServer("REMOVE_NATION", { nationFilename: nationFilename })
+    .then(() => gameObject.removeControlOfNation(nationFilename))
     .then(() => commandContext.respondToCommand(`Pretender was removed.`));
 }
 
