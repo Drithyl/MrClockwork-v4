@@ -30,10 +30,11 @@ function extendPrototypes()
     {
         value: function(asyncFn)
         {
-            var keyArray = Object.keys(this);
+            var self = this;
+            var keyArray = Object.keys(self);
 
             //Pass the item, the key to the item, and the object
-            keyArray.forEach((key, index, array) => asyncFn(this[key], keyArray[index], this));
+            keyArray.forEach((key, index, array) => asyncFn(self[key], keyArray[index], self));
         }
     });
 
@@ -42,7 +43,8 @@ function extendPrototypes()
         value: function(asyncFn)
         {
             var index = 0;
-            var keyArray = Object.keys(this);
+            var self = this;
+            var keyArray = Object.keys(self);
 
             return new Promise((resolve, reject) =>
             {
@@ -52,7 +54,7 @@ function extendPrototypes()
                         return resolve();
 
                     //Pass the item, the key to the item, and the function to move to the next promise
-                    Promise.resolve(asyncFn(this[keyArray[index]], keyArray[index++], () => loop()))
+                    Promise.resolve(asyncFn(self[keyArray[index]], keyArray[index++], () => loop()))
                     .catch((err) => reject(err));
                 })();
             });

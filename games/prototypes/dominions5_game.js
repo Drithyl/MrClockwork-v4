@@ -23,7 +23,9 @@ function Dominions5Game()
         const controllerId = playerFileStore.getPlayerIdInGameControllingNation(_gameObject.getName(), nationIdentifier);
         return controllerId;
     };
-    
+
+
+    _gameObject.memberIsPlayer = (memberId) => playerFileStore.isPlayerInGame(memberId, _gameObject.getName());
     _gameObject.isPlayerControllingNation = (playerId, nationIdentifier) => playerFileStore.isPlayerInGameControllingNation(playerId, _gameObject.getName(), nationIdentifier);
 
     _gameObject.claimNation = (playerId, nationFilename) => 
@@ -44,7 +46,7 @@ function Dominions5Game()
     _gameObject.checkIfGameStarted = () => 
     {
         return dominions5TcpQuery(_gameObject)
-        .then((tcpQuery) => Promise.resolve(tcpQuery.isInLobby()));
+        .then((tcpQuery) => Promise.resolve(tcpQuery.isInLobby() === false));
     };
 
     _gameObject.updateLastKnownTimer = () => 

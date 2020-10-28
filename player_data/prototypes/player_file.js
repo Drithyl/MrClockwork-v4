@@ -4,6 +4,8 @@ const assert = require("../../asserter.js");
 const DominionsPreferences = require("./dominions_preferences.js");
 const PlayerGameData = require("./player_game_data.js");
 
+module.exports = PlayerFile;
+
 function PlayerFile(playerId)
 {
     const _playerId = playerId;
@@ -19,25 +21,19 @@ function PlayerFile(playerId)
         _globalPreferences = dominionsPreferences;
     };
 
-    this.hasGameData = (gameName) => _arrayOfGameData.find((gameData) => gameData.getName() === gameName) != null;
-    this.getGameData = (gameName) => _arrayOfGameData.find((gameData) => gameData.getName() === gameName);
-    this.addGameData = (gameName) =>
+    this.hasGameData = (gameName) => _arrayOfGameData.find((gameData) => gameData.getGameName() === gameName) != null;
+    this.getGameData = (gameName) => _arrayOfGameData.find((gameData) => gameData.getGameName() === gameName);
+    this.addNewGameData = (gameName) =>
     {
         const newGameData = new PlayerGameData(_playerId, gameName);
-
-        _arrayOfGameData.forEach((gameData, index) =>
-        {
-            if (gameData.getName() === newGameData.getName())
-                _arrayOfGameData.splice(index, 1, newGameData);
-        });
-
-        return newGameData;
+        return _addGameData(newGameData);
     };
+
+    this.loadGameData = (gameData) => _addGameData(gameData);
 
     this.toJSON = () =>
     {
         const arrayOfGameDataToJSON = [];
-
         _arrayOfGameData.forEach((gameData) => arrayOfGameDataToJSON.push(gameData.toJSON()));
 
         return {
@@ -46,6 +42,25 @@ function PlayerFile(playerId)
             globalPreferences: _globalPreferences.toJSON()
         };
     };
+
+    function _addGameData(gameDataToAdd)
+    {
+        var alreadyExisted = false;
+        
+        _arrayOfGameData.forEach((gameData, index) =>
+        {
+            if (gameData.getGameName() === gameDataToAdd.getGameName())
+            {
+                _arrayOfGameData.splice(index, 1, gameDataToAdd);
+                alreadyExisted = true;
+            }
+        });
+
+        if (alreadyExisted === false)
+            _arrayOfGameData.push(gameDataToAdd);
+
+        return gameDataToAdd;
+    }
 }
 
 PlayerFile.loadFromJSON = (jsonData) =>
@@ -55,9 +70,10 @@ PlayerFile.loadFromJSON = (jsonData) =>
 
     playerFile.setGlobalPreferences(globalPreferences);
 
-    arrayOfGameData.forEach((jsonGameData) => 
+    jsonData.arrayOfGameData.forEach((jsonGameData) => 
     {
-        playerFile.addGameData(PlayerGameData.loadFromJSON(jsonGameData));
+        const loadedGameData = PlayerGameData.loadFromJSON(jsonGameData);
+        playerFile.loadGameData(loadedGameData);
     });
 
     return playerFile;

@@ -17,8 +17,7 @@ function ClaimPretenderCommand()
 
     claimPretenderCommand.addRequirements(
         commandPermissions.assertMemberIsTrusted,
-        commandPermissions.assertCommandIsUsedInGameChannel,
-        commandPermissions.assertGameHasNotStarted
+        commandPermissions.assertCommandIsUsedInGameChannel
     );
 
     return claimPretenderCommand;

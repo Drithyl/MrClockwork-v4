@@ -5,6 +5,7 @@ const { SemanticError, PermissionsError } = require("../errors/custom_errors.js"
 exports.assertCommandIsUsedInGameChannel = (...args) => _assertCommandIsUsedInGameChannel(...args);
 exports.assertServerIsOnline = (...args) => _assertServerIsOnline(...args);
 exports.assertGameIsOnline = (...args) => _assertGameIsOnline(...args);
+exports.assertGameIsOffline = (...args) => _assertGameIsOffline(...args);
 exports.assertGameHasStarted = (...args) => _assertGameHasStarted(...args);
 exports.assertGameHasNotStarted = (...args) => _assertGameHasNotStarted(...args);
 exports.assertGameIsBlitz = (...args) => _assertGameIsBlitz(...args);
@@ -50,20 +51,48 @@ function _assertGameIsOnline(commandContext)
     .catch((err) => Promise.reject(err));
 }
 
+//TODO: Specify type of Error thrown
+function _assertGameIsOffline(commandContext)
+{
+    const game = commandContext.getGameTargetedByCommand();
+
+    return game.isOnlineCheck()
+    .then((isOnline) =>
+    {
+        if (isOnline === false)
+            return Promise.resolve();
+        
+        else return Promise.reject(new Error(`This game's instance is already online.`));
+    })
+    .catch((err) => Promise.reject(err));
+}
+
 function _assertGameHasStarted(commandContext)
 {
     const game = commandContext.getGameTargetedByCommand();
 
-    if (game.assertGameHasStarted() === false)
-        throw new SemanticError(`This game has not started yet.`);
+    return game.checkIfGameStarted()
+    .then((hasGameStarted) =>
+    {
+        if (hasGameStarted === false)
+            return Promise.reject(new SemanticError(`This game has not started yet.`));
+
+        else return Promise.resolve();
+    });
 }
 
 function _assertGameHasNotStarted(commandContext)
 {
     const game = commandContext.getGameTargetedByCommand();
 
-    if (game.assertGameHasStarted() === true)
-        throw new SemanticError(`This game has already started.`);
+    return game.checkIfGameStarted()
+    .then((hasGameStarted) =>
+    {
+        if (hasGameStarted === true)
+            return Promise.reject(new SemanticError(`This game has already started.`));
+
+        else return Promise.resolve();
+    });
 }
 
 function _assertGameIsBlitz(commandContext)

@@ -1,8 +1,8 @@
 
 const assert = require("../../asserter.js");
+const { SemanticError } = require("../../errors/custom_errors");
 const DominionsPreferences = require("./dominions_preferences.js");
 const dom5NationStore = require("../../games/dominions5_nation_store.js");
-const dominions5NationStore = require("../../games/dominions5_nation_store.js");
 
 module.exports = PlayerGameData;
 
@@ -21,8 +21,8 @@ function PlayerGameData(playerId, gameName)
 
     this.addControlledNation = (nationFilename) =>
     {
-        if (dominions5NationStore.isValidNationIdentifier(nationFilename) === false)
-            throw new SemanticError(`Invalid nation identifier at index ${i}.`);
+        if (dom5NationStore.isValidNationIdentifier(nationFilename) === false)
+            throw new SemanticError(`Invalid nation identifier: ${nationFilename}.`);
 
         if (this.isNationControlledByPlayer(nationFilename) === false)
             _controlledNations.push(dom5NationStore.getNation(nationFilename));
@@ -30,14 +30,17 @@ function PlayerGameData(playerId, gameName)
 
     this.removePlayerControlOfNation = (nationFilename) =>
     {
+        const filenameWithoutExtension = dom5NationStore.trimFilenameExtension(nationFilename);
+        
         for (var i = _controlledNations.length - 1; i >= 0; i--)
-            if (_controlledNations[i].getFilename() == nationFilename)
+            if (_controlledNations[i].getFilename() == filenameWithoutExtension)
                 _controlledNations.splice(i, 1);
     };
 
     this.isNationControlledByPlayer = (nationFilename) => 
     {
-        return _controlledNations.find((nation) => nation.getFilename() === nationFilename) != null;
+        const filenameWithoutExtension = dom5NationStore.trimFilenameExtension(nationFilename);
+        return _controlledNations.find((nation) => nation.getFilename() === filenameWithoutExtension) != null;
     };
 
     this.getNationsControlledByPlayer = () => 
@@ -75,8 +78,7 @@ PlayerGameData.loadFromJSON = (jsonData) =>
     gameData.setDominionsPreferences(dominionsPreferences);
     jsonData.controlledNations.forEach((nationFilename) => 
     {
-        const nationObject = dom5NationStore.getNation(nationFilename);
-        gameData.addControlledNation(nationObject);
+        gameData.addControlledNation(nationFilename);
     });
 
     return gameData;

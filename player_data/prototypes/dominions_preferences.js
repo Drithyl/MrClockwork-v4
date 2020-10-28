@@ -9,9 +9,10 @@ function DominionsPreferences(playerId)
     
     const _playerId = playerId;
     const _reminders = [];
-    const _receiveScores = false;
-    const _receiveBackups = false;
-    const _receiveReminderWhenTurnIsDone = false;
+    
+    var _receiveScores = false;
+    var _receiveBackups = false;
+    var _receiveReminderWhenTurnIsDone = false;
 
     this.getPlayerId = () => _playerId;
 
@@ -63,7 +64,7 @@ function DominionsPreferences(playerId)
     this.toJSON = () =>
     {
         return {
-            playerId: _preferences.getPlayerId(),
+            playerId: _playerId,
             reminders: [..._reminders],
             receiveScores: _receiveScores,
             receiveBackups: _receiveBackups,

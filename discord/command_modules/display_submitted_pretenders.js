@@ -35,7 +35,10 @@ function _behaviour(commandContext)
             formattedListAsString += `${submittedPretender.nationNbr}. ${_formatSubmittedPretenderLine(submittedPretender, commandContext)}`;
         });
 
-        commandContext.respondToCommand(formattedListAsString.toBox());
+        if (formattedListAsString === "")
+            return commandContext.respondToCommand(`There are no submitted pretenders.`);
+
+        return commandContext.respondToCommand(formattedListAsString.toBox());
     });
 }
 

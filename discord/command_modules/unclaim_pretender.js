@@ -16,9 +16,7 @@ function UnclaimPretenderCommand()
 
     unclaimPretenderCommand.addRequirements(
         commandPermissions.assertMemberIsTrusted,
-        commandPermissions.assertCommandIsUsedInGameChannel,
-        commandPermissions.assertGameIsOnline,
-        commandPermissions.assertGameHasNotStarted
+        commandPermissions.assertCommandIsUsedInGameChannel
     );
 
     return unclaimPretenderCommand;
@@ -34,7 +32,12 @@ function _behaviour(commandContext)
     const gameObject = commandContext.getGameTargetedByCommand();
     const commandArguments = commandContext.getCommandArgumentsArray();
     const nameOfNationToBeUnclaimed = commandArguments[0];
-    const nationObject = dominions5NationStore.getNation(nameOfNationToBeUnclaimed);
+    var nationObject;
+
+    if (nameOfNationToBeUnclaimed == null)
+        return commandContext.respondToCommand(`You must specify a nation identifier to unclaim.`);
+
+    nationObject = dominions5NationStore.getNation(nameOfNationToBeUnclaimed);
 
     return gameObject.removeControlOfNation(nationObject.getFilename())
     .then(() => commandContext.respondToCommand(`Pretender was unclaimed.`));

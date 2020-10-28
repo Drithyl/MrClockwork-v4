@@ -13,13 +13,13 @@ exports.populate = () =>
     {
         return filenames.forEachPromise((filename, index, nextPromise) =>
         {
-            fsp.readFile(`${config.pathToPlayerGameData}/${filename}`, "utf8")
+            fsp.readFile(`${config.pathToPlayerData}/${filename}`, "utf8")
             .then((fileData) =>
             {
                 const parsedJSON = JSON.parse(fileData);
                 const playerFile = PlayerFile.loadFromJSON(parsedJSON);
 
-                _playerGameDataStore[playerFile.getId()] = playerFile;
+                _playerFileStore[playerFile.getId()] = playerFile;
                 return nextPromise();
             })
             .catch((err) => Promise.reject(err));
@@ -36,19 +36,19 @@ exports.addPlayerFile = (playerId) =>
 
 exports.savePlayerFile = (playerId) =>
 {
-    const filePath = `${config.pathToPlayerGameData}/${playerId}`;
+    const filePath = `${config.pathToPlayerData}/${playerId}.json`;
     const playerFile = _getPlayerFile(playerId);
 
     if (exports.hasPlayerFile(playerId) === false)
         return Promise.resolve();
 
-    return fsp.writeFile(filePath, playerFile.toJSON())
+    return fsp.writeFile(filePath, JSON.stringify(playerFile, null, 2))
     .catch((err) => Promise.reject(err));
 };
 
 exports.deletePlayerFile = (playerId) =>
 {
-    const filePath = `${config.pathToPlayerGameData}/${playerId}`;
+    const filePath = `${config.pathToPlayerData}/${playerId}.json`;
 
     if (exports.hasPlayerFile(playerId) === false)
         return Promise.resolve();
@@ -77,6 +77,12 @@ exports.hasPlayerFile = (playerId) =>
 exports.getPlayerFile = (playerId) =>
 {
     return _getPlayerFile(playerId);
+};
+
+
+exports.isPlayerInGame = (playerId, gameName) => 
+{
+    return _getGameData(playerId, gameName) != null;
 };
 
 
@@ -199,6 +205,10 @@ exports.removePlayerReminderAtHourMarkInGame = (playerId, gameName, hourMark) =>
 exports.isPlayerInGameControllingNation = (playerId, gameName, nationFilename) =>
 {
     const gameData = _getGameData(playerId, gameName);
+
+    if (gameData == null)
+        return false;
+        
     return gameData.isNationControlledByPlayer(nationFilename);
 };
 
@@ -208,7 +218,7 @@ exports.getPlayerIdInGameControllingNation = (gameName, nationFilename) =>
     {
         const gameData = _getGameData(playerId, gameName);
 
-        if (gameData.isNationControlledByPlayer(player, nationFilename) === true)
+        if (gameData.isNationControlledByPlayer(nationFilename) === true)
             return playerId;
     }
 
@@ -221,14 +231,14 @@ exports.addPlayerControlledNationInGame = (playerId, nationFilename, gameName) =
     var gameData = _getGameData(playerId, gameName);
 
     if (gameData == null)
-        gameData = playerFile.addGameData(gameName);
+        gameData = playerFile.addNewGameData(gameName);
 
     gameData.addControlledNation(nationFilename);
 };
 
 exports.removePlayerControlOfNationInGame = (nationFilename, gameName) =>
 {
-    _playerFileStore.forEachPromise((file, playerId, nextPromise) =>
+    return _playerFileStore.forEachPromise((file, playerId, nextPromise) =>
     {
         const gameData = file.getGameData(gameName);
         
@@ -240,7 +250,8 @@ exports.removePlayerControlOfNationInGame = (nationFilename, gameName) =>
         }
 
         else return nextPromise();
-    });
+    })
+    .catch((err) => Promise.reject(err));
 };
 
 function _createEmptyPlayerFileIfNoneExists(playerId)
@@ -259,17 +270,29 @@ function _getPlayerFile(playerId)
 function _getGlobalPreferences(playerId)
 {
     const playerFile = _getPlayerFile(playerId);
+
+    if (playerFile == null)
+        return null;
+        
     return playerFile.getGlobalPreferences();
 }
 
 function _getGameData(playerId, gameName)
 {
     const playerFile = _getPlayerFile(playerId);
+
+    if (playerFile == null)
+        return null;
+
     return playerFile.getGameData(gameName);
 }
 
 function _getGamePreferences(playerId, gameName)
 {
     const gameData = _getGameData(playerId, gameName);
+
+    if (gameData == null)
+        return null;
+        
     return gameData.getDominionsPreferences();
 }

@@ -2,7 +2,6 @@
 const config = require("../../config/config.json");
 const  { getOngoingGameByChannel } = require("../../games/ongoing_games_store.js");
 const { isChannelPendingHosting } = require("../game_channels_pending_hosting_store.js");
-const TimerSetting = require("../../game_settings/dom5/prototypes/timer");
 const { SemanticError } = require("../../errors/custom_errors");
 
 module.exports = CommandContext;

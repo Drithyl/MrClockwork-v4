@@ -20,7 +20,6 @@ function RemovePretenderCommand()
         commandPermissions.assertCommandIsUsedInGameChannel,
         commandPermissions.assertGameIsOnline,
         commandPermissions.assertGameHasNotStarted,
-        commandPermissions.assertMemberIsPlayer,
         assertNationNameExists,
         assertMemberIsOwnerOfPretender
     );
@@ -58,12 +57,17 @@ function assertNationNameExists(commandContext)
 
 function assertMemberIsOwnerOfPretender(commandContext)
 {
+    const nationName = extractNationNameArgument(commandContext);
     const gameObject = commandContext.getGameTargetedByCommand();
-    const commandArguments = commandContext.getCommandArgumentsArray();
-    const nameOfNationToBeRemoved = commandArguments[0];
     const playerGuildMemberWrapper = commandContext.getSenderGuildMemberWrapper();
+    var nationObject;
 
-    if (gameObject.isPlayerControllingNation(playerGuildMemberWrapper, nameOfNationToBeRemoved) === false)
+    if (nationName == null)
+        return commandContext.respondToCommand(`You must specify a nation identifier to unclaim.`);
+
+    nationObject = dominions5NationStore.getNation(nationName);
+
+    if (gameObject.isPlayerControllingNation(playerGuildMemberWrapper.getId(), nationObject.getFilename()) === false)
         throw new Error(`You are not the owner of this nation.`);
 }
 

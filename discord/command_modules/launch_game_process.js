@@ -16,6 +16,7 @@ function LaunchGameProcessCommand()
     launchGameProcessCommand.addRequirements(
         commandPermissions.assertCommandIsUsedInGameChannel,
         commandPermissions.assertServerIsOnline,
+        commandPermissions.assertGameIsOffline,
         commandPermissions.assertMemberIsTrusted,
         commandPermissions.assertMemberIsOrganizer
     );
