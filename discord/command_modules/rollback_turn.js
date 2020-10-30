@@ -27,7 +27,7 @@ function _behaviour(commandContext)
 {
     const targetedGame = commandContext.getGameTargetedByCommand();
 
-    return targetedGame.emitPromiseToServer("ROLLBACK")
+    return targetedGame.emitPromiseWithGameDataToServer("ROLLBACK")
     .then(() => commandContext.respondToCommand(`The turn has been rolled back. It may take a minute or two to update properly.`))
     .catch((err) => commandContext.respondToCommand(`An error occurred:\n\n${err.message}`));
 }

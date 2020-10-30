@@ -29,7 +29,7 @@ function _behaviour(commandContext)
     const targetedGame = commandContext.getGameTargetedByCommand();
 
     return commandContext.respondToCommand(`Launching process...`)
-    .then(() => targetedGame.emitPromiseToServer("LAUNCH_GAME"))
+    .then(() => targetedGame.emitPromiseWithGameDataToServer("LAUNCH_GAME"))
     .then(() => commandContext.respondToCommand(`The process has been launched.`))
     .catch((err) => commandContext.respondToCommand(`An error occurred:\n\n${err.message}`));
 }

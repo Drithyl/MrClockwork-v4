@@ -43,7 +43,7 @@ function _behaviour(commandContext)
     {
         const nationFilename = nation.getFilename();
 
-        return gameObject.emitPromiseToServer("GET_NATION_TURN_FILE", { nationFilename })
+        return gameObject.emitPromiseWithGameDataToServer("GET_NATION_TURN_FILE", { nationFilename })
         .then((turnFileBuffer) => 
         {
             turnFileAttachments.push({ 

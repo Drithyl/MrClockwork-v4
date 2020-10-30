@@ -75,12 +75,12 @@ function _addTimeToGame(timerChangeArg, gameObject, timeLeft)
     var newTimerStripped = timerChangeArg.replace(/\+/, "");
     var addedTimeLeft = TimeLeft.fromStringInput(newTimerStripped);
 
-    return gameObject.emitPromiseToServer("CHANGE_CURRENT_TIMER", { timer: timeLeft.getMsLeft() + addedTimeLeft.getMsLeft() })
+    return gameObject.emitPromiseWithGameDataToServer("CHANGE_CURRENT_TIMER", { timer: timeLeft.getMsLeft() + addedTimeLeft.getMsLeft() })
 }
 
 function _changeTimerForGame(timerChangeArg, gameObject)
 {
     var addedTimeLeft = TimeLeft.fromStringInput(timerChangeArg);
 
-    return gameObject.emitPromiseToServer("CHANGE_CURRENT_TIMER", { timer: addedTimeLeft.getMsLeft() });
+    return gameObject.emitPromiseWithGameDataToServer("CHANGE_CURRENT_TIMER", { timer: addedTimeLeft.getMsLeft() });
 }

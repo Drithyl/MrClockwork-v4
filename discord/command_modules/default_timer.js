@@ -76,7 +76,7 @@ function _addToDefaultTimer(timerChangeArg, gameObject, currentTimeLeft)
     var newTimerStripped = timerChangeArg.replace(/\+/, "");
     var addedTimeLeft = TimeLeft.fromStringInput(newTimerStripped);
 
-    return gameObject.emitPromiseToServer("CHANGE_DEFAULT_TIMER", {
+    return gameObject.emitPromiseWithGameDataToServer("CHANGE_DEFAULT_TIMER", {
         timer: currentTimeLeft.getMsLeft() + addedTimeLeft.getMsLeft(),
         currentTimer: currentTimeLeft.getMsLeft()
     });
@@ -86,7 +86,7 @@ function _changeDefaultTimerForGame(timerChangeArg, gameObject, currentTimeLeft)
 {
     var addedTimeLeft = TimeLeft.fromStringInput(timerChangeArg);
 
-    return gameObject.emitPromiseToServer("CHANGE_DEFAULT_TIMER", {
+    return gameObject.emitPromiseWithGameDataToServer("CHANGE_DEFAULT_TIMER", {
         timer: addedTimeLeft.getMsLeft() ,
         currentTimer: currentTimeLeft.getMsLeft()
     });

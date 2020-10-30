@@ -29,6 +29,6 @@ function _behaviour(commandContext)
     var gameName = gameObject.getName();
     var messageString = `Attached is the scores file for ${gameName}.`;
     
-    return gameObject.emitPromiseToServer("GET_SCORE_DUMP")
+    return gameObject.emitPromiseWithGameDataToServer("GET_SCORE_DUMP")
     .then((scoresFile) => commandContext.respondToCommand(messageString, scoresFile, `${gameName} Scores.txt`));
 }

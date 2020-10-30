@@ -28,7 +28,7 @@ function _behaviour(commandContext)
 {
     const targetedGame = commandContext.getGameTargetedByCommand();
 
-    return targetedGame.emitPromiseToServer("RESTART_GAME")
+    return targetedGame.emitPromiseWithGameDataToServer("RESTART_GAME")
     .then(() => commandContext.respondToCommand(`The game has been restarted. It may take a minute or two to update properly.`))
     .catch((err) => commandContext.respondToCommand(`An error occurred:\n\n${err.message}`));
 }

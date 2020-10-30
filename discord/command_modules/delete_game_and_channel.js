@@ -28,7 +28,7 @@ function _behaviour(commandContext)
     const gameChannel = gameObject.getChannel();
     const gameRole = gameObject.getRole();
 
-    return gameObject.emitPromiseToServer("DELETE_GAME")
+    return gameObject.emitPromiseWithGameDataToServer("DELETE_GAME")
     .then(() => ongoingGameStore.deleteGame(gameObject.getName()))
     .then(() =>
     {
