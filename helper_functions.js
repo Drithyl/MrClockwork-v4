@@ -21,12 +21,16 @@ function extendPrototypes()
                     return resolve();
 
                 Promise.resolve(asyncFn(array[index], index++, () => loop()))
-                .catch((err) => reject(err));
+                .catch((err) => 
+                {
+                    index++;
+                    reject(err);
+                });
             })();
         });
     };
 
-    Object.defineProperty(Object.prototype, "forEach",
+    Object.defineProperty(Object.prototype, "forEachItem",
     {
         value: function(asyncFn)
         {
@@ -34,7 +38,7 @@ function extendPrototypes()
             var keyArray = Object.keys(self);
 
             //Pass the item, the key to the item, and the object
-            keyArray.forEach((key, index, array) => asyncFn(self[key], keyArray[index], self));
+            keyArray.forEach((key, index) => asyncFn(self[key], keyArray[index], self));
         }
     });
 
@@ -55,7 +59,11 @@ function extendPrototypes()
 
                     //Pass the item, the key to the item, and the function to move to the next promise
                     Promise.resolve(asyncFn(self[keyArray[index]], keyArray[index++], () => loop()))
-                    .catch((err) => reject(err));
+                    .catch((err) => 
+                    {
+                        index++;
+                        reject(err);
+                    });
                 })();
             });
         }
