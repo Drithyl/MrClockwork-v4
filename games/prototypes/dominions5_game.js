@@ -41,7 +41,7 @@ function Dominions5Game()
         .then(() => _gameObject.claimNation(idOfNewPlayer, nationFilename));
     };
 
-    _gameObject.fetchStatusDump = () => _gameObject.emitPromiseToServer("GET_STATUS_DUMP");
+    _gameObject.fetchStatusDump = () => _gameObject.emitPromiseWithGameDataToServer("GET_STATUS_DUMP");
 
     _gameObject.checkIfGameStarted = () => 
     {
@@ -63,12 +63,12 @@ function Dominions5Game()
 
     _gameObject.stopUpdating = () => clearInterval(_intervalFunctionId);
 
-    _gameObject.emitPromiseToServer = (message, additionalDataObjectToSend) =>
+    _gameObject.emitPromiseWithGameDataToServer = (message, additionalDataObjectToSend) =>
     {
         const dataPackage = _createGameDataPackage();
         Object.assign(dataPackage, additionalDataObjectToSend);
 
-        return _gameObject.emitPromiseToServerSuper(message, dataPackage);
+        return _gameObject.emitPromiseToServer(message, dataPackage);
     };
 
     _gameObject.loadJSONData = (jsonData) =>
