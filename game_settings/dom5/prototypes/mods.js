@@ -79,7 +79,7 @@ function Mods(parentGameObject)
             modFilenames.push(modFilename.trim());
         });
 
-        return _parentGame.emitPromiseToHostServer("VERIFY_MODS", modFilenames)
+        return _parentGame.emitPromiseToServer("VERIFY_MODS", modFilenames)
         .then(() => Promise.resolve(modFilenames));
     }
 }

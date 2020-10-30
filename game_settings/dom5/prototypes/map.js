@@ -22,7 +22,7 @@ function Map(parentGameObject)
     {
         const validatedValue = _validateInputFormatOrThrow(input);
 
-        return _parentGame.emitPromiseToHostServer("VERIFY_MAP", validatedValue)
+        return _parentGame.emitPromiseToServer("VERIFY_MAP", validatedValue)
         .then(() => _value = validatedValue);
     };
 

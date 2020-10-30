@@ -1,7 +1,7 @@
 
 const config = require("../../config/config.json");
 const { SemanticError } = require("../../errors/custom_errors");
-const { getOngoingGameByChannel } = require("../../games/ongoing_games_store.js");
+const ongoingGamesStore = require("../../games/ongoing_games_store.js");
 
 module.exports = CommandContext;
 
@@ -12,7 +12,7 @@ function CommandContext(messageWrapper)
     const _targetChannelObject = messageWrapper.getDestinationChannel();
     const _commandString = _extractCommandString(_messageContent);
     const _commandArgumentsArray = _extractCommandArgumentsAsArray(_messageContent);
-    const _gameTargetedByCommand = getOngoingGameByChannel(_targetChannelObject.id);
+    const _gameTargetedByCommand = ongoingGamesStore.getOngoingGameByChannel(_targetChannelObject.id);
     
     this.isGameCommand = () => _gameTargetedByCommand != null;
 

@@ -85,6 +85,7 @@ exports.getOngoingGameByChannel = function(channelId)
 {
     return _findGameByChannel(channelId); 
 };
+
 exports.channelHasOngoingGame = function(channelId) 
 {
     return _findGameByChannel(channelId) != null; 
@@ -143,8 +144,6 @@ function _findGameByChannel(channelId)
     for (var name in _ongoingGamesByName)
     {
         let game = _ongoingGamesByName[name];
-
-        console.log(game);
 
         if (game.getChannelId() === channelId)
             return game;

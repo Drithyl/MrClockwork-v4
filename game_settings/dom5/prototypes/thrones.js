@@ -41,7 +41,7 @@ function Thrones()
     {
         var value = this.getValue();
     
-        return [`--thrones`,  value[0], value[1], value[2]];
+        return [`--thrones`, ...value];
     };
 
     function _validateInputFormatOrThrow(input)
@@ -53,7 +53,7 @@ function Thrones()
 
         input.split(",").forEach((throneLevel) =>
         {
-            thrones.push(+throneLevel.replace(/\D*/, ""));
+            thrones.push(+throneLevel.replace(/\D*/g, ""));
         });
 
         return thrones;

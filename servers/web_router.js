@@ -55,7 +55,7 @@ exports.setRoutes = (expressApp) =>
         var server;
         var guild;
 
-        console.log(`POST RECEIVED`, values);
+        console.log(`Post values received:\n`, values);
 
         if (hostingSessionsStore.doesSessionExist(values.userId, values.token) === false)
         {
@@ -87,7 +87,7 @@ exports.setRoutes = (expressApp) =>
         values.thrones = `${values.level1Thrones}, ${values.level2Thrones}, ${values.level3Thrones}`;
         values.timer = `${values.timerDays}d${values.timerHours}h${values.timerMinutes}m`;
 
-        console.log(values);
+        console.log(`\nFormatted POST values:\n`, values);
 
         guild = guildStore.getGuildWrapperById(values.guild);
         server = hostServerStore.getHostServerByName(values.server);

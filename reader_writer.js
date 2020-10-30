@@ -2,6 +2,13 @@
 const fs = require("fs");
 const fsp = require("fs").promises;
 const config = require("./config/config.json");
+const logsPath = `${config.dataPath}/${config.logsFolder}`;
+
+const logTagsToPaths = {
+    "general": `${logsPath}/general.txt`,
+    "error": `${logsPath}/error.txt`,
+    "upload": `${logsPath}/upload.txt`
+};
 
 if (fs.existsSync(config.tmpDir) === false)
 {
@@ -213,10 +220,18 @@ module.exports.log = function(tags, trace, ...inputs)
 	tags.forEachPromise((tag, index, nextPromise) =>
 	{
 		if (logTagsToPaths[tag] == null)
-			return nextPromise();
+            return nextPromise();
+            
+        return Promise.resolve()
+        .then(() =>
+        {
+            if (fs.existsSync(logTagsToPaths[tag]) === false)
+                return fsp.writeFile(logTagsToPaths[tag], `${msg}\r\n\n`);
 
-		return fsp.appendFile(logTagsToPaths[tag], `${msg}\r\n\n`)
-		.then(() => nextPromise());
+            return fsp.appendFile(logTagsToPaths[tag], `${msg}\r\n\n`);
+        })
+        .then(() => nextPromise())
+        .catch((err) => console.log(err));
 	});
 };
 

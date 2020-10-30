@@ -20,7 +20,7 @@ function Scoregraphs()
             return "Completely disabled";
 
         if (value == dom5SettingFlags.INVISIBLE_SCOREGRAPHS)
-            return "Visible hrough sites/magic";
+            return "Visible through sites/magic";
         
         if (value == dom5SettingFlags.VISIBLE_SCOREGRAPHS)
             return "Always visible";

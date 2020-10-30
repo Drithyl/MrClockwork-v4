@@ -18,7 +18,7 @@ function HostMenu(dom5Game)
         if (_regexp.test(input) === false)
             throw SemanticError("Invalid format.");
             
-        return _dom5Game.emitPromiseToHostServer("VERIFY_MAP", input)
+        return _dom5Game.emitPromiseToServer("VERIFY_MAP", input)
         .then(() => _mapObject.setValue(input));
     };
 
