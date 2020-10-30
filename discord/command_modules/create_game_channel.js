@@ -3,6 +3,7 @@ const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
 const { SemanticError } = require("../../errors/custom_errors.js");
+const pendingChannelStore = require("../pending_game_channel_store.js");
 
 const commandData = new CommandData("CREATE_GAME_CHANNEL");
 
@@ -15,8 +16,7 @@ function CreateGameChannelCommand()
     createGameChannelCommand.addBehaviour(_behaviour);
 
     createGameChannelCommand.addRequirements(
-        commandPermissions.assertMemberIsTrusted,
-        _doesNameContainInvalidCharacters
+        commandPermissions.assertMemberIsTrusted
     );
 
     return createGameChannelCommand;
@@ -24,20 +24,19 @@ function CreateGameChannelCommand()
 
 function _behaviour(commandContext)
 {
-    const gameObject = commandContext.getGameTargetedByCommand();
-    const commandArguments = commandContext.getCommandArgumentsArray();
-    const nameOfNationToBeClaimed = commandArguments[0];
-
-    //TODO: check nation name/filename here, with the dom5 nation JSON data?
-
-    return gameObject.claimPretender(nameOfNationToBeClaimed);
-}
-
-function _doesNameContainInvalidCharacters(commandContext)
-{
+    const memberId = commandContext.getCommandSenderId();
+    const guildWrapper = commandContext.getGuildWrapper();
     const commandArguments = commandContext.getCommandArgumentsArray();
     const nameOfChannel = commandArguments[0];
 
-    if (/[^0-9A-Z\-_]/i.test(nameOfChannel) === true)
-        throw new SemanticError(`Name contains invalid cahracters.`);
+    return guildWrapper.createGameChannel(nameOfChannel)
+    .then((channel) => 
+    {
+        return pendingChannelStore.addPendingChannel(memberId, channel.id)
+        .then(() =>
+        {
+            console.log(`The game channel ${channel.name} was created and added to the pending list.`);
+            return commandContext.respondToCommand(`The channel ${channel} was created.`);
+        });
+    });
 }

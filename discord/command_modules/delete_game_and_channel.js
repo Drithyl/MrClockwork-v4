@@ -4,11 +4,11 @@ const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
 const ongoingGameStore = require("../../games/ongoing_games_store.js");
 
-const commandData = new CommandData("DELETE_GAME");
+const commandData = new CommandData("DELETE_GAME_AND_CHANNEL");
 
-module.exports = DeleteGameCommand;
+module.exports = DeleteGameAndChannelCommand;
 
-function DeleteGameCommand()
+function DeleteGameAndChannelCommand()
 {
     const deleteGameCommand = new Command(commandData);
 
@@ -25,8 +25,9 @@ function DeleteGameCommand()
 function _behaviour(commandContext)
 {
     const gameObject = commandContext.getGameTargetedByCommand();
+    const gameChannel = gameObject.getChannel();
     const gameRole = gameObject.getRole();
-    
+
     return gameObject.emitPromiseToServer("DELETE_GAME")
     .then(() => ongoingGameStore.deleteGame(gameObject.getName()))
     .then(() =>
@@ -36,5 +37,6 @@ function _behaviour(commandContext)
 
         else return Promise.resolve();
     })
-    .then(() => commandContext.respondToCommand(`The game has been deleted.`));
+    .then(() => gameChannel.delete())
+    .then(() => commandContext.respondToCommand())
 }

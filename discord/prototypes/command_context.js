@@ -1,8 +1,7 @@
 
 const config = require("../../config/config.json");
-const  { getOngoingGameByChannel } = require("../../games/ongoing_games_store.js");
-const { isChannelPendingHosting } = require("../game_channels_pending_hosting_store.js");
 const { SemanticError } = require("../../errors/custom_errors");
+const { getOngoingGameByChannel } = require("../../games/ongoing_games_store.js");
 
 module.exports = CommandContext;
 
@@ -16,7 +15,6 @@ function CommandContext(messageWrapper)
     const _gameTargetedByCommand = getOngoingGameByChannel(_targetChannelObject.id);
     
     this.isGameCommand = () => _gameTargetedByCommand != null;
-    this.isChannelPendingHosting = () => isChannelPendingHosting(_targetChannelObject.id);
 
     this.wasSentByDm = () => _messageWrapper.isDirectMessage();
     this.hasArgumentByRegexp = (regexp) =>

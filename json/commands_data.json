@@ -72,22 +72,48 @@
         "argumentsRequiredInfo": ["A channel name"],
         "optionalArguments": 0,
         "regexpRequiredToInvoke": "CHANNEL",
-        "argumentRegexpArray": ["^[ !@#$%^&*()+\\-=\\[\\]{};':\"\\\\|,.<>\/?]{3,32}$"],
+        "argumentRegexpArray": ["^[^ !@#$%^&*()+\\-=\\[\\]{};':\"\\\\|,.<>\/?]{3,32}$"],
         "channelRequiredToInvoke": "guild",
         "helpText": "Creates a game channel so you can first discuss things with other players before actually hosting a game. You must specify the name of the channel as the first argument of the command."
     },
 
     "DELETE_GAME":
     {
-        "name": "delete",
+        "name": "deletegame",
         "isEnabled": true,
         "gameTypesSupported": ["dom5"],
         "argumentsRequiredInfo": [],
         "optionalArguments": 0,
-        "regexpRequiredToInvoke": "DELETE",
+        "regexpRequiredToInvoke": "DELETEGAME$",
         "argumentRegexpArray": [],
         "channelRequiredToInvoke": "game",
         "helpText": "Permanently deletes the game hosted in this channel."
+    },
+
+    "DELETE_GAME_AND_CHANNEL":
+    {
+        "name": "deletegameandchannel",
+        "isEnabled": true,
+        "gameTypesSupported": ["dom5"],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "DELETEANDCHANNEL",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "game",
+        "helpText": "Permanently deletes the game hosted in this channel, as well as the channel itself."
+    },
+
+    "DELETE_PENDING_CHANNEL":
+    {
+        "name": "deletependingchannel",
+        "isEnabled": true,
+        "gameTypesSupported": ["dom5"],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "DELETEPENDINGCHANNEL",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "guild",
+        "helpText": "Deletes a channel that was created via command to host a game on it."
     },
 
     "DEPLOY_BOT":

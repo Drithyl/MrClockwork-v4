@@ -7,14 +7,13 @@
 
   "hostServerConnectionPort": 3000,
 
-  "pathToLogs": "C:/Bot/logs",
-  "pathToGameData": "C:/Bot/game_data",
-  "pathToGuildData": "C:/Bot/guild_data",
-  "pathToPlayerData": "C:/Bot/player_data",
+  "dataPath": "C:/Bot",
 
-  "pathToGameDataBackup": "C:/Bot/game_data_backup",
-  "pathToGuildDataBackup": "C:/Bot/guild_data_backup",
-  "pathToPlayerDataBackup": "C:/Bot/player_data_backup",
+  "logsFolder": "logs",
+  "backupFolder": "backup",
+  "gameDataFolder": "game_data",
+  "guildDataFolder": "guild_data",
+  "playerDataFolder": "player_data",
 
   "tmpDir": "C:/Bot/tmp",
   "pathToDom4Exe": "C:/SteamLibrary/steamapps/common/Dominions4/Dominions4.exe",

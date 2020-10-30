@@ -8,12 +8,12 @@ const _playerFileStore = {};
 
 exports.populate = () =>
 {
-    return fsp.readdir(config.pathToPlayerData)
+    return fsp.readdir(`${config.dataPath}/${config.playerDataFolder}`)
     .then((filenames) =>
     {
         return filenames.forEachPromise((filename, index, nextPromise) =>
         {
-            fsp.readFile(`${config.pathToPlayerData}/${filename}`, "utf8")
+            fsp.readFile(`${config.dataPath}/${config.playerDataFolder}/${filename}`, "utf8")
             .then((fileData) =>
             {
                 const parsedJSON = JSON.parse(fileData);
@@ -36,7 +36,7 @@ exports.addPlayerFile = (playerId) =>
 
 exports.savePlayerFile = (playerId) =>
 {
-    const filePath = `${config.pathToPlayerData}/${playerId}.json`;
+    const filePath = `${config.dataPath}/${config.playerDataFolder}/${playerId}.json`;
     const playerFile = _getPlayerFile(playerId);
 
     if (exports.hasPlayerFile(playerId) === false)
@@ -48,7 +48,7 @@ exports.savePlayerFile = (playerId) =>
 
 exports.deletePlayerFile = (playerId) =>
 {
-    const filePath = `${config.pathToPlayerData}/${playerId}.json`;
+    const filePath = `${config.dataPath}/${config.playerDataFolder}/${playerId}.json`;
 
     if (exports.hasPlayerFile(playerId) === false)
         return Promise.resolve();

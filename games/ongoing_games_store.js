@@ -12,7 +12,7 @@ const _ongoingGamesByName = {};
 
 exports.loadAll = function()
 {
-    var pathToGameDataDir = config.pathToGameData;
+    var pathToGameDataDir = `${config.dataPath}/${config.gameDataFolder}`;
     var gameDirNames = rw.getDirSubfolderNamesSync(pathToGameDataDir);
     
     return gameDirNames.forEach((gameDirName) =>
@@ -46,6 +46,24 @@ exports.addOngoingGame = function(game)
 {
     assert.isInstanceOfPrototypeOrThrow(game, Game);
     _ongoingGamesByName[game.getName()] = game;
+};
+
+exports.deleteGame = function(gameName)
+{
+    const game = exports.getOngoingGameByName(gameName);
+    const pathToBotData = `${config.dataPath}/${config.gameDataFolder}/${gameName}`;
+
+    if (game == null)
+        return Promise.resolve();
+
+    return rw.deleteDir(pathToBotData)
+    .then(() =>
+    {
+        delete _ongoingGamesByName[gameName];
+        console.log(`Deleted ${gameName}'s bot data.`);
+        return Promise.resolve();
+    })
+    .catch((err) => Promise.reject(err));
 };
 
 exports.getOngoingGameByName = function(nameToFind) 

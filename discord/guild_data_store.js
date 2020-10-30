@@ -20,24 +20,25 @@ var trustedRoleIdKey = "trustedRoleId";
 
 module.exports.populateGuildDataStore = () =>
 {
+    const guildDataPath = `${config.dataPath}/${config.guildDataFolder}`;
     console.log("Loading guild data...");
 
-    if (fs.existsSync(config.pathToGuildData) === false)
+    if (fs.existsSync(guildDataPath) === false)
     {
         console.log("Guild data not found, creating blank directory.");
-        fs.mkdirSync(config.pathToGuildData);
+        fs.mkdirSync(guildDataPath);
     }
 
     else
     {
-        var guildDirs = rw.getAllDirFilenamesSync(config.pathToGuildData);
+        var guildDirs = rw.getAllDirFilenamesSync(guildDataPath);
 
         guildDirs.forEach((dirName) =>
         {
             var jsonData;
             var parsedData;
 
-            if (fs.existsSync(`${config.pathToGuildData}/${dirName}/data.json`) === false)
+            if (fs.existsSync(`${guildDataPath}/${dirName}/data.json`) === false)
             {
                 console.log(`Guild data dir exists for ${dirName}, but no data found!`);
                 loadedGuildData[dirName] = {};
@@ -45,7 +46,7 @@ module.exports.populateGuildDataStore = () =>
 
             else
             {
-                jsonData = fs.readFileSync(`${config.pathToGuildData}/${dirName}/data.json`);
+                jsonData = fs.readFileSync(`${guildDataPath}/${dirName}/data.json`);
                 parsedData = JSON.parse(jsonData);
 
                 loadedGuildData[dirName] = parsedData;
@@ -147,16 +148,17 @@ function _setId(guildId, idKey, id)
 
 function _saveGuildData(guildId)
 {
-    var stringifiedData = JSON.stringify(loadedGuildData[guildId], null, 2);
+    const pathToGuildData = `${config.dataPath}/${config.guildDataFolder}`;
+    const stringifiedData = JSON.stringify(loadedGuildData[guildId], null, 2);
 
     console.log(`Saving data of guild ${guildId}...`);
     return Promise.resolve()
     .then(() =>
     {
-        if (fs.existsSync(`${config.pathToGuildData}/${guildId}`) === false)
+        if (fs.existsSync(`${cpathToGuildData}/${guildId}`) === false)
         {
             console.log(`Directory for guild data does not exist, creating it.`);
-            return fsp.mkdir(`${config.pathToGuildData}/${guildId}`);
+            return fsp.mkdir(`${pathToGuildData}/${guildId}`);
         }
 
         else return Promise.resolve();
@@ -164,7 +166,7 @@ function _saveGuildData(guildId)
     .then(() => 
     {
         console.log(`Writing data file...`);
-        return fsp.writeFile(`${config.pathToGuildData}/${guildId}/data.json`, stringifiedData);
+        return fsp.writeFile(`${pathToGuildData}/${guildId}/data.json`, stringifiedData);
     })
     .then(() => console.log(`Data for guild ${guildId} saved successfully.`));
 }

@@ -137,7 +137,7 @@ function Game()
     {
         var name = this.getName();
         var data = JSON.stringify(this, null, 2);
-        var path = config.pathToGameData;
+        var path = `${config.dataPath}/${config.gameDataFolder}`;
 
         console.log(`Saving data of game ${name}...`);
 
