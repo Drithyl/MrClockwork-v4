@@ -2,8 +2,8 @@
 const fs = require("fs");
 const fsp = require("fs").promises;
 const assert = require("../../asserter.js");
-const GameSettings = require("./game_settings.js");
 const config = require("../../config/config.json");
+const GameSettings = require("./game_settings.js");
 const messenger = require("../../discord/messenger.js");
 const guildStore = require("../../discord/guild_store.js");
 const ongoingGamesStore = require("../ongoing_games_store.js");
@@ -45,7 +45,7 @@ function Game()
     };
 
     this.getChannel = () => _discordJsChannel;
-    this.getChannelId = () => _discordJsChannel.id;
+    this.getChannelId = () => (_discordJsChannel == null) ? null : _discordJsChannel.id;
     this.setChannel = (channel) =>
     {
         _discordJsChannel = channel;
@@ -58,7 +58,7 @@ function Game()
     };
 
     this.getRole = () => _discordJsRole;
-    this.getRoleId = () => _discordJsRole.id;
+    this.getRoleId = () =>  (_discordJsRole == null) ? null : _discordJsRole.id;
     this.setRole = (role) =>
     {
         _discordJsRole = role;
@@ -70,7 +70,7 @@ function Game()
         .then((role) => _discordJsRole = role);
     };
 
-    this.getOrganizerId = () => _organizerWrapper.getId();
+    this.getOrganizerId = () => (_organizerWrapper == null) ? null : _organizerWrapper.getId();
     this.setOrganizer = (organizerWrapper) =>
     {
         _organizerWrapper = organizerWrapper;
@@ -80,14 +80,14 @@ function Game()
     this.setPort = (port) => _port = port;
 
     this.getServer = () => _hostServer;
-    this.getServerId = () => _hostServer.getId();
+    this.getServerId = () => (_hostServer == null) ? null : _hostServer.getId();
     this.setServer = (hostServer) => _hostServer = hostServer;
 
     this.getIp = () => _hostServer.getIp();
     
     this.isOnlineCheck = () => 
     {
-        return this.emitPromiseToServerSuper("ONLINE_CHECK", this.getPort());
+        return this.emitPromiseToServer("ONLINE_CHECK", this.getPort());
     };
 
     this.isServerOnline = () => 
@@ -98,7 +98,7 @@ function Game()
         else return _hostServer.isOnline();
     };
 
-    this.emitPromiseToServerSuper = (message, dataPackage) => _hostServer.emitPromise(message, dataPackage);
+    this.emitPromiseToServer = (message, dataPackage) => _hostServer.emitPromise(message, dataPackage);
     this.listenToServer = (trigger, handler) => _hostServer.listenTo(trigger, handler);
 
     this.getDiscordGuildWrapper = () => _guildWrapper;
