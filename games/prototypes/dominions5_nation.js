@@ -41,6 +41,9 @@ function Dominions5Nation(eraNumber, nationData)
     {
         var lowerCaseIdentifier = identifier.toString().toLowerCase();
 
+        if (/\..+$/i.test(lowerCaseIdentifier) === true)
+            lowerCaseIdentifier = lowerCaseIdentifier.replace(/\..+$/i, "");
+
         if (lowerCaseIdentifier == this.getNumber())
             return true;
         else if (lowerCaseIdentifier === this.getName().toLowerCase())

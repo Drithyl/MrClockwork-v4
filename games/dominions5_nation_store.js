@@ -7,13 +7,12 @@ const nationObjects = _generateNationObjects();
 exports.getNation = (identifier) => 
 {
     var nationObject;
-    const extensionlessIdentifier = exports.trimFilenameExtension(identifier);
 
     for (var i = 0; i < nationObjects.length; i++)
     {
         var nationObject = nationObjects[i];
 
-        if (nationObject.doesIdentifierMatchThisNation(extensionlessIdentifier) === true)
+        if (nationObject.doesIdentifierMatchThisNation(identifier) === true)
             return nationObject;
     }
 
@@ -23,13 +22,12 @@ exports.getNation = (identifier) =>
 exports.getNationInEra = (identifier, era) => 
 {
     var nationObject;
-    const extensionlessIdentifier = exports.trimFilenameExtension(identifier);
 
     for (var i = 0; i < nationObjects.length; i++)
     {
         var nationObject = nationObjects[i];
         
-        if (nationObject.doesIdentifierMatchThisNation(extensionlessIdentifier) === true)
+        if (nationObject.doesIdentifierMatchThisNation(identifier) === true)
         {
             if (nationObject.isNationInEra(era) === true)
                 return nationObject;
@@ -46,7 +44,13 @@ exports.getLaNations = () => nationObjects.filter((nationObject) => nationObject
 exports.isValidNationIdentifier = (identifier) => exports.getNation(identifier) != null;
 exports.isValidNationIdentifierInEra = (identifier, era) => exports.getNationInEra(identifier, era) != null;
 
-exports.trimFilenameExtension = (nationFilename) => nationFilename.replace(/\..+$/i, "");
+exports.trimFilenameExtension = (nationIdentifier) => 
+{
+    if (typeof nationIdentifier !== "string")
+        return nationIdentifier;
+
+    return nationIdentifier.replace(/\..+$/i, "");
+};
 
 function _generateNationObjects()
 {
