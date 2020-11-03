@@ -5,6 +5,7 @@ const rw = require("../reader_writer.js");
 const Game = require("./prototypes/game.js");
 const config = require("../config/config.json");
 const gameFactory = require("./game_factory.js");
+const gameMonitor = require("./game_monitor.js");
 const activeMenuStore = require("../menus/active_menu_store.js");
 
 const _ongoingGamesByName = {};
@@ -19,6 +20,8 @@ exports.loadAll = function()
     {
         var gameJSONDataPath = `${pathToGameDataDir}/${gameDirName}/data.json`;
         var loadedGame = gameFactory.loadGame(gameJSONDataPath);
+        
+        gameMonitor.monitorDom5Game(loadedGame);
         exports.addOngoingGame(loadedGame);
     });
 };

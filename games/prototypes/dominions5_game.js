@@ -9,9 +9,11 @@ module.exports = Dominions5Game;
 
 function Dominions5Game()
 {
-    var _intervalFunctionId;
-    var _lastKnownMsToNewTurn;
     const _gameObject = new Game();
+    
+    var _lastKnownStatus;
+    var _lastKnownTurnNumber;
+    var _lastKnownMsToNewTurn;
 
     _gameObject.setSettingsObject(new Dominions5Settings(_gameObject));
 
@@ -49,19 +51,29 @@ function Dominions5Game()
         .then((tcpQuery) => Promise.resolve(tcpQuery.isInLobby() === false));
     };
 
-    _gameObject.updateLastKnownTimer = () => 
+    _gameObject.update = () => 
     {
+        const lastKnownStatus = _lastKnownStatus;
+        const lastKnownTurnNumber = _lastKnownTurnNumber;
+        const lastKnownMsLeft = _lastKnownMsToNewTurn;
+
         return dominions5TcpQuery(_gameObject)
         .then((tcpQuery) =>
         {
-            if (tcpQuery.isInLobby() === false)
-                _lastKnownMsToNewTurn = tcpQuery.msLeft;
+            _lastKnownMsToNewTurn = tcpQuery.msLeft;
+            _lastKnownTurnNumber = tcpQuery.turnNumber;
+            _lastKnownStatus = tcpQuery.status;
 
-            return Promise.resolve(tcpQuery);
+            return Promise.resolve({
+                lastKnownStatus,
+                lastKnownTurnNumber,
+                lastKnownMsLeft,
+                currentStatus: tcpQuery.status,
+                currentTurnNumber: tcpQuery.turnNumber,
+                currentMsLeft: tcpQuery.msLeft,
+            });
         });
     };
-
-    _gameObject.stopUpdating = () => clearInterval(_intervalFunctionId);
 
     _gameObject.emitPromiseWithGameDataToServer = (message, additionalDataObjectToSend) =>
     {
@@ -75,6 +87,12 @@ function Dominions5Game()
     {
         _gameObject.loadJSONDataSuper(jsonData);
 
+        if (typeof jsonData.lastKnownStatus === "string")
+            _lastKnownStatus = jsonData.lastKnownStatus;
+
+        if (isNaN(jsonData.lastKnownTurnNumber) === false)
+            _lastKnownTurnNumber = jsonData.lastKnownTurnNumber;
+
         if (jsonData.lastKnownMsToNewTurn >= 0)
             _lastKnownMsToNewTurn = jsonData.lastKnownMsToNewTurn;
 
@@ -84,7 +102,11 @@ function Dominions5Game()
     _gameObject.toJSON = () =>
     {
         const jsonData = _gameObject.toJSONSuper();
+
+        jsonData.lastKnownStatus = _lastKnownStatus;
+        jsonData.lastKnownTurnNumber = _lastKnownTurnNumber;
         jsonData.lastKnownMsToNewTurn = _lastKnownMsToNewTurn;
+
         return jsonData;
     };
 

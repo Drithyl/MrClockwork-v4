@@ -29,10 +29,10 @@ function _behaviour(commandContext)
     const gameObject = commandContext.getGameTargetedByCommand();
     const commandArguments = commandContext.getCommandArgumentsArray();
 
-    return gameObject.updateLastKnownTimer()
-    .then((tcpQuery) =>
+    return gameObject.update()
+    .then((updateData) =>
     {
-        const timeLeft = tcpQuery.getTimeLeft();
+        const timeLeft = new TimeLeft(updateData.currentMsLeft);
 
         if (tcpQuery.isInLobby() === true)
             return commandContext.respondToCommand(`Game is being setup in lobby.`);

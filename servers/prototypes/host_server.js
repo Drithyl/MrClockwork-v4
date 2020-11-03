@@ -1,5 +1,6 @@
 
 const assert = require("../../asserter.js");
+const { SocketResponseError } = require("../../errors/custom_errors.js");
 const ongoingGamesStore = require("../../games/ongoing_games_store");
 const trustedServerData = require("../../config/trusted_server_data.json");
 
@@ -54,10 +55,28 @@ function HostServer(id)
         _isOnline = false;
     };
 
-    this.onDisconnect = (fnToCall) => _socketWrapper.onDisconnect(fnToCall);
+    this.onDisconnect = (fnToCall) => 
+    {
+        if (_isOnline === false)
+            throw new SocketResponseError(`Socket is offline.`);
 
-    this.emitPromise = (...args) => _socketWrapper.emitPromise(...args);
-    this.listenTo = (...args) => _socketWrapper.listenTo(...args);
+        return _socketWrapper.onDisconnect(fnToCall)
+    };
+
+    this.emitPromise = (...args) => 
+    {
+        if (_isOnline === false)
+            return Promise.reject(new SocketResponseError(`Socket is offline.`));
+
+        return _socketWrapper.emitPromise(...args);
+    };
+    this.listenTo = (...args) => 
+    {
+        if (_isOnline === false)
+            return Promise.reject(new SocketResponseError(`Socket is offline.`));
+            
+        return _socketWrapper.listenTo(...args);
+    };
 
     this.getAvailableSlots = () => this.getTotalCapacity() - this.getNbrOfGames();
     this.hasAvailableSlots = () => this.getAvailableSlots() > 0;

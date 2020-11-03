@@ -103,12 +103,20 @@ function parsePlayers(tcpQueryResponse)
 
 /** NO OUTPUT WHILE START IS GENERATING; GAME BLOCKS THE TCPQUERY OPERATION */
 
+/** OUTPUT WHEN GAME IS OFFLINE (SERVER NOT AVAILABLE) 
+ * 
+ * Connecting to Server (127.0.0.1:6000)
+ * Connection failed
+ * 
+*/
+
 /** IN LOBBY, BEING SETUP GAME TCPQUERY OUTPUT:
  * 
  * Connecting to Server (127.0.0.1:6000)                          
  * Waiting for game info                                          
  * Gamename: testGame                                             
  * Status: Game is being setup
+ * 
  */
 
 /** ACTIVE, STARTED GAME TCPQUERY OUTPUT:
@@ -122,20 +130,25 @@ function parsePlayers(tcpQueryResponse)
  * player 5: Arcoscephale, Golden Era (AI controlled)             
  * player 7: Ulm, Enigma of Steel (AI controlled)                 
  * player 20: Vanheim, Age of Vanir (-)
+ * 
  */
 
 /** AI NATION TURN SHOWS AS
  * player 7: Ulm, Enigma of Steel (AI controlled)
+ * 
  */
 
 /** NATION TURN NOT CHECKED SHOWS AS
  * player 20: Vanheim, Age of Vanir (-)
+ * 
  */
 
  /** NATION TURN MARKED AS UNFINISHED
  * player 20: Vanheim, Age of Vanir (played, but not finished)
+ * 
  */
 
  /** NATION FINISHED TURN
  * player 20: Vanheim, Age of Vanir (played)
+ * 
  */
