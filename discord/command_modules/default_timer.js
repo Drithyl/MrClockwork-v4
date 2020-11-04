@@ -73,21 +73,38 @@ function _isTimerAddition(timerChangeArg)
 
 function _addToDefaultTimer(timerChangeArg, gameObject, currentTimeLeft)
 {
-    var newTimerStripped = timerChangeArg.replace(/\+/, "");
-    var addedTimeLeft = TimeLeft.fromStringInput(newTimerStripped);
+    const newTimerStripped = timerChangeArg.replace(/\+/, "");
+    const addedTimeLeft = TimeLeft.fromStringInput(newTimerStripped);
+    const settingsObject = gameObject.getSettingsObject();
+    const timerSetting = settingsObject.getTimerSetting();
+    const newMsLeft = currentTimeLeft.getMsLeft() + addedTimeLeft.getMsLeft();
 
     return gameObject.emitPromiseWithGameDataToServer("CHANGE_TIMER", {
-        timer: currentTimeLeft.getMsLeft() + addedTimeLeft.getMsLeft(),
+        timer: newMsLeft,
         currentTimer: currentTimeLeft.getMsLeft()
+    })
+    .then(() =>
+    {
+        /** update setting value */
+        timerSetting.fromJSON(newMsLeft);
+        return Promise.resolve();
     });
 }
 
 function _changeDefaultTimerForGame(timerChangeArg, gameObject, currentTimeLeft)
 {
-    var addedTimeLeft = TimeLeft.fromStringInput(timerChangeArg);
+    const addedTimeLeft = TimeLeft.fromStringInput(timerChangeArg);
+    const settingsObject = gameObject.getSettingsObject();
+    const timerSetting = settingsObject.getTimerSetting();
 
     return gameObject.emitPromiseWithGameDataToServer("CHANGE_TIMER", {
-        timer: addedTimeLeft.getMsLeft() ,
+        timer: addedTimeLeft.getMsLeft(),
         currentTimer: currentTimeLeft.getMsLeft()
+    })
+    .then(() =>
+    {
+        /** update setting value */
+        timerSetting.fromJSON(addedTimeLeft.getMsLeft());
+        return Promise.resolve();
     });
 }

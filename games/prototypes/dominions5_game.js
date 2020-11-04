@@ -65,12 +65,13 @@ function Dominions5Game()
             _lastKnownStatus = tcpQuery.status;
 
             return Promise.resolve({
+                tcpQuery,
                 lastKnownStatus,
                 lastKnownTurnNumber,
                 lastKnownMsLeft,
                 currentStatus: tcpQuery.status,
                 currentTurnNumber: tcpQuery.turnNumber,
-                currentMsLeft: tcpQuery.msLeft,
+                currentMsLeft: tcpQuery.msLeft
             });
         });
     };

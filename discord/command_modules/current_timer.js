@@ -32,6 +32,7 @@ function _behaviour(commandContext)
     return gameObject.update()
     .then((updateData) =>
     {
+        const tcpQuery = updateData.tcpQuery;
         const timeLeft = new TimeLeft(updateData.currentMsLeft);
 
         if (tcpQuery.isInLobby() === true)
@@ -78,7 +79,9 @@ function _addTimeToGame(timerChangeArg, gameObject, timeLeft)
     const timerSetting = settingsObject.getTimerSetting();
     const defaultTime = timerSetting.getValue();
 
-    return gameObject.emitPromiseWithGameDataToServer("CHANGE_CURRENT_TIMER", { 
+    console.log(defaultTime.getMsLeft() / 60000 / 60);
+
+    return gameObject.emitPromiseWithGameDataToServer("CHANGE_TIMER", { 
         timer: defaultTime.getMsLeft(),
         currentTimer: timeLeft.getMsLeft() + addedTimeLeft.getMsLeft() 
     });
@@ -91,7 +94,7 @@ function _changeTimerForGame(timerChangeArg, gameObject)
     const timerSetting = settingsObject.getTimerSetting();
     const defaultTime = timerSetting.getValue();
 
-    return gameObject.emitPromiseWithGameDataToServer("CHANGE_CURRENT_TIMER", { 
+    return gameObject.emitPromiseWithGameDataToServer("CHANGE_TIMER", { 
         timer: defaultTime.getMsLeft(),
         currentTimer: addedTimeLeft.getMsLeft() 
     });
