@@ -43,6 +43,23 @@ function Dominions5Game()
         .then(() => _gameObject.claimNation(idOfNewPlayer, nationFilename));
     };
 
+    _gameObject.changeTimer = (defaultMs, currentMs) =>
+    {
+        if (isNaN(defaultMs) === true || isNaN(currentMs) === true)
+            return Promise.reject(new Error(`Timers must be expressed in ms; got ${defaultMs} and ${currentMs}.`));
+
+        return _gameObject.emitPromiseWithGameDataToServer("CHANGE_TIMER", {
+            timer: defaultMs,
+            currentTimer: currentMs
+        });
+    };
+
+    /** */
+    _gameObject.launch = () =>
+    {
+        return _gameObject.emitPromiseWithGameDataToServer("LAUNCH_GAME");
+    };
+
     _gameObject.fetchStatusDump = () => _gameObject.emitPromiseWithGameDataToServer("GET_STATUS_DUMP");
 
     _gameObject.checkIfGameStarted = () => 
@@ -113,11 +130,18 @@ function Dominions5Game()
 
     function _createGameDataPackage()
     {
-        var settingsObject = _gameObject.getSettingsObject();
+        const settingsObject = _gameObject.getSettingsObject();
+        const timerSetting = settingsObject.getTimerSetting();
+        const defaultTime = timerSetting.getValue();
         
+        /** Include timer data as it is required for multiple server-side actions
+         *  like launching a game task, changing the timer, etc.
+         */
         const dataPackage = {
             name: _gameObject.getName(),
             port: _gameObject.getPort(),
+            timer: defaultTime.getMsLeft(),
+            currentTimer: _lastKnownMsToNewTurn,
             gameType: _gameObject.getGameType(),
             args: settingsObject.getSettingFlags()
         };

@@ -75,14 +75,8 @@ function _addTimeToGame(timerChangeArg, gameObject, timeLeft)
 {
     const newTimerStripped = timerChangeArg.replace(/\+/, "");
     const addedTimeLeft = TimeLeft.fromStringInput(newTimerStripped);
-    const settingsObject = gameObject.getSettingsObject();
-    const timerSetting = settingsObject.getTimerSetting();
-    const defaultTime = timerSetting.getValue();
-
-    console.log(defaultTime.getMsLeft() / 60000 / 60);
 
     return gameObject.emitPromiseWithGameDataToServer("CHANGE_TIMER", { 
-        timer: defaultTime.getMsLeft(),
         currentTimer: timeLeft.getMsLeft() + addedTimeLeft.getMsLeft() 
     });
 }
@@ -90,12 +84,8 @@ function _addTimeToGame(timerChangeArg, gameObject, timeLeft)
 function _changeTimerForGame(timerChangeArg, gameObject)
 {
     const addedTimeLeft = TimeLeft.fromStringInput(timerChangeArg);
-    const settingsObject = gameObject.getSettingsObject();
-    const timerSetting = settingsObject.getTimerSetting();
-    const defaultTime = timerSetting.getValue();
 
     return gameObject.emitPromiseWithGameDataToServer("CHANGE_TIMER", { 
-        timer: defaultTime.getMsLeft(),
         currentTimer: addedTimeLeft.getMsLeft() 
     });
 }

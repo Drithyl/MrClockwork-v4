@@ -48,22 +48,16 @@ function _changeDefaultTimer(gameObject, commandContext, commandArguments)
 {
     const timerChangeArg = commandArguments[0];
 
-    return dom5TcpQuery(gameObject)
-    .then((tcpQuery) =>
-    {
-        const currentTimeLeft = tcpQuery.getTimeLeft();
+    if (tcpQuery.isInLobby() === true)
+        return commandContext.respondToCommand(`Game is being setup in lobby.`);
 
-        if (tcpQuery.isInLobby() === true)
-            return commandContext.respondToCommand(`Game is being setup in lobby.`);
+    if (_isTimerAddition(timerChangeArg) === true)
+        return _addToDefaultTimer(timerChangeArg, gameObject)
+        .then(() => commandContext.respondToCommand(`The default timer was added. It may take a minute to update.`));
 
-        if (_isTimerAddition(timerChangeArg) === true)
-            return _addToDefaultTimer(timerChangeArg, gameObject, currentTimeLeft)
-            .then(() => commandContext.respondToCommand(`The default timer was added. It may take a minute to update.`));
-
-        else
-            return _changeDefaultTimerForGame(timerChangeArg, gameObject, currentTimeLeft)
-            .then(() => commandContext.respondToCommand(`The default timer was changed. It may take a minute to update.`));
-    })
+    else
+        return _changeDefaultTimerForGame(timerChangeArg, gameObject)
+        .then(() => commandContext.respondToCommand(`The default timer was changed. It may take a minute to update.`));
 }
 
 function _isTimerAddition(timerChangeArg)
@@ -71,7 +65,7 @@ function _isTimerAddition(timerChangeArg)
     return timerChangeArg.indexOf("+") === 0;
 }
 
-function _addToDefaultTimer(timerChangeArg, gameObject, currentTimeLeft)
+function _addToDefaultTimer(timerChangeArg, gameObject)
 {
     const newTimerStripped = timerChangeArg.replace(/\+/, "");
     const addedTimeLeft = TimeLeft.fromStringInput(newTimerStripped);
@@ -79,10 +73,7 @@ function _addToDefaultTimer(timerChangeArg, gameObject, currentTimeLeft)
     const timerSetting = settingsObject.getTimerSetting();
     const newMsLeft = currentTimeLeft.getMsLeft() + addedTimeLeft.getMsLeft();
 
-    return gameObject.emitPromiseWithGameDataToServer("CHANGE_TIMER", {
-        timer: newMsLeft,
-        currentTimer: currentTimeLeft.getMsLeft()
-    })
+    return gameObject.emitPromiseWithGameDataToServer("CHANGE_TIMER", { timer: newMsLeft })
     .then(() =>
     {
         /** update setting value */
@@ -91,16 +82,13 @@ function _addToDefaultTimer(timerChangeArg, gameObject, currentTimeLeft)
     });
 }
 
-function _changeDefaultTimerForGame(timerChangeArg, gameObject, currentTimeLeft)
+function _changeDefaultTimerForGame(timerChangeArg, gameObject)
 {
     const addedTimeLeft = TimeLeft.fromStringInput(timerChangeArg);
     const settingsObject = gameObject.getSettingsObject();
     const timerSetting = settingsObject.getTimerSetting();
 
-    return gameObject.emitPromiseWithGameDataToServer("CHANGE_TIMER", {
-        timer: addedTimeLeft.getMsLeft(),
-        currentTimer: currentTimeLeft.getMsLeft()
-    })
+    return gameObject.emitPromiseWithGameDataToServer("CHANGE_TIMER", { timer: addedTimeLeft.getMsLeft() })
     .then(() =>
     {
         /** update setting value */
