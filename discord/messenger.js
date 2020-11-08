@@ -95,7 +95,7 @@ function _formatAttachment(files)
   /** Files must be an array of objects that include the format 
    * {attachment: Buffer, name: string} */
   else if (files != null)
-    attachment = files;
+    attachment = { files };
 
   return attachment;
 }

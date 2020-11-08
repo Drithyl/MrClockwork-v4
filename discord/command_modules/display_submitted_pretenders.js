@@ -27,7 +27,7 @@ function _behaviour(commandContext)
     var formattedListAsString = "";
     var game = commandContext.getGameTargetedByCommand();
     
-    return game.emitPromiseWithGameDataToServer("GET_SUBMITTED_PRETENDERS")
+    return game.getSubmittedNations()
     .then((listAsArray) => 
     {
         listAsArray.forEach((submittedPretender, index) => 
@@ -48,8 +48,10 @@ function _formatSubmittedPretenderLine(submittedPretender, commandContext)
     const fullNationName = submittedPretender.fullName;
     const guildWrapper = commandContext.getGuildWrapper();
     const game = commandContext.getGameTargetedByCommand();
-    const pretenderOwnerId = game.getPlayerControllingNationInGame(nationFilename);
+    const pretenderOwnerId = game.getPlayerIdControllingNationInGame(nationFilename);
     const pretenderOwnerMember = guildWrapper.getGuildMemberWrapperById(pretenderOwnerId);
+
+    console.log(`Owner for ${fullNationName}: ${pretenderOwnerId}`);
 
     if (pretenderOwnerId != null)
         return `${fullNationName.width(40)} ${pretenderOwnerMember.getUsername()}\n`;

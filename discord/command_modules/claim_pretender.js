@@ -17,7 +17,8 @@ function ClaimPretenderCommand()
 
     claimPretenderCommand.addRequirements(
         commandPermissions.assertMemberIsTrusted,
-        commandPermissions.assertCommandIsUsedInGameChannel
+        commandPermissions.assertCommandIsUsedInGameChannel,
+        commandPermissions.assertGameIsOnline
     );
 
     return claimPretenderCommand;
@@ -43,7 +44,14 @@ function _behaviour(commandContext)
     if (nationObject == null)
         throw new SemanticError(`Invalid nation identifier provided.`);
 
-    return gameObject.claimNation(playerId, nationObject.getFilename())
+    return gameObject.checkIfNationIsSubmitted(nationObject.getFilename())
+    .then((isSubmitted) =>
+    {
+        if (isSubmitted === false)
+            return Promise.reject(new Error(`Nation is not submitted.`));
+
+        else return gameObject.claimNation(playerId, nationObject.getFilename());
+    })
     .then(() => commandContext.respondToCommand(`Pretender was claimed.`))
     .catch((err) => commandContext.respondToCommand(`Error occurred when claiming pretender:\n\n${err.message}`));
 }

@@ -17,44 +17,44 @@ const playerFileStore = require("./player_data/player_file_store.js");
 discord.startDiscordIntegration()
 .then(() =>
 {
-  console.log("Finished Discord integration.");
-  return Promise.resolve(hostServerStore.populate());
-})
-.then(() =>
-{
-  console.log("Finished Populating server store.");
-  return Promise.resolve(gamesStore.loadAll());
-})
-.then(() =>
-{
-    console.log("Games loaded.");
+    console.log("Finished Discord integration.");
     return playerFileStore.populate();
 })
-.then(() => 
+.then(() =>
 {
-  console.log("Player data loaded.");
-  return expressServer.startListeningOnPort(config.hostServerConnectionPort);
+    console.log("Player data loaded.");
+    return Promise.resolve(hostServerStore.populate());
+})
+.then(() =>
+{
+    console.log("Finished populating server store.");
+    return Promise.resolve(gamesStore.loadAll());
 })
 .then(() => 
 {
-  console.log(`Listening for connections on port ${config.hostServerConnectionPort}.`);
-  return timeEventsEmitter.startCounting();
+    console.log("Games loaded.");
+    return expressServer.startListeningOnPort(config.hostServerConnectionPort);
 })
 .then(() => 
 {
-  console.log("Initialized successfully.");
+    console.log(`Listening for connections on port ${config.hostServerConnectionPort}.`);
+    return timeEventsEmitter.startCounting();
+})
+.then(() => 
+{
+    console.log("Initialized successfully.");
 })
 .catch((err) => 
-{
-  console.log(err);
-  process.exit();
+    {
+    console.log(err);
+    process.exit();
 });
 
 
 //Catch process exceptions and log them here
 process.on("unhandledRejection", err =>
 {
-  rw.log(["error"], `Uncaught Promise Error: \n${err.stack}`);
+    rw.log(["error"], `Uncaught Promise Error: \n${err.stack}`);
 });
 
 process.on("error", (err) => rw.log(["error"], `Process Error:\n\n${err.stack}`));

@@ -1,5 +1,6 @@
 
 const fsp = require("fs").promises;
+const asserter = require("../asserter.js");
 const config = require("../config/config.json");
 const PlayerFile = require("./prototypes/player_file.js");
 
@@ -31,19 +32,18 @@ exports.populate = () =>
 
 exports.addPlayerFile = (playerId) =>
 {
+    asserter.isValidDiscordIdOrThrow(playerId);
     _playerFileStore[playerId] = new PlayerFile(playerId);
 };
 
 exports.savePlayerFile = (playerId) =>
 {
-    const filePath = `${config.dataPath}/${config.playerDataFolder}/${playerId}.json`;
     const playerFile = _getPlayerFile(playerId);
 
     if (exports.hasPlayerFile(playerId) === false)
         return Promise.resolve();
 
-    return fsp.writeFile(filePath, JSON.stringify(playerFile, null, 2))
-    .catch((err) => Promise.reject(err));
+    return playerFile.save();
 };
 
 exports.deletePlayerFile = (playerId) =>
@@ -71,7 +71,7 @@ exports.deletePlayerFile = (playerId) =>
 
 exports.hasPlayerFile = (playerId) =>
 {
-    return _getPlayerFile(playerId) != null;
+    return _playerFileStore[playerId] != null;
 };
 
 exports.getPlayerFile = (playerId) =>
@@ -82,6 +82,7 @@ exports.getPlayerFile = (playerId) =>
 
 exports.isPlayerInGame = (playerId, gameName) => 
 {
+    console.log(playerId, gameName, _getGameData(playerId, gameName));
     return _getGameData(playerId, gameName) != null;
 };
 
@@ -144,127 +145,16 @@ exports.removePlayerReminderAtHourMarkGlobal = (hourMark, playerId) =>
 };
 
 
-exports.isPlayerReceivingScoresInGame = (playerId, gameName) =>
+function _getPlayerFile(playerId)
 {
-    const gamePreferences = _getGamePreferences(playerId, gameName);
-    return gamePreferences.isReceivingScoresInGame();
-};
-
-exports.setPlayerReceivesScoresInGame = (playerId, gameName, boolean) =>
-{
-    const gamePreferences = _getGamePreferences(playerId, gameName);
-    return gamePreferences.setReceiveScores(boolean);
-};
-
-
-exports.isPlayerReceivingBackupsInGame = (playerId, gameName) =>
-{
-    const gamePreferences = _getGamePreferences(playerId, gameName);
-    return gamePreferences.isReceivingBackupsInGame();
-};
-
-exports.setPlayerReceivesBackupsInGame = (playerId, gameName, boolean) =>
-{
-    const gamePreferences = _getGamePreferences(playerId, gameName);
-    return gamePreferences.setReceiveBackups(boolean);
-};
-
-
-exports.isPlayerReceivingRemindersWhenTurnIsDoneInGame = (playerId, gameName) =>
-{
-    const gamePreferences = _getGamePreferences(playerId, gameName);
-    return gamePreferences.isReceivingRemindersWhenTurnIsDoneInGame();
-};
-
-exports.setPlayerReceivesRemindersWhenTurnInGame = (playerId, gameName, boolean) =>
-{
-    const gamePreferences = _getGamePreferences(playerId, gameName);
-    return gamePreferences.setReceiveRemindersWhenTurnIsDone(boolean);
-};
-
-
-exports.doesPlayerHaveReminderAtHourMarkInGame = (playerId, gameName, hourMark) =>
-{
-    const gamePreferences = _getGamePreferences(playerId, gameName);
-    return gamePreferences.hasReminderAtHourMarkInGame(hourMark);
-};
-
-exports.addPlayerReminderAtHourMarkInGame = (playerId, gameName, hourMark) =>
-{
-    const gamePreferences = _getGamePreferences(playerId, gameName);
-    return gamePreferences.addReminderAtHourMark(hourMark);
-};
-
-exports.removePlayerReminderAtHourMarkInGame = (playerId, gameName, hourMark) =>
-{
-    const gamePreferences = _getGamePreferences(playerId, gameName);
-    return gamePreferences.removeReminderAtHourMark(hourMark);
-};
-
-
-exports.isPlayerInGameControllingNation = (playerId, gameName, nationFilename) =>
-{
-    const gameData = _getGameData(playerId, gameName);
-
-    if (gameData == null)
-        return false;
-        
-    return gameData.isNationControlledByPlayer(nationFilename);
-};
-
-exports.getPlayerIdInGameControllingNation = (gameName, nationFilename) =>
-{
-    for (var playerId in _playerFileStore)
-    {
-        const gameData = _getGameData(playerId, gameName);
-
-        if (gameData.isNationControlledByPlayer(nationFilename) === true)
-            return playerId;
-    }
-
-    return null;
-};
-
-exports.addPlayerControlledNationInGame = (playerId, nationFilename, gameName) =>
-{
-    const playerFile = _createEmptyPlayerFileIfNoneExists(playerId);
-    var gameData = _getGameData(playerId, gameName);
-
-    if (gameData == null)
-        gameData = playerFile.addNewGameData(gameName);
-
-    gameData.addControlledNation(nationFilename);
-};
-
-exports.removePlayerControlOfNationInGame = (nationFilename, gameName) =>
-{
-    return _playerFileStore.forEachPromise((file, playerId, nextPromise) =>
-    {
-        const gameData = file.getGameData(gameName);
-        
-        if (gameData.isNationControlledByPlayer(nationFilename) === true)
-        {
-            gameData.removePlayerControlOfNation(nationFilename);
-            return exports.savePlayerFile(playerId)
-            .then(() => nextPromise());
-        }
-
-        else return nextPromise();
-    })
-    .catch((err) => Promise.reject(err));
-};
+    _createEmptyPlayerFileIfNoneExists(playerId);
+    return _playerFileStore[playerId];
+}
 
 function _createEmptyPlayerFileIfNoneExists(playerId)
 {
     if (exports.hasPlayerFile(playerId) === false)
         exports.addPlayerFile(playerId);
-
-    return _getPlayerFile(playerId);
-}
-
-function _getPlayerFile(playerId)
-{
-    return _playerFileStore[playerId];
 }
 
 function _getGlobalPreferences(playerId)

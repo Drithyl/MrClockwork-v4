@@ -60,6 +60,7 @@ exports.deleteGame = function(gameName)
         return Promise.resolve();
 
     return rw.deleteDir(pathToBotData)
+    .then(() => game.removeAllPlayerData())
     .then(() =>
     {
         delete _ongoingGamesByName[gameName];

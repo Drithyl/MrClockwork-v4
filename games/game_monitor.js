@@ -45,6 +45,7 @@ function _updateDom5Game(game)
 
         return _announceStatusChanges(game, updateData);
     })
+    .then(() => game.save())
     .catch((err) => console.log(err.message));
 }
 

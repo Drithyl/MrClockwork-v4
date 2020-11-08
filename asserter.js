@@ -23,6 +23,7 @@ exports.isSemanticError = isSemanticError;
 exports.doesStringEndIn = doesStringEndIn;
 exports.assertGameTypeIsValid = assertGameTypeIsValid;
 exports.isValidPath = isValidPath;
+exports.isValidDiscordId = isValidDiscordId;
 
 exports.isArrayOrThrow = isArrayOrThrow;
 exports.isObjectOrThrow = isObjectOrThrow;
@@ -42,6 +43,7 @@ exports.isSemanticErrorOrThrow = isSemanticErrorOrThrow;
 exports.doesStringEndInOrThrow = doesStringEndInOrThrow;
 exports.assertGameTypeIsValidOrThrow = assertGameTypeIsValidOrThrow;
 exports.isValidPathOrThrow = isValidPathOrThrow;
+exports.isValidDiscordIdOrThrow = isValidDiscordIdOrThrow;
 
 
 function isArray(arr)
@@ -132,6 +134,11 @@ function doesStringEndIn(str, ending)
 function isValidPath(path)
 {
 	return fs.existsSync(path);
+}
+
+function isValidDiscordId(id)
+{
+	return isString(id) === true && /^\d{18}$/.test(id) === true;
 }
 
 function assertGameTypeIsValid(gameType)
@@ -261,4 +268,10 @@ function isValidPathOrThrow(path)
 {
   if (isValidPath(path) === false)
     throw new InvalidPathError(`Path does not exist: ${path}`);
+}
+
+function isValidDiscordIdOrThrow(id)
+{
+    if (isValidDiscordId(id) === false)
+      throw new InvalidPathError(`Id is not a valid Discord Id: ${id}`);
 }

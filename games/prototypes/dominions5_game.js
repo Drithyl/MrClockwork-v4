@@ -10,33 +10,86 @@ module.exports = Dominions5Game;
 function Dominions5Game()
 {
     const _gameObject = new Game();
-    
+    const _playerFiles = {};
+
     var _lastKnownStatus;
     var _lastKnownTurnNumber;
     var _lastKnownMsToNewTurn;
 
     _gameObject.setSettingsObject(new Dominions5Settings(_gameObject));
 
-
     _gameObject.getGameType = () => config.dom5GameTypeName;
     _gameObject.getDataPackage = () => _createGameDataPackage();
-    _gameObject.getPlayerControllingNationInGame = (nationIdentifier) =>
+
+    _gameObject.getSubmittedNations = () => _gameObject.emitPromiseWithGameDataToServer("GET_SUBMITTED_PRETENDERS");
+
+    _gameObject.checkIfNationIsSubmitted = (nationFilename) =>
     {
-        const controllerId = playerFileStore.getPlayerIdInGameControllingNation(_gameObject.getName(), nationIdentifier);
-        return controllerId;
+        return _gameObject.getSubmittedNations()
+        .then((list) => Promise.resolve(list.find((nation) => nationFilename === nation.filename) != null));
     };
 
+    _gameObject.getPlayerIdControllingNationInGame = (nationIdentifier) =>
+    {
+        for (var playerId in _playerFiles)
+        {
+            const playerFile = _playerFiles[playerId];
 
-    _gameObject.memberIsPlayer = (memberId) => playerFileStore.isPlayerInGame(memberId, _gameObject.getName());
-    _gameObject.isPlayerControllingNation = (playerId, nationIdentifier) => playerFileStore.isPlayerInGameControllingNation(playerId, _gameObject.getName(), nationIdentifier);
+            if (playerFile.isControllingNationInGame(nationIdentifier, _gameObject.getName()) === true)
+                return playerId;
+        }
+    };
+
+    _gameObject.memberIsPlayer = (memberId) => _playerFiles[memberId] != null;
+
+    _gameObject.isPlayerControllingNation = (playerId, nationIdentifier) => 
+    {
+        const playerFile = _playerFiles[playerId];
+        return playerFile.isControllingNationInGame(nationIdentifier, _gameObject.getName());
+    };
 
     _gameObject.claimNation = (playerId, nationFilename) => 
     {
-        playerFileStore.addPlayerControlledNationInGame(playerId, nationFilename, _gameObject.getName());
-        return playerFileStore.savePlayerFile(playerId);
+        if (_playerFiles[playerId] == null)
+            _playerFiles[playerId] = playerFileStore.getPlayerFile(playerId);
+
+        return _playerFiles[playerId].addControlledNationInGame(nationFilename, _gameObject.getName());
     };
 
-    _gameObject.removeControlOfNation = (nationFilename) => playerFileStore.removePlayerControlOfNationInGame(nationFilename, _gameObject.getName());
+    _gameObject.removeControlOfNation = (nationFilename) => 
+    {
+        const playerId = _gameObject.getPlayerControllingNationInGame(nationFilename);
+        const playerFile = _playerFiles[playerId];
+
+        return playerFile.removeControlOfNationInGame(nationFilename, _gameObject.getName())
+        .then(() =>
+        {
+            if (playerFile.hasGameData(_gameObject.getName()) === false)
+                delete _playerFiles[playerId];
+
+            return Promise.resolve();
+        });
+    };
+
+    _gameObject.removeNationClaims = () =>
+    {
+        return _playerFiles.forEachPromise((playerFile, playerId, nextPromise) =>
+        {
+            return playerFile.removeControlOfAllNationsInGame(_gameObject.getName())
+            .then(() => nextPromise());
+        });
+    };
+
+    _gameObject.removeAllPlayerData = () =>
+    {
+        return _playerFiles.forEachPromise((playerFile, playerId, nextPromise) =>
+        {
+            return playerFile.removeGameData(_gameObject.getName())
+            .then(() => playerFile.save())
+            .then(() => nextPromise());
+        });
+    };
+
     _gameObject.substitutePlayerControllingNation = (idOfNewPlayer, nationFilename) =>
     {
         return _gameObject.removeControlOfNation(nationFilename)
@@ -114,6 +167,14 @@ function Dominions5Game()
         if (jsonData.lastKnownMsToNewTurn >= 0)
             _lastKnownMsToNewTurn = jsonData.lastKnownMsToNewTurn;
 
+        if (Array.isArray(jsonData.playerData) === true)
+        {
+            jsonData.playerData.forEach((playerId) =>
+            {
+                _playerFiles[playerId] = playerFileStore.getPlayerFile(playerId);
+            });
+        }
+
         return _gameObject;
     };
 
@@ -124,6 +185,9 @@ function Dominions5Game()
         jsonData.lastKnownStatus = _lastKnownStatus;
         jsonData.lastKnownTurnNumber = _lastKnownTurnNumber;
         jsonData.lastKnownMsToNewTurn = _lastKnownMsToNewTurn;
+
+        jsonData.playerData = [];
+        _playerFiles.forEachItem((playerFile, playerId) => jsonData.playerData.push(playerId));
 
         return jsonData;
     };
