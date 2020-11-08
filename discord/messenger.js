@@ -5,34 +5,39 @@ const MessageWrapper = require("./wrappers/message_wrapper.js");
 
 module.exports.send = function(receiver, text, options = {})
 {
-  let optionsObject = _createMessageOptionsObject(options);
+    const optionsObject = _createMessageOptionsObject(options);
+    const filesData = _analyzeFiles(optionsObject.files);
 
-  return new Promise((resolve, reject) =>
-  {
     if (optionsObject.files == null && (text == null || text === ""))
-    {
-      return reject(new Error("Cannot send an empty message."));
-    }
+        return Promise.reject(new Error("Cannot send an empty message."));
 
-    try
+    if (filesData.hasFileTooLarge === true)
+        return Promise.reject(`File is too large for Discord.`);
+
+    return Promise.resolve()
+    .then(() =>
     {
-      receiver.send(text, optionsObject)
-      .then((discordJsMessage) => 
-      {
+        if (filesData.isTotalSizeTooLarge === true)
+            return _sendMessageAndAttachmentsSeparately(receiver, text, optionsObject);
+
+        else return receiver.send(text, optionsObject);
+    })
+    .then((discordJsMessage) => 
+    {
         if (optionsObject.pin === true)
-          return discordJsMessage.pin();
+            return discordJsMessage.pin();
         
-        else return resolve(discordJsMessage);
-      })
-      .then((discordJsMessage) => resolve(new MessageWrapper(discordJsMessage)))
-      .catch((err) => reject(new Error(`Could not send message:\n\n${err.stack}`)));
-    }
+        else return Promise.resolve(discordJsMessage);
+    })
+    .then((discordJsMessage) => Promise.resolve(new MessageWrapper(discordJsMessage)))
+    .catch((err) => Promise.reject(new Error(`Could not send message:\n\n${err.stack}`)));
+};
 
-    catch (err)
-    {
-      reject(err);
-    }
-  });
+//Same as send, but will also log the error
+module.exports.sendError = function(receiver, errorText)
+{
+  rw.log("error", errorText);
+  return module.exports.send(receiver, errorText);
 };
 
 function _createMessageOptionsObject(options)
@@ -45,8 +50,7 @@ function _createMessageOptionsObject(options)
     Object.assign(optionsObject, wrapper);
 
   //The pin() function will *not* be available in the returned discordjs message object
-  //after using the send() function if the split option was used, since it can't pin
-  //multiple messages
+  //after using the send() function if the split option was used; it can't pin multiple messages
   else if (options.pin === true)
     optionsObject.pin = true;
 
@@ -56,12 +60,46 @@ function _createMessageOptionsObject(options)
   return optionsObject;
 }
 
-//Same as send, but will also log the error
-module.exports.sendError = function(receiver, errorText)
+function _analyzeFiles(files)
 {
-  rw.log("error", errorText);
-  return module.exports.send(receiver, errorText);
-};
+    var totalSize;
+    var result = {
+        hasFileTooLarge: false,
+        isTotalSizeTooLarge: false
+    }
+
+    if (Array.isArray(files) === false)
+        return result;
+
+    totalSize = files.reduce((total, file) => 
+    {
+        const sizeInMB = file.attachment.length * 0.000001;
+
+        if (sizeInMB > 8)
+            result.hasFileTooLarge = true;
+            
+        return total + sizeInMB;
+    }, 0);
+        
+    if (totalSize > 8)
+        result.isTotalSizeTooLarge = true;
+
+    return result;
+}
+
+function _sendMessageAndAttachmentsSeparately(receiver, text, options)
+{
+    return receiver.send(text, { split: options.split })
+    .then((discordJsMessage) => 
+    {
+        return options.files.forEachPromise((file, index, nextPromise) => 
+        {
+            return receiver.send({ files: [file] })
+            .then(() => nextPromise());
+        })
+        .then(() => Promise.resolve(discordJsMessage));
+    })
+}
 
 function _formatWrapper(prepend, append)
 {
