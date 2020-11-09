@@ -16,7 +16,7 @@ function TimerSetting()
         if (_value == null || _value == 0)
             return "No timer/Paused";
 
-        return `${_value.days}d${_value.hours}h${_value.minutes}m`;
+        return `${_value.getDaysLeft()}d${_value.getHoursLeft()}h${_value.getMinutesLeft()}m`;
     };
     
     this.setValue = (input) =>

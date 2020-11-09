@@ -21,7 +21,6 @@ exports.loadAll = function()
         var gameJSONDataPath = `${pathToGameDataDir}/${gameDirName}/data.json`;
         var loadedGame = gameFactory.loadGame(gameJSONDataPath);
         
-        gameMonitor.monitorDom5Game(loadedGame);
         exports.addOngoingGame(loadedGame);
     });
 };
@@ -49,6 +48,7 @@ exports.addOngoingGame = function(game)
 {
     assert.isInstanceOfPrototypeOrThrow(game, Game);
     _ongoingGamesByName[game.getName()] = game;
+    gameMonitor.monitorDom5Game(game);
 };
 
 exports.deleteGame = function(gameName)
@@ -59,8 +59,9 @@ exports.deleteGame = function(gameName)
     if (game == null)
         return Promise.resolve();
 
-    return rw.deleteDir(pathToBotData)
+    return gameMonitor.stopMonitoringDom5Game(game)
     .then(() => game.removeAllPlayerData())
+    .then(() => rw.deleteDir(pathToBotData))
     .then(() =>
     {
         delete _ongoingGamesByName[gameName];

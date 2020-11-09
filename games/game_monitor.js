@@ -6,17 +6,39 @@ var monitoredGames = {};
 
 exports.monitorDom5Game = (game) =>
 {
-    const gameName = game.getName();
-    monitoredGames[gameName] = setInterval(() => _updateDom5Game(game), UPDATE_INTERVAL);
+    _updateDom5Game(game);
+    monitoredGames[game.getName()] = true;
 };
 
 exports.stopMonitoringDom5Game = (game) =>
 {
-    const gameName = game.getName();
-    clearInterval(monitoredGames[gameName]);
+    delete monitoredGames[game.getName()];
 };
 
 function _updateDom5Game(game)
+{
+    const gameName = game.getName();
+
+    setTimeout(() => 
+    {
+        return _updateCycle(game)
+        .then(() => 
+        {
+            if (monitoredGames[gameName] != null)
+                _updateDom5Game(game)
+        })
+        .catch(() => 
+        {
+            console.log(`${gameName}\toffline; cannot update.`);
+            
+            if (monitoredGames[gameName] != null)
+                _updateDom5Game(game)
+        });
+
+    }, UPDATE_INTERVAL);
+}
+
+function _updateCycle(game)
 {
     const gameName = game.getName();
 
@@ -25,7 +47,7 @@ function _updateDom5Game(game)
     if (game.isServerOnline() === false)
         return console.log(`${gameName}\tserver offline; cannot update.`);
 
-    game.isOnlineCheck()
+    return game.isOnlineCheck()
     .then((isOnline) =>
     {
         if (isOnline === false)
@@ -46,7 +68,7 @@ function _updateDom5Game(game)
         return _announceStatusChanges(game, updateData);
     })
     .then(() => game.save())
-    .catch((err) => console.log(err.message));
+    .catch((err) => Promise.reject(err));
 }
 
 function _announceStatusChanges(game, updateData)

@@ -58,7 +58,7 @@ function Dominions5Game()
 
     _gameObject.removeControlOfNation = (nationFilename) => 
     {
-        const playerId = _gameObject.getPlayerControllingNationInGame(nationFilename);
+        const playerId = _gameObject.getPlayerIdControllingNationInGame(nationFilename);
         const playerFile = _playerFiles[playerId];
 
         return playerFile.removeControlOfNationInGame(nationFilename, _gameObject.getName())
@@ -84,8 +84,9 @@ function Dominions5Game()
     {
         return _playerFiles.forEachPromise((playerFile, playerId, nextPromise) =>
         {
-            return playerFile.removeGameData(_gameObject.getName())
-            .then(() => playerFile.save())
+            playerFile.removeGameData(_gameObject.getName());
+
+            return playerFile.save()
             .then(() => nextPromise());
         });
     };

@@ -36,7 +36,7 @@ function PlayerFile(playerId)
         _arrayOfGameData.forEach((gameData, index) =>
         {
             if (gameData.getGameName() === gameName)
-                _arrayOfGameData.splice(index, 1, gameDataToAdd);
+                _arrayOfGameData.splice(index, 1);
         });
     };
 
