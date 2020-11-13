@@ -16,6 +16,8 @@ function DominionsPreferences(playerId)
 
     this.getPlayerId = () => _playerId;
 
+    this.getReminders = () => [..._reminders];
+
     this.hasReminderAtHourMark = (hourMark) => _reminders.includes(hourMark);
 
     this.addReminderAtHourMark = (hourMark) => 

@@ -25,6 +25,7 @@ function PlayerFile(playerId)
 
     this.hasGameData = (gameName) => _arrayOfGameData.find((gameData) => gameData.getGameName() === gameName) != null;
     this.getGameData = (gameName) => _arrayOfGameData.find((gameData) => gameData.getGameName() === gameName);
+    this.getAllGameData = () => [..._arrayOfGameData];
     this.addNewGameData = (gameName) =>
     {
         const newGameData = new PlayerGameData(_playerId, gameName);
