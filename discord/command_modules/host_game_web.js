@@ -3,8 +3,8 @@ const uuidv4 = require("uuid").v4;
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
+const webSessionsStore = require("../../servers/web_sessions_store.js");
 const Dominions5Game = require("../../games/prototypes/dominions5_game.js");
-const hostingSessionsStore = require("../../servers/hosting_sessions_store.js");
 
 const hostServerStore = require("../../servers/host_server_store.js");
 const { SemanticError } = require("../../errors/custom_errors.js");
@@ -37,7 +37,7 @@ function _behaviour(commandContext)
     const newGameObject = new Dominions5Game();
 
     newGameObject.setOrganizer(guildMemberWrapper);
-    hostingSessionsStore.addSession(userId, token, newGameObject);
+    webSessionsStore.addSession(userId, token, newGameObject);
 
     return guildMemberWrapper.sendMessage(`You can begin the hosting process by accessing the link http://localhost:3000/host_game?userId=${userId}&token=${token} on your browser.`);
 }

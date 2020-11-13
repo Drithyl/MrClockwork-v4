@@ -1,0 +1,15 @@
+
+
+<label for="input_mod">Mods</label>
+<select id="input_mod" name="mods" class="form-control selectpicker" multiple>
+
+    <!-- Must use typeof to check if variable exists at all, since it might be undefined -->
+    <% if (typeof mods === "object" && Array.isArray(mods) === true) { %>
+        <% mods.forEach((modName) => {%>
+            <option value="<%=modName %>"><%=modName %></option>
+        <% }); %>
+    <% } else { %>
+        <p>No mods available</p>
+    <% } %>
+
+</select>

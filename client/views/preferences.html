@@ -1,0 +1,179 @@
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8" />
+
+    <title>Mr. Clockwork Dominions Hosting Website</title>
+    <meta name="author" content="Hugo Bujan Prevot" />
+    <meta
+      name="description"
+      content="Preferences page of the Dominions hosting Discord bot"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="keywords"
+      content="home, clockwork, dominions, strategy, turn-based, mythology, pretender, pantheon, pantokrator, hosting, online, multiplayer"
+    />
+    <meta http-equiv="refresh" content="60" />
+      
+    <!-- jQuery, Popper and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+    <!-- Latest compiled and minified JavaScript for bootstrap-select  -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
+      
+    <!-- Handlebars -->
+    <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
+      
+    <!-- Bootstrap 4 -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/main.css" />
+      
+    <!-- Latest compiled and minified CSS for bootstrap-select, docs: https://developer.snapappointments.com/bootstrap-select/examples/ -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
+  </head>
+
+  <body>
+      
+    <!-- MAIN CONTAINER FOR BOTH THE HEADER OF THE PAGE AND THE BODY -->
+    <div class="container main_container">
+        
+        <!-- HEADER -->
+        <div class="row page_header">
+            
+            <!-- Filler column -->
+            <div class="col-md"></div>
+            
+            <!-- BANNER COLUMN -->
+            <div class="col">
+                <img src="img/logo.png" class="img-fluid w-50" alt="Mr. Clockwork logo">
+            </div>
+            
+            <!-- NAVBAR COLUMN -->
+            <div class="col-4 text-h-centered text-v-centered">
+                
+                <!-- Navbar expands on medium screens or larger -->
+                <!-- Original navbar code taken from: https://mdbootstrap.com/docs/jquery/navigation/navbar/ and edited to fit my purpose -->
+                <nav class="navbar navbar-expand-md navbar-dark">
+                    
+                    <!-- On smaller screens it collapses and a toggler button shows up -->
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContainer"
+                        aria-controls="navbarContainer" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    
+                    <div class="collapse navbar-collapse" id="navbarContainer">
+                        <ul class="navbar-nav mr-auto">
+                            <li class="nav-item active">
+                                <a class="nav-link" href="index.html">Home</a>
+                            </li>
+                            <li class="nav-item active">
+                                <a class="nav-link" href="list_games.html">Check a game</a>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                </nav>
+                
+            </div>
+            
+            <!-- Filler column -->
+            <div class="col-md"></div>
+            
+        </div>
+        <!---------------->
+        
+        <!-- BODY -->
+        <div class="row section">
+            
+            <!-- Left buffer column that pads the space between the content sections and the body -->
+            <div class="col-md buffer_left"></div>
+            <div class="col-md-8 main_section">
+            
+                <div class="section">
+                    <form id="preferences_form">
+
+                        <label for="input_game">Game preferences</label>
+                        <select id="input_game" name="games" class="form-control selectpicker" multiple>
+
+                            <!-- Handlebars template; the rendering code is found @js/ai_input_template_compiler.js -->
+                            <script id="game_preferences_input_template" type="template/handlebars">
+
+                                {{#each this}}
+
+                                    {{! Render an option for each game }}
+                                    <option value={{this.name}} onclick="updateGamePreferences({{this.name}})">{{this.name}}</option>
+
+                                {{/each}}
+
+                            </script>
+
+                        </select>
+
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="scoresCheck">
+                            <label class="form-check-label" for="scoresCheck">Receive scores file each turn?</label>
+                        </div>
+
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="backupsCheck">
+                            <label class="form-check-label" for="backupsCheck">Receive turn backup each turn?</label>
+                        </div>
+
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="reminderWhenTurnDoneCheck">
+                            <label class="form-check-label" for="reminderWhenTurnDoneCheck">Receive timer reminders even when the turn is marked as finished?</label>
+                        </div>
+
+                        <select id="input_reminders" name="reminders" class="form-control selectpicker" multiple>
+
+                            <!-- Render n options with JS in game_preferences_template_compiler.js -->
+
+                        </select>
+
+                        
+                        <div class="form-group row">
+                            <div class="col-sm-10">
+                                <button type="button" class="btn btn-dark btn-lg" onclick="savePreferences()">Save preferences</button>
+                            </div>
+                        </div>
+
+                        <!-- Save Preferences Script -->
+                        <script src="js/save_preferences.js"></script>
+                        
+                    </form>
+                    
+                </div>
+            
+            
+            </div>
+            
+            <!-- Right buffer column that pads the space between the content sections and the body -->
+            <div class="col-md buffer_right"></div>
+        
+        </div>
+        <!---------------->
+        
+        
+        <!-- FOOTER SECTION -->
+        <footer class="row">
+            
+            <div class="col container">
+            
+                <p class="text-h-centered text-v-centered">
+                    © Hugo Bujan Prevot 2020<br>
+                    hugo.bujan@gmail.com<br>
+                </p>
+            
+            </div> 
+        
+        </footer>
+        <!---------------->
+        
+    </div>
+
+    
+  </body>
+</html>

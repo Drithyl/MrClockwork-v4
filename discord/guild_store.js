@@ -35,6 +35,21 @@ module.exports.getGuildWrapperById = (guildId) =>
     return guildWrappers[guildId];
 };
 
+module.exports.getGuildsWhereUserIsMember = (userId) =>
+{
+    const guildsWhereUserIsMember = [];
+
+    for (var id in guildWrappers)
+    {
+        const guild = guildWrappers[id];
+
+        if (guild.isMember(userId) === true)
+            guildsWhereUserIsMember.push(guild);
+    }
+
+    return guildsWhereUserIsMember;
+};
+
 module.exports.getGuildClientData = (userId) =>
 {
     var guildData = [];

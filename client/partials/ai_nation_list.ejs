@@ -1,0 +1,20 @@
+
+
+<label for="input_ai">AI Nations</label>
+<select id="input_ai" name="aiNations" class="form-control selectpicker" data-size="8" multiple data-selected-text-format="count">
+    
+    <!-- Must use typeof to check if variable exists at all, since it might be undefined -->
+    <% if (typeof nations === "object" && Array.isArray(nations) === true) { %>
+        <% nations.forEach((nation) => { %>
+            <optgroup label="<%=nation.name %>" data-max-options="1">
+                <option data-subtext="easy" value="<%=nation.name %> easy"><%=nation.name %></option>
+                <option data-subtext="normal" value="<%=nation.name %> normal"><%=nation.name %></option>
+                <option data-subtext="difficult" value="<%=nation.name %> difficult"><%=nation.name %></option>
+                <option data-subtext="mighty" value="<%=nation.name %> mighty"><%=nation.name %></option>
+                <option data-subtext="master" value="<%=nation.name %> master"><%=nation.name %></option>
+                <option data-subtext="impossible" value="<%=nation.name %> impossible"><%=nation.name %></option>
+            </optgroup>
+        <% }); %>
+    <% } %>
+
+</select>

@@ -1,0 +1,19 @@
+
+
+<legend class="col-form-label col-sm-2 pt-0">Server</legend>
+<div id="server_input_container" class="col-sm-10">
+    <!-- Must use typeof to check if variable exists at all, since it might be undefined -->
+    <% if (typeof servers === "object" && Array.isArray(servers) === true && servers.length > 0) { %>
+        <% servers.forEach((serverData, i) => {%>
+            <div class="form-check">
+                    <input class="form-check-input" type="radio" name="server" id="server_radio_<%=serverData.name %>" value="<%=serverData.name %>" <% if (i === 0) { %> checked <% } %> >
+                    <label class="form-check-label" for="server_radio_<%=serverData.name %>">
+                        <%=serverData.name %> (<%=serverData.slots %> slots available)
+                    </label>
+            </div>
+        <% }); %>
+    <% } else { %>
+        <p><b>No server slots available, or all servers are offline. Cannot host game.</b></p>
+    <% } %>
+    
+</div>
