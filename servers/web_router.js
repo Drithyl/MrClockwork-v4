@@ -1,26 +1,57 @@
 
-const _path = require('path');
+const url = require("url");
+const ejs = require("ejs");
+const path = require("path");
+const oauth2 = require("./discord_oauth2.js")
 const guildStore = require("../discord/guild_store.js");
 const hostServerStore = require("./host_server_store.js");
-const hostingSessionsStore = require("./hosting_sessions_store.js");
+const webSessionsStore = require("./web_sessions_store.js");
 
 exports.setMiddlewares = (expressApp, express) =>
 {
     //Set the middleware used to handle incoming HTTP requests.
     //static() will serve all files within the provided directory, including css or js
-    expressApp.use(express.static(_path.join(__dirname + "/../client")));
-    expressApp.use(express.static(_path.join(__dirname + "/../shared")));
+    expressApp.use(express.static(path.join(__dirname + "/../client")));
     expressApp.use(express.json());
     expressApp.use(express.urlencoded());
+
+    expressApp.set("views", path.join(__dirname + "/../client/views"));
+    expressApp.set("view engine", "ejs");
+    expressApp.engine("html", require("ejs").renderFile);
 };
 
 exports.setRoutes = (expressApp) =>
 {
     //default URL for website, handle incoming requests on root page
-    expressApp.get("/", (req, res) =>
+    expressApp.get("/", (req, res) => res.render("index.html"));
+
+    expressApp.get("/login", (req, res) =>
     {
-        var indexPath = _path.join(__dirname + "/../client/index.html");
-        res.sendFile(indexPath);
+        const urlObject = url.parse(req.url, true);
+
+        oauth2.authenticate(urlObject)
+        .then((userInfo) => 
+        {
+            const guildData = [];
+            const userId = userInfo.id;
+            const guildsWhereUserIsMember = guildStore.getGuildsWhereUserIsMember(userId);
+            const availableServers = hostServerStore.getAvailableServers();
+
+            guildsWhereUserIsMember.forEach((wrapper) =>
+            {
+                guildData.push({
+                    id: wrapper.getId(),
+                    name: wrapper.getName()
+                })
+            });
+            
+            /** redirect to host_game */
+            res.render("host_game.ejs", {
+                guilds: guildData, 
+                servers: availableServers
+            });
+        })
+        .catch((err) => res.send(`Error occurred: ${err.message}`));
     });
 
     //Get the params from the url itself instead of turning it into a route;
@@ -30,16 +61,27 @@ exports.setRoutes = (expressApp) =>
     //since they will also be extracted in the client
     expressApp.get("/host_game", (req, res) =>
     {
-        var params = req.url.replace("/host_game?", "");
-        var userId = params.replace(/userId=(\d+)&token.+/i, "$1");
-        var token = params.replace(/^.+&token=/i, "");
+        const authenticationParams = _extractAuthenticationParams(req.url);
+        console.log("Host game authentication params:", authenticationParams);
 
-        console.log("Host game authentication params:", userId, token);
-
-        if (hostingSessionsStore.doesSessionExist(userId, token) === true)
+        if (_isAuthenticationValid(authenticationParams) === true)
         {
-            var hostGamePath = _path.join(__dirname + "/../client/host_game.html");
+            const hostGamePath = path.join(__dirname + "/../client/host_game.html");
             return res.sendFile(hostGamePath);
+        }
+
+        else return res.send("Session does not exist!");
+    });
+
+    expressApp.get("/preferences", (req, res) =>
+    {
+        const authenticationParams = _extractAuthenticationParams(req.url);
+        console.log("Host game authentication params:", authenticationParams);
+
+        if (_isAuthenticationValid(authenticationParams) === true)
+        {
+            const preferencesPath = path.join(__dirname + "/../client/preferences.html");
+            return res.sendFile(preferencesPath);
         }
 
         else return res.send("Session does not exist!");
@@ -57,15 +99,15 @@ exports.setRoutes = (expressApp) =>
 
         console.log(`Post values received:\n`, values);
 
-        if (hostingSessionsStore.doesSessionExist(values.userId, values.token) === false)
+        if (_isAuthenticationValid(values) === false)
         {
             console.log("Session does not exist; cannot host.");
             return res.send("Session does not exist!");
         }
 
-        gameObject = hostingSessionsStore.getSessionGameObject(values.userId);
+        gameObject = webSessionsStore.getSessionData(values.userId);
 
-        hostingSessionsStore.removeSession(values.userId);
+        webSessionsStore.removeSession(values.userId);
 
 
         //format aiNations as the setting expects it
@@ -116,6 +158,23 @@ exports.setRoutes = (expressApp) =>
         });
     });
 
+    expressApp.post("/preferences", (req, res) =>
+    {
+        const values = req.body;
+        var playerFile;
+
+        console.log(`Post values received:\n`, values);
+
+        if (_isAuthenticationValid(values) === false)
+        {
+            console.log("Session does not exist; cannot edit preferences.");
+            return res.send("Session does not exist!");
+        }
+
+        playerFile = webSessionsStore.getSessionData(values.userId);
+        webSessionsStore.removeSession(values.userId);
+    });
+
 
     //Below are routes used specifically to retrieve data
     expressApp.get("/guilds/:userId", (req, res) =>
@@ -161,4 +220,106 @@ exports.setRoutes = (expressApp) =>
         server.emitPromise("GET_MOD_LIST")
         .then((list) => res.send(list));
     });
+
+
+    //Below are routes used specifically to retrieve data
+    expressApp.get("/game_preferences/:userId", (req, res) =>
+    {
+        const userId = req.params.userId;
+        const playerFile = webSessionsStore.getSessionData(userId);
+        const gameData = playerFile.getAllGameData();
+        const dataToSend = {};
+
+        gameData.forEach((gameData) =>
+        {
+            const gameName = gameData.getGameName();
+            const preferences = gameData.getDominionsPreferences();
+
+            dataToSend[gameName] = {
+                name: gameName,
+                sendTurns: preferences.isReceivingBackups(),
+                sendScores: preferences.isReceivingScores(),
+                sendReminderWhenTurnDone: preferences.isReceivingRemindersWhenTurnIsDone(),
+                reminders: preferences.getReminders()
+            };
+        });
+
+        res.send(dataToSend);
+    });
+
+    
+
+    expressApp.get("/update_ai_partial/:eraNbr", (req, res) =>
+    {
+        const dom5Nations = require("../json/dom5_nations.json");
+        const era = req.params.eraNbr;
+        const nations = dom5Nations[era];
+        
+        ejs.renderFile("./client/partials/ai_nation_list.ejs", { nations }, (err, compiledStr) =>
+        {
+            if (err)
+                res.send(`Error when fetching ai list: ${err.message}`);
+
+            res.send(compiledStr);
+        });
+    });
+
+    expressApp.get("/update_mod_partial/:serverName", (req, res) =>
+    {
+        const serverName = req.params.serverName;
+        const server = hostServerStore.getHostServerByName(serverName);
+
+        if (server.isOnline() === false)
+            return res.send("Selected server is offline");
+
+        server.emitPromise("GET_MOD_LIST")
+        .then((mods) => 
+        {
+            ejs.renderFile("./client/partials/mod_list.ejs", { mods }, (err, compiledHthml) =>
+            {
+                if (err)
+                    res.send(`Error when fetching mods: ${err.message}`);
+
+                res.send(compiledHthml);
+            });
+        });
+    });
+
+    expressApp.get("/update_map_partial/:serverName", (req, res) =>
+    {
+        const serverName = req.params.serverName;
+        const server = hostServerStore.getHostServerByName(serverName);
+
+        if (server.isOnline() === false)
+            return res.send("Selected server is offline");
+
+        server.emitPromise("GET_MAP_LIST")
+        .then((maps) => 
+        {
+            ejs.renderFile("./client/partials/map_list.ejs", { maps }, (err, compiledHthml) =>
+            {
+                if (err)
+                    res.send(`Error when fetching mods: ${err.message}`);
+
+                res.send(compiledHthml);
+            });
+        });
+    });
 };
+
+function _extractAuthenticationParams(url)
+{
+    const params = url.replace(/^\/\.+\?/, "");
+    const userId = params.replace(/userId=(\d+)&token.+/i, "$1");
+    const token = params.replace(/^.+&token=/i, "");
+
+    return { userId, token };
+}
+
+function _isAuthenticationValid(authenticationParams)
+{
+    const userId = authenticationParams.userId;
+    const token = authenticationParamstoken
+
+    return webSessionsStore.doesSessionExist(userId, token);
+}
