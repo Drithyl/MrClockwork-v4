@@ -59,8 +59,9 @@ exports.deleteGame = function(gameName)
     if (game == null)
         return Promise.resolve();
 
-    return gameMonitor.stopMonitoringDom5Game(game)
-    .then(() => game.removeAllPlayerData())
+    gameMonitor.stopMonitoringDom5Game(game);
+
+    return game.removeAllPlayerData()
     .then(() => rw.deleteDir(pathToBotData))
     .then(() =>
     {

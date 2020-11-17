@@ -37,6 +37,5 @@ function _behaviour(commandContext)
 
         else return Promise.resolve();
     })
-    .then(() => gameChannel.delete())
-    .then(() => commandContext.respondToCommand())
+    .then(() => gameChannel.delete());
 }

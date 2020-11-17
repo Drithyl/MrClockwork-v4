@@ -7,12 +7,12 @@
     <% if (typeof nations === "object" && Array.isArray(nations) === true) { %>
         <% nations.forEach((nation) => { %>
             <optgroup label="<%=nation.name %>" data-max-options="1">
-                <option data-subtext="easy" value="<%=nation.name %> easy"><%=nation.name %></option>
-                <option data-subtext="normal" value="<%=nation.name %> normal"><%=nation.name %></option>
-                <option data-subtext="difficult" value="<%=nation.name %> difficult"><%=nation.name %></option>
-                <option data-subtext="mighty" value="<%=nation.name %> mighty"><%=nation.name %></option>
-                <option data-subtext="master" value="<%=nation.name %> master"><%=nation.name %></option>
-                <option data-subtext="impossible" value="<%=nation.name %> impossible"><%=nation.name %></option>
+                <option name="nation" data-subtext="easy" value="<%=nation.number %> easy"><%=nation.name %></option>
+                <option name="nation" data-subtext="normal" value="<%=nation.number %> normal"><%=nation.name %></option>
+                <option name="nation" data-subtext="difficult" value="<%=nation.number %> difficult"><%=nation.name %></option>
+                <option name="nation" data-subtext="mighty" value="<%=nation.number %> mighty"><%=nation.name %></option>
+                <option name="nation" data-subtext="master" value="<%=nation.number %> master"><%=nation.name %></option>
+                <option name="nation" data-subtext="impossible" value="<%=nation.number %> impossible"><%=nation.name %></option>
             </optgroup>
         <% }); %>
     <% } %>

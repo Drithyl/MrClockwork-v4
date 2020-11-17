@@ -1,11 +1,12 @@
 
 
 <%- include('../partials/head.ejs')-%>
-
 <%- include('../partials/body_start.ejs')-%>
 
 <form id="host_game_form">
-                          
+
+    <input type="hidden" name="token" value="<%=(typeof token === "string") ? token : "none"%>"/>
+
     <div class="form-group row">
         <label for="input_game_name" class="col-sm-2 col-form-label">Game Name</label>
         <div class="col-sm-10">
@@ -427,7 +428,7 @@
     
     <div class="form-group row">
         <div class="col-sm-10">
-            <button type="button" class="btn btn-dark btn-lg" onclick="hostGame()">Host a new game</button>
+            <button type="submit" class="btn btn-dark btn-lg">Host a new game</button>
         </div>
     </div>
 
@@ -437,5 +438,4 @@
 </form>
 
 <%- include('../partials/body_end.ejs')-%>
-
 <%- include('../partials/footer.ejs')-%>

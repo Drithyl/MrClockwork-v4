@@ -1,0 +1,33 @@
+
+
+<%- include('../partials/head.ejs')-%>
+<%- include('../partials/body_start.ejs')-%>
+
+<p> 
+    <% if (typeof userData === "object" && typeof userData.token === "string") { %>
+        <b>Session id:</b> <%=userData.token %><br>
+
+    <% } else { %>
+        <b>Session id:</b> <b>BAD SESSION!</b><br>
+    <% } %>
+
+    <% if (typeof userData === "object" && typeof userData.userId === "string") { %>
+        <b>User id:</b> <%=userData.userId %><br>
+
+    <% } else { %>
+        <b>User id:</b> <b>BAD SESSION!</b><br>
+    <% } %>
+</p>
+
+<form action="/host_game" method="GET">
+    <input type="hidden" name="token" value="<%=(typeof userData === "object") ? userData.token : "none"%>"/>
+    <button type="submit" class="btn btn-dark btn-lg">Host a new game</button>
+</form>
+
+<form action="/edit_preferences" method="GET">
+    <input type="hidden" name="token" value="<%=(typeof userData === "object") ? userData.token : "none"%>"/>
+    <button type="submit" class="btn btn-dark btn-lg">Edit game preferences</button>
+</form>
+
+<%- include('../partials/body_end.ejs')-%>
+<%- include('../partials/footer.ejs')-%>

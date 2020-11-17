@@ -1,36 +1,29 @@
 
 
-function hostGame()
+$("#host_game_form").submit(function(eventObj)
 {
+    eventObj.preventDefault();
+    console.log(eventObj);
+
+    var urlEncodedData = $("#host_game_form").serialize();
+    console.log(urlEncodedData);
+
+    $.post("/host_game", urlEncodedData)
+    .done((response) =>
+    {
+        console.log(response);
+    });
+})
+
+/*function hostGame(sessionToken)
+{
+    console.log("TOKEN " + sessionToken);
     var url_encoded_data = $("#host_game_form").serialize();
+    url_encoded_data += `&token=${sessionToken}`;
 
-    //get authentication params from the url and include them in the data
-    const userIdParam = window.location.search.replace(/^.+userId=(\d+)&token.+/i, "$1");
-    const tokenParam = window.location.search.replace(/^.+&token=/i, "");
-
-    url_encoded_data += `&userId=${userIdParam}&token=${tokenParam}`;
-
-    var xmlRequest = new XMLHttpRequest();
-
-    xmlRequest.addEventListener("load", (event) =>
+    $.post("/host_game", url_encoded_data)
+    .done((response) =>
     {
-        console.log("Data sent and response loaded.");
-    });
-
-    xmlRequest.addEventListener("error", (event) =>
-    {
-        console.log(`Error:`, event);
-    });
-
-    xmlRequest.onreadystatechange = function () 
-    {
-        if (xmlRequest.readyState == 4 && xmlRequest.status == "200") 
-        {
-            console.log(xmlRequest.responseText);
-        }
-    };
-    
-    xmlRequest.open('POST', "/host_game", true);
-    xmlRequest.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    xmlRequest.send(url_encoded_data);  
-}
+        console.log(response);
+    }); 
+}*/

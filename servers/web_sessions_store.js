@@ -1,23 +1,53 @@
 
+const url = require("url");
+const uuidv4 = require("uuid").v4;
 
 const _sessions = {};
 
-module.exports.addSession = (userId, token, data) =>
+module.exports.createSession = (userId, data) =>
 {
-    _sessions[userId] = {token, data: data};
+    const token = uuidv4();
+    _sessions[token] = {userId, data, token};
+    return token;
 };
 
-module.exports.doesSessionExist = (userId, token) =>
+module.exports.doesSessionExist = (token) =>
 {
-    return _sessions[userId] != null && _sessions[userId].token === token;
+    return _sessions[token] != null && _sessions[token].token === token;
 };
 
-module.exports.removeSession = (userId) =>
+module.exports.removeSession = (token) =>
 {
-    delete _sessions[userId];
+    delete _sessions[token];
 };
 
-module.exports.getSessionData = (userId) =>
+module.exports.getSessionUserId = (token) =>
 {
-    return _sessions[userId].data;  
+    if (_sessions[token] == null)
+        return null;
+
+    return _sessions[token].userId;  
+};
+
+module.exports.getSessionData = (token) =>
+{
+    if (_sessions[token] == null)
+        return null;
+        
+    return _sessions[token].data;  
+};
+
+module.exports.extractSessionParamsFromUrl = (reqUrl) =>
+{
+    const urlObject = url.parse(reqUrl, true);
+    const token = urlObject.query.token;
+    const userId = exports.getSessionUserId(token);
+
+    return { userId, token };
+};
+
+module.exports.isSessionValid = (authenticationParams) =>
+{
+    const token = authenticationParams.token;
+    return exports.doesSessionExist(token);
 };

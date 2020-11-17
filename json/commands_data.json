@@ -97,7 +97,7 @@
         "gameTypesSupported": ["dom5"],
         "argumentsRequiredInfo": [],
         "optionalArguments": 0,
-        "regexpRequiredToInvoke": "DELETEANDCHANNEL",
+        "regexpRequiredToInvoke": "DELETEGAMEANDCHANNEL",
         "argumentRegexpArray": [],
         "channelRequiredToInvoke": "game",
         "helpText": "Permanently deletes the game hosted in this channel, as well as the channel itself."

@@ -15,7 +15,6 @@ function DominionsPreferences(playerId)
     var _receiveReminderWhenTurnIsDone = false;
 
     this.getPlayerId = () => _playerId;
-
     this.getReminders = () => [..._reminders];
 
     this.hasReminderAtHourMark = (hourMark) => _reminders.includes(hourMark);
@@ -62,6 +61,8 @@ function DominionsPreferences(playerId)
 
         _receiveReminderWhenTurnIsDone = boolean;
     };
+
+    this.getData = () => this.toJSON();
 
     this.toJSON = () =>
     {

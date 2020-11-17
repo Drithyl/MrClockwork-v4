@@ -27,9 +27,9 @@ function _updateDom5Game(game)
             if (monitoredGames[gameName] != null)
                 _updateDom5Game(game)
         })
-        .catch(() => 
+        .catch((err) => 
         {
-            console.log(`${gameName}\toffline; cannot update.`);
+            console.log(`${gameName}\t${err.message}`);
             
             if (monitoredGames[gameName] != null)
                 _updateDom5Game(game)
@@ -45,7 +45,7 @@ function _updateCycle(game)
     console.log(`${gameName}\tupdating...`);
 
     if (game.isServerOnline() === false)
-        return console.log(`${gameName}\tserver offline; cannot update.`);
+        return Promise.reject(new Error(`${gameName}\tserver offline; cannot update.`));
 
     return game.isOnlineCheck()
     .then((isOnline) =>
