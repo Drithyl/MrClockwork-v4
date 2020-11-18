@@ -1,14 +1,21 @@
 
 <label for="input_game">Edit preferences for:</label>
-<select id="input_game" name="games" class="form-control selectpicker">
+<select id="input_game" class="form-control selectpicker">
 
     <!-- Must use typeof to check if variable exists at all, since it might be undefined -->
     <% if (typeof gamePreferences === "object" && Array.isArray(gamePreferences) === true && gamePreferences.length > 0) { %>
+
+        <option disabled selected value> -- Select preferences to edit -- </option>
+
         <% gamePreferences.forEach((preferences, i) => {%>
-            <option value="<%=preferences.name%>" onclick="displayGamePreferences('<%=preferences%>')" ><%=preferences.name%></option>
+
+            <option value="<%=preferences.name%>"><%=preferences.name%></option>
+
         <% }); %>
     <% } else { %>
+
         <p><b>No games available.</b></p>
+
     <% } %>
     
 </select>

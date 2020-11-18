@@ -9,36 +9,15 @@
 
     <%- include('../partials/game_list.ejs')-%>
 
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" id="scoresCheck" name="receiveBackups" onclick="updatePreference(this)">
-        <label class="form-check-label" for="scoresCheck">Receive scores file each turn?</label>
-    </div>
-
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" id="backupsCheck" name="receiveScores" onclick="updatePreference(this)">
-        <label class="form-check-label" for="backupsCheck">Receive turn backup each turn?</label>
-    </div>
-
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" id="reminderWhenTurnDoneCheck" name="receiveReminderWhenTurnIsDone" onclick="updatePreference(this)">
-        <label class="form-check-label" for="reminderWhenTurnDoneCheck">Receive timer reminders even when the turn is marked as finished?</label>
-    </div>
-
-    <select id="input_reminders" name="reminders" name="reminders" class="form-control selectpicker" multiple>
-
-        <!-- Render n options with JS in game_preferences_template_compiler.js -->
-
-    </select>
+    <%- include('../partials/game_preferences.ejs')-%>
 
     <div class="form-group row">
         <div class="col-sm-10">
-            <button type="button" class="btn btn-dark btn-lg" onclick="savePreferences('<%=token%>', '<%=gamePreferences%>')">Save preferences</button>
+            <button type="submit" class="btn btn-dark btn-lg">Save preferences</button>
         </div>
     </div>
 
-    <!-- Save Preferences Script -->
-    <script src="js/update_game_preferences.js"></script>
-    <script src="js/save_preferences.js"></script>
+    <script src="js/update_preferences.js"></script>
     
 </form>
 

@@ -24,16 +24,5 @@ function ChangePlayerPreferencesCommand()
 
 function _behaviour(commandContext)
 {
-    const userId = commandContext.getCommandSenderId();
-    const token = uuidv4();
-    const playerFile = playerFileStore.getPlayerFile(userId);
-
-    webSessionsStore.addSession(userId, token, playerFile);
-
-    return guildMemberWrapper.sendMessage(`You can change your preferences by accessing the link http://localhost:3000/preferences?userId=${userId}&token=${token} on your browser.`);
-}
-
-/*function _behaviour(commandContext)
-{
     return activeMenuStore.startChangePlayerPreferencesMenu(commandContext);
-}*/
+}

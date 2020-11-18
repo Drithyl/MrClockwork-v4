@@ -2,7 +2,7 @@
 /* THIS IS CLIENT-SIDE CODE RUN IN THE USER'S BROWSER; CANNOT USE NODEJS HERE */
 
 updateNations();
-$("#host_game_form input").on("change", updateNations);
+$("#host_game_form input[name=era]").on("change", updateNations);
 
 function updateNations()
 {
