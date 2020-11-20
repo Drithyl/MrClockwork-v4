@@ -17,12 +17,12 @@ function DominionsPreferences(playerId)
     this.getPlayerId = () => _playerId;
     this.getReminders = () => [..._reminders];
 
-    this.hasReminderAtHourMark = (hourMark) => _reminders.includes(hourMark);
+    this.hasReminderAtHourMark = (hourMark) => _reminders.includes(+hourMark);
 
     this.addReminderAtHourMark = (hourMark) => 
     {
-        assert.isIntegerOrThrow(hourMark);
-        _reminders.push(hourMark);
+        assert.isIntegerOrThrow(+hourMark);
+        _reminders.push(+hourMark);
     };
 
     this.removeReminderAtHourMark = (hourMark) =>
@@ -51,7 +51,7 @@ function DominionsPreferences(playerId)
         if (assert.isBoolean(boolean) === false)
             _receiveBackups = false;
 
-        _receiveBackups = boolean;
+        else _receiveBackups = boolean;
     };
 
     this.setReceiveRemindersWhenTurnIsDone = (boolean) => 
@@ -59,7 +59,7 @@ function DominionsPreferences(playerId)
         if (assert.isBoolean(boolean) === false)
             _receiveReminderWhenTurnIsDone = false;
 
-        _receiveReminderWhenTurnIsDone = boolean;
+        else _receiveReminderWhenTurnIsDone = boolean;
     };
 
     this.getData = () => this.toJSON();

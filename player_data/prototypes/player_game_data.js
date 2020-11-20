@@ -1,7 +1,6 @@
 
 const assert = require("../../asserter.js");
 const { SemanticError } = require("../../errors/custom_errors");
-const DominionsPreferences = require("./dominions_preferences.js");
 const dom5NationStore = require("../../games/dominions5_nation_store.js");
 
 module.exports = PlayerGameData;
@@ -14,7 +13,6 @@ function PlayerGameData(playerId, gameName)
     const _playerId = playerId;
     const _gameName = gameName;
     const _controlledNations = [];
-    var _dominionsPreferences = new DominionsPreferences(playerId, gameName);
 
     this.getPlayerId = () => _playerId;
     this.getGameName = () => _gameName;
@@ -54,13 +52,6 @@ function PlayerGameData(playerId, gameName)
         return [..._controlledNations];
     };
 
-    this.getDominionsPreferences = () => _dominionsPreferences;
-    this.setDominionsPreferences = (dominionsPreferences) =>
-    {
-        assert.isInstanceOfPrototypeOrThrow(dominionsPreferences, DominionsPreferences);
-        _dominionsPreferences = dominionsPreferences;
-    };
-
     this.toJSON = () =>
     {
         const nationFilenames = [];
@@ -70,7 +61,6 @@ function PlayerGameData(playerId, gameName)
         return {
             playerId: _playerId,
             gameName: _gameName,
-            preferences: _dominionsPreferences.toJSON(),
             controlledNations: nationFilenames
         };
     };
@@ -79,9 +69,7 @@ function PlayerGameData(playerId, gameName)
 PlayerGameData.loadFromJSON = (jsonData) =>
 {
     const gameData = new PlayerGameData(jsonData.playerId, jsonData.gameName);
-    const dominionsPreferences = DominionsPreferences.loadFromJSON(jsonData.preferences);
 
-    gameData.setDominionsPreferences(dominionsPreferences);
     jsonData.controlledNations.forEach((nationFilename) => 
     {
         gameData.addControlledNation(nationFilename);

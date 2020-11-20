@@ -23,7 +23,12 @@ $("#preferences_form").submit(function(event)
     const formDataArray = $(this).serializeArray();
     const jsonData = _formDataToJson(formDataArray);
 
-    $.post("/edit_preferences", jsonData)
+    $.post({
+        url: "/edit_preferences",
+        contentType: "application/json",
+        data: jsonData,
+        dataType: "json"
+    })
     .done((response) =>
     {
         console.log(response);
@@ -60,8 +65,15 @@ function _formDataToJson(serializedArray)
             jsonData[gameName][key].push(+value);
         }
 
-        else jsonData[gameName][key] = true;
+        /** Checkbox values here; if they show up in the serialized array it's because
+         *  they are "on", or checked, thus assign them as true
+         */
+        else
+        {
+            console.log(key + " is " + value);
+            jsonData[gameName][key] = true;
+        }
     });
 
-    return jsonData;
+    return JSON.stringify(jsonData);
 }

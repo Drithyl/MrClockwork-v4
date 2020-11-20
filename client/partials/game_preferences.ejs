@@ -7,12 +7,12 @@
         <div id="<%=preferences.name%>_container" style="display:none;">
  
             <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="<%=preferences.name%>_scores_checkbox" name="<%=preferences.name%>.receiveBackups" <% if (preferences.receiveBackups) { %> checked <% } %>>
+                <input type="checkbox" class="form-check-input" id="<%=preferences.name%>_scores_checkbox" name="<%=preferences.name%>.receiveScores" <% if (preferences.receiveScores) { %> checked <% } %>>
                 <label class="form-check-label" for="<%=preferences.name%>_scores_checkbox">Receive scores file each turn?</label>
             </div>
         
             <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="<%=preferences.name%>_backups_checkbox" name="<%=preferences.name%>.receiveScores" <% if (preferences.receiveScores) { %> checked <% } %>>
+                <input type="checkbox" class="form-check-input" id="<%=preferences.name%>_backups_checkbox" name="<%=preferences.name%>.receiveBackups" <% if (preferences.receiveBackups) { %> checked <% } %>>
                 <label class="form-check-label" for="<%=preferences.name%>_backups_checkbox">Receive turn backup each turn?</label>
             </div>
         

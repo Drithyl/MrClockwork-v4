@@ -179,10 +179,10 @@ function _getGameData(playerId, gameName)
 
 function _getGamePreferences(playerId, gameName)
 {
-    const gameData = _getGameData(playerId, gameName);
+    const playerFile = _getPlayerFile(playerId);
 
-    if (gameData == null)
+    if (playerFile == null)
         return null;
         
-    return gameData.getDominionsPreferences();
+    return playerFile.getGamePreferences(gameName);
 }

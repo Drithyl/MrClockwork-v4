@@ -11,21 +11,23 @@ module.exports = PlayerFile;
 function PlayerFile(playerId)
 {
     const _playerId = playerId;
-    const _arrayOfGameData = [];
-    var _globalPreferences = new DominionsPreferences(playerId, "global");
+    const _gameDataByGameName = {};
+    const _preferencesByGameName = {
+        global: new DominionsPreferences(playerId, "global") 
+    };
 
     this.getId = () => _playerId;
 
-    this.getGlobalPreferences = () => _globalPreferences;
+    this.getGlobalPreferences = () => _preferencesByGameName.global;
     this.setGlobalPreferences = (dominionsPreferences) =>
     {
         assert.isInstanceOfPrototypeOrThrow(dominionsPreferences, DominionsPreferences);
-        _globalPreferences = dominionsPreferences;
+        _preferencesByGameName.global = dominionsPreferences;
     };
 
-    this.hasGameData = (gameName) => _arrayOfGameData.find((gameData) => gameData.getGameName() === gameName) != null;
-    this.getGameData = (gameName) => _arrayOfGameData.find((gameData) => gameData.getGameName() === gameName);
-    this.getAllGameData = () => [..._arrayOfGameData];
+    this.hasGameData = (gameName) => _gameDataByGameName[gameName] != null;
+    this.getGameData = (gameName) => _gameDataByGameName[gameName];
+    this.getAllGameData = () => _gameDataByGameName;
 
     this.addNewGameData = (gameName) =>
     {
@@ -33,72 +35,19 @@ function PlayerFile(playerId)
         return _addGameData(newGameData);
     };
 
-    this.removeGameData = (gameName) =>
+    this.removeGameData = (gameName) => delete _gameDataByGameName[gameName];
+
+    this.hasGamePreferences = (gameName) => _preferencesByGameName[gameName] != null;
+    this.getGamePreferences = (gameName) => _preferencesByGameName[gameName];
+    this.getAllGamePreferences = () => _preferencesByGameName;
+
+    this.setGamePreferences = (gameName, gamePreferences) =>
     {
-        _arrayOfGameData.forEach((gameData, index) =>
-        {
-            if (gameData.getGameName() === gameName)
-                _arrayOfGameData.splice(index, 1);
-        });
+        assert.isInstanceOfPrototypeOrThrow(gamePreferences, DominionsPreferences);
+        _preferencesByGameName[gameName] = gamePreferences;
     };
 
-
-    this.isReceivingScoresInGame = (gameName) =>
-    {
-        const gameData = this.getGameData(gameName);
-        return gameData.isReceivingScoresInGame();
-    };
-
-    this.setReceivesScoresInGame = (gameName, boolean) =>
-    {
-        const gameData = this.getGameData(gameName);
-        return gameData.setReceiveScores(boolean);
-    };
-
-
-    this.isReceivingBackupsInGame = (gameName) =>
-    {
-        const gameData = this.getGameData(gameName);
-        return gameData.isReceivingBackupsInGame();
-    };
-
-    this.setReceivesBackupsInGame = (gameName, boolean) =>
-    {
-        const gameData = this.getGameData(gameName);
-        return gameData.setReceiveBackups(boolean);
-    };
-
-
-    this.isReceivingRemindersWhenTurnIsDoneInGame = (gameName) =>
-    {
-        const gameData = this.getGameData(gameName);
-        return gameData.isReceivingRemindersWhenTurnIsDoneInGame();
-    };
-
-    this.setReceivesRemindersWhenTurnInGame = (gameName, boolean) =>
-    {
-        const gameData = this.getGameData(gameName);
-        return gameData.setReceiveRemindersWhenTurnIsDone(boolean);
-    };
-
-
-    this.doesHaveReminderAtHourMarkInGame = (gameName, hourMark) =>
-    {
-        const gameData = this.getGameData(gameName);
-        return gameData.hasReminderAtHourMarkInGame(hourMark);
-    };
-
-    this.addReminderAtHourMarkInGame = (gameName, hourMark) =>
-    {
-        const gameData = this.getGameData(gameName);
-        return gameData.addReminderAtHourMark(hourMark);
-    };
-
-    this.removeReminderAtHourMarkInGame = (gameName, hourMark) =>
-    {
-        const gameData = this.getGameData(gameName);
-        return gameData.removeReminderAtHourMark(hourMark);
-    };
+    this.removeGamePreferences = (gameName) => delete _preferencesByGameName[gameName];
 
 
     this.isControllingNationInGame = (nationFilename, gameName) =>
@@ -114,6 +63,9 @@ function PlayerFile(playerId)
     {
         if (this.hasGameData(gameName) === false)
             this.addNewGameData(gameName);
+
+        if (this.hasGamePreferences(gameName) === false)
+            this.setGamePreferences(gameName, new DominionsPreferences(_playerId));
 
         const gameData = this.getGameData(gameName);
         gameData.addControlledNation(nationFilename);
@@ -149,13 +101,16 @@ function PlayerFile(playerId)
 
     this.toJSON = () =>
     {
-        const arrayOfGameDataToJSON = [];
-        _arrayOfGameData.forEach((gameData) => arrayOfGameDataToJSON.push(gameData.toJSON()));
+        const gameDataObjectToJSON = {};
+        const preferencesObjectToJSON = {};
+        
+        _gameDataByGameName.forEachItem((gameData, gameName) => gameDataObjectToJSON[gameName] = gameData.toJSON());
+        _preferencesByGameName.forEachItem((preferences, gameName) => preferencesObjectToJSON[gameName] = preferences.toJSON());
 
         return {
             playerId: _playerId,
-            arrayOfGameData: arrayOfGameDataToJSON,
-            globalPreferences: _globalPreferences.toJSON()
+            gameDataByGameName: gameDataObjectToJSON,
+            preferencesByGameName: preferencesObjectToJSON
         };
     };
 
@@ -169,35 +124,27 @@ function PlayerFile(playerId)
 
     function _addGameData(gameDataToAdd)
     {
-        var alreadyExisted = false;
+        assert.isInstanceOfPrototypeOrThrow(gameDataToAdd, PlayerGameData);
         
-        _arrayOfGameData.forEach((gameData, index) =>
-        {
-            if (gameData.getGameName() === gameDataToAdd.getGameName())
-            {
-                _arrayOfGameData.splice(index, 1, gameDataToAdd);
-                alreadyExisted = true;
-            }
-        });
-
-        if (alreadyExisted === false)
-            _arrayOfGameData.push(gameDataToAdd);
-
-        return gameDataToAdd;
+        const gameName = gameDataToAdd.getGameName();
+        _gameDataByGameName[gameName] = gameDataToAdd;
     }
 }
 
 PlayerFile.loadFromJSON = (jsonData) =>
 {
-    const globalPreferences = DominionsPreferences.loadFromJSON(jsonData.globalPreferences);
     const playerFile = new PlayerFile(jsonData.playerId);
 
-    playerFile.setGlobalPreferences(globalPreferences);
-
-    jsonData.arrayOfGameData.forEach((jsonGameData) => 
+    jsonData.gameDataByGameName.forEachItem((jsonGameData) => 
     {
         const loadedGameData = PlayerGameData.loadFromJSON(jsonGameData);
         playerFile.loadGameData(loadedGameData);
+    });
+
+    jsonData.preferencesByGameName.forEachItem((jsonPreferences, gameName) => 
+    {
+        const loadedPreferences = DominionsPreferences.loadFromJSON(jsonPreferences);
+        playerFile.setGamePreferences(gameName, loadedPreferences);
     });
 
     return playerFile;
