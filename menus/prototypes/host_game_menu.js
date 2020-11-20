@@ -7,7 +7,7 @@ module.exports = HostMenu;
 
 function HostMenu(gameObject, useDefaults = false)
 {
-  const _screens = _loadSettingsCreensInOrder(gameObject, useDefaults);
+  const _screens = _loadSettingsScreensInOrder(gameObject, useDefaults);
   const _guildMemberWrapper = gameObject.getOrganizerMemberWrapper();
   const _guildMemberId = _guildMemberWrapper.getId();
 
@@ -34,7 +34,7 @@ function HostMenu(gameObject, useDefaults = false)
   return _menuStructure;
 }
 
-function _loadSettingsCreensInOrder(gameObject, useDefaults = false)
+function _loadSettingsScreensInOrder(gameObject, useDefaults = false)
 {
   var menuScreens = [];
   var settingsObject = gameObject.getSettingsObject();
