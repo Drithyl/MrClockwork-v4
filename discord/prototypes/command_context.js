@@ -100,6 +100,7 @@ function CommandContext(messageWrapper)
     this.getDestinationChannel = () => _targetChannelObject;
 
     this.respondToCommand = (...args) => _messageWrapper.respond(...args);
+    this.respondToSender = (...args) => _messageWrapper.respondToSender(...args);
 
     this.replaceRoleWith = (idOfRoleToBeReplaced, idOfRoleToTakeItsPlace) =>
     {

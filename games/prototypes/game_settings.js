@@ -50,6 +50,19 @@ function GameSettings(parentGame)
         });
     };
 
+    this.getSettingByKey = (keyToMatch) =>
+    {
+        var setting;
+
+        this.forEachSettingObject((settingObject, settingKey) =>
+        {
+            if (keyToMatch.toLowerCase() === settingKey.toLowerCase())
+                setting = settingObject;
+        });
+
+        return setting;
+    };
+
     this.getSettingFlags = () =>
     {
         var server = _parentGame.getServer();

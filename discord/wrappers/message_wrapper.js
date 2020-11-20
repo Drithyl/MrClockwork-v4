@@ -42,6 +42,7 @@ function MessageWrapper(discordJsMessageObject)
   this.startsWithCommandPrefix = () => _startsWithCommandPrefix(this.getMessageContent());
 
   this.respond = (response, ...args) => messenger.send(this.getDestinationChannel(), response, ...args);
+  this.respondToSender = (response, ...args) => messenger.send(_discordJsMessageObject.author, response, ...args);
   this.pin = () => 
   {
     return _discordJsMessageObject.pin();

@@ -70,6 +70,7 @@ function Game()
         .then((role) => _discordJsRole = role);
     };
 
+    this.getOrganizer = () => _organizerWrapper;
     this.getOrganizerId = () => (_organizerWrapper == null) ? null : _organizerWrapper.getId();
     this.setOrganizer = (organizerWrapper) =>
     {

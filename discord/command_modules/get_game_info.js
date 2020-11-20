@@ -24,8 +24,17 @@ function GetGameInfoCommand()
 function _behaviour(commandContext)
 {
     const targetedGame = commandContext.getGameTargetedByCommand();
+    const settingsObject = targetedGame.getSettingsObject();
+    const organizerWrapper = targetedGame.getOrganizer();
 
-    return targetedGame.killProcess()
-    .then(() => commandContext.respondToCommand(`The process has been killed.`))
-    .catch((err) => commandContext.respondToCommand(`An error occurred; process could not be killed:\n\n${err.message}`));
+    var info = `Ip: ${targetedGame.getIp()}:${targetedGame.getPort()}\nOrganizer:`;
+
+    if (organizerWrapper == null)
+        info += "No organizer set";
+
+    else info += "\n" + organizerWrapper.getUsername();
+
+    info += settingsObject.getPublicSettingsStringList();
+
+    return commandContext.respondToSender(info.toBox());
 }

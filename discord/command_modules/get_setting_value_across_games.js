@@ -16,7 +16,7 @@ function GetSettingValueAcrossGamesCommand()
     getSettingValueAcrossGamesCommand.addBehaviour(_behaviour);
 
     getSettingValueAcrossGamesCommand.addRequirements(
-        commandPermissions.assertMemberIsTrusted
+        commandPermissions.assertMemberIsDev
     );
 
     return getSettingValueAcrossGamesCommand;
@@ -24,11 +24,12 @@ function GetSettingValueAcrossGamesCommand()
 
 function _behaviour(commandContext)
 {
-    var orderedvalueNamePairs;
-    var arrayOfCommandArguments = commandContext.getCommandArgumentsArray();
-    var settingKeyArgument = arrayOfCommandArguments[0];
-    var introductionString = `Below is the list of values for the setting ${settingKeyArgument}:\n\n`;
     var listString = "";
+    var orderedvalueNamePairs;
+
+    const arrayOfCommandArguments = commandContext.getCommandArgumentsArray();
+    const settingKeyArgument = arrayOfCommandArguments[0].toLowerCase();
+    const introductionString = `Below is the list of values for the setting ${settingKeyArgument}:\n\n`;
 
     if (dom5SettingsData[settingKeyArgument] == null)
         return commandContext.respondToCommand(`Invalid setting key.`);
@@ -47,10 +48,13 @@ function getOrderedValueNamePairsArray(settingKey)
 {
     var array = [];
 
-    ongoingGamesStore.forEachGame((gameObject, nameKey) =>
+    ongoingGamesStore.forEachGame((gameObject, gameName) =>
     {
-        var settingObject = gameObject.getSettingByKey(settingKeyArgument);
-        array.push([settingObject.getValue(), gameObject.getName()]);
+        const settingsObject = gameObject.getSettingsObject();
+        const setting = settingsObject.getSettingByKey(settingKey);
+
+        if (setting != null)
+            array.push([setting.getValue(), gameName]);
     });
 
     array.sort((obj1, obj2) => obj1[0] < obj2[0]);

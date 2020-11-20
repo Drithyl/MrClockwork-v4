@@ -85,6 +85,7 @@ function Dominions5Game()
         return _playerFiles.forEachPromise((playerFile, playerId, nextPromise) =>
         {
             playerFile.removeGameData(_gameObject.getName());
+            playerFile.removeGamePreferences(_gameObject.getName());
 
             return playerFile.save()
             .then(() => nextPromise());
