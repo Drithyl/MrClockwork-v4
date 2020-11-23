@@ -176,6 +176,21 @@ function GuildWrapper(discordJsGuildObject)
         return botGuildMemberJsObject.permissions.has(permissionFlag);
     };
 
+    this.replaceRoleWith = (idOfRoleToBeReplaced, idOfRoleToTakeItsPlace) =>
+    {
+        const oldRole = this.getRoleById(idOfRoleToBeReplaced);
+        const newRole = this.getRoleById(idOfRoleToTakeItsPlace);
+
+        if (oldRole == null)
+            return Promise.reject(new Error(`Cannot find old role.`));
+
+        if (newRole == null)
+            return Promise.reject(new Error(`Cannot find new role.`));
+
+        
+        return guildDataStore.replaceRoleWithNew(this.getId(), idOfRoleToBeReplaced, idOfRoleToTakeItsPlace);
+    };
+
     function _clearChannel(channel)
     {
         //deletes the last 100 messages in the channel. This is the max

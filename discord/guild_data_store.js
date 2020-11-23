@@ -126,6 +126,33 @@ module.exports.setTrustedRoleId = (guildId, id) => _setId(guildId, trustedRoleId
 module.exports.getTrustedRolePermissionOverwrites = () => permissionOverwritesConfig[trustedRoleIdKey];
 
 
+module.exports.replaceRoleWithNew = (guildId, oldRoleId, newRoleId) =>
+{
+    var wasChanged = false;
+    const guildData = loadedGuildData[guildId];
+
+    assert.isValidDiscordIdOrThrow(newRoleId);
+
+    if (guildData == null)
+        return Promise.reject(new Error(`Incorrect guild id provided.`));
+
+    for (var key in guildData)
+    {
+        const discordId = guildData[key];
+
+        if (discordId === oldRoleId)
+        {
+            guildData[key] = newRoleId;
+            wasChanged = true;
+        }
+    }
+
+    if (wasChanged === true)
+        return _saveGuildData(guildId);
+
+    else return Promise.resolve();
+};
+
 
 function _getId(guildId, idKey)
 {
@@ -155,7 +182,7 @@ function _saveGuildData(guildId)
     return Promise.resolve()
     .then(() =>
     {
-        if (fs.existsSync(`${cpathToGuildData}/${guildId}`) === false)
+        if (fs.existsSync(`${pathToGuildData}/${guildId}`) === false)
         {
             console.log(`Directory for guild data does not exist, creating it.`);
             return fsp.mkdir(`${pathToGuildData}/${guildId}`);
