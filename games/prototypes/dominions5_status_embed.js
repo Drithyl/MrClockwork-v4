@@ -32,7 +32,7 @@ Dominions5StatusEmbed.sendNew = (game) =>
     embedBuild.addField(TIMER_HEADER, "N/A", true);
     embedBuild.addField(UNDONE_TURNS_HEADER, "N/A");
 
-    return messenger.send(channel, `${gameName}'s status:`, { embed: embedBuild.toEmbedStruct() })
+    return messenger.send(channel, `${gameName}'s status:`, { embed: embedBuild.toEmbedStruct(), pin: true })
     .then((messageWrapper) => 
     {
         const embedWrapper = messageWrapper.getEmbedWrapper(0);
