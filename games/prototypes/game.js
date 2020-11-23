@@ -113,7 +113,7 @@ function Game()
         _settingsObject = settingsObject;
     };
 
-    this.sendMessageToDiscordChannel = (text) => messenger.send(_discordJsChannel, text);
+    this.sendMessageToChannel = (text) => messenger.send(_discordJsChannel, text);
     this.sendGameAnnouncement = (text) => messenger.send(_discordJsChannel, `${_discordJsRole} ${text}`);
 
     this.pinSettingsToChannel = () =>

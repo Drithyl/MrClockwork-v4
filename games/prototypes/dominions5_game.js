@@ -4,6 +4,7 @@ const config = require("../../config/config.json");
 const Dominions5Settings = require("./dominions5_settings.js");
 const dominions5TcpQuery = require("./dominions5_tcp_query.js");
 const playerFileStore = require("../../player_data/player_file_store.js");
+const Dominions5StatusEmbed = require("./dominions5_status_embed.js");
 
 module.exports = Dominions5Game;
 
@@ -12,6 +13,7 @@ function Dominions5Game()
     const _gameObject = new Game();
     const _playerFiles = {};
 
+    var _statusEmbed;
     var _lastKnownStatus;
     var _lastKnownTurnNumber;
     var _lastKnownMsToNewTurn;
@@ -109,11 +111,7 @@ function Dominions5Game()
         });
     };
 
-    /** */
-    _gameObject.launch = () =>
-    {
-        return _gameObject.emitPromiseWithGameDataToServer("LAUNCH_GAME");
-    };
+    _gameObject.launch = () => _gameObject.emitPromiseWithGameDataToServer("LAUNCH_GAME");
 
     _gameObject.fetchStatusDump = () => _gameObject.emitPromiseWithGameDataToServer("GET_STATUS_DUMP");
 
@@ -123,29 +121,55 @@ function Dominions5Game()
         .then((tcpQuery) => Promise.resolve(tcpQuery.isInLobby() === false));
     };
 
-    _gameObject.update = () => 
+    _gameObject.getLastKnownData = () => 
+    {
+        return {
+            lastKnownStatus: _lastKnownStatus,
+            lastKnownMsLeft: _lastKnownMsToNewTurn,
+            lastKnownTurnNumber: _lastKnownTurnNumber
+        };
+    };
+
+    _gameObject.update = (tcpQuery) => 
     {
         const lastKnownStatus = _lastKnownStatus;
         const lastKnownTurnNumber = _lastKnownTurnNumber;
         const lastKnownMsLeft = _lastKnownMsToNewTurn;
 
-        return dominions5TcpQuery(_gameObject)
-        .then((tcpQuery) =>
-        {
-            _lastKnownMsToNewTurn = tcpQuery.msLeft;
-            _lastKnownTurnNumber = tcpQuery.turnNumber;
-            _lastKnownStatus = tcpQuery.status;
+        _lastKnownMsToNewTurn = tcpQuery.msLeft;
+        _lastKnownTurnNumber = tcpQuery.turnNumber;
+        _lastKnownStatus = tcpQuery.status;
 
-            return Promise.resolve({
-                tcpQuery,
-                lastKnownStatus,
-                lastKnownTurnNumber,
-                lastKnownMsLeft,
-                currentStatus: tcpQuery.status,
-                currentTurnNumber: tcpQuery.turnNumber,
-                currentMsLeft: tcpQuery.msLeft
-            });
+        return {
+            tcpQuery,
+            lastKnownStatus,
+            lastKnownTurnNumber,
+            lastKnownMsLeft,
+            currentStatus: tcpQuery.status,
+            currentTurnNumber: tcpQuery.turnNumber,
+            currentMsLeft: tcpQuery.msLeft
+        };
+    };
+
+    _gameObject.sendStatusEmbed = () => 
+    {
+        return Dominions5StatusEmbed.sendNew(_gameObject)
+        .then((statusEmbed) =>
+        {
+            _statusEmbed = statusEmbed;
+            return Promise.resolve();
         });
+    };
+
+    _gameObject.updateStatusEmbed = (tcpQuery) => 
+    {
+        if (_statusEmbed != null)
+            _statusEmbed.update(tcpQuery)
+            .catch((err) => console.log(`Could not update status embed: ${err.message}`));
+
+        else if (_gameObject.getChannel() != null)
+            _gameObject.sendStatusEmbed()
+            .catch((err) => console.log(`Could not send status embed: ${err.message}\n`, err.stack));
     };
 
     _gameObject.emitPromiseWithGameDataToServer = (message, additionalDataObjectToSend) =>
@@ -177,6 +201,14 @@ function Dominions5Game()
             });
         }
 
+        if (jsonData.statusEmbedId != null && _gameObject.getChannel() != null)
+        {
+            Dominions5StatusEmbed.loadExisting(_gameObject.getChannel(), jsonData.statusEmbedId)
+            .then((statusEmbed) => Promise.resolve(_statusEmbed = statusEmbed))
+            .catch((err) => console.log(`Could not load ${_gameObject.getName()}'s status embed: ${err.message}`));
+        }
+
+
         return _gameObject;
     };
 
@@ -184,6 +216,7 @@ function Dominions5Game()
     {
         const jsonData = _gameObject.toJSONSuper();
 
+        jsonData.statusEmbedId = _statusEmbed.getMessageId();
         jsonData.lastKnownStatus = _lastKnownStatus;
         jsonData.lastKnownTurnNumber = _lastKnownTurnNumber;
         jsonData.lastKnownMsToNewTurn = _lastKnownMsToNewTurn;

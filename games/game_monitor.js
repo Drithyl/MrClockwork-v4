@@ -1,7 +1,12 @@
 
+const dominions5TcpQuery = require("./prototypes/dominions5_tcp_query.js");
+
 const UPDATE_INTERVAL = 10000;
 const IN_LOBBY = "Game is being setup";
 const STARTED = "Game is active";
+const SERVER_OFFLINE = "Host server offline";
+const GAME_OFFLINE = "Game offline";
+
 var monitoredGames = {};
 
 exports.monitorDom5Game = (game) =>
@@ -40,23 +45,25 @@ function _updateDom5Game(game)
 
 function _updateCycle(game)
 {
+    var updateData;
+
     const gameName = game.getName();
 
     console.log(`${gameName}\tupdating...`);
 
-    if (game.isServerOnline() === false)
-        return Promise.reject(new Error(`${gameName}\tserver offline; cannot update.`));
-
-    return game.isOnlineCheck()
-    .then((isOnline) =>
+    return dominions5TcpQuery(game)
+    .then((tcpQuery) =>
     {
-        if (isOnline === false)
+        game.updateStatusEmbed(tcpQuery);
+
+        if (tcpQuery.isServerOnline() === false)
+            return Promise.reject(new Error(`${gameName}\tserver offline; cannot update.`));
+
+        if (tcpQuery.isOnline() === false)
             return Promise.reject(new Error(`${gameName}\toffline; cannot update.`));
 
-        return game.update(game);
-    })
-    .then((updateData) => 
-    {
+        updateData = game.update(tcpQuery);
+
         console.log(`${gameName}\treceived updated data:\n
         \tcurrentStatus:\t\t${updateData.currentStatus}
         \tcurrentMsLeft:\t\t${updateData.currentMsLeft}
@@ -80,7 +87,13 @@ function _announceStatusChanges(game, updateData)
     const lastKnownStatus = updateData.lastKnownStatus;
     const lastKnownTurnNumber = updateData.lastKnownTurnNumber;
 
-    if (_didGameStart(currentStatus, lastKnownStatus) === true)
+    if (_didServerGoOffline(currentStatus, lastKnownStatus) === true)
+        return game.sendMessageToChannel(`Host server is offline. It will be back online shortly.`);
+
+    else if (_didGameGoOffline(currentStatus, lastKnownStatus) === true)
+        return game.sendMessageToChannel(`Game process is offline. Use the launch command to relaunch it.`);
+
+    else if (_didGameStart(currentStatus, lastKnownStatus) === true)
     {
         console.log(`${gameName}\tstarted.`);
         return game.sendGameAnnouncement(`The game has started!`);
@@ -104,7 +117,23 @@ function _announceStatusChanges(game, updateData)
         return game.sendGameAnnouncement(`The game has been rollbacked to turn ${currentTurnNumber}.`);
     }
 
+    else if (_isServerBackOnline(currentStatus, lastKnownStatus) === true)
+        return game.sendMessageToChannel(`Host server is online again. If the game does not go online shortly, you can relaunch it.`);
+
+    else if (_isGameBackOnline(currentStatus, lastKnownStatus) === true)
+        return game.sendMessageToChannel(`Game process is back online.`);
+
     else return Promise.resolve();
+}
+
+function _didServerGoOffline(currentStatus, lastKnownStatus)
+{
+    return currentStatus === SERVER_OFFLINE && lastKnownStatus !== SERVER_OFFLINE;
+}
+
+function _didGameGoOffline(currentStatus, lastKnownStatus)
+{
+    return currentStatus === GAME_OFFLINE && lastKnownStatus !== GAME_OFFLINE;
 }
 
 function _didGameStart(currentStatus, lastKnownStatus)
@@ -125,4 +154,14 @@ function _isNewTurn(currentTurnNumber, lastKnownTurnNumber)
 function _isRollbackTurn(currentTurnNumber, lastKnownTurnNumber)
 {
     return currentTurnNumber < lastKnownTurnNumber;
+}
+
+function _isServerBackOnline(currentStatus, lastKnownStatus)
+{
+    return currentStatus !== SERVER_OFFLINE && lastKnownStatus === SERVER_OFFLINE;
+}
+
+function _isGameBackOnline(currentStatus, lastKnownStatus)
+{
+    return currentStatus !== GAME_OFFLINE && lastKnownStatus === GAME_OFFLINE;
 }

@@ -36,28 +36,32 @@ module.exports.send = function(receiver, text, options = {})
 //Same as send, but will also log the error
 module.exports.sendError = function(receiver, errorText)
 {
-  rw.log("error", errorText);
-  return module.exports.send(receiver, errorText);
+    rw.log("error", errorText);
+    return module.exports.send(receiver, errorText);
 };
 
 function _createMessageOptionsObject(options)
 {
-  var optionsObject = {};
-  var wrapper = _formatWrapper(options.prepend, options.append);
-  var attachment = _formatAttachment(options.files);
+    var optionsObject = {};
+    var embed = _formatEmbed(options.embed);
+    var wrapper = _formatWrapper(options.prepend, options.append);
+    var attachment = _formatAttachment(options.files);
 
-  if (wrapper != null)
-    Object.assign(optionsObject, wrapper);
+    if (embed != null)
+        Object.assign(optionsObject, embed);
 
-  //The pin() function will *not* be available in the returned discordjs message object
-  //after using the send() function if the split option was used; it can't pin multiple messages
-  else if (options.pin === true)
-    optionsObject.pin = true;
+    if (wrapper != null && embed == null)
+        Object.assign(optionsObject, wrapper);
 
-  if (attachment != null)
-    Object.assign(optionsObject, attachment);
+    //The pin() function will *not* be available in the returned discordjs message object
+    //after using the send() function if the split option was used; it can't pin multiple messages
+    else if (options.pin === true)
+        optionsObject.pin = true;
 
-  return optionsObject;
+    if (attachment != null)
+        Object.assign(optionsObject, attachment);
+
+    return optionsObject;
 }
 
 function _analyzeFiles(files)
@@ -101,39 +105,47 @@ function _sendMessageAndAttachmentsSeparately(receiver, text, options)
     })
 }
 
+function _formatEmbed(embedStruct)
+{
+    if (embedStruct == null)
+        return null;
+
+    return { embed: embedStruct }
+}
+
 function _formatWrapper(prepend, append)
 {
-  var wrapperObject = { split: { prepend: "", append: "" } };
+    var wrapperObject = { split: { prepend: "", append: "" } };
 
-  if (prepend == null && append == null)
-    return null;
+    if (prepend == null && append == null)
+        return null;
 
-  if (assert.isString(prepend) === true)
-    wrapperObject.split.prepend = prepend;
+    if (assert.isString(prepend) === true)
+        wrapperObject.split.prepend = prepend;
 
-  if (assert.isString(append) === true)
-    wrapperObject.split.append = append;
+    if (assert.isString(append) === true)
+        wrapperObject.split.append = append;
 
-  return wrapperObject;
+    return wrapperObject;
 }
 
 function _formatAttachment(files)
 {
-  let attachment = null;
+    let attachment = null;
 
-  if (Array.isArray(files) === false && files != null)
-  {
-    attachment = {
-        files: [{
-            attachment: files.attachment, name: files.filename
-        }]
-    };
-  }
+    if (Array.isArray(files) === false && files != null)
+    {
+        attachment = {
+            files: [{
+                attachment: files.attachment, name: files.filename
+            }]
+        };
+    }
 
-  /** Files must be an array of objects that include the format 
-   * {attachment: Buffer, name: string} */
-  else if (files != null)
-    attachment = { files };
+    /** Files must be an array of objects that include the format 
+     * {attachment: Buffer, name: string} */
+    else if (files != null)
+        attachment = { files };
 
-  return attachment;
+    return attachment;
 }

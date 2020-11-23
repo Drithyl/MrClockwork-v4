@@ -27,9 +27,12 @@ function queryGame(gameObject)
 
         _process.onStdoutData((tcpQueryResponse) => 
         {
-            return verifyTcpQueryResponse(tcpQueryResponse)
-            .then((response) => resolve(new Dominions5TcpQuery(response)))
-            .catch((error) => reject(error));
+            const query = new Dominions5TcpQuery(tcpQueryResponse);
+
+            if (gameObject.isServerOnline() === false)
+                query.status = "Host server offline";
+
+            resolve(query);
         });
     });
 }
@@ -45,25 +48,18 @@ function Dominions5TcpQuery(tcpQueryResponse)
     this.players = parsePlayers(tcpQueryResponse);
 
     this.isInLobby = () => this.status === "Game is being setup";
+    this.isOngoing = () => this.status === "Game is active";
+
+    this.isOnline = () => this.isInLobby() || this.isOngoing();
+    this.isServerOnline = () => this.status !== "Host server offline";
+
     this.getTimeLeft = () =>
     {
-        if (this.isInLobby() === true)
+        if (this.isOngoing() === false)
             return null;
 
         return new TimeLeft(this.msLeft)
     };
-}
-
-function verifyTcpQueryResponse(tcpQueryResponse)
-{
-    //response is not guaranteed to be valid; a wrong ip produce a response
-    //with an error rather than the expected tcpquery data
-    if (tcpQueryResponse.toLowerCase().includes("status:") === false)
-    {
-        return Promise.reject(new Error(tcpQueryResponse));
-    }
-
-    return Promise.resolve(tcpQueryResponse);
 }
 
 function parseGameName(tcpQueryResponse)
@@ -77,6 +73,10 @@ function parseStatus(tcpQueryResponse)
 {
     let statusLine = tcpQueryResponse.match(/Status:.+/i);
     let status = (statusLine != null) ? statusLine[0].replace(/Status:\s+/i, "").trim() : "Could not find status";
+
+    if (tcpQueryResponse.includes("Connection failed") === true)
+        return "Game offline";
+
     return status;
 }
 
@@ -98,8 +98,29 @@ function parsePlayers(tcpQueryResponse)
 {
     let playersLines = tcpQueryResponse.match(/player\s*\d+:.+/ig);
     let players = (playersLines != null) ? playersLines.map((line) => line.replace(/player\s*\w+:/i, "").trim()) : undefined;
+
+    if (Array.isArray(players) === true)
+    {
+        players = players.map((playerString) => 
+        {
+            const name = playerString.replace(/^(.+)\s\(.+$/ig, "$1");
+            const turnStatus = playerString.replace(/^.+\s\((.+)\)$/ig, "$1");
+            var isTurnDone = false;
+            var isAi = false;
+
+            if (turnStatus === "AI controlled" || turnStatus === "played")
+                isTurnDone = true;
+                
+            if (turnStatus === "AI controlled")
+                isAi = true;
+
+            return { name, isTurnDone, isAi };
+        });
+    }
+
     return players;
 }
+
 
 /** NO OUTPUT WHILE START IS GENERATING; GAME BLOCKS THE TCPQUERY OPERATION */
 

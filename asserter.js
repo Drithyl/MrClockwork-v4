@@ -240,7 +240,7 @@ function isStringInArrayOrThrow(str, array)
 function isInstanceOfPrototypeOrThrow(instance, prototypeDef)
 {
   if (isInstanceOfPrototype(instance, prototypeDef) === false)
-    throw new InstanceOfError(`Expected instance of ${prototypeDef.name}, got: <${inst}>`);
+    throw new InstanceOfError(`Expected instance of ${prototypeDef.name}, got: <${instance}>`);
 }
 
 function isSemanticErrorOrThrow(error)
