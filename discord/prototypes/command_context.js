@@ -90,6 +90,7 @@ function CommandContext(messageWrapper)
 
     this.getCommandString = () => _commandString;
     this.getCommandArgumentsArray = () => [..._commandArgumentsArray];
+    this.getMentionedMembers = () => _messageWrapper.getMentionedMembers();
     this.getMessageContent = () => _messageWrapper.getMessageContent().slice(1);
     
     this.getCommandSenderId = () => _messageWrapper.getSenderId();

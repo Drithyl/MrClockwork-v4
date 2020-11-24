@@ -24,6 +24,20 @@ function MessageWrapper(discordJsMessageObject)
     this.getDestinationChannel = () => _discordJsMessageObject.channel;
     this.getDestinationChannelType = () => _discordJsMessageObject.channel.type;
     this.getMessageContent = () => _discordJsMessageObject.content;
+    this.getMentionedMembers = () => 
+    {
+        const guildMemberWrappers = [];
+        const guild = this.getGuildWrapper();
+
+        _discordJsMessageObject.mentions.members.each((guildMember) =>
+        {
+            const guildMemberWrapper = guild.getGuildMemberWrapperById(guildMember.id);
+            guildMemberWrappers.push(guildMemberWrapper)
+        });
+
+        return guildMemberWrappers;
+    }
+
     this.getEmbedWrapper = (index = 0) => 
     {
         if (_discordJsMessageObject.embeds.length < index)
