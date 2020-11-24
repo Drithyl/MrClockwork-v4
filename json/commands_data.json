@@ -442,6 +442,19 @@
         "helpText": "Rollbacks the game to the previous turn. This cannot be undone. Only a couple rollbacks are available at a time, depending on the server's size."
     },
 
+    "SET_ORGANIZER":
+    {
+        "name": "setorganizer",
+        "isEnabled": true,
+        "gameTypesSupported": ["dom5"],
+        "argumentsRequiredInfo": ["A mention to the new organizer (@Username#0000)"],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "SETORGANIZER",
+        "argumentRegexpArray": ["\\d+", "@\\.+"],
+        "channelRequiredToInvoke": "game",
+        "helpText": "Sets a member as the organizer of this game. If an organizer exists; replaces them."
+    },
+
     "START_GAME":
     {
         "name": "start",
