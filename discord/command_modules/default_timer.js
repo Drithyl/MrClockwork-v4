@@ -3,7 +3,6 @@ const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const TimeLeft = require("../../games/prototypes/time_left.js");
 const commandPermissions = require("../command_permissions.js");
-const dom5TcpQuery = require("../../games/prototypes/dominions5_tcp_query.js");
 
 const commandData = new CommandData("DEFAULT_TIMER");
 
@@ -47,8 +46,9 @@ function _sendDefaultTimer(gameObject, commandContext)
 function _changeDefaultTimer(gameObject, commandContext, commandArguments)
 {
     const timerChangeArg = commandArguments[0];
+    const { lastKnownTurnNumber } = gameObject.getLastKnownData();
 
-    if (tcpQuery.isInLobby() === true)
+    if (lastKnownTurnNumber <= 0)
         return commandContext.respondToCommand(`Game is being setup in lobby.`);
 
     if (_isTimerAddition(timerChangeArg) === true)
@@ -71,7 +71,8 @@ function _addToDefaultTimer(timerChangeArg, gameObject)
     const addedTimeLeft = TimeLeft.fromStringInput(newTimerStripped);
     const settingsObject = gameObject.getSettingsObject();
     const timerSetting = settingsObject.getTimerSetting();
-    const newMsLeft = currentTimeLeft.getMsLeft() + addedTimeLeft.getMsLeft();
+    const { lastKnownMsLeft } = gameObject.getLastKnownData();
+    const newMsLeft = lastKnownMsLeft + addedTimeLeft.getMsLeft();
 
     return gameObject.emitPromiseWithGameDataToServer("CHANGE_TIMER", { timer: newMsLeft })
     .then(() =>

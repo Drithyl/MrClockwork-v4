@@ -28,21 +28,16 @@ function _behaviour(commandContext)
 {
     const gameObject = commandContext.getGameTargetedByCommand();
     const commandArguments = commandContext.getCommandArgumentsArray();
+    const { lastKnownMsLeft, lastKnownTurnNumber } = gameObject.getLastKnownData();
+    const timeLeft = new TimeLeft(lastKnownMsLeft);
 
-    return gameObject.update()
-    .then((updateData) =>
-    {
-        const tcpQuery = updateData.tcpQuery;
-        const timeLeft = new TimeLeft(updateData.currentMsLeft);
+    if (lastKnownTurnNumber <= 0)
+        return commandContext.respondToCommand(`Game is being setup in lobby.`);
 
-        if (tcpQuery.isInLobby() === true)
-            return commandContext.respondToCommand(`Game is being setup in lobby.`);
-
-        if (commandArguments.length <= 0)
-            return _sendCurrentTimer(commandContext, timeLeft);
-        
-        return _changeCurrentTimer(gameObject, commandContext, commandArguments, timeLeft);
-    });
+    if (commandArguments.length <= 0)
+        return _sendCurrentTimer(commandContext, timeLeft);
+    
+    return _changeCurrentTimer(gameObject, commandContext, commandArguments, timeLeft);
 }
 
 function _sendCurrentTimer(commandContext, timeLeft)

@@ -1,5 +1,6 @@
 
 const Game = require("./game.js");
+const asserter = require("../../asserter.js");
 const config = require("../../config/config.json");
 const Dominions5Settings = require("./dominions5_settings.js");
 const dominions5TcpQuery = require("./dominions5_tcp_query.js");
@@ -15,6 +16,7 @@ function Dominions5Game()
 
     var _statusEmbed;
     var _lastKnownStatus;
+    var _lastTurnTimestamp;
     var _lastKnownTurnNumber;
     var _lastKnownMsToNewTurn;
 
@@ -125,30 +127,27 @@ function Dominions5Game()
     {
         return {
             lastKnownStatus: _lastKnownStatus,
+            lastTurnTimestamp: _lastTurnTimestamp,
             lastKnownMsLeft: _lastKnownMsToNewTurn,
             lastKnownTurnNumber: _lastKnownTurnNumber
         };
     };
 
-    _gameObject.update = (tcpQuery) => 
+    _gameObject.update = (updateData) => 
     {
-        const lastKnownStatus = _lastKnownStatus;
-        const lastKnownTurnNumber = _lastKnownTurnNumber;
-        const lastKnownMsLeft = _lastKnownMsToNewTurn;
+        if (asserter.isInteger(updateData.msLeft) === true)
+            _lastKnownMsToNewTurn = updateData.msLeft;
 
-        _lastKnownMsToNewTurn = tcpQuery.msLeft;
-        _lastKnownTurnNumber = tcpQuery.turnNumber;
-        _lastKnownStatus = tcpQuery.status;
+        if (asserter.isInteger(updateData.lastTurnTimestamp) === true)
+            _lastTurnTimestamp = updateData.lastTurnTimestamp;
 
-        return {
-            tcpQuery,
-            lastKnownStatus,
-            lastKnownTurnNumber,
-            lastKnownMsLeft,
-            currentStatus: tcpQuery.status,
-            currentTurnNumber: tcpQuery.turnNumber,
-            currentMsLeft: tcpQuery.msLeft
-        };
+        if (asserter.isInteger(updateData.turnNumber) === true)
+            _lastKnownTurnNumber = updateData.turnNumber;
+
+        if (asserter.isString(updateData.status) === true)
+            _lastKnownStatus = updateData.status;
+
+        return updateData;
     };
 
     _gameObject.sendStatusEmbed = () => 
@@ -184,10 +183,13 @@ function Dominions5Game()
     {
         _gameObject.loadJSONDataSuper(jsonData);
 
-        if (typeof jsonData.lastKnownStatus === "string")
+        if (asserter.isString(jsonData.lastKnownStatus) === true)
             _lastKnownStatus = jsonData.lastKnownStatus;
 
-        if (isNaN(jsonData.lastKnownTurnNumber) === false)
+        if (asserter.isInteger(jsonData.lastTurnTimestamp) === true)
+            _lastTurnTimestamp = jsonData.lastTurnTimestamp;
+
+        if (asserter.isInteger(jsonData.lastKnownTurnNumber) === true)
             _lastKnownTurnNumber = jsonData.lastKnownTurnNumber;
 
         if (jsonData.lastKnownMsToNewTurn >= 0)
@@ -208,7 +210,6 @@ function Dominions5Game()
             .catch((err) => console.log(`Could not load ${_gameObject.getName()}'s status embed: ${err.message}`));
         }
 
-
         return _gameObject;
     };
 
@@ -218,6 +219,7 @@ function Dominions5Game()
 
         jsonData.statusEmbedId = _statusEmbed.getMessageId();
         jsonData.lastKnownStatus = _lastKnownStatus;
+        jsonData.lastTurnTimestamp = _lastTurnTimestamp;
         jsonData.lastKnownTurnNumber = _lastKnownTurnNumber;
         jsonData.lastKnownMsToNewTurn = _lastKnownMsToNewTurn;
 
