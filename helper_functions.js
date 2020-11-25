@@ -21,7 +21,6 @@ function extendPrototypes()
                     return resolve();
 
                 Promise.resolve(asyncFn(array[index], index++, () => loop()))
-                .then(() => loop())
                 .catch((err) => 
                 {
                     index++;

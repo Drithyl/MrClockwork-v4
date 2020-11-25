@@ -31,7 +31,11 @@ function _behaviour(commandContext)
         
     sortedGuildGamesEmbeds = _embedSortedGuildGames(sortedGames, guild);
     
-    return sortedGuildGamesEmbeds.forEachPromise((embed, i, nextPromise) => embed.sendTo(channel, stringList));
+    return sortedGuildGamesEmbeds.forEachPromise((embed, i, nextPromise) => 
+    {
+        return embed.sendTo(channel, stringList)
+        .then(() => nextPromise());
+    });
 }
 
 function _getGamesSortedByLastHosted()
