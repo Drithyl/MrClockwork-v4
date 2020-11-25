@@ -82,7 +82,6 @@ function _updateCycle(game)
 
 function _getTcpQueryEvents(tcpQuery, lastKnownData)
 {
-    console.log(tcpQuery);
     const currentStatus = tcpQuery.status;
     const currentTurnNumber = tcpQuery.turnNumber;
 
