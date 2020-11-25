@@ -220,6 +220,19 @@
         "helpText": "Prints this game's information and settings."
     },
 
+    "GET_GAMES_BY_LAST_HOSTED":
+    {
+        "name": "getgamesbylasthosted",
+        "isEnabled": true,
+        "gameTypesSupported": [],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "LASTHOSTED",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "any",
+        "helpText": "Prints a list of all hosted games in this Discord guild, or all games if the command is sent by DM, sorted by the last time they had a turn."
+    },
+
     "GET_LIST_OF_HOSTED_GAMES":
     {
         "name": "games",
@@ -447,7 +460,7 @@
         "name": "setorganizer",
         "isEnabled": true,
         "gameTypesSupported": ["dom5"],
-        "argumentsRequiredInfo": ["A mention to the new organizer (@Username#0000)"],
+        "argumentsRequiredInfo": ["`A mention to the new organizer (@Username#0000)`"],
         "optionalArguments": 0,
         "regexpRequiredToInvoke": "SETORGANIZER",
         "argumentRegexpArray": ["\\d+", "@\\.+"],
