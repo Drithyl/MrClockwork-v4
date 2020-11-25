@@ -27,7 +27,7 @@ function _behaviour(commandContext)
     var sortedGuildGamesEmbeds;
 
     if (commandContext.wasSentByDm() === true)
-        return commandContext.respondToCommand(`${stringList}:\n\n${_printAllSortedGames(sortedGames).toBox()}`, );
+        return commandContext.respondToCommand(`${stringList}${_printAllSortedGames(sortedGames).toBox()}`, );
         
     sortedGuildGamesEmbeds = _embedSortedGuildGames(sortedGames, guild);
     
@@ -128,12 +128,12 @@ function _formatLastHostedString(game)
     const guildName = guild.getName();
 
     const lastKnownData = game.getLastKnownData();
-    const lastTurnTimestamp = lastKnownData.lastTurnTimestamp;
+    const lastTurnTimestampDate = new Date(lastKnownData.lastTurnTimestamp).toDateString();
 
     const server = game.getServer();
     const serverName = server.getName();
 
-    return `${gameName.width(32)} ${guildName.width(20)} ${serverName.width(10)} ${ip.width(23)} ${lastTurnTimestamp.toDateString()}\n`;
+    return `${gameName.width(32)} ${guildName.width(20)} ${serverName.width(10)} ${ip.width(23)} ${lastTurnTimestampDate}\n`;
 }
 
 function buildEmbed()
