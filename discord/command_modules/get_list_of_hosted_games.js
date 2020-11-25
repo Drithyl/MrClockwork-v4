@@ -1,7 +1,6 @@
 
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
-const commandPermissions = require("../command_permissions.js");
 const ongoingGamesStore = require("../../games/ongoing_games_store.js");
 
 const commandData = new CommandData("GET_LIST_OF_HOSTED_GAMES");
