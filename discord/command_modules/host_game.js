@@ -40,7 +40,7 @@ function _behaviour(commandContext)
     const selectedServer = hostServerStore.getHostServerByName(selectedServerName);
 
     if (selectedServer == null || selectedServer.isOnline() === false)
-        throw new SemanticError(`You must specify a server name from the ones available below:\n\n${hostServerStore.getListOfOnlineHostServers().toBox()}`);
+        throw new SemanticError(`You must specify a server name from the ones available below:\n\n${hostServerStore.printListOfOnlineHostServers().toBox()}`);
 
     return selectedServer.reserveGameSlot()
     .then((reservedPort) =>

@@ -50,7 +50,7 @@ exports.getAvailableServers = () =>
     return servers;
 };
 
-exports.getListOfOnlineHostServers = () =>
+exports.printListOfOnlineHostServers = () =>
 {
     var str = "";
 
@@ -63,6 +63,9 @@ exports.getListOfOnlineHostServers = () =>
             
         str += `- ${hostServerObject.getName()}\n`;
     }
+
+    if (str === "")
+        return "No servers online";
 
     return str;
 };
