@@ -155,6 +155,19 @@
         "helpText": "Displays a list of submitted pretenders in the game hosted in the channel. You can then claim a pretender, unclaim it, remove it or designate a substitute for it."
     },
 
+    "FORCE_HOST":
+    {
+        "name": "forcehost",
+        "isEnabled": true,
+        "gameTypesSupported": ["dom5"],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "FORCEHOST",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "game",
+        "helpText": "Forces a turn to roll immediately."
+    },
+
     "GET_CURRENT_TURN_FILE":
     {
         "name": "turnfile",
