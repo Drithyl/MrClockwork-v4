@@ -7,9 +7,9 @@ const MessageEmbedWrapper = require("../../discord/wrappers/message_embed_wrappe
 
 
 const STATUS_HEADER = "Status:";
-const TURN_HEADER = "Turn:";
-const TIMER_HEADER = "Time left:";
-const UNDONE_TURNS_HEADER = "Undone turns:";
+const TURN_HEADER = "Last known turn:";
+const TIMER_HEADER = "Last known time left:";
+const UNDONE_TURNS_HEADER = "Last known undone turns:";
 
 
 module.exports = Dominions5StatusEmbed;
@@ -61,39 +61,41 @@ function Dominions5StatusEmbed(embedWrapper)
 
     this.getMessageId = () => embedWrapper.getMessageId();
 
-    this.update = (tcpQuery) =>
+    this.update = (updateData) =>
     {
-        const timeLeft = tcpQuery.getTimeLeft();
+        const timeLeft = updateData.getTimeLeft();
 
-        if (tcpQuery.isInLobby() === true)
+        if (updateData.isInLobby() === true)
         {
             _embed.editField(0, STATUS_HEADER, "waiting for pretenders", true);
-            _embed.removeFields(1, 3);
+
+            if (updateData.didGameRestart === true)
+                _embed.removeFields(1, 3);
         }
 
-        else if (tcpQuery.isOngoing() === true)
+        else if (updateData.isOngoing() === true)
         {
             _embed.replaceField(0, STATUS_HEADER, "online", true);
 
 
-            if (asserter.isInteger(tcpQuery.turnNumber) === true)
-                _embed.replaceField(1, TURN_HEADER, tcpQuery.turnNumber, true);
+            if (asserter.isInteger(updateData.turnNumber) === true)
+                _embed.replaceField(1, TURN_HEADER, updateData.turnNumber, true);
 
             else _embed.replaceField(1, TURN_HEADER, "unavailable", true);
 
 
-            if (tcpQuery.msLeft === 0)
-                _embed.editField(2, TIMER_HEADER, "paused", true);
+            if (updateData.msLeft === 0)
+                _embed.editField(2, TIMER_HEADER, "paused");
 
-            else if (asserter.isInteger(tcpQuery.msLeft) === true)
-                _embed.editField(2, TIMER_HEADER, timeLeft.printTimeLeftShort(), true);
+            else if (asserter.isInteger(updateData.msLeft) === true)
+                _embed.editField(2, TIMER_HEADER, timeLeft.printTimeLeftShort());
 
-            else _embed.editField(2, TIMER_HEADER, "unavailable", true);
+            else _embed.editField(2, TIMER_HEADER, "unavailable");
 
 
-            if (asserter.isArray(tcpQuery.players) === true)
+            if (asserter.isArray(updateData.players) === true)
             {
-                const playerStr = tcpQuery.players.reduce((playersInfo, playerData) => 
+                const playerStr = updateData.players.reduce((playersInfo, playerData) => 
                 {
                     if (playerData.isTurnDone === false)
                         return playersInfo + `${playerData.name}\n`;
@@ -107,11 +109,8 @@ function Dominions5StatusEmbed(embedWrapper)
             else _embed.editField(3, UNDONE_TURNS_HEADER, "unavailable");
         }
 
-        else 
-        {
-            _embed.editField(0, STATUS_HEADER, tcpQuery.status, true);
-            _embed.removeFields(1, 3);
-        }
+        else _embed.editField(0, STATUS_HEADER, updateData.status, true);
+
 
         return _embed.update();
     };
