@@ -120,6 +120,7 @@
     {
         "name": "deleteunusedmaps",
         "isEnabled": true,
+        "isDevOnly": true,
         "gameTypesSupported": [],
         "argumentsRequiredInfo": ["`A server's name`"],
         "optionalArguments": 0,
@@ -315,6 +316,7 @@
     {
         "name": "values",
         "isEnabled": true,
+        "isDevOnly": true,
         "gameTypesSupported": [],
         "argumentsRequiredInfo": ["`A setting key`"],
         "optionalArguments": 0,
@@ -393,6 +395,7 @@
     {
         "name": "post",
         "isEnabled": true,
+        "isDevOnly": true,
         "gameTypesSupported": [],
         "argumentsRequiredInfo": [],
         "optionalArguments": 0,
@@ -563,6 +566,7 @@
     {
         "name": "updatehelp",
         "isEnabled": true,
+        "isDevOnly": true,
         "gameTypesSupported": [],
         "argumentsRequiredInfo": ["A guild ID, if only one channel requires updating."],
         "optionalArguments": 1,

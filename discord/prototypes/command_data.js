@@ -33,6 +33,7 @@ function CommandData(commandName)
 
   const _name = _data.name;
   const _isEnabled = _data.isEnabled;
+  const _isDevOnly = _data.isDevOnly;
   const _gameTypesSupported = _data.gameTypesSupported;
   const _argumentsRequiredInfo = _data.argumentsRequiredInfo;
   const _regexpRequiredToInvoke = new RegExp(config.commandPrefix + _data.regexpRequiredToInvoke, "i");
@@ -45,7 +46,8 @@ function CommandData(commandName)
     _argumentRegexpArray.push(new RegExp(regexp, "i"));
   });
 
-  this.isEnabled = () => _isEnabled;
+  this.isEnabled = () => _isEnabled === true;
+  this.isDevOnly = () => _isDevOnly === true;
   this.isGameTypeSupported = (gameType) => _gameTypesSupported.includes(gameType);
   
   this.getName = () => _name;

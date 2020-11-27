@@ -10,6 +10,7 @@ function DiscordCommand(commandDataObject)
 {
     assert.isInstanceOfPrototype(commandDataObject, commandData);
 
+    const _command = this;
     const _data = commandDataObject;
 
     var _requirementsArray = [];
@@ -17,6 +18,7 @@ function DiscordCommand(commandDataObject)
     var _runCommand;
 
     this.isEnabled = () => _data.isEnabled();
+    this.isDevOnly = () => _data.isDevOnly();
     this.isGameTypeSupported = (...args) => _data.isGameTypeSupported(...args);
 
     this.getName = (...args) => _data.getName(...args);
@@ -110,6 +112,9 @@ function DiscordCommand(commandDataObject)
 
     function _checkSilentRequirementsAreMet(commandContext)
     {
+        if (_command.isDevOnly() === true && commandContext.isSenderDev() === false)
+            return Promise.resolve(false);
+
         return _silentRequirementsArray.forEachPromise((requirementCheck, index, nextPromise) =>
         {
             //Wrap check in a promise, as some are sync and some are async
