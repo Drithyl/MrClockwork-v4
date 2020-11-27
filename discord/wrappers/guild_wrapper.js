@@ -50,7 +50,7 @@ function GuildWrapper(discordJsGuildObject)
             return Promise.resolve();
 
         return _clearChannel(helpChannel)
-        .then(() => messenger.send(helpChannel, updatedHelpString));
+        .then(() => messenger.send(helpChannel, updatedHelpString, { prepend: "", append: "" }));
     };
 
     this.deployBot = () => guildStore.deployBotOnGuild(this.getId());
@@ -191,10 +191,33 @@ function GuildWrapper(discordJsGuildObject)
         return guildDataStore.replaceRoleWithNew(this.getId(), idOfRoleToBeReplaced, idOfRoleToTakeItsPlace);
     };
 
+    /** The channel.bulkDelete method does not work since it cannot delete messages
+     *  older than 14 days, even with the boolean option set to true.
+     */
     function _clearChannel(channel)
     {
-        //deletes the last 100 messages in the channel. This is the max
-        //value accepted but it should be enough.
-        return channel.bulkDelete(100, true);
+        var _lastMessage;
+
+        return channel.messages.fetch(channel.lastMessageID)
+        .then((lastMessage) =>
+        {
+            _lastMessage = lastMessage;
+            
+            /** fetch all messages before last in channel */
+            return channel.messages.fetch({ before: lastMessage.id });
+        })
+        .then((messages) =>
+        {
+            const messageArray = messages.array();
+            messageArray.push(_lastMessage);
+
+            /** delete all messages before last */
+            return messageArray.forEachPromise((message, index, nextPromise) =>
+            {
+                console.log("Deleting message " + channel.id);
+                return message.delete()
+                .then(() => nextPromise());
+            });
+        });
     }
 }

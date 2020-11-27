@@ -37,7 +37,11 @@ function _createHelpString()
     var string = `Below are the commands available. Each one contains information about what it does and the arguments (sometimes optional, sometimes required) that make them work:\n\n`;
     var commands = [];
 
-    commandStore.forEachCommand((command) => commands.push(command));
+    commandStore.forEachCommand((command) => 
+    {
+        if (command.isDevOnly() === false)
+            commands.push(command);
+    });
 
     commands.sort((a, b) => 
     {
