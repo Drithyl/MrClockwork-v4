@@ -64,9 +64,6 @@ exports.printListOfOnlineHostServers = () =>
         str += `- ${hostServerObject.getName()}\n`;
     }
 
-    if (str === "")
-        return "No servers online";
-
     return str;
 };
 
