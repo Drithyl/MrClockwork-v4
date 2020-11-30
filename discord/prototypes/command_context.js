@@ -102,11 +102,6 @@ function CommandContext(messageWrapper)
 
     this.respondToCommand = (...args) => _messageWrapper.respond(...args);
     this.respondToSender = (...args) => _messageWrapper.respondToSender(...args);
-
-    this.replaceRoleWith = (idOfRoleToBeReplaced, idOfRoleToTakeItsPlace) =>
-    {
-        //TODO:
-    };
 }
 
 function _extractCommandString(messageContent)
