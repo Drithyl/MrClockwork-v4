@@ -48,8 +48,8 @@ function _behaviour(commandContext)
     .then((statusMessage) => server.emitPromise("UPLOAD_FILE", { type: fileType, fileId: googleDriveId }))
     .then((responseData) => 
     {
-        console.log(responseData);
-        commandContext.respondToCommand(`Download complete!`)
+        return commandContext.respondToCommand(`Download complete! Details will be sent to your DMs.`)
+        .then(() => commandContext.respondToSender(_formatResponseData(responseData), { prepend: "```", append: "```" }));
     });
 }
 
@@ -67,4 +67,32 @@ function _extractGoogleDriveFileId(id)
         return id.replace(linkRegExp, "$6");
 
     else return null;
+}
+
+function _formatResponseData(responseData)
+{
+    var formattedStr = "";
+    const { writtenEntries, skippedEntries } = responseData;
+
+    if (asserter.isArray(writtenEntries) === false || asserter.isArray(skippedEntries) === false)
+        return "No download details available, but the operation was either successful or skipped files that already existed.";
+
+    if (writtenEntries.length <= 0)
+        return "Files already existed on the server; none of them was written.";
+
+    if (skippedEntries.length <= 0)
+        return "All files were written successfully.";
+
+
+    formattedStr = `Below are the files which were written. Those not listed were skipped, as they already existed.:\n\n\`\`\``;
+
+    writtenEntries.forEach((filename) =>
+    {
+        if (/\/$/.test(filename) === true)
+            formattedStr += `\n\n${filename}\n\n`;
+
+        else formattedStr += `\t${filename}\n`;
+    });
+
+    return formattedStr + "```";
 }
