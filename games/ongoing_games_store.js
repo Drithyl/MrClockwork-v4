@@ -28,7 +28,7 @@ exports.loadAll = function()
 exports.getGameDataForHostServer = function(hostServer)
 {
     var dataPack = [];
-    var gamesOnServer = _getOngoingGamesByServer(hostServer);
+    var gamesOnServer = exports.getOngoingGamesOnServer(hostServer);
 
     gamesOnServer.forEach((game) => 
     {
@@ -39,9 +39,24 @@ exports.getGameDataForHostServer = function(hostServer)
     return dataPack;
 };
 
+exports.getOngoingGamesOnServer = function(hostServer)
+{
+    const games = [];
+
+    for (var gameName in _ongoingGamesByName)
+    {
+        const game = _ongoingGamesByName[gameName];
+
+        if (game.getServerId() === hostServer.getId())
+            games.push(game);
+    }
+
+    return games;
+};
+
 exports.getNbrOfGamesOnServer = function(hostServer)
 {
-    return _getOngoingGamesByServer(hostServer).length;
+    return exports.getOngoingGamesOnServer(hostServer).length;
 };
 
 exports.addOngoingGame = function(game)
@@ -120,21 +135,6 @@ exports.forEachGame = function(fnToApply)
         fnToApply(game, name);
     }
 };
-
-function _getOngoingGamesByServer(hostServer) 
-{ 
-    var games = [];
-
-    for (var gameName in _ongoingGamesByName)
-    {
-        var game = _ongoingGamesByName[gameName];
-
-        if (game.getServerId() === hostServer.getId())
-            games.push(game);
-    }
-
-    return games;
-}
 
 function _findGameByName(nameToFind)
 {

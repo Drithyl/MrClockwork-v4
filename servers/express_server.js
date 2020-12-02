@@ -18,7 +18,11 @@ exports.startListeningOnPort = (port) =>
         console.log(`Express HTTP server running on port ${_expressServer.address().port}`);
     });
 
-    _ioObject.on("connection", (socket) => _requestServerData(new SocketWrapper(socket)));
+    _ioObject.on("connection", (socket) => 
+    {
+        const wrapper = new SocketWrapper(socket);
+        _requestServerData(wrapper);
+    });
 };
 
 function _requestServerData(socketWrapper)
@@ -53,8 +57,11 @@ function _requestServerData(socketWrapper)
         });
         
         console.log("Sending game data...");
-        return hostServer.sendGameData();
+
+        return hostServer.sendGameData()
+        .then(() => console.log("Server acknowledged game data. Launching games..."))
+        .then(() => hostServer.launchGames())
+        .then(() => console.log("Launch requests sent."));
     })
-    .then(() => console.log("Server acknowledged game data."))
     .catch((errMessage) => console.log(`Error occurred; server not added to list: ${errMessage}`));
 }

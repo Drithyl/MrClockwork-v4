@@ -86,9 +86,19 @@ function HostServer(id)
         return ongoingGamesStore.getNbrOfGamesOnServer(this);
     };
 
+    this.launchGames = () =>
+    {
+        ongoingGamesStore.getOngoingGamesOnServer(this).forEach((game) =>
+        {
+            game.launch()
+            .then(() => console.log(`${game.getName()} launched!`))
+            .catch((err) => console.log(`${game.getName()} error: ${err.message}`));
+        });
+    };
+
     this.sendGameData = () =>
     {
-        var gameData = ongoingGamesStore.getGameDataForHostServer(this);
+        const gameData = ongoingGamesStore.getGameDataForHostServer(this);
         return this.emitPromise("GAME_DATA", gameData)
         .catch((err) => Promise.reject(err));
     };
