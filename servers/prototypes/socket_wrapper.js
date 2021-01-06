@@ -1,6 +1,7 @@
 
 const TimeoutError = require("../../errors/custom_errors").TimeoutError;
 const SocketResponseError = require("../../errors/custom_errors").SocketResponseError;
+const handleDom5Error = require("../../games/dominions5_runtime_error_handler.js");
 
 module.exports = SocketWrapper;
 
@@ -55,9 +56,20 @@ function SocketWrapper(socketIoObject)
         });
     };
 
-    this.listenTo("GAME_ERROR", (data) => console.log(`${data.gameName}: reported game error: ${data.error}`));
+    
+    this.listenTo("NEW_TURN", (data) => console.log(`${data.gameName}: New turn!`));
     this.listenTo("STDIO_CLOSED", (data) => console.log(`${data.gameName}: stdio closed with code ${data.code}`));
     this.listenTo("STDIO_DATA", (data) => console.log(`${data.gameName}: ${data.type} data received: ${data.data}`));
-    this.listenTo("STDIO_ERROR", (data) => console.log(`${data.gameName}: ${data.type} ERROR received: ${data.error}`));
-    this.listenTo("NEW_TURN", (data) => console.log(`${data.gameName}: New turn!`));
+
+    this.listenTo("STDIO_ERROR", (data) => 
+    {
+        console.log(`${data.gameName}: ${data.type} ERROR received: ${data.error}`);
+        handleDom5Error(data.gameName, data.error);
+    });
+
+    this.listenTo("GAME_ERROR", (data) => 
+    {
+        console.log(`${data.gameName}: reported game error: ${data.error}`);
+        handleDom5Error(data.gameName, data.error);
+    });
 }
