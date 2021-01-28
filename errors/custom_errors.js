@@ -19,6 +19,15 @@ exports.InvalidPathError = class InvalidPathError extends Error
   }
 };
 
+exports.InvalidDiscordIdError = class InvalidDiscordIdError extends Error
+{
+  constructor(message)
+  {
+    super(message);
+    this.name = "InvalidDiscordIdError";
+  }
+};
+
 exports.LengthError = class LengthError extends Error
 {
   constructor(message)

@@ -1,0 +1,82 @@
+
+
+<fieldset class="form-group">
+    <div class="row">
+        <legend class="col-form-label col-sm-2 pt-0">Research Speed</legend>
+        <div class="col-sm-10">
+            
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="researchSpeed" id="research_radio_0" value="0"
+                    <% if (typeof gameSettings === "object" && gameSettings.researchSpeed == 0) { %> checked <% } %>
+                >
+                <label class="form-check-label" for="research_radio_0">
+                    Very Easy
+                </label>
+            </div>
+            
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="researchSpeed" id="research_radio_1" value="1"
+                    <% if (typeof gameSettings === "object" && gameSettings.researchSpeed == 1) { %> checked <% } %>
+                >
+                <label class="form-check-label" for="research_radio_1">
+                    Easy
+                </label>
+            </div>
+            
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="researchSpeed" id="research_radio_2" value="2"
+                    <% if (typeof gameSettings !== "object" || (typeof gameSettings === "object" && gameSettings.researchSpeed == 2)) { %> checked <% } %>
+                >
+                <label class="form-check-label" for="research_radio_2">
+                    Normal
+                </label>
+            </div>
+            
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="researchSpeed" id="research_radio_3" value="3"
+                    <% if (typeof gameSettings === "object" && gameSettings.researchSpeed == 3) { %> checked <% } %>
+                >
+                <label class="form-check-label" for="research_radio_3">
+                    Hard
+                </label>
+            </div>
+            
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="researchSpeed" id="research_radio_4" value="4"
+                    <% if (typeof gameSettings === "object" && gameSettings.researchSpeed == 4) { %> checked <% } %>
+                >
+                <label class="form-check-label" for="research_radio_4">
+                    Very Hard
+                </label>
+            </div>
+            
+        </div>
+    </div>
+</fieldset>
+
+<fieldset class="form-group">
+    <div class="row">
+        <legend class="col-form-label col-sm-2 pt-0">Starting Research</legend>
+        <div class="col-sm-10">
+            
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="startingResearch" id="starting_research_radio_0" value="0"
+                    <% if (typeof gameSettings !== "object" || (typeof gameSettings === "object" && gameSettings.startingResearch == 0)) { %> checked <% } %>
+                >
+                <label class="form-check-label" for="starting_research_radio_0">
+                    Spread evenly across schools
+                </label>
+            </div>
+            
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="startingResearch" id="starting_research_radio_1" value="1"
+                    <% if (typeof gameSettings === "object" && gameSettings.startingResearch == 1) { %> checked <% } %>
+                >
+                <label class="form-check-label" for="starting_research_radio_1">
+                    Randomly spread
+                </label>
+            </div>
+            
+        </div>
+    </div>
+</fieldset>

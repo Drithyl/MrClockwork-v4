@@ -30,14 +30,14 @@ function _updateDom5Game(game)
         .then(() => 
         {
             if (monitoredGames[gameName] != null)
-                _updateDom5Game(game)
+                _updateDom5Game(game);
         })
         .catch((err) => 
         {
             console.log(`${gameName}\t${err.message}`);
             
             if (monitoredGames[gameName] != null)
-                _updateDom5Game(game)
+                _updateDom5Game(game);
         });
 
     }, UPDATE_INTERVAL);

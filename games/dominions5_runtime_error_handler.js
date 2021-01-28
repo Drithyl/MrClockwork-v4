@@ -109,7 +109,7 @@ module.exports = function(gameName, errStr)
         rw.log("error", `The game ${game.getName()} reported an unknown error: ${errStr}`);
         sendWarning(game, `The game ${game.getName()} reported the error: ${errStr}`);
     }
-}
+};
 
 function handleFailedToCreateTmpDir(game, errStr)
 {

@@ -32,7 +32,7 @@ function _behaviour(commandContext)
     if (organizerWrapper == null)
         info += "No organizer set";
 
-    else info += "\n" + organizerWrapper.getUsername();
+    else info += organizerWrapper.getUsername();
 
     info += settingsObject.getPublicSettingsStringList();
 

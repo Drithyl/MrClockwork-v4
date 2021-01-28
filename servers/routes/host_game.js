@@ -1,6 +1,7 @@
 
 const guildStore = require("../../discord/guild_store.js");
 const hostServerStore = require("../host_server_store.js");
+const dom5Nations = require("../../json/dom5_nations.json");
 const webSessionsStore = require("../web_sessions_store.js");
 const Dominions5Game = require("../../games/prototypes/dominions5_game.js");
 
@@ -22,7 +23,7 @@ exports.set = (expressApp) =>
         console.log("Host game authentication params:", sessionParams);
 
         if (webSessionsStore.isSessionValid(sessionParams) === false)
-            return res.send("Session does not exist!");
+            return res.render("results_screen.ejs", { result: `Session does not exist.` });
 
         availableServers = hostServerStore.getAvailableServers();
         guildsWhereUserIsMember = guildStore.getGuildsWhereUserIsMember(sessionParams.userId);
@@ -36,9 +37,10 @@ exports.set = (expressApp) =>
         });
         
         /** redirect to host_game */
-        res.render("host_game.ejs", Object.assign(sessionParams, {
+        res.render("host_game_screen.ejs", Object.assign(sessionParams, {
             guilds: guildData, 
-            servers: availableServers
+            servers: availableServers,
+            nations: dom5Nations
         }));
     });
 
@@ -53,22 +55,22 @@ exports.set = (expressApp) =>
         if (webSessionsStore.isSessionValid(values) === false)
         {
             console.log("Session does not exist; cannot host.");
-            return res.send("Session does not exist!");
+            return res.render("results_screen.ejs", { result: `Session does not exist.` });
         }
 
         webSessionsStore.removeSession(sessionToken);
         _formatPostValues(values);
 
         _createGame(userId, values)
-        .then(() => 
+        .then((game) => 
         {
-            res.send("Game has been hosted! Find the corresponding channel in the selected Discord guild.");
-            return Promise.resolve();
+            res.render("results_screen.ejs", { result: "Game has been hosted! Find the corresponding channel in the selected Discord guild." });
+            return game.launch();
         })
         .catch((err) => 
         {
             console.log(err);
-            res.send(`Error occurred when creating the game: ${err.message}`);
+            res.render("results_screen.ejs", { result: `Error occurred when creating the game: ${err.message}` });
         });
     });
 };

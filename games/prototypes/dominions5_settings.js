@@ -32,24 +32,6 @@ const SuppliesModifier = require("../../game_settings/dom5/prototypes/supplies_m
 const Thrones = require("../../game_settings/dom5/prototypes/thrones.js");
 const TimerSetting = require("../../game_settings/dom5/prototypes/timer.js");
 
-async function load(pathToDataDir)
-{
-    assert.isStringOrThrow(pathToDataDir);
-
-    var stringData = fs.readFileSync(`${pathToDataDir}/dominions5_settings.json`, "utf8");
-    var parsedData = JSON.parse(stringData);
-    var dominions5Settings = new Dominions5Settings();
-    
-    dominions5Settings.forEachSettingObject((settingObject, key) =>
-    {
-        var loadedValueData = parsedData[key];
-
-        settingObject.setValue(loadedValueData);
-    });
-
-    return dominions5Settings;
-}
-
 module.exports = Dominions5Settings;
 
 function Dominions5Settings(parentGameObject)
@@ -143,6 +125,18 @@ function Dominions5Settings(parentGameObject)
     _gameSettingsObject.getSuppliesModifierSetting = () => _suppliesModifier;
     _gameSettingsObject.getThronesSetting = () => _thrones;
     _gameSettingsObject.getTimerSetting = () => _timerSetting;
+
+    _gameSettingsObject.toEjsData = () =>
+    {
+        const jsonData = _gameSettingsObject.toJSON();
+        const timerSetting = _gameSettingsObject.getTimerSetting();
+
+        // Override the normal json value of the timer (an ms integer) with the live
+        // value, a TimeLeft object, so the front-end can access the days, hours, minutes
+        jsonData[timerSetting.getKey()] = timerSetting.getValue();
+
+        return jsonData;
+    };
 
     return _gameSettingsObject;
 }

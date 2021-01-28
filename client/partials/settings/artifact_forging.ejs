@@ -1,0 +1,28 @@
+
+
+<fieldset class="form-group">
+    <div class="row">
+        <legend class="col-form-label col-sm-2 pt-0">Artifact Forging</legend>
+        <div class="col-sm-10">
+            
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="artifactForging" id="artifact_forging_radio_0" value="0"
+                    <% if (typeof gameSettings !== "object" || (typeof gameSettings === "object" && gameSettings.artifactForging == 0)) { %> checked <% } %>
+                >
+                <label class="form-check-label" for="artifact_forging_radio_0">
+                    Players can only forge one artifact per turn
+                </label>
+            </div>
+            
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="artifactForging" id="artifact_forging_radio_1" value="1"
+                    <% if (typeof gameSettings === "object" && gameSettings.artifactForging == 1) { %> checked <% } %>
+                >
+                <label class="form-check-label" for="artifact_forging_radio_1">
+                    No limit to artifact forging
+                </label>
+            </div>
+            
+        </div>
+    </div>
+</fieldset>

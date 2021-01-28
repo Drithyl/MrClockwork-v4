@@ -114,6 +114,7 @@ function Dominions5Game()
     };
 
     _gameObject.launch = () => _gameObject.emitPromiseWithGameDataToServer("LAUNCH_GAME");
+    _gameObject.kill = () => _gameObject.emitPromiseWithGameDataToServer("KILL_GAME");
 
     _gameObject.fetchStatusDump = () => _gameObject.emitPromiseWithGameDataToServer("GET_STATUS_DUMP");
 
@@ -206,7 +207,11 @@ function Dominions5Game()
         if (jsonData.statusEmbedId != null && _gameObject.getChannel() != null)
         {
             Dominions5StatusEmbed.loadExisting(_gameObject.getChannel(), jsonData.statusEmbedId)
-            .then((statusEmbed) => Promise.resolve(_statusEmbed = statusEmbed))
+            .then((statusEmbed) => 
+            {
+                _statusEmbed = statusEmbed;
+                return Promise.resolve();
+            })
             .catch((err) => console.log(`Could not load ${_gameObject.getName()}'s status embed: ${err.message}`));
         }
 
@@ -217,7 +222,9 @@ function Dominions5Game()
     {
         const jsonData = _gameObject.toJSONSuper();
 
-        jsonData.statusEmbedId = _statusEmbed.getMessageId();
+        if (_statusEmbed != null)
+            jsonData.statusEmbedId = _statusEmbed.getMessageId();
+            
         jsonData.lastKnownStatus = _lastKnownStatus;
         jsonData.lastTurnTimestamp = _lastTurnTimestamp;
         jsonData.lastKnownTurnNumber = _lastKnownTurnNumber;

@@ -89,6 +89,9 @@ exports.deleteGame = function(gameName)
 
 exports.getOngoingGameByName = function(nameToFind) 
 {
+    if (assert.isString(nameToFind) === false)
+        return null;
+        
     return _findGameByName(nameToFind); 
 };
 

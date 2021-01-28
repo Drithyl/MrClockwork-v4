@@ -1,0 +1,10 @@
+
+
+<div class="form-group row">
+    <label for="input_hall_of_fame" class="col-sm-2 col-form-label">Hall of Fame Entries</label>
+    <div class="col-sm-10">
+        <input type="number" id="input_hall_of_fame" name="hallOfFame" min="5" max="20" pattern="\d\d?"
+            <% if (typeof gameSettings === "object" && typeof gameSettings.hallOfFame === "number") { %> value=<%=gameSettings.hallOfFame %> <% } else { %> value="10" <% } %>
+        >
+    </div>
+</div>

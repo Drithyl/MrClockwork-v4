@@ -73,7 +73,7 @@ module.exports.deleteDir = function(path)
                 return fsp.unlink(filepath);
             })
             .then(() => nextPromise());
-        })
+        });
     })
     .then(() => fsp.rmdir(path))
     .catch((err) => Promise.reject(err));

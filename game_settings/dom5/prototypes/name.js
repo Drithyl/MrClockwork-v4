@@ -5,7 +5,7 @@ const SemanticError = require("../../../errors/custom_errors.js").SemanticError;
 
 const _blacklistedNames = [
     "global"
-]
+];
 
 const key = "name";
 

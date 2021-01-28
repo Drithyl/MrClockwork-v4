@@ -58,7 +58,7 @@ function Dominions5TcpQuery(tcpQueryResponse)
         if (this.isOngoing() === false)
             return null;
 
-        return new TimeLeft(this.msLeft)
+        return new TimeLeft(this.msLeft);
     };
 }
 

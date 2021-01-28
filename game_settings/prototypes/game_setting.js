@@ -20,7 +20,13 @@ function GameSetting(key)
     this.getDefault = () => _defaultValue;
     this.getDescription = () => _description;
     this.getParseRegexp = () => _regexp;
-    this.isExpectedFormat = (str) => _expectedInputFormatRegexp.test(str);
+    this.isExpectedFormat = (inputStr) => 
+    {
+        if (assert.isString(inputStr) === false)
+            return false;
+
+        else return _expectedInputFormatRegexp.test(inputStr)
+    };
 }
 
 GameSetting.prototype.getPrompt = () => "No prompt behaviour defined.";

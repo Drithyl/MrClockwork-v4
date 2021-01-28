@@ -10,18 +10,24 @@ exports.set = (expressApp) =>
     {
         const urlObject = url.parse(req.url, true);
 
+        console.log("Login request received with urlObject: " + urlObject.query.code);
+
         oauth2.authenticate(urlObject)
         .then((userInfo) => 
         {
             const userId = userInfo.id;
             const sessionToken = webSessionsStore.createSession(userId);
+
+            if (userId == null)
+                return console.log("Invalid login attempt, ignoring.");
+
             console.log(`Authenticated! userId: ${userId}, token: ${sessionToken}`);
 
-            res.render("user_home.ejs", { userData: {
+            res.render("user_home_screen.ejs", { userData: {
                 token: sessionToken, 
                 userId 
             } });
         })
-        .catch((err) => res.send(`Error occurred: ${err.message}`));
+        .catch((err) => res.render("results_screen.ejs", { result: `Error occurred: ${err.message}` }));
     });
 };

@@ -1,0 +1,10 @@
+
+
+<div class="form-group row">
+    <label for="input_global_slots" class="col-sm-2 col-form-label">Global Slots</label>
+    <div class="col-sm-10">
+        <input type="number" id="input_global_slots" name="globalSlots" min="3" max="9" pattern="\d"
+            <% if (typeof gameSettings === "object" && typeof gameSettings.globalSlots === "number") { %> value=<%=gameSettings.globalSlots %> <% } else { %> value="5" <% } %>
+        >
+    </div>
+</div>

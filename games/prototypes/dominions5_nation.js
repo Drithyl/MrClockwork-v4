@@ -59,8 +59,10 @@ function Dominions5Nation(eraNumber, nationData)
     {
         if (era == this.getNationEraAsNumber())
             return true;
-        else if (era.toString.toLowerCase() == this.getNationEraAsString())
+
+        else if (era.toString().toLowerCase() == this.getNationEraAsString())
             return true;
+
         else return false;
     };
 }

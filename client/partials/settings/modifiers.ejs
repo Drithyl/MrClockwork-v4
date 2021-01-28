@@ -1,0 +1,37 @@
+
+
+<div class="form-group row">
+    <label for="input_gold_modifier" class="col-sm-2 col-form-label">Gold Modifier</label>
+    <div class="col-sm-10">
+        <input type="number" id="input_gold_modifier" name="goldModifier" min="50" max="300" pattern="\d\d\d?"
+            <% if (typeof gameSettings === "object" && typeof gameSettings.goldModifier === "number") { %> value=<%=gameSettings.goldModifier %> <% } else { %> value="100" <% } %>
+        >
+    </div>
+</div>
+
+<div class="form-group row">
+    <label for="input_resources_modifier" class="col-sm-2 col-form-label">Resources Modifier</label>
+    <div class="col-sm-10">
+        <input type="number" id="input_resources_modifier" name="resourcesModifier" min="50" max="300" pattern="\d\d\d?"
+            <% if (typeof gameSettings === "object" && typeof gameSettings.resourcesModifier === "number") { %> value=<%=gameSettings.resourcesModifier %> <% } else { %> value="100" <% } %>
+        >
+    </div>
+</div>
+
+<div class="form-group row">
+    <label for="input_supplies_modifier" class="col-sm-2 col-form-label">Supplies Modifier</label>
+    <div class="col-sm-10">
+        <input type="number" id="input_supplies_modifier" name="suppliesModifier" value="100" min="50" max="300" pattern="\d\d\d?"
+            <% if (typeof gameSettings === "object" && typeof gameSettings.suppliesModifier === "number") { %> value=<%=gameSettings.suppliesModifier %> <% } else { %> value="100" <% } %>
+        >
+    </div>
+</div>
+
+<div class="form-group row">
+    <label for="input_recruitment_modifier" class="col-sm-2 col-form-label">Recruitment Modifier</label>
+    <div class="col-sm-10">
+        <input type="number" id="input_recruitment_modifier" name="recruitmentModifier" value="100" min="50" max="300" pattern="\d\d\d?"
+            <% if (typeof gameSettings === "object" && typeof gameSettings.recruitmentModifier === "number") { %> value=<%=gameSettings.recruitmentModifier %> <% } else { %> value="100" <% } %>
+        >
+    </div>
+</div>

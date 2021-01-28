@@ -39,6 +39,8 @@ function _requestServerData(socketWrapper)
         if (requestedData == null)
             return console.log("Socket sent no data; ignoring.");
 
+        else console.log("Data sent by socket: ", requestedData);
+
         if (_hostServerStore.hasHostServerById(requestedData.id) === false)
         {
             console.log(`Unrecognized server id ${requestedData.id}; closing socket.`);

@@ -23,15 +23,11 @@ $("#preferences_form").submit(function(event)
     const formDataArray = $(this).serializeArray();
     const jsonData = _formDataToJson(formDataArray);
 
-    $.post({
-        url: "/edit_preferences",
-        contentType: "application/json",
-        data: jsonData,
-        dataType: "json"
-    })
+    $.post("/edit_preferences", jsonData)
     .done((response) =>
     {
         console.log(response);
+        $("#bodySection").html(response);
     });
 });
 
@@ -75,5 +71,5 @@ function _formDataToJson(serializedArray)
         }
     });
 
-    return JSON.stringify(jsonData);
+    return jsonData;
 }

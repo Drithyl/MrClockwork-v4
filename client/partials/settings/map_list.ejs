@@ -1,0 +1,21 @@
+
+
+<div id="maps_div" class="form-group">
+    <label for="input_map">Map</label>
+    <select id="input_map" name="map" class="form-control selectpicker" data-size="8" data-show-subtext="true">
+        
+        <!-- Must use typeof to check if variable exists at all, since it might be undefined -->
+        <% if (typeof maps === "object" && Array.isArray(maps) === true) { %>
+            <% maps.forEach((mapData, i) => {%>
+                <option data-subtext="<%=mapData.land %> land + <%=mapData.sea %> sea" value="<%=mapData.name %>"  
+                    <% if (typeof gameSettings === "object" && gameSettings.map != null && typeof gameSettings === "object" && gameSettings.map === mapData.name) { %> selected <% } %>
+                >
+                    <%=mapData.name %>
+                </option>
+            <% }); %>
+        <% } else { %>
+            <p>No maps available</p>
+        <% } %>
+
+    </select>
+</div>

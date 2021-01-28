@@ -19,12 +19,17 @@
     <% } %>
 </p>
 
-<form action="/host_game" method="GET">
+<form id="host_game_screen_form" action="/host_game" method="GET">
     <input type="hidden" name="token" value="<%=(typeof userData === "object") ? userData.token : "none"%>"/>
     <button type="submit" class="btn btn-dark btn-lg">Host a new game</button>
 </form>
 
-<form action="/edit_preferences" method="GET">
+<form id="change_settings_screen_form" action="/change_game_settings" method="GET">
+    <input type="hidden" name="token" value="<%=(typeof userData === "object") ? userData.token : "none"%>"/>
+    <button type="submit" class="btn btn-dark btn-lg">Change game settings</button>
+</form>
+
+<form id="edit_preferences_screen_form" action="/edit_preferences" method="GET">
     <input type="hidden" name="token" value="<%=(typeof userData === "object") ? userData.token : "none"%>"/>
     <button type="submit" class="btn btn-dark btn-lg">Edit game preferences</button>
 </form>

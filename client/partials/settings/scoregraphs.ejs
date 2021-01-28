@@ -1,0 +1,37 @@
+
+
+<fieldset class="form-group">
+    <div class="row">
+        <legend class="col-form-label col-sm-2 pt-0">Scoregraphs</legend>
+        <div class="col-sm-10">
+            
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="scoregraphs" id="scoregraphs_radio_0" value="0"
+                    <% if (typeof gameSettings === "object" && gameSettings.scoregraphs == 0) { %> checked <% } %>
+                >
+                <label class="form-check-label" for="scoregraphs_radio_0">
+                    Completely disabled
+                </label>
+            </div>
+            
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="scoregraphs" id="scoregraphs_radio_1" value="1"
+                    <% if (typeof gameSettings !== "object" || (typeof gameSettings === "object" && gameSettings.scoregraphs == 1)) { %> checked <% } %>
+                >
+                <label class="form-check-label" for="scoregraphs_radio_1">
+                    Enabled only through magic sites and spells
+                </label>
+            </div>
+            
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="scoregraphs" id="scoregraphs_radio_2" value="2"
+                    <% if (typeof gameSettings === "object" && gameSettings.scoregraphs == 2) { %> checked <% } %>
+                >
+                <label class="form-check-label" for="scoregraphs_radio_2">
+                    Always enabled
+                </label>
+            </div>
+            
+        </div>
+    </div>
+</fieldset>

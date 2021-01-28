@@ -70,7 +70,7 @@ function _analyzeFiles(files)
     var result = {
         hasFileTooLarge: false,
         isTotalSizeTooLarge: false
-    }
+    };
 
     if (Array.isArray(files) === false)
         return result;
@@ -102,7 +102,7 @@ function _sendMessageAndAttachmentsSeparately(receiver, text, options)
             .then(() => nextPromise());
         })
         .then(() => Promise.resolve(discordJsMessage));
-    })
+    });
 }
 
 function _formatEmbed(embedStruct)
@@ -110,7 +110,7 @@ function _formatEmbed(embedStruct)
     if (embedStruct == null)
         return null;
 
-    return { embed: embedStruct }
+    return { embed: embedStruct };
 }
 
 function _formatWrapper(prepend, append)

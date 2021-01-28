@@ -1,0 +1,64 @@
+
+
+<fieldset class="form-group">
+    <div class="row">
+        <legend class="col-form-label col-sm-2 pt-0">Event Rarity</legend>
+        <div class="col-sm-10">
+            
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="eventRarity" id="event_rarity_radio_1" value="1"
+                    <% if (typeof gameSettings !== "object" || (typeof gameSettings === "object" && gameSettings.eventRarity == 1)) { %> checked <% } %>
+                >
+                <label class="form-check-label" for="event_rarity_radio_1">
+                    Common Events
+                </label>
+            </div>
+            
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="eventRarity" id="event_rarity_radio_2" value="2"
+                    <% if (typeof gameSettings === "object" && gameSettings.eventRarity == 2) { %> checked <% } %>
+                >
+                <label class="form-check-label" for="event_rarity_radio_2">
+                    Rare Events
+                </label>
+            </div>
+            
+        </div>
+    </div>
+</fieldset>
+
+<fieldset class="form-group">
+    <div class="row">
+        <legend class="col-form-label col-sm-2 pt-0">Story Events</legend>
+        <div class="col-sm-10">
+            
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="storyEvents" id="story_events_radio_0" value="0"
+                    <% if (typeof gameSettings === "object" && gameSettings.storyEvents == 0) { %> checked <% } %>
+                >
+                <label class="form-check-label" for="story_events_radio_0">
+                    No Story Events
+                </label>
+            </div>
+            
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="storyEvents" id="story_events_radio_1" value="1"
+                    <% if (typeof gameSettings === "object" && gameSettings.storyEvents == 1) { %> checked <% } %>
+                >
+                <label class="form-check-label" for="story_events_radio_1">
+                    Only Minor Story Events enabled
+                </label>
+            </div>
+            
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="storyEvents" id="story_events_radio_2" value="2"
+                    <% if (typeof gameSettings !== "object" || (typeof gameSettings === "object" && gameSettings.storyEvents == 2)) { %> checked <% } %>
+                >
+                <label class="form-check-label" for="story_events_radio_2">
+                    All Story Events enabled
+                </label>
+            </div>
+            
+        </div>
+    </div>
+</fieldset>

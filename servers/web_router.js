@@ -11,6 +11,7 @@ const serversRoute = require("./routes/servers.js");
 const hostGameRoute = require("./routes/host_game.js");
 const updatePartialsRoute = require("./routes/update_partials.js");
 const editPreferencesRoute = require("./routes/edit_preferences.js");
+const changeGameSettingsRoute = require("./routes/change_game_settings.js");
 
 exports.setMiddlewares = (expressApp, express) =>
 {
@@ -37,4 +38,5 @@ exports.setRoutes = (expressApp) =>
     hostGameRoute.set(expressApp);
     updatePartialsRoute.set(expressApp);
     editPreferencesRoute.set(expressApp);
+    changeGameSettingsRoute.set(expressApp);
 };

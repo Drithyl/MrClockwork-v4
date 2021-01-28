@@ -60,7 +60,7 @@ function HostServer(id)
         if (_isOnline === false)
             throw new SocketResponseError(`Socket is offline.`);
 
-        return _socketWrapper.onDisconnect(fnToCall)
+        return _socketWrapper.onDisconnect(fnToCall);
     };
 
     this.emitPromise = (...args) => 
@@ -116,5 +116,19 @@ function HostServer(id)
         return this.emitPromise("RESERVE_PORT")
         .then((portReserved) => portReserved)
         .catch((err) => Promise.reject(new Error(`Could not reserve a port on this server.`)));
+    };
+
+    this.getDom5MapsOnServer = () =>
+    {
+        return this.emitPromise("GET_MAP_LIST")
+        .then((mapList) => Promise.resolve(mapList))
+        .catch((err) => Promise.reject(new Error(`Could not retrieve the list of maps: ${err.message}`)));
+    };
+
+    this.getDom5ModsOnServer = () =>
+    {
+        return this.emitPromise("GET_MOD_LIST")
+        .then((mapList) => Promise.resolve(mapList))
+        .catch((err) => Promise.reject(new Error(`Could not retrieve the list of maps: ${err.message}`)));
     };
 }

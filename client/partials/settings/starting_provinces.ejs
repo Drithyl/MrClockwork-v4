@@ -1,0 +1,10 @@
+
+
+<div class="form-group row">
+    <label for="input_starting_provinces" class="col-sm-2 col-form-label">Starting Provinces</label>
+    <div class="col-sm-10">
+        <input type="number" id="input_starting_provinces" name="startingProvinces" min="1" max="9" pattern="\d"
+            <% if (typeof gameSettings === "object" && typeof gameSettings.startingProvinces === "number") { %> value=<%=gameSettings.startingProvinces %> <% } else { %> value="1" <% } %>
+        >
+    </div>
+</div>

@@ -7,18 +7,46 @@
 <a id="login" style="display: none;" href="https://discord.com/api/oauth2/authorize?client_id=721522017249263737&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Flogin&response_type=code&scope=identify">Identify Yourself</a>
 <script>
 
+    function generateRandomString() 
+    {
+        let randStr = '';
+        const rand = Math.floor(Math.random() * 10);
+
+        for (let i = 0; i < 20 + rand; i++)
+        {
+            randStr += String.fromCharCode(33 + Math.floor(Math.random() * 94));
+        }
+
+        return randStr;
+    }
+
     window.onload = () => 
     {
         const fragment = new URLSearchParams(window.location.hash.slice(1));
 
-        if (fragment.has("access_token")) 
+        if (fragment.has("access_token") === false)
         {
+            const randStr = generateRandomString();
+            localStorage.setItem('stateParameter', randStr);
+
+            document.getElementById('login').href += `&state=${encodeURIComponent(btoa(randStr))}`;
+            return document.getElementById('login').style.display = 'block';
+        }
+
+        else
+        {
+            const urlState = fragment.get("state");
+            const stateParameter = localStorage.getItem('stateParameter');
+
+            if (stateParameter !== atob(decodeURIComponent(urlState)))
+                return console.log("You may have been clicjacked!");
+
+
             const accessToken = fragment.get("access_token");
             const tokenType = fragment.get("token_type");
 
             fetch('https://discord.com/api/users/@me', {
-                headers: {
-                    authorization: `${tokenType} ${accessToken}`
+                headers: {authorization: `${tokenType} ${accessToken}`
                 }
             })
             .then((res) => res.json())
@@ -30,8 +58,6 @@
             })
             .catch(console.error);
         }
-
-        else document.getElementById('login').style.display = 'block';
     }
 
 </script>

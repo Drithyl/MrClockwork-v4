@@ -43,7 +43,7 @@ function getListOfMapsOnServerAndSend(serverObject, commandContext)
     var introductionString = "Below is the list of maps available:\n\n";
     var stringList = "";
 
-    return serverObject.emitPromise("GET_MAP_LIST")
+    return serverObject.getDom5MapsOnServer()
     .then((list) =>
     {
         if (list.length <= 0)

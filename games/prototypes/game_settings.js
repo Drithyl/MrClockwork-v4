@@ -30,7 +30,8 @@ function GameSettings(parentGame)
         return _settingObjectsArray.forEachPromise((settingObject, index, nextPromise) =>
         {
             return Promise.resolve(doSomething(settingObject, settingObject.getKey()))
-            .then(() => nextPromise());
+            .then(() => nextPromise())
+            .catch((err) => Promise.reject(err));
         });
     };
 

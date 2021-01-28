@@ -32,11 +32,11 @@ function MessageWrapper(discordJsMessageObject)
         _discordJsMessageObject.mentions.members.each((guildMember) =>
         {
             const guildMemberWrapper = guild.getGuildMemberWrapperById(guildMember.id);
-            guildMemberWrappers.push(guildMemberWrapper)
+            guildMemberWrappers.push(guildMemberWrapper);
         });
 
         return guildMemberWrappers;
-    }
+    };
 
     this.getEmbedWrapper = (index = 0) => 
     {

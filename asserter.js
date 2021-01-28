@@ -1,7 +1,7 @@
 
 const fs = require("fs");
 const config = "./config/config.json";
-const { TypeError, RangeError, LengthError, SemanticError, InstanceOfError, InvalidPathError, PermissionsError } = require("./errors/custom_errors.js");
+const { TypeError, RangeError, LengthError, SemanticError, InstanceOfError, InvalidDiscordIdError, InvalidPathError, PermissionsError } = require("./errors/custom_errors.js");
 
 
 exports.isArray = isArray;
@@ -273,5 +273,5 @@ function isValidPathOrThrow(path)
 function isValidDiscordIdOrThrow(id)
 {
     if (isValidDiscordId(id) === false)
-      throw new InvalidPathError(`Id is not a valid Discord Id: ${id}`);
+      throw new InvalidDiscordIdError(`Id is not a valid Discord Id: ${id}`);
 }

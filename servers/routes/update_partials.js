@@ -5,7 +5,7 @@ const hostServerStore = require("../host_server_store.js");
 
 exports.set = (expressApp) => 
 {
-    expressApp.get("/update_ai_partial/:eraNbr", (req, res) =>
+    /*expressApp.get("/update_ai_partial/:eraNbr", (req, res) =>
     {
         const dom5Nations = require("../../json/dom5_nations.json");
         const era = req.params.eraNbr;
@@ -18,7 +18,7 @@ exports.set = (expressApp) =>
 
             res.send(compiledStr);
         });
-    });
+    });*/
 
     expressApp.get("/update_mod_partial/:serverName", (req, res) =>
     {
@@ -31,7 +31,7 @@ exports.set = (expressApp) =>
         server.emitPromise("GET_MOD_LIST")
         .then((mods) => 
         {
-            ejs.renderFile("./client/partials/mod_list.ejs", { mods }, (err, compiledHthml) =>
+            ejs.renderFile("./client/partials/settings/mod_list.ejs", { mods }, (err, compiledHthml) =>
             {
                 if (err)
                     res.send(`Error when fetching mods: ${err.message}`);
@@ -52,7 +52,7 @@ exports.set = (expressApp) =>
         server.emitPromise("GET_MAP_LIST")
         .then((maps) => 
         {
-            ejs.renderFile("./client/partials/map_list.ejs", { maps }, (err, compiledHthml) =>
+            ejs.renderFile("./client/partials/settings/map_list.ejs", { maps }, (err, compiledHthml) =>
             {
                 if (err)
                     res.send(`Error when fetching mods: ${err.message}`);

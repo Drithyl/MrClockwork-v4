@@ -213,7 +213,7 @@ function MessageEmbedBuilder()
         }
 
         return _fields[index].value;
-    }
+    };
 
     this.hasMaxFields = () => _fields.length === MAX_FIELDS;
     this.isTitleTooLong = (titleLength) => titleLength > MAX_TITLE_LENGTH;
