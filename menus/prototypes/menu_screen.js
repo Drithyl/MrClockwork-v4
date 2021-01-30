@@ -1,10 +1,10 @@
 
-  const assert = require("../../asserter.js");
+const assert = require("../../asserter.js");
 
-  module.exports = MenuScreen;
+module.exports = MenuScreen;
 
-  function MenuScreen(displayText, behaviour)
-  {
+function MenuScreen(displayText, behaviour)
+{
     assert.isStringOrThrow(displayText);
     assert.isFunctionOrThrow(behaviour);
 
@@ -13,4 +13,4 @@
 
     this.getDisplayText = () => _displayText;
     this.invokeBehaviour = (...args) => _behaviour(...args);
-  }
+}

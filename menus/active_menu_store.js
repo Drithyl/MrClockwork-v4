@@ -13,117 +13,117 @@ var activeMenus = {};
 
 module.exports.startHelpMenu = function(commandContext)
 {
-  const memberId = commandContext.getCommandSenderId();
-  const helpMenuInstance = new HelpMenu(commandContext);
+    const memberId = commandContext.getCommandSenderId();
+    const helpMenuInstance = new HelpMenu(commandContext);
 
-  //finish any previous instances of a menu
-  deleteInstance(memberId);
-  addInstance(helpMenuInstance, memberId, "HELP");
-  
-  return helpMenuInstance.startMenu();
+    //finish any previous instances of a menu
+    deleteInstance(memberId);
+    addInstance(helpMenuInstance, memberId, "HELP");
+
+    return helpMenuInstance.startMenu();
 };
 
 module.exports.startHostGameMenu = function(newGameObject, useDefaults)
 {
-  const memberId = newGameObject.getOrganizerId();
-  const hostMenuInstance = new HostGameMenu(newGameObject, useDefaults);
+    const memberId = newGameObject.getOrganizerId();
+    const hostMenuInstance = new HostGameMenu(newGameObject, useDefaults);
 
-  //finish any previous instances of a menu
-  deleteInstance(memberId);
-  addInstance(hostMenuInstance, memberId, "HOST");
-  
-  return hostMenuInstance.startMenu();
+    //finish any previous instances of a menu
+    deleteInstance(memberId);
+    addInstance(hostMenuInstance, memberId, "HOST");
+
+    return hostMenuInstance.startMenu();
 };
 
 module.exports.startChangeSettingsMenu = function(commandContext)
 {
-  const memberId = commandContext.getCommandSenderId();
-  const changeSettingsMenuInstance = new ChangeSettingsMenu(commandContext);
+    const memberId = commandContext.getCommandSenderId();
+    const changeSettingsMenuInstance = new ChangeSettingsMenu(commandContext);
 
-  //finish any previous instances of a menu
-  deleteInstance(memberId);
-  addInstance(changeSettingsMenuInstance, memberId, "CHANGE_SETTINGS");
-  
-  return changeSettingsMenuInstance.startMenu();
+    //finish any previous instances of a menu
+    deleteInstance(memberId);
+    addInstance(changeSettingsMenuInstance, memberId, "CHANGE_SETTINGS");
+
+    return changeSettingsMenuInstance.startMenu();
 };
 
 module.exports.startChangePlayerPreferencesMenu = function(commandContext)
 {
-  const memberId = commandContext.getCommandSenderId();
-  const changePlayerPreferencesMenuInstance = new ChangePlayerPreferencesMenu(commandContext);
+    const memberId = commandContext.getCommandSenderId();
+    const changePlayerPreferencesMenuInstance = new ChangePlayerPreferencesMenu(commandContext);
 
-  //finish any previous instances of a menu
-  deleteInstance(memberId);
-  addInstance(changePlayerPreferencesMenuInstance, memberId, "CHANGE_PLAYER_PREFERENCES");
-  
-  return changePlayerPreferencesMenuInstance.startMenu();
+    //finish any previous instances of a menu
+    deleteInstance(memberId);
+    addInstance(changePlayerPreferencesMenuInstance, memberId, "CHANGE_PLAYER_PREFERENCES");
+
+    return changePlayerPreferencesMenuInstance.startMenu();
 };
 
 module.exports.removeActiveInstance = function(memberId)
 {
-  deleteInstance(memberId);
+    deleteInstance(memberId);
 };
 
 module.exports.finish = function(userId)
 {
-  console.log("Finishing menu...");
-  return activeMenus[userId].instance.sendMessage(`You have closed this instance.`)
-  .then(() => Promise.resolve(deleteInstance(userId)));
+    console.log("Finishing menu...");
+    return activeMenus[userId].instance.sendMessage(`You have closed this instance.`)
+    .then(() => Promise.resolve(deleteInstance(userId)));
 };
 
 module.exports.isReservedCommand = function(command)
 {
-  return backRegexp.test(command) === true || endRegexp.test(command) === true;
+    return backRegexp.test(command) === true || endRegexp.test(command) === true;
 };
 
 module.exports.handleInput = function(userId, messageWrapper)
 {
-  const activeMenuInstance = activeMenus[userId].instance;
-  const input = messageWrapper.getMessageContent();
+    const activeMenuInstance = activeMenus[userId].instance;
+    const input = messageWrapper.getMessageContent();
 
-  activeMenuInstance.handleInput(input);
+    activeMenuInstance.handleInput(input);
 };
 
 module.exports.isUserInMenu = function(userId)
 {
-  return activeMenus[userId] != null;
+    return activeMenus[userId] != null;
 };
 
 module.exports.getUsersMenuType = function(userId)
 {
-  if (activeMenus[userId] != null)
-  {
-    return activeMenus[userId].type;
-  }
+    if (activeMenus[userId] != null)
+    {
+        return activeMenus[userId].type;
+    }
 
-  else return null;
+    else return null;
 };
 
 module.exports.hasHostingInstanceWithGameNameReserved = (name) =>
 {
-  for (var id in activeMenus)
-  {
-    var instance = activeMenus[id];
+    for (var id in activeMenus)
+    {
+        var instance = activeMenus[id];
 
-    if (typeof instance.hasGameNameReserved === "function" && instance.hasGameNameReserved(name) === true)
-      return true;
-  }
+        if (typeof instance.hasGameNameReserved === "function" && instance.hasGameNameReserved(name) === true)
+        return true;
+    }
 
-  return false;
+    return false;
 };
 
 function addInstance(instance, userId, type)
 {
-  console.log("Adding instance to list.");
-  activeMenus[userId] = {instance, type};
+    console.log("Adding instance to list.");
+    activeMenus[userId] = {instance, type};
 }
 
 function deleteInstance(userId)
 {
-  if (activeMenus[userId] != null && typeof activeMenus[userId].kill === "string")
-  {
-    activeMenus[userId].instance.kill();
-  }
+    if (activeMenus[userId] != null && typeof activeMenus[userId].kill === "string")
+    {
+        activeMenus[userId].instance.kill();
+    }
 
-  delete activeMenus[userId];
+    delete activeMenus[userId];
 }
