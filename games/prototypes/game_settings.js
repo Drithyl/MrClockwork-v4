@@ -17,19 +17,50 @@ function GameSettings(parentGame)
         });
     };
 
-    this.forEachSettingObject = (doSomething) =>
-    {
-        _settingObjectsArray.forEach((settingObject) =>
-        {
-            doSomething(settingObject, settingObject.getKey());
-        });
-    };
-
-    this.forEachSettingObjectPromise = (doSomething) =>
+    this.forEachSetting = (fnToCallOnSettings) =>
     {
         return _settingObjectsArray.forEachPromise((settingObject, index, nextPromise) =>
         {
-            return Promise.resolve(doSomething(settingObject, settingObject.getKey()))
+            return Promise.resolve(fnToCallOnSettings(settingObject, settingObject.getKey()))
+            .then(() => nextPromise())
+            .catch((err) => Promise.reject(err));
+        });
+    };
+
+    this.forEachPublicSetting = (fnToCallOnSettings) =>
+    {
+        return _settingObjectsArray.forEachPromise((settingObject, index, nextPromise) =>
+        {
+            if (settingObject.isPublic() === false)
+                return nextPromise();
+
+            return Promise.resolve(fnToCallOnSettings(settingObject, settingObject.getKey()))
+            .then(() => nextPromise())
+            .catch((err) => Promise.reject(err));
+        });
+    };
+
+    this.forEachChangeableSetting = (fnToCallOnSettings) =>
+    {
+        return _settingObjectsArray.forEachPromise((settingObject, index, nextPromise) =>
+        {
+            if (settingObject.canBeChangedAfterCreation() === false)
+                return nextPromise();
+                
+            return Promise.resolve(fnToCallOnSettings(settingObject, settingObject.getKey()))
+            .then(() => nextPromise())
+            .catch((err) => Promise.reject(err));
+        });
+    };
+
+    this.forEachChangeablePublicSetting = (fnToCallOnSettings) =>
+    {
+        return _settingObjectsArray.forEachPromise((settingObject, index, nextPromise) =>
+        {
+            if (settingObject.canBeChangedAfterCreation() === false || settingObject.isPublic() === false)
+                return nextPromise();
+                
+            return Promise.resolve(fnToCallOnSettings(settingObject, settingObject.getKey()))
             .then(() => nextPromise())
             .catch((err) => Promise.reject(err));
         });
@@ -38,7 +69,7 @@ function GameSettings(parentGame)
     this.loadJSONData = (jsonData) =>
     {
         console.log("Loading JSON data...", jsonData);
-        this.forEachSettingObject((settingObject, settingKey) =>
+        this.forEachSetting((settingObject, settingKey) =>
         {
             var loadedValue = jsonData[settingKey];
 
@@ -55,7 +86,7 @@ function GameSettings(parentGame)
     {
         var setting;
 
-        this.forEachSettingObject((settingObject, settingKey) =>
+        this.forEachSetting((settingObject, settingKey) =>
         {
             if (keyToMatch.toLowerCase() === settingKey.toLowerCase())
                 setting = settingObject;
@@ -69,7 +100,7 @@ function GameSettings(parentGame)
         var server = _parentGame.getServer();
         var flags = ["--tcpserver", "--ipadr", server.getIp(), "--port", _parentGame.getPort()];
 
-        this.forEachSettingObject((settingObject) =>
+        this.forEachSetting((settingObject) =>
         {
             const key = settingObject.getKey();
             const flag = settingObject.translateValueToCmdFlag();
@@ -87,7 +118,7 @@ function GameSettings(parentGame)
     {
         var stringList = "";
 
-        this.forEachSettingObject((settingObject, settingKey) =>
+        this.forEachSetting((settingObject, settingKey) =>
         {
             var name = settingObject.getName();
             var readableValue = settingObject.getReadableValue();
@@ -101,14 +132,11 @@ function GameSettings(parentGame)
     {
         var stringList = "";
 
-        this.forEachSettingObject((settingObject, settingKey) =>
+        this.forEachPublicSetting((settingObject, settingKey) =>
         {
-            if (settingKey !== "masterPassword")
-            {
-                var name = settingObject.getName();
-                var readableValue = settingObject.getReadableValue();
-                stringList += `${name}: ${readableValue}\n`;
-            }
+            var name = settingObject.getName();
+            var readableValue = settingObject.getReadableValue();
+            stringList += `${name}: ${readableValue}\n`;
         });
 
         return stringList;
@@ -118,7 +146,7 @@ function GameSettings(parentGame)
     {
         var jsonData = {};
 
-        this.forEachSettingObject((settingObject, settingKey) =>
+        this.forEachSetting((settingObject, settingKey) =>
         {
             jsonData[settingKey] = settingObject.getValue();
         });

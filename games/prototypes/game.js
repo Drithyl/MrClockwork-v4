@@ -165,7 +165,7 @@ function Game()
     {
         const settingsObject = this.getSettingsObject();
 
-        return settingsObject.forEachSettingObjectPromise((settingObject, settingKey) =>
+        return settingsObject.forEachSetting((settingObject, settingKey) =>
         {
             var loadedValue = inputValues[settingKey];
 
