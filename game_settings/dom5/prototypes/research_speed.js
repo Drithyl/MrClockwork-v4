@@ -69,5 +69,3 @@ function ResearchSpeed()
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf
 ResearchSpeed.prototype = new GameSetting(key);
 ResearchSpeed.prototype.constructor = ResearchSpeed;
-
-ResearchSpeed.prototype.getPrompt = () => ResearchSpeed.prototype.getDescription();

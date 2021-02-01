@@ -63,5 +63,3 @@ function ArtifactForging()
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf
 ArtifactForging.prototype = new GameSetting(key);
 ArtifactForging.prototype.constructor = ArtifactForging;
-
-ArtifactForging.prototype.getPrompt = () => ArtifactForging.prototype.getDescription();

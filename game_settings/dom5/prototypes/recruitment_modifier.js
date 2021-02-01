@@ -55,5 +55,3 @@ function RecruitmentModifier()
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf
 RecruitmentModifier.prototype = new GameSetting(key);
 RecruitmentModifier.prototype.constructor = RecruitmentModifier;
-
-RecruitmentModifier.prototype.getPrompt = () => RecruitmentModifier.prototype.getDescription();

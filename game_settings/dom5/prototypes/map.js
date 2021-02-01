@@ -56,5 +56,3 @@ function Map(parentGameObject)
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf
 Map.prototype = new GameSetting(key);
 Map.prototype.constructor = Map;
-
-Map.prototype.getPrompt = () => Map.prototype.getDescription();

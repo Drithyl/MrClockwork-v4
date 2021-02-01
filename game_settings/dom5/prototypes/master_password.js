@@ -53,5 +53,3 @@ function MasterPassword()
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf
 MasterPassword.prototype = new GameSetting(key);
 MasterPassword.prototype.constructor = MasterPassword;
-
-MasterPassword.prototype.getPrompt = () => MasterPassword.prototype.getDescription();

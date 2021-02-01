@@ -20,6 +20,8 @@ function GameSetting(key)
     this.getDefault = () => _defaultValue;
     this.getDescription = () => _description;
     this.getParseRegexp = () => _regexp;
+    this.getPrompt = () => `**${this.getName()}:** ${this.getDescription()}`;
+
     this.isExpectedFormat = (inputStr) => 
     {
         if (assert.isString(inputStr) === false)

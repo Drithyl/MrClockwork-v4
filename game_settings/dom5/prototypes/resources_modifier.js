@@ -55,5 +55,3 @@ function ResourcesModifier()
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf
 ResourcesModifier.prototype = new GameSetting(key);
 ResourcesModifier.prototype.constructor = ResourcesModifier;
-
-ResourcesModifier.prototype.getPrompt = () => ResourcesModifier.prototype.getDescription();

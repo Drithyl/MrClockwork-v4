@@ -65,5 +65,3 @@ function Scoregraphs()
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf
 Scoregraphs.prototype = new GameSetting(key);
 Scoregraphs.prototype.constructor = Scoregraphs;
-
-Scoregraphs.prototype.getPrompt = () => Scoregraphs.prototype.getDescription();

@@ -50,5 +50,3 @@ function AscensionPoints()
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf
 AscensionPoints.prototype = new GameSetting(key);
 AscensionPoints.prototype.constructor = AscensionPoints;
-
-AscensionPoints.prototype.getPrompt = () => AscensionPoints.prototype.getDescription();

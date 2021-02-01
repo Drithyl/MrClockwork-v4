@@ -64,5 +64,3 @@ function Era()
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf
 Era.prototype = new GameSetting(key);
 Era.prototype.constructor = Era;
-
-Era.prototype.getPrompt = () => Era.prototype.getDescription();

@@ -67,5 +67,3 @@ function TimerSetting()
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf
 TimerSetting.prototype = new GameSetting(key);
 TimerSetting.prototype.constructor = TimerSetting;
-
-TimerSetting.prototype.getPrompt = () => TimerSetting.prototype.getDescription();

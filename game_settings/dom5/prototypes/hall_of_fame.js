@@ -55,5 +55,3 @@ function HallOfFame()
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf
 HallOfFame.prototype = new GameSetting(key);
 HallOfFame.prototype.constructor = HallOfFame;
-
-HallOfFame.prototype.getPrompt = () => HallOfFame.prototype.getDescription();

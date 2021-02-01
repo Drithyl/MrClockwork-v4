@@ -61,5 +61,3 @@ function EventRarity()
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf
 EventRarity.prototype = new GameSetting(key);
 EventRarity.prototype.constructor = EventRarity;
-
-EventRarity.prototype.getPrompt = () => EventRarity.prototype.getDescription();

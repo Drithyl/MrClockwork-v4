@@ -55,5 +55,3 @@ function MagicSites()
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf
 MagicSites.prototype = new GameSetting(key);
 MagicSites.prototype.constructor = MagicSites;
-
-MagicSites.prototype.getPrompt = () => MagicSites.prototype.getDescription();

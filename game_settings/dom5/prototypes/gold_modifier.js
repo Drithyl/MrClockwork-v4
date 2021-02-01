@@ -53,5 +53,3 @@ function GoldModifier()
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf
 GoldModifier.prototype = new GameSetting(key);
 GoldModifier.prototype.constructor = GoldModifier;
-
-GoldModifier.prototype.getPrompt = () => GoldModifier.prototype.getDescription();

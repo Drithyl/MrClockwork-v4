@@ -90,5 +90,3 @@ function Mods(parentGameObject)
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf
 Mods.prototype = new GameSetting(key);
 Mods.prototype.constructor = Mods;
-
-Mods.prototype.getPrompt = () => Mods.prototype.getDescription();

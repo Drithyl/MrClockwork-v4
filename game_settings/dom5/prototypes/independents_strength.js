@@ -55,5 +55,3 @@ function IndependentsStrength()
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf
 IndependentsStrength.prototype = new GameSetting(key);
 IndependentsStrength.prototype.constructor = IndependentsStrength;
-
-IndependentsStrength.prototype.getPrompt = () => IndependentsStrength.prototype.getDescription();

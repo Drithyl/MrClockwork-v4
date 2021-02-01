@@ -127,5 +127,3 @@ function AiNations(parentGameObject)
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf
 AiNations.prototype = new GameSetting(key);
 AiNations.prototype.constructor = AiNations;
-
-AiNations.prototype.getPrompt = () => AiNations.prototype.getDescription();

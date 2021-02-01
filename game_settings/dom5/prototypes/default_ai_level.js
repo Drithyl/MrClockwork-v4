@@ -83,5 +83,3 @@ function DefaultAiLevel()
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf
 DefaultAiLevel.prototype = new GameSetting(key);
 DefaultAiLevel.prototype.constructor = DefaultAiLevel;
-
-DefaultAiLevel.prototype.getPrompt = () => DefaultAiLevel.prototype.getDescription();

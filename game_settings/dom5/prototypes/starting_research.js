@@ -65,5 +65,3 @@ function StartingResearch()
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf
 StartingResearch.prototype = new GameSetting(key);
 StartingResearch.prototype.constructor = StartingResearch;
-
-StartingResearch.prototype.getPrompt = () => StartingResearch.prototype.getDescription();

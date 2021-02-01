@@ -55,5 +55,3 @@ function StartingProvinces()
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf
 StartingProvinces.prototype = new GameSetting(key);
 StartingProvinces.prototype.constructor = StartingProvinces;
-
-StartingProvinces.prototype.getPrompt = () => StartingProvinces.prototype.getDescription();

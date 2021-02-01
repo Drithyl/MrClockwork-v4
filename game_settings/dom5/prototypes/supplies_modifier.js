@@ -55,5 +55,3 @@ function SuppliesModifier()
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf
 SuppliesModifier.prototype = new GameSetting(key);
 SuppliesModifier.prototype.constructor = SuppliesModifier;
-
-SuppliesModifier.prototype.getPrompt = () => SuppliesModifier.prototype.getDescription();

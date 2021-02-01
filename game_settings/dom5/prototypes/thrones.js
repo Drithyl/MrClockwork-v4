@@ -66,5 +66,3 @@ function Thrones()
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf
 Thrones.prototype = new GameSetting(key);
 Thrones.prototype.constructor = Thrones;
-
-Thrones.prototype.getPrompt = () => Thrones.prototype.getDescription();

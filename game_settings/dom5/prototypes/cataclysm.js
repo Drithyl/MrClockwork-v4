@@ -53,5 +53,3 @@ function Cataclysm()
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf
 Cataclysm.prototype = new GameSetting(key);
 Cataclysm.prototype.constructor = Cataclysm;
-
-Cataclysm.prototype.getPrompt = () => Cataclysm.prototype.getDescription();

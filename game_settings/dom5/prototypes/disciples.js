@@ -70,5 +70,3 @@ function Disciples()
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf
 Disciples.prototype = new GameSetting(key);
 Disciples.prototype.constructor = Disciples;
-
-Disciples.prototype.getPrompt = () => Disciples.prototype.getDescription();

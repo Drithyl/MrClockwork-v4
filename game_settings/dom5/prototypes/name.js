@@ -64,5 +64,3 @@ function Name()
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf
 Name.prototype = new GameSetting(key);
 Name.prototype.constructor = Name;
-
-Name.prototype.getPrompt = () => Name.prototype.getDescription();

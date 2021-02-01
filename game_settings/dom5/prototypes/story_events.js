@@ -71,5 +71,3 @@ function StoryEvents()
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf
 StoryEvents.prototype = new GameSetting(key);
 StoryEvents.prototype.constructor = StoryEvents;
-
-StoryEvents.prototype.getPrompt = () => StoryEvents.prototype.getDescription();

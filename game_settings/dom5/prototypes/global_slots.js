@@ -55,5 +55,3 @@ function GlobalSlots()
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf
 GlobalSlots.prototype = new GameSetting(key);
 GlobalSlots.prototype.constructor = GlobalSlots;
-
-GlobalSlots.prototype.getPrompt = () => GlobalSlots.prototype.getDescription();
