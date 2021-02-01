@@ -33,7 +33,7 @@ function Cataclysm()
         var value = this.getValue();
     
         if (value > 0)
-            return [`--cataclysm ${value}`];
+            return [`--cataclysm`, value];
     
         else return [];
     };
@@ -43,7 +43,7 @@ function Cataclysm()
         if (Cataclysm.prototype.isExpectedFormat(input) === false)
             throw new SemanticError(`Invalid value format for cataclysm.`);
 
-        return +input.replace(/\D*/, "");
+        return +input.replace(/\D*/g, "");
     }
 }
 
