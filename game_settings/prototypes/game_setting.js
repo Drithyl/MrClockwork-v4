@@ -22,6 +22,9 @@ function GameSetting(key)
     this.getParseRegexp = () => _regexp;
     this.getPrompt = () => `**${this.getName()}:** ${this.getDescription()}`;
 
+    this.isPublic = () => true;
+    this.canBeChangedAfterCreation = () => true;
+
     this.isExpectedFormat = (inputStr) => 
     {
         if (assert.isString(inputStr) === false)
