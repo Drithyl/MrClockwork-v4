@@ -19,6 +19,11 @@ function GameSettings(parentGame)
 
     this.forEachSetting = (fnToCallOnSettings) =>
     {
+        _settingObjectsArray.forEach((settingObject) => fnToCallOnSettings(settingObject, settingObject.getKey()));
+    };
+
+    this.forEachSettingPromise = (fnToCallOnSettings) =>
+    {
         return _settingObjectsArray.forEachPromise((settingObject, index, nextPromise) =>
         {
             return Promise.resolve(fnToCallOnSettings(settingObject, settingObject.getKey()))
@@ -29,40 +34,28 @@ function GameSettings(parentGame)
 
     this.forEachPublicSetting = (fnToCallOnSettings) =>
     {
-        return _settingObjectsArray.forEachPromise((settingObject, index, nextPromise) =>
+        this.forEachSetting((settingObject, key) =>
         {
-            if (settingObject.isPublic() === false)
-                return nextPromise();
-
-            return Promise.resolve(fnToCallOnSettings(settingObject, settingObject.getKey()))
-            .then(() => nextPromise())
-            .catch((err) => Promise.reject(err));
+            if (settingObject.isPublic() === true)
+                fnToCallOnSettings(settingObject, key);
         });
     };
 
     this.forEachChangeableSetting = (fnToCallOnSettings) =>
     {
-        return _settingObjectsArray.forEachPromise((settingObject, index, nextPromise) =>
+        this.forEachSetting((settingObject, key) =>
         {
-            if (settingObject.canBeChangedAfterCreation() === false)
-                return nextPromise();
-                
-            return Promise.resolve(fnToCallOnSettings(settingObject, settingObject.getKey()))
-            .then(() => nextPromise())
-            .catch((err) => Promise.reject(err));
+            if (settingObject.canBeChangedAfterCreation() === true)
+                fnToCallOnSettings(settingObject, key);
         });
     };
 
     this.forEachChangeablePublicSetting = (fnToCallOnSettings) =>
     {
-        return _settingObjectsArray.forEachPromise((settingObject, index, nextPromise) =>
+        this.forEachSetting((settingObject, key) =>
         {
-            if (settingObject.canBeChangedAfterCreation() === false || settingObject.isPublic() === false)
-                return nextPromise();
-                
-            return Promise.resolve(fnToCallOnSettings(settingObject, settingObject.getKey()))
-            .then(() => nextPromise())
-            .catch((err) => Promise.reject(err));
+            if (settingObject.canBeChangedAfterCreation() === true && settingObject.isPublic() === true)
+                fnToCallOnSettings(settingObject, key);
         });
     };
 
@@ -78,7 +71,7 @@ function GameSettings(parentGame)
             if (loadedValue !== undefined)
                 settingObject.fromJSON(loadedValue);
 
-            else console.log(`${settingKey} is undefined.`);
+            else throw new Error(`${settingKey} is undefined.`);
         });
     };
 
