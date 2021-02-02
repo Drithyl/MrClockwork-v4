@@ -60,7 +60,10 @@ function Disciples()
         if (Disciples.prototype.isExpectedFormat(input) === false)
             throw new SemanticError(`Invalid value format for disciples.`);
 
-        return +input.replace(/\D*/, "");
+        if (+input == 0 || +input == 1 || +input == 2)
+            return +input;
+
+        else throw new SemanticError(`Unexpected value for the artifact forging: ${input}`);
     }
 }
 

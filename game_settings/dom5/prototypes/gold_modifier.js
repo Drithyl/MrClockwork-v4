@@ -1,4 +1,5 @@
 
+const assert = require("../../../asserter.js");
 const GameSetting = require("../../prototypes/game_setting.js");
 const SemanticError = require("../../../errors/custom_errors.js").SemanticError;
 
@@ -43,7 +44,10 @@ function GoldModifier()
         if (GoldModifier.prototype.isExpectedFormat(input) === input)
             throw new SemanticError(`Invalid value format for the gold modifier.`);
 
-        return +input.replace(/\D*/, "");
+        if (assert.isInteger(+input) === true && +input >= 50 && +input <= 300)
+            return +input;
+
+        else throw new SemanticError(`Unexpected value for the gold modifier: ${input}`);
     }
 }
 

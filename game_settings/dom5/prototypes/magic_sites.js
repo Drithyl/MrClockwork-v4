@@ -1,4 +1,5 @@
 
+const assert = require("../../../asserter.js");
 const GameSetting = require("../../prototypes/game_setting.js");
 const SemanticError = require("../../../errors/custom_errors.js").SemanticError;
 
@@ -45,7 +46,10 @@ function MagicSites()
         if (MagicSites.prototype.isExpectedFormat(input) === false)
             throw new SemanticError(`Invalid value format for magic sites.`);
 
-        return +input.replace(/\D*/, "");
+        if (assert.isInteger(+input) === true && +input >= 0 && +input <= 75)
+            return +input;
+
+        else throw new SemanticError(`Unexpected value for the magic sites: ${input}`);
     }
 }
 

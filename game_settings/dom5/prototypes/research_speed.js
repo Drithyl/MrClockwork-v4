@@ -1,4 +1,5 @@
 
+const assert = require("../../../asserter.js");
 const GameSetting = require("../../prototypes/game_setting.js");
 const dom5SettingFlags = require("../../../json/dominions5_setting_flags.json");
 const SemanticError = require("../../../errors/custom_errors.js").SemanticError;
@@ -59,7 +60,10 @@ function ResearchSpeed()
         if (ResearchSpeed.prototype.isExpectedFormat(input) === false)
             throw new SemanticError(`Invalid value format for the research speed.`);
 
-        return +input.replace(/\D*/, "");
+        if (assert.isInteger(+input) === true && +input >= dom5SettingFlags.VERY_EASY_RESEARCH_SPEED && +input <= dom5SettingFlags.VERY_HARD_RESEARCH_SPEED)
+            return +input;
+
+        else throw new SemanticError(`Unexpected value for the research speed: ${input}`);
     }
 }
 

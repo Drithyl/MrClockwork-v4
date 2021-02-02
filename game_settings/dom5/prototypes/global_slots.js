@@ -1,4 +1,5 @@
 
+const assert = require("../../../asserter.js");
 const GameSetting = require("../../prototypes/game_setting.js");
 const SemanticError = require("../../../errors/custom_errors.js").SemanticError;
 
@@ -45,7 +46,10 @@ function GlobalSlots()
         if (GlobalSlots.prototype.isExpectedFormat(input) === false)
             throw new SemanticError(`Invalid value format for global slots.`);
 
-        return +input.replace(/\D*/, "");
+        if (assert.isInteger(+input) === true && +input >= 3 && +input <= 9)
+            return +input;
+
+        else throw new SemanticError(`Unexpected value for the global slots: ${input}`);
     }
 }
 

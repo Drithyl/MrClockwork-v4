@@ -51,7 +51,10 @@ function EventRarity()
         if (EventRarity.prototype.isExpectedFormat(input) === false)
             throw new SemanticError(`Invalid value format for the event rarity.`);
 
-        return +input.replace(/\D*/, "");
+        if (+input == 1 || +input == 2)
+            return +input;
+
+        else throw new SemanticError(`Unexpected value for the event rarity: ${input}`);
     }
 }
 

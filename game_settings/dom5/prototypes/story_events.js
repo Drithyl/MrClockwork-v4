@@ -1,4 +1,5 @@
 
+const assert = require("../../../asserter.js");
 const GameSetting = require("../../prototypes/game_setting.js");
 const dom5SettingFlags = require("../../../json/dominions5_setting_flags.json");
 const SemanticError = require("../../../errors/custom_errors.js").SemanticError;
@@ -61,7 +62,10 @@ function StoryEvents()
         if (StoryEvents.prototype.isExpectedFormat(input) === false)
             throw new SemanticError(`Invalid value format for the story events.`);
 
-        return +input.replace(/\D*/, "");
+        if (assert.isInteger(+input) === true && +input >= dom5SettingFlags.NO_STORY_EVENTS && +input <= dom5SettingFlags.FULL_STORY_EVENTS)
+            return +input;
+
+        else throw new SemanticError(`Unexpected value for the story events: ${input}`);
     }
 }
 

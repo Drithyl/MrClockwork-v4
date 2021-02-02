@@ -54,6 +54,8 @@ function ArtifactForging()
 
         else if (+input == 1)
             return true;
+
+        else throw new SemanticError(`Unexpected value for the artifact forging: ${input}`);
     }
 }
 

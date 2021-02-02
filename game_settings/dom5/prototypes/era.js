@@ -54,7 +54,10 @@ function Era()
         if (Era.prototype.isExpectedFormat(input) === false)
             throw new SemanticError(`Invalid value format for era.`);
 
-        return +input.replace(/\D*/, "");
+        if (+input == 1 || +input == 2 || +input == 3)
+            return +input;
+
+        else throw new SemanticError(`Unexpected value for the era: ${input}`);
     }
 }
 

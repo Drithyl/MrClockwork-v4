@@ -1,4 +1,5 @@
 
+const assert = require("../../../asserter.js");
 const GameSetting = require("../../prototypes/game_setting.js");
 const SemanticError = require("../../../errors/custom_errors.js").SemanticError;
 const dom5SettingFlags = require("../../../json/dominions5_setting_flags.json");
@@ -73,7 +74,10 @@ function DefaultAiLevel()
         if (DefaultAiLevel.prototype.isExpectedFormat(input) === false)
             throw new SemanticError(`Invalid value format for the default AI level.`);
 
-        return +input.replace(/\D*/, "");
+        if (assert.isInteger(+input) === true && +input >= dom5SettingFlags.NO_GOING_AI && +input <= dom5SettingFlags.IMPOSSIBLE_PLAYER_AI)
+            return +input;
+
+        else throw new SemanticError(`Unexpected value for the default ai level: ${input}`);
     }
 }
 
