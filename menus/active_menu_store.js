@@ -37,8 +37,10 @@ module.exports.startHostGameMenu = function(newGameObject, useDefaults)
 
 module.exports.startChangeSettingsMenu = function(commandContext)
 {
-    const memberId = commandContext.getCommandSenderId();
-    const changeSettingsMenuInstance = new ChangeSettingsMenu(commandContext);
+    const memberWrapper = commandContext.getSenderGuildMemberWrapper();
+    const memberId = memberWrapper.getId();
+    const gameObject = commandContext.getGameTargetedByCommand();
+    const changeSettingsMenuInstance = new ChangeSettingsMenu(gameObject, memberWrapper);
 
     //finish any previous instances of a menu
     deleteInstance(memberId);

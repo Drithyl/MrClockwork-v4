@@ -1,121 +1,81 @@
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//TODO: finish change settings menu
-
-
-
-/*
-
-const rw = require("../../reader_writer.js");
+const assert = require("../../asserter.js");
+const MenuScreen = require("./menu_screen.js");
 const config = require("../../config/config.json");
-const menuNavigator = require("./menu_navigator.js");
-const messenger = require("../../discord/messenger.js");
-const settingsLoader = require("../../games/settings/loader.js");
-const settingsChanger = require("../../games/settings/settings_changer.js");
-const MAIN_MENU = "MAIN_MENU";*/
+const MenuStructure = require("./menu_structure.js");
 
-module.exports.start = function(member, game)
+module.exports = ChangeSettingsMenu;
+
+function ChangeSettingsMenu(gameObject, memberWrapper)
 {
-  console.log(`Starting change settings menu for ${member.user.username} in game ${game.name}.`);
-  let instance = createSettingsMenu(member, game);
+    const settingsObject = gameObject.getSettingsObject();
+    const _menuStructure = new MenuStructure(memberWrapper);
+    const _screens = _createMenuScreens(_menuStructure, settingsObject);
 
-  return instance.goTo(MAIN_MENU)
-  .then(() => Promise.resolve(instance))
-  .catch((err) => Promise.reject(new Error(`Could not send ${MAIN_MENU} menu to start the change settings instance:\n\n${err.stack}`)));
-};
+    _menuStructure.addIntroductionMessage(`Choose a number from the menu below to change a setting, or type \`${config.prefix}finish\` to finish changing settings.:\n\n`);
+    _menuStructure.addScreens(..._screens);
 
-function createSettingsMenu(member, game)
-{
-  console.log(`Creating menu...`);
-  let data = {game};
-  let settings = settingsLoader.getAll(game.gameType);
-  let navigator = menuNavigator.create(member, data)
-  .addMenu(MAIN_MENU, "", displayMainMenu.bind(null, game.gameType), selectSettingHandler);
-
-  settings.forEach((setting, i) =>
-  {
-    navigator.addMenu(
-    setting.key,
-    setting.name,
-    displaySelectedSetting.bind(null, setting, game),
-    changeSettingHandler
-  );});
-
-  console.log("Created.");
-  return navigator;
+    return _menuStructure;
 }
 
-function selectSettingHandler(instance, selectedSettingInput)
+
+function _createMenuScreens(menuStructure, settingsObject)
 {
-  let game = instance.data.game;
-  let selectedSetting = settingsLoader.getByIndex(game.gameType, selectedSettingInput);
-  let menu = displaySelectedSetting(selectedSetting, game);
+    const menuScreens = [];
+    const mainScreen = _createMainScreen(menuStructure, settingsObject);
 
-  if (selectedSetting == null)
-  {
-    console.log(`Selected setting input <${selectedSettingInput}> is invalid.`);
-    return instance.member.send(`You must select a number from the list to change the setting. If you're done changing settings, type \`${config.prefix}finish\`.`);
-  }
+    menuScreens.push(mainScreen);
 
-  console.log(`Member selected setting ${selectedSetting.name} to be changed.`);
-  instance.data.selectedSetting = selectedSetting;
-  instance.goTo(selectedSetting.key)
-  .catch((err) => rw.log("error", `Could not send ${selectedSetting.key} menu:\n\n${err.message}`));
-}
-
-function changeSettingHandler(instance, newSettingValue)
-{
-  let changedValue;
-  let member = instance.member;
-  let game = instance.data.game;
-  let selectedSetting = instance.data.selectedSetting;
-
-  return settingsChanger.change(game, selectedSetting.key, newSettingValue)
-  .then((changedValue) =>
-  {
-    rw.log("general", `${game.name}'s ${selectedSetting.name} setting was changed to ${changedValue}`);
-    return messenger.send(member, `The setting was changed successfully.`)
-    .then(() =>
+    settingsObject.forEachChangeableSetting((setting) => 
     {
-      //send setting change to the game's channel if it's not the master password
-      if (selectedSetting.key !== "masterPassword" && game.channel != null)
-      {
-        return messenger.send(game.channel, `Game setting was changed: ${selectedSetting.toInfo(game.settings[selectedSetting.key], game).toBox()}`);
-      }
+        const display = setting.getPrompt();
 
-      return Promise.resolve();
+        menuScreens.push(new MenuScreen(display, (input) =>
+        {
+            setting.setValue(input);
+            _updateMainScreenDisplay(mainScreen, settingsObject);
+            menuStructure.goBackToPreviousScreen();
+        }));
     });
-  })
-  .then(() => instance.goTo(MAIN_MENU))
-  .catch((err) => messenger.sendError(member, `An error occurred while changing the setting:\n\n${err.message}`));
+
+    return menuScreens;
 }
 
-function displaySelectedSetting(setting, game)
+function _createMainScreen(menuStructure, settingsObject)
 {
-  return `${setting.cue} \n\nCurrent setting is \`${setting.toInfo(game.settings[setting.key], game)}\`.`;
+    const mainScreen = new MenuScreen("", (input) =>
+    {
+        const errStr = "You must type the index number of the setting you wish to change.";
+
+        if (assert.isInteger(+input) === false)
+            return errStr;
+
+        try
+        {
+            menuStructure.goToScreenAtIndex(+input);
+        }
+
+        catch(err)
+        {
+            return errStr;
+        }
+    });
+
+    _updateMainScreenDisplay(mainScreen, settingsObject);
+    return mainScreen;
 }
 
-function displayMainMenu(gameType)
+function _updateMainScreenDisplay(mainScreenObject, settingsObject)
 {
-  var str = `Choose a number from the menu below to change a setting, or type \`${config.prefix}finish\` to finish changing settings.:\n\n`;
+    var i = 1;
+    var mainScreenDisplay = "";
 
-  settingsLoader.getAll(gameType).forEach(function(mod, index)
-  {
-    str += `\t${index}. ${mod.name}.\n`;
-  });
+    settingsObject.forEachChangeableSetting((setting, key) => 
+    {
+        const currentValue = setting.getReadableValue();
+        mainScreenDisplay += `${i}. `.width(4) + `${setting.getName()} `.width(24) + `${currentValue}\n`;
+        i++;
+    });
 
-  return str;
+    mainScreenObject.setDisplayText(mainScreenDisplay.toBox());
 }
