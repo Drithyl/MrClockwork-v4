@@ -15,7 +15,7 @@ function MenuStructure(guildMemberWrapper, contextData)
 
     var _onFinishedMenu = null;
     var _onInputValidated = null;
-    var _currentScreenIndex = null;
+    var _currentScreenIndex = 0;
 
     this.getId = () => _guildMemberWrapper.getId();
 
@@ -27,7 +27,8 @@ function MenuStructure(guildMemberWrapper, contextData)
 
     this.startMenu = () =>
     {
-        return Promise.resolve(() =>
+        return Promise.resolve()
+        .then(() =>
         {
             if (assert.isString(_introductionMessage) === true)
                 return _guildMemberWrapper.sendMessage(_introductionMessage);
