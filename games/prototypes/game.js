@@ -165,7 +165,7 @@ function Game()
     {
         const settingsObject = this.getSettingsObject();
 
-        return settingsObject.forEachSetting((settingObject, settingKey) =>
+        return settingsObject.forEachSettingPromise((settingObject, settingKey) =>
         {
             var loadedValue = inputValues[settingKey];
 
@@ -214,8 +214,8 @@ function Game()
         jsonObject.settings = _settingsObject.toJSON();
         jsonObject.organizerId = _organizerWrapper.getId();
         jsonObject.guildId = _guildWrapper.getId();
-        jsonObject.channelId = _discordJsChannel.id;
-        jsonObject.roleId = _discordJsRole.id;
+        jsonObject.channelId = (_discordJsChannel == null) ? null : _discordJsChannel.id;
+        jsonObject.roleId = (_discordJsRole == null) ? null : _discordJsRole.id;
         return jsonObject;
     };
 }
