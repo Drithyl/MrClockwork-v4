@@ -64,7 +64,7 @@ function DefaultAiLevel()
             return ["--nonewai"];
     
         if (value >= 1 && value <= 6)
-            return [`--newailvl ${value}`];
+            return [`--newailvl`, value];
     
         else return [];
     };
