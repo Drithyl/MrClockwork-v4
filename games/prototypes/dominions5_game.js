@@ -33,6 +33,8 @@ function Dominions5Game()
         .then((list) => Promise.resolve(list.find((nation) => nationFilename === nation.filename) != null));
     };
 
+    _gameObject.forEachPlayerFile = (fnToCall) => _playerFiles.forEachItem((file, id) => fnToCall(file, id));
+
     _gameObject.getPlayerIdControllingNationInGame = (nationIdentifier) =>
     {
         for (var playerId in _playerFiles)
@@ -169,6 +171,7 @@ function Dominions5Game()
 
         else if (_gameObject.getChannel() != null)
             _gameObject.sendStatusEmbed()
+            .then(() => _gameObject.save())
             .catch((err) => console.log(`Could not send status embed: ${err.message}\n`, err.stack));
     };
 
