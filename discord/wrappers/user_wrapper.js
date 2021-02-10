@@ -1,4 +1,6 @@
 
+const messenger = require("../messenger.js");
+
 module.exports = UserWrapper;
 
 function UserWrapper(discordJsUserObject)
@@ -7,4 +9,5 @@ function UserWrapper(discordJsUserObject)
 
   this.getId = () => _discordJsUserObject.id;
   this.getUsername = () => _discordJsUserObject.username;
+  this.sendMessage = (...args) => messenger.send(_discordJsUserObject, ...args);
 }
