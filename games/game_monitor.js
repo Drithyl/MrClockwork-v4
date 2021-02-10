@@ -46,9 +46,6 @@ function _updateDom5Game(game)
 
 function _updateCycle(game)
 {
-    var updateData;
-
-    const gameName = game.getName();
     const lastKnownData = game.getLastKnownData();
 
     //console.log(`${gameName}\tupdating...`);
@@ -56,14 +53,16 @@ function _updateCycle(game)
     return dominions5TcpQuery(game)
     .then((tcpQuery) =>
     {
-        updateData = Object.assign(tcpQuery, _getTcpQueryEvents(tcpQuery, lastKnownData));
+        const updateData = Object.assign(tcpQuery, _getTcpQueryEvents(tcpQuery, lastKnownData));
         game.updateStatusEmbed(updateData);
 
         if (tcpQuery.isServerOnline() === false)
-            return Promise.reject(new Error(`${gameName}\tserver offline; cannot update.`));
+            //return Promise.reject(new Error(`${gameName}\tserver offline; cannot update.`));
+            return Promise.resolve();
 
         else if (tcpQuery.isOnline() === false)
-            return Promise.reject(new Error(`${gameName}\toffline; cannot update.`));
+            //return Promise.reject(new Error(`${gameName}\toffline; cannot update.`));
+            return Promise.resolve();
 
         game.update(updateData);
 
@@ -75,9 +74,9 @@ function _updateCycle(game)
         \tlastKnownMsLeft:\t${updateData.lastKnownMsLeft}
         \tlastKnownTurnNumber:\t${updateData.lastKnownTurnNumber}`);*/
 
-        return _announceEvents(game, updateData);
+        return _announceEvents(game, updateData)
+        .then(() => _processPlayerPreferences(game, updateData));
     })
-    .then(() => _processPlayerPreferences(game, updateData))
     .then(() => game.save())
     .catch((err) => Promise.reject(err));
 }
