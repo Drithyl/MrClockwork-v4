@@ -80,7 +80,8 @@ DominionsPreferences.loadFromJSON = (jsonData) =>
 {
     const preferences = new DominionsPreferences(jsonData.playerId);
 
-    jsonData.reminders.forEach((hourMark) => preferences.addReminderAtHourMark(hourMark));
+    if (assert.isArray(jsonData.reminders) === true)
+        jsonData.reminders.forEach((hourMark) => preferences.addReminderAtHourMark(hourMark));
     
     preferences.setReceiveScores(jsonData.receiveScores);
     preferences.setReceiveBackups(jsonData.receiveBackups);

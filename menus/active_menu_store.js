@@ -1,6 +1,5 @@
 
 const config = require("../config/config.json");
-const messenger = require("../discord/messenger.js");
 const backRegexp = new RegExp(`^${config.prefix}BACK`, "i");
 const endRegexp = new RegExp(`^${config.prefix}FINISH`, "i");
 

@@ -2,8 +2,7 @@
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
-const webSessionsStore = require("../../servers/web_sessions_store.js");
-const playerFileStore = require("../../player_data/player_file_store.js");
+const activeMenuStore = require("../../menus/active_menu_store.js");
 
 const commandData = new CommandData("CHANGE_PLAYER_PREFERENCES");
 

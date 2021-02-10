@@ -41,6 +41,14 @@ function PlayerFile(playerId)
     this.getGamePreferences = (gameName) => _preferencesByGameName[gameName];
     this.getAllGamePreferences = () => _preferencesByGameName;
 
+    this.getEffectiveGamePreferences = (gameName) => 
+    {
+        if (this.hasGamePreferences(gameName) === true)
+            return this.getGamePreferences(gameName);
+
+        else return this.getGlobalPreferences();
+    };
+
     this.setGamePreferences = (gameName, gamePreferences) =>
     {
         assert.isInstanceOfPrototypeOrThrow(gamePreferences, DominionsPreferences);
@@ -49,6 +57,15 @@ function PlayerFile(playerId)
 
     this.removeGamePreferences = (gameName) => delete _preferencesByGameName[gameName];
 
+
+    this.getControlledNationsInGame = (gameName) =>
+    {
+        if (this.hasGameData(gameName) === false)
+            return false;
+
+        const gameData = this.getGameData(gameName);
+        return gameData.getNationsControlledByPlayer();
+    };
 
     this.isControllingNationInGame = (nationFilename, gameName) =>
     {
