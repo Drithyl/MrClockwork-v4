@@ -10,13 +10,13 @@ exports.getId = () => _discordJsBotClient.user.id;
 
 exports.loginToDiscord = () => 
 {
-  console.log("Logging into Discord...");
-  return _discordJsBotClient.login(config.loginToken)
-  .then(() => 
-  {
-    console.log("Bot logged in.");
-    return Promise.resolve(_discordJsBotClient.guilds.cache);
-  });
+    console.log("Logging into Discord...");
+    return _discordJsBotClient.login(config.loginToken)
+    .then(() => 
+    {
+        console.log("Bot logged in.");
+        return Promise.resolve(_discordJsBotClient.guilds.cache);
+    });
 };
 
 //wrappers for discord events caught by the bot client in the DiscordJs library
@@ -39,22 +39,22 @@ exports.addOnBotErrorHandler = (handler) => _discordJsBotClient.on("error", (err
 
 exports.addOnBotJoinedGuildHandler = (handler) =>
 {
-  _discordJsBotClient.on("guildCreate", function onGuildCreate(discordJsGuild) 
-  {
-    //if guild is not on the bot's list, this event triggered because the bot joined a guild
-    if (_discordJsBotClient.hasGuild(discordJsGuild.id) === false)
-      handler(discordJsGuild);
-  });
+    _discordJsBotClient.on("guildCreate", function onGuildCreate(discordJsGuild) 
+    {
+        //if guild is not on the bot's list, this event triggered because the bot joined a guild
+        if (_discordJsBotClient.guilds.cache.has(discordJsGuild.id) === false)
+        handler(discordJsGuild);
+    });
 };
 
 exports.addGuildBecameAvailableHandler = (handler) =>
 {
-  _discordJsBotClient.on("guildCreate", function onGuildBecameAvailable(discordJsGuild) 
-  {
-    //if guild is already on the bot's list, this event triggered because it became available again
-    if (_discordJsBotClient.hasGuild(discordJsGuild.id) === true)
-      handler(discordJsGuild);
-  });
+    _discordJsBotClient.on("guildCreate", function onGuildBecameAvailable(discordJsGuild) 
+    {
+        //if guild is already on the bot's list, this event triggered because it became available again
+        if (_discordJsBotClient.hasGuild(discordJsGuild.id) === true)
+        handler(discordJsGuild);
+    });
 };
 
 exports.fetchUser = (userId) => 
