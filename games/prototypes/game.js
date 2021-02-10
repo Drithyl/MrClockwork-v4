@@ -140,7 +140,7 @@ function Game()
         var data = JSON.stringify(this, null, 2);
         var path = `${config.dataPath}/${config.gameDataFolder}`;
 
-        console.log(`Saving data of game ${name}...`);
+        //console.log(`Saving data of game ${name}...`);
 
         return Promise.resolve()
         .then(() =>
@@ -155,10 +155,13 @@ function Game()
         })
         .then(() => 
         {
-            console.log(`Writing data file...`);
+            //console.log(`Writing data file...`);
             return fsp.writeFile(`${path}/${name}/data.json`, data);
         })
-        .then(() => console.log(`Data for game ${name} saved successfully.`));
+        .then(() => 
+        {
+            //console.log(`Data for game ${name} saved successfully.`);
+        });
     };
 
     this.loadSettingsFromInput = (inputValues) =>
