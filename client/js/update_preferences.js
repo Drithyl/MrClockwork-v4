@@ -23,12 +23,27 @@ $("#preferences_form").submit(function(event)
     const formDataArray = $(this).serializeArray();
     const jsonData = _formDataToJson(formDataArray);
 
-    $.post("/edit_preferences", jsonData)
+    // When using the options object as parameter to ensure that
+    // values are parsed as json in the server (so that booleabs)
+    // are received as that, rather than strings), the done() promise
+    // does not get called, but fail() receives the response as if
+    // it was an error, even though it's not...
+    $.post({
+        url: "/edit_preferences",
+        contentType: "application/json",
+        data: jsonData,
+        dataType: "json"
+    })
     .done((response) =>
     {
         console.log(response);
         $("#bodySection").html(response);
-    });
+    })
+    .fail((response) =>
+    {
+        console.log("FAIL", response);
+        $("#bodySection").html(response.responseText);
+    })
 });
 
 
@@ -71,5 +86,5 @@ function _formDataToJson(serializedArray)
         }
     });
 
-    return jsonData;
+    return JSON.stringify(jsonData);
 }
