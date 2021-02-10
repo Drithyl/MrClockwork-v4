@@ -4,7 +4,10 @@
 <%- include('../partials/body_start.ejs')-%>
 
 <!-- Discord Oauth2 flow: https://discordjs.guide/oauth2/#putting-it-together -->
-<a id="login" style="display: none;" href="https://discord.com/api/oauth2/authorize?client_id=721522017249263737&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Flogin&response_type=code&scope=identify">Identify Yourself</a>
+<!-- <a id="login" style="display: none;" href="https://discord.com/api/oauth2/authorize?client_id=721522017249263737&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Flogin&response_type=code&scope=identify">Identify Yourself</a> -->
+
+<button type="button" class="btn btn-dark btn-lg"><a id="login" href="https://discord.com/api/oauth2/authorize?client_id=721522017249263737&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Flogin&response_type=code&scope=identify">Identify Yourself</a></button>
+
 <script>
 
     function generateRandomString() 
