@@ -43,7 +43,7 @@ exports.addOnBotJoinedGuildHandler = (handler) =>
     {
         //if guild is not on the bot's list, this event triggered because the bot joined a guild
         if (_discordJsBotClient.guilds.cache.has(discordJsGuild.id) === false)
-        handler(discordJsGuild);
+            handler(discordJsGuild);
     });
 };
 
@@ -52,8 +52,8 @@ exports.addGuildBecameAvailableHandler = (handler) =>
     _discordJsBotClient.on("guildCreate", function onGuildBecameAvailable(discordJsGuild) 
     {
         //if guild is already on the bot's list, this event triggered because it became available again
-        if (_discordJsBotClient.hasGuild(discordJsGuild.id) === true)
-        handler(discordJsGuild);
+        if (_discordJsBotClient.guilds.cache.has(discordJsGuild.id) === true)
+            handler(discordJsGuild);
     });
 };
 
