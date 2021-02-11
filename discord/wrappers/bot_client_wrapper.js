@@ -1,5 +1,6 @@
 
 const Discord = require("discord.js");
+const guildStore = require("../guild_store.js");
 const UserWrapper = require("./user_wrapper.js");
 const config = require("../../config/config.json");
 
@@ -41,8 +42,8 @@ exports.addOnBotJoinedGuildHandler = (handler) =>
 {
     _discordJsBotClient.on("guildCreate", function onGuildCreate(discordJsGuild) 
     {
-        //if guild is not on the bot's list, this event triggered because the bot joined a guild
-        if (_discordJsBotClient.guilds.cache.has(discordJsGuild.id) === false)
+        //if guild is not on the guild wrapper store, this event triggered because the bot joined a guild
+        if (guildStore.hasGuildWrapper(discordJsGuild.id) === false)
             handler(discordJsGuild);
     });
 };
