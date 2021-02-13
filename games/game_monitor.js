@@ -232,7 +232,6 @@ function _processNewTurnPreferences(game, turnNumber)
 function _processNewHourPreferences(game, playerTurnData, hourMarkPassed)
 {
     const gameName = game.getName();
-    console.log(playerTurnData);
 
     game.forEachPlayerFile((file) =>
     {
@@ -246,8 +245,6 @@ function _processNewHourPreferences(game, playerTurnData, hourMarkPassed)
             {
                 const nationFullName = controlledNationsByFullName[i];
                 const nationTurnData = playerTurnData.find((nationData) => nationData.name.toLowerCase() === nationFullName.toLowerCase());
-                
-                console.log("Checking for ", nationFullName);
 
                 if (nationTurnData != null)
                 {
