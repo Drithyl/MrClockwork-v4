@@ -549,6 +549,19 @@
         "helpText": "Removes your claim from your submitted pretender."
     },
 
+    "UNDEPLOY_BOT":
+    {
+        "name": "undeploy",
+        "isEnabled": true,
+        "gameTypesSupported": [],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "UNDEPLOY",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "guild",
+        "helpText": "Only useable by the guild's owner. This will attempt to delete all categories, channels and roles that the bot created on deployment."
+    },
+
     "UNSUBSCRIBE_FROM_GAME":
     {
         "name": "unsubscribe",
