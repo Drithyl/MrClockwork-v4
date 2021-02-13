@@ -34,7 +34,21 @@ function GuildWrapper(discordJsGuildObject)
     this.memberHasTrustedRole = (guildMemberWrapper) => guildMemberWrapper.hasRole(guildDataStore.getTrustedRoleId(this.getId())) === true;
     this.memberHasBlitzerRole = (guildMemberWrapper) => guildMemberWrapper.hasRole(guildDataStore.getBlitzerRoleId(this.getId())) === true;
     this.memberHasGameMasterRole = (guildMemberWrapper) => guildMemberWrapper.hasRole(guildDataStore.getBlitzerRoleId(this.getId())) === true;
+    
+    this.wasDiscordElementCreatedByBot = (discordId) =>
+    {
+        const guildData = guildDataStore.getGuildData(this.getId());
 
+        for (var key in guildData)
+        {
+            if (guildData[key] === discordId)
+                return true;
+        }
+
+        return false;
+    };
+
+    this.clearData = (discordId) => guildDataStore.clearGuildData(this.getId(), discordId);
 
     this.postNews = (newsString) => 
     {
@@ -54,6 +68,7 @@ function GuildWrapper(discordJsGuildObject)
     };
 
     this.deployBot = () => guildStore.deployBotOnGuild(this.getId());
+    this.undeployBot = () => guildStore.undeployBotOnGuild(this.getId());
 
     this.findChannel = (channelId) => 
     {

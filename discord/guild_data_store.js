@@ -59,6 +59,32 @@ module.exports.populateGuildDataStore = () =>
 };
 
 module.exports.hasGuildData = (guildId) => loadedGuildData[guildId] != null;
+module.exports.getGuildData = (guildId) =>
+{
+    if (exports.hasGuildData(guildId) === false)
+        return {};
+
+    return Object.assign({}, loadedGuildData[guildId]);
+};
+
+module.exports.clearGuildData = (guildId, discordIdToClear) =>
+{
+    if (exports.hasGuildData(guildId) === false)
+        return Promise.resolve();
+
+    const guildData = loadedGuildData[guildId];
+
+    for (var key in guildData)
+    {
+        if (guildData[key] === discordIdToClear)
+        {
+            delete guildData[key];
+            return _saveGuildData(guildId);
+        }
+    }
+
+    return Promise.resolve();
+};
 
 module.exports.createGuildData = (guildId) =>
 {
@@ -79,7 +105,6 @@ module.exports.createGuildData = (guildId) =>
     console.log("Guild bot data created.");
     return guildData;
 };
-
 
 module.exports.getNewsChannelId = (guildId) => _getId(guildId, newsChannelIdKey);
 module.exports.setNewsChannelId = (guildId, id) => _setId(guildId, newsChannelIdKey, id);

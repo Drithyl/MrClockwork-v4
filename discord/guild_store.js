@@ -236,6 +236,52 @@ exports.deployBotOnGuild = (guildId) =>
     .then((category) => guildDataStore.setBlitzCategoryId(guildId, category.id));
 };
 
+exports.undeployBotOnGuild = (guildId) =>
+{
+    var guildWrapper = this.getGuildWrapperById(guildId);
+
+    const newsChannel = guildWrapper.getNewsChannel();
+    const helpChannel = guildWrapper.getHelpChannel();
+
+    const recruitingCategory = guildWrapper.getRecruitingCategory();
+    const blitzRecruitingCategory = guildWrapper.getBlitzRecruitingCategory();
+    const gameCategory = guildWrapper.getGameCategory();
+    const blitzCategory = guildWrapper.getBlitzCategory();
+
+    const gameMasterRole = guildWrapper.getGameMasterRole();
+    const trustedRole = guildWrapper.getTrustedRole();
+    const blitzerRole = guildWrapper.getBlitzerRole();
+
+    newsChannel.delete()
+    .catch((err) => console.log("Could not delete news channel: ", err));
+
+    helpChannel.delete()
+    .catch((err) => console.log("Could not delete help channel: ", err));
+
+    recruitingCategory.delete()
+    .catch((err) => console.log("Could not delete recruiting category: ", err));
+
+    blitzRecruitingCategory.delete()
+    .catch((err) => console.log("Could not delete blitz recruiting category: ", err));
+
+    gameCategory.delete()
+    .catch((err) => console.log("Could not delete game category: ", err));
+
+    blitzCategory.delete()
+    .catch((err) => console.log("Could not delete blitz category: ", err));
+
+    gameMasterRole.delete()
+    .catch((err) => console.log("Could not delete game master role: ", err));
+
+    trustedRole.delete()
+    .catch((err) => console.log("Could not delete trusted role: ", err));
+
+    blitzerRole.delete()
+    .catch((err) => console.log("Could not delete blitzer role: ", err));
+
+    return Promise.resolve();
+};
+
 exports.updateHelpChannels = (updatedHelpString, idOfGuildToUpdate = "") =>
 {
     var guildToUpdate = this.getGuildWrapperById(idOfGuildToUpdate);

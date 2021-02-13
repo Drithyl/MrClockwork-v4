@@ -27,6 +27,7 @@ exports.addOnGuildUnavailableHandler = (handler) => _discordJsBotClient.on("guil
 exports.addOnGuildDeletedHandler = (handler) => _discordJsBotClient.on("guildBecameUnavailable", (discordJsGuild) => handler(discordJsGuild));
 
 exports.addOnChannelDeletedHandler = (handler) => _discordJsBotClient.on("channelDelete", (discordJsChannel) => handler(discordJsChannel));
+exports.addOnRoleDeletedHandler = (handler) => _discordJsBotClient.on("roleDelete", (discordJsChannel) => handler(discordJsChannel));
 
 exports.addOnMessageReceivedHandler = (handler) => _discordJsBotClient.on("message", (discordJsMessage) => handler(discordJsMessage));
 exports.addOnMessageDeletedHandler = (handler) => _discordJsBotClient.on("messageDelete", (discordJsMessage) => handler(discordJsMessage));
@@ -65,3 +66,13 @@ exports.fetchUser = (userId) =>
     .catch((err) => Promise.reject(err));
 };
 
+this.isCreatorOfDiscordElement = (discordId) =>
+{
+    guildStore.forEachGuild((guildWrapper) =>
+    {
+        if (guildWrapper.wasDiscordElementCreatedByBot(discordId) === true)
+            return true;
+    });
+
+    return false;
+};
