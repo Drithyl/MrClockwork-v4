@@ -7,8 +7,7 @@
             "allow": 
             [
                 "USE_EXTERNAL_EMOJIS", 
-                "MENTION_EVERYONE", 
-                "SEND_TTS_MESSAGES", 
+                "MENTION_EVERYONE",
                 "VIEW_CHANNEL", 
                 "SEND_MESSAGES", 
                 "MANAGE_MESSAGES", 
@@ -28,8 +27,7 @@
             "deny": 
             [
                 "USE_EXTERNAL_EMOJIS", 
-                "MENTION_EVERYONE", 
-                "SEND_TTS_MESSAGES", 
+                "MENTION_EVERYONE",
                 "VIEW_CHANNEL", 
                 "SEND_MESSAGES", 
                 "MANAGE_MESSAGES", 
@@ -47,8 +45,7 @@
             "allow": 
             [
                 "USE_EXTERNAL_EMOJIS", 
-                "MENTION_EVERYONE", 
-                "SEND_TTS_MESSAGES", 
+                "MENTION_EVERYONE",
                 "VIEW_CHANNEL", 
                 "SEND_MESSAGES", 
                 "MANAGE_MESSAGES", 
@@ -68,8 +65,7 @@
             "deny": 
             [
                 "USE_EXTERNAL_EMOJIS", 
-                "MENTION_EVERYONE", 
-                "SEND_TTS_MESSAGES", 
+                "MENTION_EVERYONE",
                 "VIEW_CHANNEL", 
                 "SEND_MESSAGES", 
                 "MANAGE_MESSAGES", 
