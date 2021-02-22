@@ -1,59 +1,91 @@
+
 //Extend functionality of basic types with a few methods
 require("./helper_functions.js").extendPrototypes();
 
+const configHelper = require("./config_helper.js");
 
-//import the modules required for initialization
-const rw = require("./reader_writer.js");
-const config = require("./config/config.json");
-const discord = require("./discord/discord.js");
-const expressServer = require("./servers/express_server.js");
-const gamesStore = require("./games/ongoing_games_store.js");
-const timeEventsEmitter = require("./time_events_emitter.js");
-const hostServerStore = require("./servers/host_server_store.js");
-const playerFileStore = require("./player_data/player_file_store.js");
+var config;
+var rw;
+var discord;
+var expressServer;
+var gamesStore;
+var timeEventsEmitter;
+var hostServerStore;
+var playerFileStore;
 
 
-//Begin initialization
-discord.startDiscordIntegration()
+Promise.resolve()
 .then(() =>
 {
-    console.log("Finished Discord integration.");
-    return playerFileStore.populate();
-})
-.then(() =>
-{
-    console.log("Player data loaded.");
-    return Promise.resolve(hostServerStore.populate());
+    // Set up config by asking user in console
+    if (configHelper.hasConfig() === false)
+        return configHelper.askConfigQuestions();
+
+    else return Promise.resolve();
 })
 .then(() =>
 {
-    console.log("Finished populating server store.");
-    return Promise.resolve(gamesStore.loadAll());
-})
-.then(() => 
-{
-    console.log("Games loaded.");
-    return expressServer.startListeningOnPort(config.hostServerConnectionPort);
-})
-.then(() => 
-{
-    console.log(`Listening for connections on port ${config.hostServerConnectionPort}.`);
-    return timeEventsEmitter.startCounting();
-})
-.then(() => 
-{
-    console.log("Initialized successfully.");
-})
-.catch((err) => 
-    {
-    console.log(err);
-    process.exit();
+    // Load config and then begin initialization
+    config = require("./config/config.json");
+
+    _initializeComponents();
 });
+
+
+function _initializeComponents()
+{
+    //import the modules required for initialization
+    rw = require("./reader_writer.js");
+    discord = require("./discord/discord.js");
+    expressServer = require("./servers/express_server.js");
+    gamesStore = require("./games/ongoing_games_store.js");
+    timeEventsEmitter = require("./time_events_emitter.js");
+    hostServerStore = require("./servers/host_server_store.js");
+    playerFileStore = require("./player_data/player_file_store.js");
+
+    //Begin initialization
+    discord.startDiscordIntegration()
+    .then(() =>
+    {
+        console.log("Finished Discord integration.");
+        return playerFileStore.populate();
+    })
+    .then(() =>
+    {
+        console.log("Player data loaded.");
+        return Promise.resolve(hostServerStore.populate());
+    })
+    .then(() =>
+    {
+        console.log("Finished populating server store.");
+        return Promise.resolve(gamesStore.loadAll());
+    })
+    .then(() => 
+    {
+        console.log("Games loaded.");
+        return expressServer.startListeningOnPort(config.hostServerConnectionPort);
+    })
+    .then(() => 
+    {
+        console.log(`Listening for connections on port ${config.hostServerConnectionPort}.`);
+        return timeEventsEmitter.startCounting();
+    })
+    .then(() => 
+    {
+        console.log("Initialized successfully.");
+    })
+    .catch((err) => 
+    {
+        console.log(err);
+        process.exit();
+    });
+}
 
 
 //Catch process exceptions and log them here
 process.on("unhandledRejection", err =>
 {
+    console.log(err);
     rw.log(["error"], `Uncaught Promise Error: \n${err.stack}`);
 });
 
