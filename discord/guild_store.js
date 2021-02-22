@@ -98,6 +98,13 @@ module.exports.addGuild = (discordJsGuild) =>
     guildWrappers[guildId] = guildWrapper;
 };
 
+module.exports.removeGuild = (discordJsGuild) =>
+{
+    const guildId = discordJsGuild.id;
+    delete guildWrappers[guildId];
+    return guildDataStore.removeGuildData(guildId);
+};
+
 exports.deployBotOnGuild = (guildId) =>
 {
     var botId = botClientWrapper.getId();

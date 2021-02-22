@@ -23,6 +23,8 @@ exports.loginToDiscord = () =>
 //wrappers for discord events caught by the bot client in the DiscordJs library
 exports.addOnLoggedInHandler = (handler) => _discordJsBotClient.on("ready", () => handler());
 
+exports.addOnBotLeftGuildHandler = (handler) => _discordJsBotClient.on("guildDelete", (discordJsGuild) => handler(discordJsGuild));
+
 exports.addOnGuildUnavailableHandler = (handler) => _discordJsBotClient.on("guildUnavailable", (discordJsGuild) => handler(discordJsGuild));
 exports.addOnGuildDeletedHandler = (handler) => _discordJsBotClient.on("guildBecameUnavailable", (discordJsGuild) => handler(discordJsGuild));
 

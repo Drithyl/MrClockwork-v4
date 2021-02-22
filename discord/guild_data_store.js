@@ -106,6 +106,34 @@ module.exports.createGuildData = (guildId) =>
     return guildData;
 };
 
+module.exports.removeGuildData = (guildId) =>
+{
+    const pathToGuildData = `${config.dataPath}/${config.guildDataFolder}`;
+
+    console.log("Removing guild data...");
+    delete loadedGuildData[guildId];
+
+    return Promise.resolve()
+    .then(() =>
+    {
+        if (fs.existsSync(`${pathToGuildData}/${guildId}/data.json`) === true)
+            return fsp.unlink(`${pathToGuildData}/${guildId}/data.json`);
+
+        else return Promise.resolve();
+    })
+    .then(() => 
+    {
+        if (fs.existsSync(`${pathToGuildData}/${guildId}`) === true)
+            return fsp.rmdir(`${pathToGuildData}/${guildId}`);
+
+        else return Promise.resolve();
+    })
+    .then(() => 
+    {
+        console.log(`Data for guild ${guildId} removed.`);
+    });
+};
+
 module.exports.getNewsChannelId = (guildId) => _getId(guildId, newsChannelIdKey);
 module.exports.setNewsChannelId = (guildId, id) => _setId(guildId, newsChannelIdKey, id);
 module.exports.getNewsChannelBotPermissionOverwrites = (allowOrDeny) => permissionOverwritesConfig[helpChannelIdKey]["bot"][allowOrDeny];
