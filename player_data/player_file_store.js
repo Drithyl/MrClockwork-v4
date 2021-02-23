@@ -3,6 +3,7 @@ const fsp = require("fs").promises;
 const asserter = require("../asserter.js");
 const config = require("../config/config.json");
 const PlayerFile = require("./prototypes/player_file.js");
+const gameStore = require("../games/ongoing_games_store.js");
 
 const _playerFileStore = {};
 
@@ -29,6 +30,35 @@ exports.populate = () =>
     .catch((err) => Promise.reject(err));
 };
 
+exports.clearObsoleteData = () =>
+{
+    return _playerFileStore.forEachPromise((playerFile, playerId, nextPromise) =>
+    {
+        var wasDataCleared = false;
+        const gameDataList = playerFile.getAllGameData();
+
+        gameDataList.forEachItem((gameData, gameName) =>
+        {
+            if (gameStore.hasOngoingGameByName(gameName) === false)
+            {
+                playerFile.removeGameData(gameName);
+                playerFile.removeGamePreferences(gameName);
+                wasDataCleared = true;
+            }
+        });
+
+        if (wasDataCleared === false)
+            return nextPromise();
+        
+        return exports.savePlayerFile(playerId)
+        .then(() => nextPromise())
+        .catch((err) =>
+        {
+            console.log(`Could not save pruned player file ${playerId}: ${err.message}\n\n${err.stack}`);
+            nextPromise();
+        });
+    });
+};
 
 exports.addPlayerFile = (playerId) =>
 {

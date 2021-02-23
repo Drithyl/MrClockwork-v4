@@ -406,6 +406,20 @@
         "helpText": "[Dev Only] Posts a message across all clockwork_news channels in all the Discord guilds where the bot is present."
     },
 
+    "PRUNE_DATA":
+    {
+        "name": "prunedata",
+        "isEnabled": true,
+        "isDevOnly": true,
+        "gameTypesSupported": [],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "PRUNEDATA",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "dm",
+        "helpText": "[Dev Only] Prunes obsolete player data, like leftover game data or preferences from games that do not exist anymore."
+    },
+
     "REMOVE_PRETENDER":
     {
         "name": "remove",
