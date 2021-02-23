@@ -11,7 +11,7 @@ function SocketWrapper(socketIoObject)
 
     this.getId = () => _socketIoObject.id;
 
-    this.close = () => _socketIoObject.close();
+    this.close = (shouldCloseConnection = true) => _socketIoObject.disconnect(shouldCloseConnection);
 
     this.onDisconnect = (fnToCall) => _socketIoObject.on("disconnect", () => fnToCall(this));
 
