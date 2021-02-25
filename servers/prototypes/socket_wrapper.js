@@ -36,7 +36,7 @@ function SocketWrapper(socketIoObject)
             setTimeout(function handleTimeout()
             {
                 if (receivedResponse === false)
-                    reject(new TimeoutError("No response from socket."));
+                    reject(new TimeoutError(`Request ${trigger} received no response from socket. Data sent was:\n\n${data}`));
 
             }, 60000);
         });
