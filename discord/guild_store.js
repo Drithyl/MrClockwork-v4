@@ -296,17 +296,20 @@ exports.updateHelpChannels = (updatedHelpString, idOfGuildToUpdate = "") =>
     if (guildToUpdate != null)
         return guildToUpdate.updateHelpChannel(updatedHelpString);
 
-    else
+    return guildWrappers.forEachPromise((wrapper, guildId, nextPromise) =>
     {
-        return this.forEachGuildAsync((guildWrapper, index, next) =>
+        console.log(`Updating guild ${wrapper.getName()}...`);
+
+        return wrapper.updateHelpChannel(updatedHelpString)
+        .then(() => 
         {
-          return guildWrapper.updateHelpChannel(updatedHelpString)
-          .then(() => next())
-          .catch((err) => 
-          {
+            console.log(`${wrapper.getName()} help channel updated.`);
+            return nextPromise();
+        })
+        .catch((err) => 
+        {
             console.log(`Error updating ${guildWrapper.getName()}: ${err.message}`);
             return next(); 
-          });
         });
-    }
+    });
 };

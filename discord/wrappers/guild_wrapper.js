@@ -61,10 +61,17 @@ function GuildWrapper(discordJsGuildObject)
         var helpChannel = this.getHelpChannel();
 
         if (helpChannel == null)
+        {
+            console.log(`Help channel for ${this.getName()} does not exist; cannot update.`);
             return Promise.resolve();
+        }
 
         return _clearChannel(helpChannel)
-        .then(() => messenger.send(helpChannel, updatedHelpString, { prepend: "", append: "" }));
+        .then(() => 
+        {
+            console.log(`${this.getName()}'s help channel cleared; sending new help string.`);
+            messenger.send(helpChannel, updatedHelpString, { prepend: "", append: "" });
+        });
     };
 
     this.deployBot = () => guildStore.deployBotOnGuild(this.getId());
