@@ -1,7 +1,18 @@
 
 const fs = require("fs");
+const path = require("path");
 const readline = require("readline");
+const config = require("./config/config.json");
 const exampleConfig = require("./config/example.config.json");
+
+
+exports.buildDataPath = () =>
+{
+    if (config.dataPath.startsWith(".") === true)
+        config.dataPath = path.resolve(__dirname, config.dataPath);
+
+    return config;
+};
 
 exports.hasConfig = () => fs.existsSync("./config/config.json");
 
@@ -13,8 +24,11 @@ exports.askConfigQuestions = () =>
     {
         config.loginToken = answer;
     })
-    .then(() => _promisifiedQuestion("Input root path to bot data: ", (answer) =>
+    .then(() => _promisifiedQuestion("Input root path to bot data (Enter for default): ", (answer) =>
     {
+        if (answer === "")
+            return Promise.resolve();
+
         if (fs.existsSync(answer) === false)
             return Promise.reject("Path does not exist: ");
 

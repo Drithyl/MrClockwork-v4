@@ -9,5 +9,8 @@ config/trusted_server_data.json
 #node modules
 node_modules/
 
+#app data
+data/
+
 
 package-lock.json
