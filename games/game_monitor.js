@@ -50,6 +50,9 @@ function _updateCycle(game)
 
     //console.log(`${gameName}\tupdating...`);
 
+    if (game.getServer() == null)
+        return Promise.resolve();
+
     return dominions5TcpQuery(game)
     .then((tcpQuery) =>
     {

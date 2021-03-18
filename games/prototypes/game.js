@@ -84,7 +84,7 @@ function Game()
     this.getServerId = () => (_hostServer == null) ? null : _hostServer.getId();
     this.setServer = (hostServer) => _hostServer = hostServer;
 
-    this.getIp = () => _hostServer.getIp();
+    this.getIp = () => (_hostServer == null) ? null : _hostServer.getIp();
     
     this.isOnlineCheck = () => 
     {
