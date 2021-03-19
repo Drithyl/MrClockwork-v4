@@ -10,9 +10,9 @@ const logTagsToPaths = {
     "upload": `${logsPath}/upload.txt`
 };
 
-if (fs.existsSync(config.tmpDir) === false)
+if (fs.existsSync(logsPath) === false)
 {
-	fs.mkdirSync(config.tmpDir);
+	fs.mkdirSync(logsPath);
 }
 
 module.exports.copyFile = function(source, target)
