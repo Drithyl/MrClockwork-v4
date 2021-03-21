@@ -1,12 +1,13 @@
 
 const fs = require("fs");
+const path = require("path");
 const fsp = require("fs").promises;
 const config = require("../config/config.json");
 const pathToData = `${config.dataPath}/pending_channels.json`;
 var channelsPendingHostingByUserId = {};
 
 if (fs.existsSync(pathToData) === true)
-    channelsPendingHostingByUserId = require(pathToData);
+    channelsPendingHostingByUserId = require(path.resolve(__dirname, "../", pathToData));
 
 exports.save = () =>
 {
