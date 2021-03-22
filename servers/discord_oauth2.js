@@ -1,10 +1,12 @@
 
+
 const fetch = require("node-fetch");
+const config = require("../config/config.json");
 
 /** data to make the request for the authorization code */
 const data = {
-    client_id: "721522017249263737",
-    client_secret: "VcIQNdz-uGcgqzaSI_j7xikr-jQVrl7j",
+    client_id: config.discordClientId,
+    client_secret: config.discordClientSecret,
 
     /** where the authentication info will be sent; must be the same as the
      *  authorized redirect in https://discord.com/developers/applications/721522017249263737/oauth2
@@ -28,7 +30,7 @@ const data = {
  */
 exports.authenticate = (urlObject) =>
 {
-    data.code = urlObject.query.code;
+    data.code = urlObject.searchParams.get("code");
 
     if (data.code == null)
         return Promise.reject(new Error(`Access code not found.`));

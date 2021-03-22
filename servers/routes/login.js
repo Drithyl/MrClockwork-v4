@@ -8,9 +8,9 @@ exports.set = (expressApp) =>
 {
     expressApp.get("/login", (req, res) =>
     {
-        const urlObject = url.parse(req.url, true);
+        const urlObject = new url.URL("http://www." + req.hostname + req.originalUrl);
 
-        console.log("Login request received with urlObject: " + urlObject.query.code);
+        console.log("Login request received with urlObject: " + urlObject.searchParams.get("code"));
 
         oauth2.authenticate(urlObject)
         .then((userInfo) => 
