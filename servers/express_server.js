@@ -1,21 +1,43 @@
 
 
 const _express = require("express");
+
 const _expressApp = _express();
-const _expressServer = require('http').Server(_expressApp);
-const _ioObject = require('socket.io')(_expressServer);
+const _expressAppHttps = _express();
+
+const _expressHttpServer = require('http').Server(_expressApp);
+const _expressHttpsServer = require('http').Server(_expressAppHttps);
+
+const _ioObject = require('socket.io')(_expressHttpServer);
 const _router = require("./web_router.js");
 const _hostServerStore = require("./host_server_store.js");
 const SocketWrapper = require("./prototypes/socket_wrapper.js");
 
-exports.startListeningOnPort = (port) => 
+exports.startListening = (port) => 
 {
     _router.setMiddlewares(_expressApp, _express);
     _router.setRoutes(_expressApp);
 
-    _expressServer.listen(port, () => 
+    _expressHttpServer.listen(port, () => 
     {
-        console.log(`Express HTTP server running on port ${_expressServer.address().port}`);
+        console.log(`Express HTTP server running on port ${_expressHttpServer.address().port}`);
+    });
+
+    _ioObject.on("connection", (socket) => 
+    {
+        const wrapper = new SocketWrapper(socket);
+        _requestServerData(wrapper);
+    });
+};
+
+exports.startListeningSsl = (port) => 
+{
+    _router.setMiddlewares(_expressAppHttps, _express);
+    _router.setRoutes(_expressAppHttps);
+
+    _expressHttpsServer.listen(port, () => 
+    {
+        console.log(`Express HTTP server running on port ${_expressHttpsServer.address().port}`);
     });
 
     _ioObject.on("connection", (socket) => 

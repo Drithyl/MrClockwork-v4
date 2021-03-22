@@ -63,11 +63,13 @@ function _initializeComponents()
     .then(() => 
     {
         console.log("Games loaded.");
-        return expressServer.startListeningOnPort(config.hostServerConnectionPort);
+        expressServer.startListeningSsl(config.hostServerSslConnectionPort);
+        expressServer.startListening(config.hostServerConnectionPort);
+        return Promise.resolve();
     })
     .then(() => 
     {
-        console.log(`Listening for connections on port ${config.hostServerConnectionPort}.`);
+        console.log(`Listening for connections on ports ${config.hostServerConnectionPort} and ${config.hostServerSslConnectionPort}.`);
         return timeEventsEmitter.startCounting();
     })
     .then(() => 
