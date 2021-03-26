@@ -79,17 +79,17 @@ function _initializeHttpsServer()
         return console.log("HTTPS private key not found; skipping HTTPS server initialization.");
 
     
-    expressAppHttps = _express();
+    _expressAppHttps = _express();
 
     // Read HTTPS file contents
     const privateKey = fs.readFileSync(config.httpsPrivateKeyPath);
     const certificate = fs.readFileSync(config.httpsCertificatePath);
     
     // Create HTTPS server
-    expressHttpsServer = https.createServer({
+    _expressHttpsServer = https.createServer({
         key: privateKey,
         cert: certificate
-    }, expressAppHttps);
+    }, _expressAppHttps);
 
     console.log("HTTPS server initialized.");
 }
