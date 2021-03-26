@@ -12,7 +12,7 @@ const data = {
      *  authorized redirect in https://discord.com/developers/applications/721522017249263737/oauth2
      *  and the same as the redirect specified in the OAuth2 URL in the index.html page
      */
-    redirect_uri: "http://localhost:3000/login",
+    redirect_uri: config.discordRedirectUri,
 
     /** authorization_code will give us refresh tokens so the user does not need to go through
      *  the process every time: https://discordjs.guide/oauth2/#oauth2-flows
