@@ -36,7 +36,14 @@ exports.startListening = (port) =>
 
 exports.isHttpsAvailable = () =>
 {
-    return _expressHttpsServer != null;
+    if (_expressHttpsServer != null)
+    {
+        console.log("HTTPS server available to use.");
+        return true;
+    }
+
+    console.log("HTTPS server is not available to use.");
+    return false;
 };
 
 exports.startListeningSsl = (port) => 
@@ -84,6 +91,7 @@ function _initializeHttpsServer()
         cert: certificate
     }, expressAppHttps);
 
+    console.log("HTTPS server initialized.");
 }
 
 function _requestServerData(socketWrapper)

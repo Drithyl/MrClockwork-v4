@@ -66,13 +66,13 @@ function _initializeComponents()
 
         if (expressServer.isHttpsAvailable() === true)
             expressServer.startListeningSsl(config.hostServerSslConnectionPort);
-            
+
         expressServer.startListening(config.hostServerConnectionPort);
         return Promise.resolve();
     })
     .then(() => 
     {
-        console.log(`Listening for connections on ports ${config.hostServerConnectionPort} and ${config.hostServerSslConnectionPort}.`);
+        
         return timeEventsEmitter.startCounting();
     })
     .then(() => 
