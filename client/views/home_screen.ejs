@@ -7,10 +7,10 @@
 
 <div id="info">Welcome!</div>
 
-<% if (typeof discordRedirectUri === "string") { %>
+<% if (typeof oAuth2Url === "string") { %>
 
-    <% console.log("discordRedirectUri: " + discordRedirectUri); %>
-    <button type="button" class="btn btn-dark btn-lg"><a id="login" href="<%=discordRedirectUri %>">Identify Yourself</a></button>
+    <% console.log("oAuth2URL: " + oAuth2Url); %>
+    <button type="button" class="btn btn-dark btn-lg"><a id="login" href="<%=oAuth2Url %>">Identify Yourself</a></button>
 
 <% } else { %>
 
