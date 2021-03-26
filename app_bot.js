@@ -63,7 +63,10 @@ function _initializeComponents()
     .then(() => 
     {
         console.log("Games loaded.");
-        expressServer.startListeningSsl(config.hostServerSslConnectionPort);
+
+        if (expressServer.isHttpsAvailable() === true)
+            expressServer.startListeningSsl(config.hostServerSslConnectionPort);
+            
         expressServer.startListening(config.hostServerConnectionPort);
         return Promise.resolve();
     })

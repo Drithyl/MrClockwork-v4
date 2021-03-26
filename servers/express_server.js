@@ -1,17 +1,21 @@
 
-
 const _express = require("express");
+const config = require("../config/config.json");
 
 const _expressApp = _express();
-const _expressAppHttps = _express();
+var _expressAppHttps;
 
 const _expressHttpServer = require('http').Server(_expressApp);
-const _expressHttpsServer = require('http').Server(_expressAppHttps);
+var _expressHttpsServer;
 
 const _ioObject = require('socket.io')(_expressHttpServer);
 const _router = require("./web_router.js");
 const _hostServerStore = require("./host_server_store.js");
 const SocketWrapper = require("./prototypes/socket_wrapper.js");
+
+
+_initializeHttpsServer();
+
 
 exports.startListening = (port) => 
 {
@@ -30,8 +34,16 @@ exports.startListening = (port) =>
     });
 };
 
+exports.isHttpsAvailable = () =>
+{
+    return _expressHttpsServer != null;
+};
+
 exports.startListeningSsl = (port) => 
 {
+    if (exports.isHttpsAvailable() === false)
+        throw new Error(`HTTPS server not available. One of the certificate files was probably not found.`);
+
     _router.setMiddlewares(_expressAppHttps, _express);
     _router.setRoutes(_expressAppHttps);
 
@@ -46,6 +58,33 @@ exports.startListeningSsl = (port) =>
         _requestServerData(wrapper);
     });
 };
+
+
+function _initializeHttpsServer()
+{
+    const fs = require("fs");
+    const https = require("https");
+
+    if (fs.existsSync(config.httpsCertificatePath) === false)
+        return console.log("HTTPS certificate not found; skipping HTTPS server initialization.");
+        
+    if (fs.existsSync(config.httpsPrivateKeyPath) === false)
+        return console.log("HTTPS private key not found; skipping HTTPS server initialization.");
+
+    
+    expressAppHttps = _express();
+
+    // Read HTTPS file contents
+    const privateKey = fs.readFileSync(config.httpsPrivateKeyPath);
+    const certificate = fs.readFileSync(config.httpsCertificatePath);
+    
+    // Create HTTPS server
+    expressHttpsServer = https.createServer({
+        key: privateKey,
+        cert: certificate
+    }, expressAppHttps);
+
+}
 
 function _requestServerData(socketWrapper)
 {
