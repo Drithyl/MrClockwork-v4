@@ -28,7 +28,7 @@ function SocketWrapper(socketIoObject)
                 receivedResponse = true;
 
                 if (errMessage != null)
-                    return reject(new SocketResponseError(errMessage));
+                    return reject(new SocketResponseError(`Request ${trigger} response error: ${errMessage}`));
 
                 else return resolve(returnData);
             });
