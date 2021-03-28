@@ -37,12 +37,8 @@ exports.startListening = (port) =>
 exports.isHttpsAvailable = () =>
 {
     if (_expressHttpsServer != null)
-    {
-        console.log("HTTPS server available to use.");
         return true;
-    }
 
-    console.log("HTTPS server is not available to use.");
     return false;
 };
 
