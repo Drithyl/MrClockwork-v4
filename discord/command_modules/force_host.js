@@ -28,6 +28,6 @@ function _behaviour(commandContext)
 {
     const gameObject = commandContext.getGameTargetedByCommand();
 
-    return gameObject.emitPromiseWithGameDataToServer("FORCE_HOST")
+    return gameObject.forceHost()
     .then(() => commandContext.respondToCommand(`The turn will start processing in a few seconds.`));
 }

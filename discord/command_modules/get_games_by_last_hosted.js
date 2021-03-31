@@ -44,8 +44,8 @@ function _getGamesSortedByLastHosted()
 
     arrayOfOngoingGames.sort((a, b) => 
     {
-        const lastHostedA = a.getLastKnownData().lastTurnTimestamp;
-        const lastHostedB = b.getLastKnownData().lastTurnTimestamp;
+        const lastHostedA = a.getLastKnownStatus().getLastTurnTimeStamp();
+        const lastHostedB = b.getLastKnownStatus().getLastTurnTimeStamp();
 
         return a.getName() - b.getName() && lastHostedB - lastHostedA;
     });
@@ -82,8 +82,8 @@ function _embedSortedGuildGames(sortedGamesArray, guild)
         const server = game.getServer();
         const serverName = server.getName();
 
-        const lastKnownData = game.getLastKnownData();
-        const lastHostedDate = new Date(lastKnownData.lastTurnTimestamp).toDateString();
+        const lastKnownStatus = game.getLastKnownStatus();
+        const lastHostedDate = new Date(lastKnownStatus.getLastTurnTimeStamp()).toDateString();
 
         var fieldValue = `\n${channel}\`${serverName} ${ip}`;
 
@@ -127,8 +127,8 @@ function _formatLastHostedString(game)
     const guild = game.getGuild();
     const guildName = guild.getName();
 
-    const lastKnownData = game.getLastKnownData();
-    const lastTurnTimestampDate = new Date(lastKnownData.lastTurnTimestamp).toDateString();
+    const lastKnownStatus = game.getLastKnownStatus();
+    const lastTurnTimestampDate = new Date(lastKnownStatus.getLastTurnTimeStamp()).toDateString();
 
     const server = game.getServer();
     const serverName = server.getName();

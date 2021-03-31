@@ -1,12 +1,9 @@
 
-const dominions5TcpQuery = require("./prototypes/dominions5_tcp_query.js");
+const assert = require("../asserter.js");
 const botClientWrapper = require("../discord/wrappers/bot_client_wrapper.js");
+const { queryDominions5Game } = require("./prototypes/dominions5_status.js");
 
 const UPDATE_INTERVAL = 10000;
-const IN_LOBBY = "Game is being setup";
-const STARTED = "Game is active";
-const SERVER_OFFLINE = "Host server offline";
-const GAME_OFFLINE = "Game offline";
 
 var monitoredGames = {};
 
@@ -35,7 +32,7 @@ function _updateDom5Game(game)
         })
         .catch((err) => 
         {
-            console.log(`${gameName}\t${err.message}`);
+            console.log(`${gameName}\t${err.message}\n\n${err.stack}`);
             
             if (monitoredGames[gameName] != null)
                 _updateDom5Game(game);
@@ -46,36 +43,57 @@ function _updateDom5Game(game)
 
 function _updateCycle(game)
 {
-    const lastKnownData = game.getLastKnownData();
+    const lastKnownStatus = game.getLastKnownStatus();
 
     //console.log(`${gameName}\tupdating...`);
 
     if (game.getServer() == null)
         return Promise.resolve();
 
-    return dominions5TcpQuery(game)
-    .then((tcpQuery) =>
+    return queryDominions5Game(game)
+    .then((updatedStatus) =>
     {
-        const updateData = Object.assign(tcpQuery, _getTcpQueryEvents(tcpQuery, lastKnownData));
+        if (game.isEnforcingTimer() === false)
+            return Promise.resolve(updatedStatus);
+
+        updatedStatus.copyTimerValues(lastKnownStatus);
+
+        if (updatedStatus.isPaused() === false)
+            updatedStatus.moveTimerBy(UPDATE_INTERVAL);
+
+        return Promise.resolve(updatedStatus);
+    })
+    .then((updatedStatus) =>
+    {
+        const gameEvents = _getGameEvents(updatedStatus, lastKnownStatus);
+        const updateData = Object.assign(updatedStatus, gameEvents);
+
         game.updateStatusEmbed(updateData);
 
-        if (tcpQuery.isServerOnline() === false)
-            //return Promise.reject(new Error(`${gameName}\tserver offline; cannot update.`));
+
+        if (updatedStatus.isServerOnline() === false)
+            //return Promise.reject(new Error(`${game.getName()}\tserver offline; cannot update.`));
             return Promise.resolve();
 
-        else if (tcpQuery.isOnline() === false)
-            //return Promise.reject(new Error(`${gameName}\toffline; cannot update.`));
+        else if (updatedStatus.isOnline() === false)
+            //return Promise.reject(new Error(`${game.getName()}\toffline; cannot update.`));
             return Promise.resolve();
+            
+        if (game.isEnforcingTimer() === true)
+            _handleUpdatedStatus(game, updateData);
+
+
+        console.log(`${game.getName()}\treceived updated data:\n
+        \tcurrentStatus:\t\t${updateData.getStatus()}
+        \tcurrentMsLeft:\t\t${updateData.getMsLeft()}
+        \tcurrentTurnNumber:\t${updateData.getTurnNumber()}
+        \tcurrent isPaused:\t${updateData.isPaused()}\n
+        \tlastKnownStatus:\t${lastKnownStatus.getStatus()}
+        \tlastKnownMsLeft:\t${lastKnownStatus.getMsLeft()}
+        \tlastKnownTurnNumber:\t${lastKnownStatus.getTurnNumber()}
+        \tlastKnown isPaused:\t${lastKnownStatus.isPaused()}`);
 
         game.update(updateData);
-
-        /*console.log(`${gameName}\treceived updated data:\n
-        \tcurrentStatus:\t\t${updateData.status}
-        \tcurrentMsLeft:\t\t${updateData.msLeft}
-        \tcurrentTurnNumber:\t${updateData.turnNumber}
-        \tlastKnownStatus:\t${updateData.lastKnownStatus}
-        \tlastKnownMsLeft:\t${updateData.lastKnownMsLeft}
-        \tlastKnownTurnNumber:\t${updateData.lastKnownTurnNumber}`);*/
 
         return _announceEvents(game, updateData)
         .then(() => _processPlayerPreferences(game, updateData));
@@ -84,38 +102,48 @@ function _updateCycle(game)
     .catch((err) => Promise.reject(err));
 }
 
-function _getTcpQueryEvents(tcpQuery, lastKnownData)
+function _handleUpdatedStatus(game, updatedData)
 {
-    const currentStatus = tcpQuery.status;
-    const currentTurnNumber = tcpQuery.turnNumber;
+    if (updatedData.isNewTurn === true || updatedData.didGameStart === true)
+    {
+        const timerSetting = game.getSettingsObject().getTimerSetting();
+        const timePerTurnObject = timerSetting.getValue();
+        const msPerTurn = timePerTurnObject.getMsLeft();
+        
+        updatedData.setMsLeft(msPerTurn);
+    }
 
-    const { lastKnownMsLeft, 
-            lastKnownStatus, 
-            lastTurnTimestamp, 
-            lastKnownTurnNumber } = lastKnownData;
+    else if (updatedData.getMsLeft() <= 0 && updatedData.isPaused() === false)
+        game.forceHost();
+}
+
+function _getGameEvents(updatedStatus, lastKnownStatus)
+{
+    const currentTurnNumber = updatedStatus.getTurnNumber();
+
+    const lastKnownMsLeft = lastKnownStatus.getMsLeft();
+    const lastTurnTimestamp = lastKnownStatus.getLastTurnTimestamp();
+    const lastKnownTurnNumber = lastKnownStatus.getTurnNumber();
             
     const lastKnownHourMark = Math.floor(lastKnownMsLeft / 1000 / 3600);
-    const currentHourMark = Math.floor(tcpQuery.msLeft / 1000 / 3600);
+    const currentHourMark = Math.floor(updatedStatus.getMsLeft() / 1000 / 3600);
 
     const events = {
 
-        didServerGoOffline: currentStatus === SERVER_OFFLINE && lastKnownStatus !== SERVER_OFFLINE,
-        didGameGoOffline:   currentStatus === GAME_OFFLINE && lastKnownStatus !== GAME_OFFLINE,
-        isServerBackOnline: currentStatus !== SERVER_OFFLINE && lastKnownStatus === SERVER_OFFLINE,
-        isGameBackOnline:   currentStatus !== GAME_OFFLINE && lastKnownStatus === GAME_OFFLINE,
-        didGameStart:       currentStatus === STARTED && lastKnownStatus === IN_LOBBY,
-        didGameRestart:     currentStatus === IN_LOBBY && lastKnownStatus === STARTED,
+        didServerGoOffline: updatedStatus.isServerOnline() === false && lastKnownStatus.isServerOnline() === true,
+        didGameGoOffline:   updatedStatus.isOnline() === false && lastKnownStatus.isOnline === true,
+        isServerBackOnline: updatedStatus.isServerOnline() === true && lastKnownStatus.isServerOnline() === false,
+        isGameBackOnline:   updatedStatus.isOnline() === true && lastKnownStatus.isOnline() === false,
+        didGameStart:       updatedStatus.isOngoing() === true && lastKnownStatus.isInLobby() === true,
+        didGameRestart:     updatedStatus.isInLobby() === true && lastKnownStatus.isOngoing() === true,
         didHourPass:        lastKnownHourMark !== currentHourMark,
         isNewTurn:          currentTurnNumber > lastKnownTurnNumber,
         wasTurnRollbacked:  currentTurnNumber < lastKnownTurnNumber,
-        lastTurnTimestamp,
-        lastKnownStatus,
-        lastKnownTurnNumber,
-        lastKnownMsLeft
+        lastTurnTimestamp
     };
 
     if (events.isNewTurn === true)
-        events.lastTurnTimestamp = Date.now();
+        updatedStatus.setLastTurnTimestamp(Date.now());
 
     return events;
 }
@@ -149,13 +177,13 @@ function _announceEvents(game, updateData)
     else if (updateData.isNewTurn === true)
     {
         console.log(`${gameName}\tnew turn.`);
-        return game.sendGameAnnouncement(`Turn ${updateData.turnNumber} has arrived.`);
+        return game.sendGameAnnouncement(`Turn ${updateData.getTurnNumber()} has arrived.`);
     }
 
     else if (updateData.wasTurnRollbacked === true)
     {
         console.log(`${gameName}\trollbacked turn.`);
-        return game.sendGameAnnouncement(`The game has been rollbacked to turn ${updateData.turnNumber}.`);
+        return game.sendGameAnnouncement(`The game has been rollbacked to turn ${updateData.getTurnNumber()}.`);
     }
 
     else if (updateData.isServerBackOnline === true)
@@ -170,12 +198,12 @@ function _announceEvents(game, updateData)
 function _processPlayerPreferences(game, updateData)
 {
     if (updateData.isNewTurn === true)
-        _processNewTurnPreferences(game, updateData.turnNumber);
+        _processNewTurnPreferences(game, updateData.getTurnNumber());
 
     else if (updateData.didHourPass === true)
     {
-        const hourMarkPassed = Math.ceil(updateData.msLeft / 1000 / 3600);
-        _processNewHourPreferences(game, updateData.players, hourMarkPassed);
+        const hourMarkPassed = Math.ceil(updateData.getMsLeft() / 1000 / 3600);
+        _processNewHourPreferences(game, updateData.getPlayers(), hourMarkPassed);
     }
 
     return Promise.resolve();

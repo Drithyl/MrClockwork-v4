@@ -3,7 +3,7 @@
 
 const assert = require("../../asserter.js");
 const TimeLeft = require("./time_left.js");
-const queryDominions5Game = require("./dominions5_tcp_query.js");
+const { queryDominions5Game } = require("./dominions5_status.js");
 const TimerSetting = require("../../game_settings/dom5/prototypes/timer.js");
 
 module.exports = Dominions5CurrentTimer;
@@ -51,12 +51,12 @@ function Dominions5CurrentTimer()
     this.updateTimer = () =>
     {
         return queryDominions5Game(_gameObject)
-        .then((tcpQueryResponse) =>
+        .then((status) =>
         {
             const storedLastKnownTurnNumber = _lastKnownTurnNumber;
             const storedLastKnownMsLeftForNewTurn = _lastKnownMsLeftForNewTurn;
-            const updatedMs = tcpQueryResponse.getMsLeft();
-            const updatedTurnNumber = tcpQueryResponse.getCurrentTurnNumber();
+            const updatedMs = status.getMsLeft();
+            const updatedTurnNumber = status.getTurnNumber();
 
             _lastKnownMsLeftForNewTurn = updatedMs;
             _lastKnownTurnNumber = updatedTurnNumber;

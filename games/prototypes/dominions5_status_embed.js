@@ -61,7 +61,9 @@ function Dominions5StatusEmbed(embedWrapper)
 
     this.getMessageId = () => embedWrapper.getMessageId();
 
-    this.update = (updateData) =>
+    // updateData is an instance of Dominions5Status, enhanced with some new 
+    // boolean event properties which stem from the game_monitor.js code
+    this.update = (updateData, isBotEnforced = true) =>
     {
         const timeLeft = updateData.getTimeLeft();
 
@@ -78,24 +80,24 @@ function Dominions5StatusEmbed(embedWrapper)
             _embed.replaceField(0, STATUS_HEADER, "online", true);
 
 
-            if (asserter.isInteger(updateData.turnNumber) === true)
-                _embed.replaceField(1, TURN_HEADER, updateData.turnNumber, true);
+            if (asserter.isInteger(updateData.getTurnNumber()) === true)
+                _embed.replaceField(1, TURN_HEADER, updateData.getTurnNumber(), true);
 
             else _embed.replaceField(1, TURN_HEADER, "unavailable", true);
 
 
-            if (updateData.msLeft === 0)
-                _embed.editField(2, TIMER_HEADER, "paused");
+            if (updateData.isPaused() === true)
+                _embed.editField(2, TIMER_HEADER, `paused ${(isBotEnforced) ? "(bot-enforced)" : "(game-enforced)"}`);
 
-            else if (asserter.isInteger(updateData.msLeft) === true)
-                _embed.editField(2, TIMER_HEADER, timeLeft.printTimeLeftShort());
+            else if (asserter.isInteger(updateData.getMsLeft()) === true)
+                _embed.editField(2, TIMER_HEADER, `${timeLeft.printTimeLeftShort()} ${(isBotEnforced) ? "(bot-enforced)" : "(game-enforced)"}`);
 
-            else _embed.editField(2, TIMER_HEADER, "unavailable");
+            else _embed.editField(2, TIMER_HEADER, `unavailable ${(isBotEnforced) ? "(bot-enforced)" : "(game-enforced)"}`);
 
 
-            if (asserter.isArray(updateData.players) === true)
+            if (asserter.isArray(updateData.getPlayers()) === true)
             {
-                const playerStr = updateData.players.reduce((playersInfo, playerData) => 
+                const playerStr = updateData.getPlayers().reduce((playersInfo, playerData) => 
                 {
                     if (playerData.isTurnDone === false)
                         return playersInfo + `${playerData.name}\n`;
@@ -109,7 +111,7 @@ function Dominions5StatusEmbed(embedWrapper)
             else _embed.editField(3, UNDONE_TURNS_HEADER, "unavailable");
         }
 
-        else _embed.editField(0, STATUS_HEADER, updateData.status, true);
+        else _embed.editField(0, STATUS_HEADER, updateData.getStatus(), true);
 
 
         return _embed.update();

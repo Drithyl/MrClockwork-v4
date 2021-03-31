@@ -98,7 +98,7 @@ function GameSettings(parentGame)
             const key = settingObject.getKey();
             const flag = settingObject.translateValueToCmdFlag();
 
-            if (key !== "name")
+            if (key !== "name" && (key !== "timer" || _parentGame.isEnforcingTimer() === false))
                 flags = flags.concat(flag);
         });
 

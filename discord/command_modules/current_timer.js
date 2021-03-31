@@ -28,7 +28,9 @@ function _behaviour(commandContext)
 {
     const gameObject = commandContext.getGameTargetedByCommand();
     const commandArguments = commandContext.getCommandArgumentsArray();
-    const { lastKnownMsLeft, lastKnownTurnNumber } = gameObject.getLastKnownData();
+    const lastKnownStatus = gameObject.getLastKnownStatus();
+    const lastKnownMsLeft = lastKnownStatus.getMsLeft();
+    const lastKnownTurnNumber = lastKnownStatus.getTurnNumber();
     const timeLeft = new TimeLeft(lastKnownMsLeft);
 
     if (lastKnownTurnNumber <= 0)
@@ -48,39 +50,33 @@ function _sendCurrentTimer(commandContext, timeLeft)
 function _changeCurrentTimer(gameObject, commandContext, commandArguments, timeLeft)
 {
     const timerChangeArg = commandArguments[0];
+    const timeToSet = _extractTimeToSet(timerChangeArg, timeLeft);
 
-    return Promise.resolve()
+    if (gameObject.isEnforcingTimer() === true && timeToSet > 0)
+        gameObject.getLastKnownStatus().setMsLeft(timeToSet);
+
+    return gameObject.changeTimer(timeToSet)
     .then(() =>
     {
-        if (_isTimerAddition(timerChangeArg))
-            return _addTimeToGame(timerChangeArg, gameObject, timeLeft);
+        if (timeToSet <= 0)
+            return commandContext.respondToCommand(`The timer has been paused. It may take a minute to update.`);
 
-        else
-            return _changeTimerForGame(timerChangeArg, gameObject);
-    })
-    .then(() => commandContext.respondToCommand(`The timer was changed. It may take a minute to update.`));
+        else return commandContext.respondToCommand(`The timer was changed. It may take a minute to update.`);
+    });
+}
+
+function _extractTimeToSet(timerChangeArg, timeLeft)
+{
+    const isAddition = (_isTimerAddition(timerChangeArg)) ? true : false;
+    const addedTimeLeft = TimeLeft.fromStringInput(timerChangeArg.replace(/\+/g, ""));
+
+    if (isAddition === true)
+        return timeLeft.getMsLeft() + addedTimeLeft.getMsLeft();
+
+    else return addedTimeLeft.getMsLeft();
 }
 
 function _isTimerAddition(timerChangeArg)
 {
     return timerChangeArg.indexOf("+") === 0;
-}
-
-function _addTimeToGame(timerChangeArg, gameObject, timeLeft)
-{
-    const newTimerStripped = timerChangeArg.replace(/\+/, "");
-    const addedTimeLeft = TimeLeft.fromStringInput(newTimerStripped);
-
-    return gameObject.emitPromiseWithGameDataToServer("CHANGE_TIMER", { 
-        currentTimer: timeLeft.getMsLeft() + addedTimeLeft.getMsLeft() 
-    });
-}
-
-function _changeTimerForGame(timerChangeArg, gameObject)
-{
-    const addedTimeLeft = TimeLeft.fromStringInput(timerChangeArg);
-
-    return gameObject.emitPromiseWithGameDataToServer("CHANGE_TIMER", { 
-        currentTimer: addedTimeLeft.getMsLeft() 
-    });
 }

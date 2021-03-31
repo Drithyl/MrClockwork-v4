@@ -2,8 +2,8 @@
 const Game = require("./game.js");
 const asserter = require("../../asserter.js");
 const config = require("../../config/config.json");
+const dominions5Status = require("./dominions5_status.js");
 const Dominions5Settings = require("./dominions5_settings.js");
-const dominions5TcpQuery = require("./dominions5_tcp_query.js");
 const playerFileStore = require("../../player_data/player_file_store.js");
 const Dominions5StatusEmbed = require("./dominions5_status_embed.js");
 
@@ -13,12 +13,10 @@ function Dominions5Game()
 {
     const _gameObject = new Game();
     const _playerFiles = {};
+    const _status = new dominions5Status.Dominions5Status();
 
     var _statusEmbed;
-    var _lastKnownStatus;
-    var _lastTurnTimestamp;
-    var _lastKnownTurnNumber;
-    var _lastKnownMsToNewTurn;
+    var _isEnforcingTimer = true;
 
     _gameObject.setSettingsObject(new Dominions5Settings(_gameObject));
 
@@ -104,15 +102,58 @@ function Dominions5Game()
         .then(() => _gameObject.claimNation(idOfNewPlayer, nationFilename));
     };
 
-    _gameObject.changeTimer = (defaultMs, currentMs) =>
+    _gameObject.getMsLeftPerTurn = () => 
     {
+        const settingsObject = _gameObject.getSettingsObject();
+        const timerSetting = settingsObject.getTimerSetting();
+        const timeLeft = timerSetting.getValue();
+
+        return timeLeft.getMsLeft();
+    };
+
+    _gameObject.changeTimer = (currentMs, defaultMs = null) =>
+    {
+        const settingsObject = _gameObject.getSettingsObject();
+        const timerSetting = settingsObject.getTimerSetting();
+
+        if (defaultMs == null)
+            defaultMs = _gameObject.getMsLeftPerTurn();
+
         if (isNaN(defaultMs) === true || isNaN(currentMs) === true)
             return Promise.reject(new Error(`Timers must be expressed in ms; got ${defaultMs} and ${currentMs}.`));
 
-        return _gameObject.emitPromiseWithGameDataToServer("CHANGE_TIMER", {
+        if (_gameObject.isEnforcingTimer() === true)
+        {
+            timerSetting.fromJSON(defaultMs);
+
+            if (currentMs <= 0)
+                return Promise.resolve(_status.setIsPaused(true));
+
+            _status.setIsPaused(false);
+            _status.setMsLeft(currentMs);
+            return Promise.resolve();
+        }
+
+        else return _gameObject.emitPromiseWithGameDataToServer("CHANGE_TIMER", {
             timer: defaultMs,
             currentTimer: currentMs
         });
+    };
+
+    _gameObject.forceHost = () => _gameObject.emitPromiseWithGameDataToServer("FORCE_HOST");
+
+    _gameObject.isEnforcingTimer = () => _isEnforcingTimer;
+    _gameObject.switchTimerEnforcer = () => 
+    {
+        if (_gameObject.isEnforcingTimer() === true)
+        {
+            _isEnforcingTimer = false;
+            return _gameObject.changeTimer(_status.getMsLeft())
+            .then(() => Promise.resolve(_isEnforcingTimer));
+        }
+
+        _isEnforcingTimer = true;
+        return Promise.resolve(_isEnforcingTimer);
     };
 
     _gameObject.launch = () => _gameObject.emitPromiseWithGameDataToServer("LAUNCH_GAME");
@@ -122,35 +163,36 @@ function Dominions5Game()
 
     _gameObject.checkIfGameStarted = () => 
     {
-        return dominions5TcpQuery(_gameObject)
-        .then((tcpQuery) => Promise.resolve(tcpQuery.isInLobby() === false));
+        return dominions5Status.queryDominions5Game(_gameObject)
+        .then((status) => Promise.resolve(status.isOngoing()));
     };
 
-    _gameObject.getLastKnownData = () => 
+    _gameObject.getLastKnownStatus = () => 
     {
-        return {
-            lastKnownStatus: _lastKnownStatus,
-            lastTurnTimestamp: _lastTurnTimestamp,
-            lastKnownMsLeft: _lastKnownMsToNewTurn,
-            lastKnownTurnNumber: _lastKnownTurnNumber
-        };
+        const timerSetting = _gameObject.getSettingsObject().getTimerSetting();
+        const timePerTurnObject = timerSetting.getValue();
+        const msPerTurn = timePerTurnObject.getMsLeft();
+
+        return _status;
     };
 
-    _gameObject.update = (updateData) => 
+    _gameObject.update = (updatedStatus) => 
     {
-        if (asserter.isInteger(updateData.msLeft) === true)
-            _lastKnownMsToNewTurn = updateData.msLeft;
+        if (asserter.isInteger(updatedStatus.getMsLeft()) === true)
+            _status.setMsLeft(updatedStatus.getMsLeft());
 
-        if (asserter.isInteger(updateData.lastTurnTimestamp) === true)
-            _lastTurnTimestamp = updateData.lastTurnTimestamp;
+        if (asserter.isInteger(updatedStatus.getLastTurnTimestamp()) === true)
+            _status.setLastTurnTimestamp(updatedStatus.getLastTurnTimestamp());
 
-        if (asserter.isInteger(updateData.turnNumber) === true)
-            _lastKnownTurnNumber = updateData.turnNumber;
+        if (asserter.isInteger(updatedStatus.getTurnNumber()) === true)
+            _status.setTurnNumber(updatedStatus.getTurnNumber());
 
-        if (asserter.isString(updateData.status) === true)
-            _lastKnownStatus = updateData.status;
+        if (asserter.isString(updatedStatus.getStatus()) === true)
+            _status.setStatus(updatedStatus.getStatus());
 
-        return updateData;
+        _status.setLastUpdateTimestamp(Date.now());
+
+        return _status;
     };
 
     _gameObject.sendStatusEmbed = () => 
@@ -163,10 +205,10 @@ function Dominions5Game()
         });
     };
 
-    _gameObject.updateStatusEmbed = (tcpQuery) => 
+    _gameObject.updateStatusEmbed = (updatedStatus) => 
     {
         if (_statusEmbed != null)
-            _statusEmbed.update(tcpQuery)
+            _statusEmbed.update(updatedStatus, _isEnforcingTimer)
             .catch((err) => console.log(`Could not update status embed: ${err.message}`));
 
         else if (_gameObject.getChannel() != null)
@@ -187,17 +229,11 @@ function Dominions5Game()
     {
         _gameObject.loadJSONDataSuper(jsonData);
 
-        if (asserter.isString(jsonData.lastKnownStatus) === true)
-            _lastKnownStatus = jsonData.lastKnownStatus;
+        if (asserter.isObject(jsonData.status) === true)
+            _status.fromJSON(jsonData.status);
 
-        if (asserter.isInteger(jsonData.lastTurnTimestamp) === true)
-            _lastTurnTimestamp = jsonData.lastTurnTimestamp;
-
-        if (asserter.isInteger(jsonData.lastKnownTurnNumber) === true)
-            _lastKnownTurnNumber = jsonData.lastKnownTurnNumber;
-
-        if (jsonData.lastKnownMsToNewTurn >= 0)
-            _lastKnownMsToNewTurn = jsonData.lastKnownMsToNewTurn;
+        if (asserter.isBoolean(jsonData.isEnforcingTimer) === true)
+            _isEnforcingTimer = jsonData.isEnforcingTimer;
 
         if (Array.isArray(jsonData.playerData) === true)
         {
@@ -225,13 +261,12 @@ function Dominions5Game()
     {
         const jsonData = _gameObject.toJSONSuper();
 
+        jsonData.status = _status.toJSON();
+
         if (_statusEmbed != null)
             jsonData.statusEmbedId = _statusEmbed.getMessageId();
             
-        jsonData.lastKnownStatus = _lastKnownStatus;
-        jsonData.lastTurnTimestamp = _lastTurnTimestamp;
-        jsonData.lastKnownTurnNumber = _lastKnownTurnNumber;
-        jsonData.lastKnownMsToNewTurn = _lastKnownMsToNewTurn;
+        jsonData.isEnforcingTimer = _isEnforcingTimer;
 
         jsonData.playerData = [];
         _playerFiles.forEachItem((playerFile, playerId) => jsonData.playerData.push(playerId));
@@ -251,11 +286,15 @@ function Dominions5Game()
         const dataPackage = {
             name: _gameObject.getName(),
             port: _gameObject.getPort(),
-            timer: defaultTime.getMsLeft(),
-            currentTimer: _lastKnownMsToNewTurn,
             gameType: _gameObject.getGameType(),
             args: settingsObject.getSettingFlags()
         };
+
+        if (_gameObject.isEnforcingTimer() === false)
+        {
+            dataPackage.timer = defaultTime.getMsLeft();
+            dataPackage.currentTimer = _status.getMsLeft();
+        }
 
         return dataPackage;
     }
