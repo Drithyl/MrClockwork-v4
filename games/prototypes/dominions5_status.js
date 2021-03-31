@@ -34,7 +34,6 @@ function queryGame(gameObject)
 
         _process.onStdoutData((tcpQueryResponse) => 
         {
-            console.log(tcpQueryResponse);
             const statusObject = _parseTcpQuery(tcpQueryResponse);
 
             if (gameObject.isServerOnline() === false)
@@ -180,9 +179,6 @@ function Dominions5Status()
     {
         const delta = Date.now() - _lastUpdateTimestamp;
         const elapsedMs = Math.min(updateStepInMs, delta);
-
-        console.log("elapsedMs since last update with delta: " + elapsedMs);
-        console.log("New value is " + Math.max(_msLeft - elapsedMs, 0));
 
         if (assert.isInteger(_msLeft) === true && assert.isInteger(elapsedMs) === true)
             this.setMsLeft(Math.max(_msLeft - elapsedMs, 0));

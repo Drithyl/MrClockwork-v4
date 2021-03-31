@@ -83,7 +83,7 @@ function _updateCycle(game)
             _handleUpdatedStatus(game, updateData);
 
 
-        console.log(`${game.getName()}\treceived updated data:\n
+        /*console.log(`${game.getName()}\treceived updated data:\n
         \tcurrentStatus:\t\t${updateData.getStatus()}
         \tcurrentMsLeft:\t\t${updateData.getMsLeft()}
         \tcurrentTurnNumber:\t${updateData.getTurnNumber()}
@@ -91,7 +91,7 @@ function _updateCycle(game)
         \tlastKnownStatus:\t${lastKnownStatus.getStatus()}
         \tlastKnownMsLeft:\t${lastKnownStatus.getMsLeft()}
         \tlastKnownTurnNumber:\t${lastKnownStatus.getTurnNumber()}
-        \tlastKnown isPaused:\t${lastKnownStatus.isPaused()}`);
+        \tlastKnown isPaused:\t${lastKnownStatus.isPaused()}`);*/
 
         game.update(updateData);
 
@@ -271,7 +271,6 @@ function _processNewHourPreferences(game, playerTurnData, hourMarkPassed)
         
         if (preferences.hasReminderAtHourMark(hourMarkPassed) === true)
         {
-            console.log("Has reminder set");
             for (var i = 0; i < controlledNationsByFullName.length; i++)
             {
                 const nationFullName = controlledNationsByFullName[i];
