@@ -68,6 +68,11 @@ module.exports.getGuildClientData = (userId) =>
     return guildData;
 };
 
+module.exports.getRecruitingCategoryId = (guildId) => guildDataStore.getRecruitingCategoryId(guildId);
+module.exports.getBlitzRecruitingCategoryId = (guildId) => guildDataStore.getBlitzRecruitingCategoryId(guildId);
+module.exports.getGameCategoryId = (guildId) => guildDataStore.getGameCategoryId(guildId);
+module.exports.getBlitzCategoryId = (guildId) => guildDataStore.getBlitzCategoryId(guildId);
+
 module.exports.hasGuildWrapper = (guildId) =>
 {
     return guildWrappers[guildId] != null;

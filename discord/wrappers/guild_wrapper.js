@@ -220,25 +220,45 @@ function GuildWrapper(discordJsGuildObject)
     {
         var _lastMessage;
 
+        console.log("Last message id: " + channel.lastMessageID);
+
+        if (channel.lastMessageID == null)
+        {
+            console.log("Channel already empty.");
+            return Promise.resolve();
+        }
+
         return channel.messages.fetch(channel.lastMessageID)
         .then((lastMessage) =>
         {
+            console.log("Fetched last message " + lastMessage.id);
             _lastMessage = lastMessage;
             
-            /** fetch all messages before last in channel */
+            // Fetch all messages before last in channel
             return channel.messages.fetch({ before: lastMessage.id });
         })
         .then((messages) =>
         {
             const messageArray = messages.array();
             messageArray.push(_lastMessage);
+            
+            console.log("Fetched all previous messages; total messages fetched: " + messageArray.length);
 
-            /** delete all messages before last */
+            // Delete all messages
             return messageArray.forEachPromise((message, index, nextPromise) =>
             {
                 console.log("Deleting message " + channel.id);
                 return message.delete()
-                .then(() => nextPromise());
+                .then(() => 
+                {
+                    console.log("Message deleted.");
+                    return nextPromise();
+                })
+                .catch((err) => 
+                {
+                    console.log(`Could not delete: ${err.message}\n\n${err.stack}`);
+                    Promise.reject(err)
+                });
             });
         });
     }

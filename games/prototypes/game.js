@@ -54,7 +54,17 @@ function Game()
     this.createNewChannel = () =>
     {
         return _guildWrapper.createGameChannel(`${this.getName()}`)
-        .then((channel) => _discordJsChannel = channel);
+        .then((channel) => 
+        {
+            const guildId = _guildWrapper.getId();
+            const status = this.getLastKnownStatus();
+            _discordJsChannel = channel
+
+            if (status.isOngoing() === true)
+                channel.setParent(guildStore.getGameCategoryId(guildId));
+            
+            else channel.setParent(guildStore.getRecruitingCategoryId(guildId));
+        });
     };
 
     this.getRole = () => _discordJsRole;
