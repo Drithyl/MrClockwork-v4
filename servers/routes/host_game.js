@@ -79,7 +79,7 @@ function _formatPostValues(values)
 {
     //format aiNations as the setting expects it
     if (values.aiNations == null)
-    values.aiNations = "none";
+        values.aiNations = "none";
 
     else if (Array.isArray(values.aiNations) === true)
         values.aiNations = values.aiNations.join(",");

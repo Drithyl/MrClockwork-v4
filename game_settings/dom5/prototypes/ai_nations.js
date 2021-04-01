@@ -70,7 +70,7 @@ function AiNations(parentGameObject)
         var flags = [];
         var aiNations = this.getValue();
     
-        if (aiNations == null)
+        if (aiNations == null || Object.keys(aiNations).length <= 0)
             return flags;
     
         for (var nationNbr in aiNations)
@@ -105,6 +105,9 @@ function AiNations(parentGameObject)
 
         if (AiNations.prototype.isExpectedFormat(input) === false)
             throw new SemanticError(`Invalid value format for AI nations.`);
+
+        if (input === "none")
+            return aiNations;
 
         input.split(",").forEach((aiNationStr) =>
         {
