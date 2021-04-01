@@ -20,14 +20,6 @@ function Mods(parentGameObject)
         return _value.join(", ");
     };
     
-    this.setValue = (value) =>
-    {
-        if (Array.isArray(value) === false)
-            _value = null;
-
-        else _value = value;
-    };
-    
     this.setValue = (input) =>
     {
         return _validateInputFormatOrThrow(input)
