@@ -182,8 +182,10 @@ function Game()
         {
             var loadedValue = inputValues[settingKey];
 
-            if (loadedValue !== undefined)
-                return settingObject.setValue(loadedValue);
+            if (loadedValue == undefined)
+                return Promise.reject(new SemanticError(`Expected value for setting ${settingKey} is undefined.`));
+
+            return settingObject.setValue(loadedValue);
         });
     };
 
