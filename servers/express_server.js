@@ -54,12 +54,6 @@ exports.startListeningSsl = (port) =>
     {
         console.log(`Express HTTP server running on port ${_expressHttpsServer.address().port}`);
     });
-
-    _ioObject.on("connection", (socket) => 
-    {
-        const wrapper = new SocketWrapper(socket);
-        _requestServerData(wrapper);
-    });
 };
 
 

@@ -1,7 +1,6 @@
 
-const TimeoutError = require("../../errors/custom_errors").TimeoutError;
-const SocketResponseError = require("../../errors/custom_errors").SocketResponseError;
 const handleDom5Error = require("../../games/dominions5_runtime_error_handler.js");
+const { TimeoutError, SocketResponseError } = require("../../errors/custom_errors");
 
 module.exports = SocketWrapper;
 
@@ -49,8 +48,11 @@ function SocketWrapper(socketIoObject)
             _socketIoObject.on(trigger, function(response, callback)
             {
                 Promise.resolve(handler(response))
-                .then((handlerReturnValue) => callback(handlerReturnValue))
-                .then(() => resolve())
+                .then((handlerReturnValue) => 
+                {
+                    callback(handlerReturnValue);
+                    resolve();
+                })
                 .catch((err) => reject(err));
             });
         });
