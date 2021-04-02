@@ -36,7 +36,7 @@ function _onMessageReceived(discordJsMessage)
         }
     }
 
-    else if (activeMenuStore.isUserInMenu(senderId) === true)
+    else if (activeMenuStore.isUserInMenu(senderId) === true && messageWrapper.isDirectMessage() === true)
     {
         try
         {
