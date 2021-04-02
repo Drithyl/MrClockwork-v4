@@ -45,14 +45,18 @@ function _updateCycle(game)
 {
     const lastKnownStatus = game.getLastKnownStatus();
 
-    //console.log(`${gameName}\tupdating...`);
+    console.log(`${game.getName()}\tupdating...`);
 
     if (game.getServer() == null)
+    {
+        console.log(`${game.getName()}\tno server found for this game?`);
         return Promise.resolve();
+    }
 
     return queryDominions5Game(game)
     .then((updatedStatus) =>
     {
+        //console.log(`${game.getName()}\tquery results received.`);
         if (game.isEnforcingTimer() === false)
             return Promise.resolve(updatedStatus);
 
@@ -68,6 +72,7 @@ function _updateCycle(game)
         const gameEvents = _getGameEvents(updatedStatus, lastKnownStatus);
         const updateData = Object.assign(updatedStatus, gameEvents);
 
+        //console.log(`${game.getName()}\tupdating embed.`);
         game.updateStatusEmbed(updateData);
 
 
@@ -83,7 +88,7 @@ function _updateCycle(game)
             _handleUpdatedStatus(game, updateData);
 
 
-        /*console.log(`${game.getName()}\treceived updated data:\n
+        console.log(`${game.getName()}\treceived updated data:\n
         \tcurrentStatus:\t\t${updateData.getStatus()}
         \tcurrentMsLeft:\t\t${updateData.getMsLeft()}
         \tcurrentTurnNumber:\t${updateData.getTurnNumber()}
@@ -91,7 +96,7 @@ function _updateCycle(game)
         \tlastKnownStatus:\t${lastKnownStatus.getStatus()}
         \tlastKnownMsLeft:\t${lastKnownStatus.getMsLeft()}
         \tlastKnownTurnNumber:\t${lastKnownStatus.getTurnNumber()}
-        \tlastKnown isPaused:\t${lastKnownStatus.isPaused()}`);*/
+        \tlastKnown isPaused:\t${lastKnownStatus.isPaused()}`);
 
         game.update(updateData);
 

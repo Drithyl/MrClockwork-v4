@@ -32,7 +32,8 @@ function queryGame(gameObject)
     {
         _process.onError((error) => reject(error));
 
-        _process.onStdoutData((tcpQueryResponse) => 
+        _process.readWholeStdoutData()
+        .then((tcpQueryResponse) => 
         {
             const statusObject = _parseTcpQuery(tcpQueryResponse);
 
@@ -113,7 +114,7 @@ function Dominions5Status()
             _msLeft = msLeft;
     };
 
-    this.getPlayers = () => [..._players];
+    this.getPlayers = () => (assert.isArray(_players)) ? [..._players] : null;
     this.setPlayers = (players) =>
     {
         if (assert.isArray(players) === true)
