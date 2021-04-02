@@ -19,7 +19,7 @@ function Mods(parentGameObject)
 
         return _value.join(", ");
     };
-    
+
     this.setValue = (input) =>
     {
         return _validateInputFormatOrThrow(input)
@@ -64,7 +64,7 @@ function Mods(parentGameObject)
             Promise.reject(new SemanticError(`Invalid value format for the mods.`));
 
         if (input.toLowerCase() === "none")
-            return Promise.resolve(null);
+            return Promise.resolve(modFilenames);
 
         input.split(",").forEach((modFilename) =>
         {
