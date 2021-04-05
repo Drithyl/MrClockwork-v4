@@ -1,6 +1,6 @@
 
 const log = require("../../logger.js");
-const handleDom5Error = require("../../games/dominions5_runtime_error_handler.js");
+const handleDom5Data = require("../../games/dominions5_runtime_data_handler.js");
 const { TimeoutError, SocketResponseError } = require("../../errors/custom_errors");
 
 module.exports = SocketWrapper;
@@ -62,17 +62,27 @@ function SocketWrapper(socketIoObject)
     
     this.listenTo("NEW_TURN", (data) => log.general(log.getNormalLevel(), `${data.name}: New turn!`));
     this.listenTo("STDIO_CLOSED", (data) => log.general(log.getNormalLevel(), `${data.name}: stdio closed with code ${data.code}`));
-    this.listenTo("STDIO_DATA", (data) => log.general(log.getNormalLevel(), `${data.name}: ${data.type} data received`, data));
+    this.listenTo("STDIO_DATA", (data) => 
+    {
+        if (data.data.type === "Buffer")
+        {
+            log.general(log.getVerboseLevel(), `${data.name}: Ignoring ${data.type} data buffer received`);
+            return;
+        }
+
+        log.general(log.getNormalLevel(), `${data.name}: ${data.type} data received`, data.data);
+        handleDom5Data(data.name, data.data);
+    });
 
     this.listenTo("STDIO_ERROR", (data) => 
     {
-        log.error(log.getLeanLevel(), `${data.name}: ${data.type} ERROR RECEIVED`, data);
-        handleDom5Error(data.name, data.error);
+        log.error(log.getLeanLevel(), `${data.name}: ${data.type} ERROR RECEIVED`, data.error);
+        handleDom5Data(data.name, data.error);
     });
 
     this.listenTo("GAME_ERROR", (data) => 
     {
-        log.error(log.getLeanLevel(), `${data.name} REPORTED GAME ERROR`, data);
-        handleDom5Error(data.name, data.error);
+        log.error(log.getLeanLevel(), `${data.name} REPORTED GAME ERROR`, data.error);
+        handleDom5Data(data.name, data.error);
     });
 }
