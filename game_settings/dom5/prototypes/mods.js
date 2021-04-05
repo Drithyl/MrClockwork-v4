@@ -23,7 +23,14 @@ function Mods(parentGameObject)
     this.setValue = (input) =>
     {
         return _validateInputFormatOrThrow(input)
-        .then((validatedValue) => _value = validatedValue);
+        .then((validatedValue) => _value = validatedValue)
+        .then(() => 
+        {
+            if (/\.dm$/.test(validatedValue) === false)
+                validatedValue += ".dm";
+                
+            _value = validatedValue
+        });
     };
 
     this.fromJSON = (value) =>
