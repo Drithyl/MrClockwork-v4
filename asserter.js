@@ -1,6 +1,5 @@
 
 const fs = require("fs");
-const config = "./config/config.json";
 const { TypeError, RangeError, LengthError, SemanticError, InstanceOfError, InvalidDiscordIdError, InvalidPathError, PermissionsError } = require("./errors/custom_errors.js");
 
 
