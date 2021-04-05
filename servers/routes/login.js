@@ -11,7 +11,7 @@ exports.set = (expressApp) =>
     {
         const urlObject = new url.URL("http://www." + req.hostname + req.originalUrl);
 
-        log.general(log.geVerboseLevel(), `Login request received with urlObject: ${urlObject.searchParams.get("code")}`);
+        log.general(log.getVerboseLevel(), `Login request received with urlObject: ${urlObject.searchParams.get("code")}`);
 
         oauth2.authenticate(urlObject)
         .then((userInfo) => 
