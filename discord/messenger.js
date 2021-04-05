@@ -30,11 +30,7 @@ module.exports.send = function(receiver, text, options = {})
         else return Promise.resolve(discordJsMessage);
     })
     .then((discordJsMessage) => Promise.resolve(new MessageWrapper(discordJsMessage)))
-    .catch((err) => 
-    {
-        log.error(log.getNormalLevel(), `COULD NOT DELIVER MESSAGE`, err)
-        Promise.reject(new Error(`Could not deliver message: ${err.message}`));
-    });
+    .catch((err) => Promise.reject(new Error(`Could not deliver message: ${err.message}`)));
 };
 
 function _createMessageOptionsObject(options)

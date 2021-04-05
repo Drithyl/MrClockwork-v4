@@ -29,14 +29,17 @@ module.exports.setLogLevel = (level) =>
         return;
 
     logLevel = level;
+    exports.general(LEAN_LEVEL, `logLevel set to ${level}.`);
 };
 
+module.exports.isLoggingToFile = () => logToFile;
 module.exports.setLogToFile = (shouldLogToFile) =>
 {
     if (assert.isBoolean(shouldLogToFile) === false)
         return;
 
     logToFile = shouldLogToFile;
+    exports.general(LEAN_LEVEL, `logToFile set to ${shouldLogToFile}.`);
 };
 
 

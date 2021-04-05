@@ -498,6 +498,34 @@
         "helpText": "Rollbacks the game to the previous turn. This cannot be undone. Only a couple rollbacks are available at a time, depending on the server's size."
     },
 
+    "SET_LOG_LEVEL":
+    {
+        "name": "setloglevel",
+        "isEnabled": true,
+        "isDevOnly": true,
+        "gameTypesSupported": [],
+        "argumentsRequiredInfo": ["The numerical level of logging verbosity, inclusive from 0 (lean) to 2 (verbose)"],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "SETLOGLEVEL",
+        "argumentRegexpArray": ["^\\d$"],
+        "channelRequiredToInvoke": "dm",
+        "helpText": "[Dev Only] Sets the verbosity level of the logging functions to the console and files, with values ranging from 0 (lean) to 2 (verbose)."
+    },
+
+    "SET_LOG_TO_FILE":
+    {
+        "name": "setlogtofile",
+        "isEnabled": true,
+        "isDevOnly": true,
+        "gameTypesSupported": [],
+        "argumentsRequiredInfo": ["True or false, or 1 or 0: whether to log to a file"],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "SETLOGTOFILE",
+        "argumentRegexpArray": ["^((TRUE)|(FALSE))|(1|0)$"],
+        "channelRequiredToInvoke": "dm",
+        "helpText": "[Dev Only] Sets whether the bot will log its prints to files."
+    },
+
     "SET_ORGANIZER":
     {
         "name": "setorganizer",

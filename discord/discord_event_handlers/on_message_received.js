@@ -54,6 +54,7 @@ function _onMessageReceived(discordJsMessage)
 
 function _handleCommandError(messageWrapper, err)
 {
+    console.log(err);
     if (assert.isSemanticError(err) === true)
     {
         log.general(log.getNormalLevel(), `Invalid command format by user`, err.message);

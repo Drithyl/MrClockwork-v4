@@ -99,21 +99,27 @@ function DiscordCommand(commandDataObject)
             {
                 //Silently stop command execution
                 if (areRequirementsMet === false)
-                    resolve();
+                    return resolve(log.general(log.getNormalLevel(), `Silent requirements not met`));
 
-                else
-                    return _validateRequirementsOrThrow(commandContext);
-            })
-            .then(() => _runCommand(commandContext))
-            .then(() => resolve())
-            .catch((err) => reject(err));
+
+                _validateRequirementsOrThrow(commandContext)
+                .then(() => _runCommand(commandContext))
+                .then(() => resolve())
+                .catch((err) => reject(err));
+            });
         });
     };
 
     function _checkSilentRequirementsAreMet(commandContext)
     {
         if (_command.isDevOnly() === true && commandContext.isSenderDev() === false)
+        {
+            log.general(log.getVerboseLevel(), `This is a dev-only command; user is not a dev`);
             return Promise.resolve(false);
+        }
+
+        if (_silentRequirementsArray.length <= 0)
+            return Promise.resolve(true);
 
         return _silentRequirementsArray.forEachPromise((requirementCheck, index, nextPromise) =>
         {
@@ -122,13 +128,13 @@ function DiscordCommand(commandDataObject)
             .then(() => nextPromise())
             .catch((err) => 
             {
-                log.general(log.getNormalLevel(), `Command ${_command.getName()} silent requirements not met, check failed!`, requirementCheck, err.message);
+                log.general(log.getNormalLevel(), `Command ${_command.getName()} silent requirements not met`, requirementCheck, err.message);
                 Promise.resolve(false);
             });
         })
         .then(() =>
         {
-            log.general(log.getNormalLevel(), `Command ${_command.getName()} silent requirements met!`);
+            log.general(log.getNormalLevel(), `Command ${_command.getName()} silent requirements met`);
             return Promise.resolve(true);
         });
     }
