@@ -49,157 +49,163 @@ const fileCreationErrRegexp = new RegExp("Failed\\s*to\\s*create", "i");
 //Exact error: "The game [game_name] reported the error: *** no site called [site_name] ([replaced_site_name])"
 const replacedThroneErrRegexp = new RegExp("no\\s*site\\s*called\\s*\\w+\\s*(\\w+)", "i");
 
+// Exact message: "Setup port [port] (clients may start), open: 35, players 0, ais 0"
+const setupMessageRegexp = new RegExp("Setup port \\d+ (clients may start)", "i");
+
 const replacedThroneErrArray = [];
 
-module.exports = function(gameName, errStr)
+module.exports = function(gameName, message)
 {
     const game = gameStore.getOngoingGameByName(gameName);
 
     if (game == null)
-        return log.error(log.getNormalLevel(), `GAME ${gameName} REPORTED AN ERROR; BUT COULD NOT FIND IT IN STORE`, errStr);
+        return log.error(log.getNormalLevel(), `GAME ${gameName} REPORTED AN ERROR; BUT COULD NOT FIND IT IN STORE`, message);
 
-    if (typeof errStr !== "string")
+    if (typeof message !== "string")
         return log.error(log.getNormalLevel(), `GAME ${gameName} REPORTED AN ERROR; BUT DID NOT RECEIVE DATA ABOUT IT`);
 
+    // Ignore all these messages
+    if (setupMessageRegexp.test(message) === true)
+        return;
 
-    if (failedToCreateTmpDirErrRegexp.test(errStr) === true)
-        handleFailedToCreateTmpDir(game, errStr);
+    if (failedToCreateTmpDirErrRegexp.test(message) === true)
+        handleFailedToCreateTmpDir(game, message);
 
-    else if (brokenPipeErrRegexp.test(errStr) === true)
-        handleBrokenPipe(game, errStr);
+    else if (brokenPipeErrRegexp.test(message) === true)
+        handleBrokenPipe(game, message);
 
-    else if (addressInUseErrRegexp.test(errStr) === true)
-        handleAddressInUse(game, errStr);
+    else if (addressInUseErrRegexp.test(message) === true)
+        handleAddressInUse(game, message);
 
-    else if (terminatedErrRegexp.test(errStr) === true)
-        handleTerminated(game, errStr);
+    else if (terminatedErrRegexp.test(message) === true)
+        handleTerminated(game, message);
 
-    else if (mapNotFoundErrRegexp.test(errStr) === true)
-        handleMapNotFound(game, errStr);
+    else if (mapNotFoundErrRegexp.test(message) === true)
+        handleMapNotFound(game, message);
 
-    else if (mapImgNotFoundErrRegexp.test(errStr) === true)
-        handleMapImgNotFound(game, errStr);
+    else if (mapImgNotFoundErrRegexp.test(message) === true)
+        handleMapImgNotFound(game, message);
 
-    else if (throneInCapitalErrRegexp.test(errStr) === true)
-        handleThroneInCapital(game, errStr);
+    else if (throneInCapitalErrRegexp.test(message) === true)
+        handleThroneInCapital(game, message);
 
-    else if (badAiPlayerErrRegexp.test(errStr) === true)
-        handleBadAiPlayer(game, errStr);
+    else if (badAiPlayerErrRegexp.test(message) === true)
+        handleBadAiPlayer(game, message);
 
-    else if (coreDumpedErrRegexp.test(errStr) === true)
-        handleCoreDumped(game, errStr);
+    else if (coreDumpedErrRegexp.test(message) === true)
+        handleCoreDumped(game, message);
 
-    else if (versionTooOldErrRegexp.test(errStr) === true)
-        handleVersionTooOld(game, errStr);
+    else if (versionTooOldErrRegexp.test(message) === true)
+        handleVersionTooOld(game, message);
 
-    else if (itemForgingErrRegexp.test(errStr) === true)
-        handleItemForgingErr(game, errStr);
+    else if (itemForgingErrRegexp.test(message) === true)
+        handleItemForgingErr(game, message);
 
-    else if (fileCreationErrRegexp.test(errStr) === true)
-        handleFileCreationErr(game, errStr);
+    else if (fileCreationErrRegexp.test(message) === true)
+        handleFileCreationErr(game, message);
 
-    else if (nagotGickFelErrRegexp.test(errStr) === true)
-        handleNagotGickFel(game, errStr);
+    else if (nagotGickFelErrRegexp.test(message) === true)
+        handleNagotGickFel(game, message);
 
-    else if (replacedThroneErrRegexp.test(errStr) === true)
-        handleReplacedThroneErr(game, errStr);
+    else if (replacedThroneErrRegexp.test(message) === true)
+        handleReplacedThroneErr(game, message);
 
     else
     {
-        log.error(log.getLeanLevel(), `GAME ${game.getName()} REPORTED AN UNKNOWN ERROR`, errStr);
-        sendWarning(game, `The game ${game.getName()} reported the error: ${errStr}`);
+        log.error(log.getLeanLevel(), `GAME ${game.getName()} REPORTED AN UNKNOWN ERROR`, message);
+        sendWarning(game, `The game ${game.getName()} reported the error:\n\n${message}`);
     }
 };
 
-function handleFailedToCreateTmpDir(game, errStr)
+function handleFailedToCreateTmpDir(game, message)
 {
-    log.general(log.getVerboseLevel(), `Handling failedToCreateTmpDir error ${errStr}`);
+    log.general(log.getVerboseLevel(), `Handling failedToCreateTmpDir error ${message}`);
     sendWarning(game, `Dominions reported an error: the game instance could not be started because it failed to create a temp dir. Try killing it and launching it again.`);
 }
 
-function handleBrokenPipe(game, errStr)
+function handleBrokenPipe(game, message)
 {
-    log.general(log.getVerboseLevel(), `Ignoring brokenPipe error ${errStr}`);
+    log.general(log.getVerboseLevel(), `Ignoring brokenPipe error ${message}`);
 }
 
-function handleAddressInUse(game, errStr)
+function handleAddressInUse(game, message)
 {
-    log.general(log.getVerboseLevel(), `Handling addressInUse error ${errStr}`);
+    log.general(log.getVerboseLevel(), `Handling addressInUse error ${message}`);
     sendWarning(game, `The port used by this game is already in use. Most likely the game failed to shut down properly, so killing it and relaunching it should work.`);
 }
 
-function handleTerminated(game, errStr)
+function handleTerminated(game, message)
 {
-    log.general(log.getVerboseLevel(), `Ignoring terminated error ${errStr}`);
+    log.general(log.getVerboseLevel(), `Ignoring terminated error ${message}`);
 }
 
-function handleNagotGickFel(game, errStr)
+function handleNagotGickFel(game, message)
 {
-    log.general(log.getVerboseLevel(), `Handling nagotGickFel error ${errStr}`);
-    sendWarning(game, `Dominions crashed due to an error: ${errStr}`);
+    log.general(log.getVerboseLevel(), `Handling nagotGickFel error ${message}`);
+    sendWarning(game, `Dominions crashed due to an error: ${message}`);
 }
 
-function handleMapNotFound(game, errStr)
+function handleMapNotFound(game, message)
 {
-    log.general(log.getVerboseLevel(), `Handling mapNotFound error ${errStr}`);
+    log.general(log.getVerboseLevel(), `Handling mapNotFound error ${message}`);
 
     //this error string is pretty explicit and informative so send it as is
-    sendWarning(game, errStr);
+    sendWarning(game, message);
 }
 
-function handleMapImgNotFound(game, errStr)
+function handleMapImgNotFound(game, message)
 {
-    log.general(log.getVerboseLevel(), `Handling mapImgNotFound error ${errStr}`);
+    log.general(log.getVerboseLevel(), `Handling mapImgNotFound error ${message}`);
     sendWarning(game, `Dominions reported an error: One or more of the image files of the selected map could not be found. Make sure they've been uploaded and that the .map file points to the proper names.`);
 }
 
-function handleThroneInCapital(game, errStr)
+function handleThroneInCapital(game, message)
 {
-    log.general(log.getVerboseLevel(), `Handling throneInCapital error ${errStr}`);
+    log.general(log.getVerboseLevel(), `Handling throneInCapital error ${message}`);
     sendWarning(game, `Dominions reported an error: A throne was probably forced to start on a player's capital. Check the pre-set starts and thrones in the .map file (original error is: bc: king has throne in capital (p43 c385 h160 vp2) [new game created])`);
 }
 
-function handleBadAiPlayer(game, errStr)
+function handleBadAiPlayer(game, message)
 {
-    log.general(log.getVerboseLevel(), `Handling badAiPlayer error ${errStr}`);
+    log.general(log.getVerboseLevel(), `Handling badAiPlayer error ${message}`);
     sendWarning(game, `Dominions reported an error: one of the AI players has an invalid nation number.`);
 }
 
-function handleCoreDumped(game, errStr)
+function handleCoreDumped(game, message)
 {
-    log.general(log.getVerboseLevel(), `Ignoring codeDumped error ${errStr}`);
+    log.general(log.getVerboseLevel(), `Ignoring codeDumped error ${message}`);
     //don't send error here as this comes coupled with other more explicit errors
 }
 
-function handleVersionTooOld(game, errStr)
+function handleVersionTooOld(game, message)
 {
-    log.general(log.getVerboseLevel(), `Handling versionTooOld error ${errStr}`);
+    log.general(log.getVerboseLevel(), `Handling versionTooOld error ${message}`);
     sendWarning(game, `The game has crashed because a new Dominions version is available. Please be patient while the admins update the servers :)`);
 }
 
-function handleItemForgingErr(game, errStr)
+function handleItemForgingErr(game, message)
 {
-    log.general(log.getVerboseLevel(), `Handling itemForging error ${errStr}`);
+    log.general(log.getVerboseLevel(), `Handling itemForging error ${message}`);
     sendWarning(game, `The game has crashed on turn generation due to an error caused by forging a bad item. This should theoretically not happen.`);
 }
 
-function handleFileCreationErr(game, errStr)
+function handleFileCreationErr(game, message)
 {
-    log.general(log.getVerboseLevel(), `Ignoring fileCreation error ${errStr}`);
+    log.general(log.getVerboseLevel(), `Ignoring fileCreation error ${message}`);
 }
 
-function handleReplacedThroneErr(game, errStr)
+function handleReplacedThroneErr(game, message)
 {
-    log.general(log.getVerboseLevel(), `Handling replacedThrone error ${errStr}`);
+    log.general(log.getVerboseLevel(), `Handling replacedThrone error ${message}`);
 
     if (replacedThroneErrArray.includes(game.getName()) === true)
         return;
 
     replacedThroneErrArray.push(game.getName());
-    sendWarning(game, `A site was replaced in this mod but Dominions considers it an error. This has no impact in the game other than this warning message:\n\n${errStr}`);
+    sendWarning(game, `A site was replaced in this mod but Dominions considers it an error. This has no impact in the game other than this warning message:\n\n${message}`);
 }
 
-function addToHistory(game, errStr)
+function addToHistory(game, message)
 {
     errorHistory[game.getName()] = Date.now();
 }
