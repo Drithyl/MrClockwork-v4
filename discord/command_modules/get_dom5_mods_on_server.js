@@ -50,6 +50,6 @@ function getListOfModsOnServerAndSend(serverObject, commandContext)
             return commandContext.respondToCommand("No mods are available on this server.");
 
         list.forEach((modFilename) => stringList += `${modFilename}\n`);
-        return commandContext.respondToCommand(introductionString + stringList.toBox());
+        return commandContext.respondToCommand(introductionString + stringList.toBox(), { prepend: "```", append: "```" });
     });
 }

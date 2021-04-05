@@ -110,8 +110,9 @@ function _formatWrapper(prepend, append)
 {
     var wrapperObject = { split: { prepend: "", append: "" } };
 
+    // Always split message by default rather than not sending it
     if (prepend == null && append == null)
-        return null;
+        return { split: true };
 
     if (assert.isString(prepend) === true)
         wrapperObject.split.prepend = prepend;
