@@ -34,8 +34,11 @@ function Map(parentGameObject)
 
     this.fromJSON = (value) =>
     {
-        if (typeof value !== "string" || /.map$/i.test(value) === false)
-            throw new Error(`Expected string ending with .map; got ${value}`);
+        if (typeof value !== "string")
+            throw new Error(`Expected string; got ${value}`);
+
+        if (/.map$/i.test(value) === false)
+            value += ".map";
 
         _value = value;
     };

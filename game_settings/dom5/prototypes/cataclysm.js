@@ -11,7 +11,13 @@ function Cataclysm()
     var _value;
 
     this.getValue = () => _value;
-    this.getReadableValue = () => `Turn ${_value}`;
+    this.getReadableValue = () => 
+    {
+        if (_value <= 0)
+            return "Off";
+
+        else return `Turn ${_value}`;
+    };
     
     this.setValue = (input) =>
     {

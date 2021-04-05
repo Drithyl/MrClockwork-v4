@@ -23,13 +23,7 @@ function Mods(parentGameObject)
     this.setValue = (input) =>
     {
         return _validateInputFormatOrThrow(input)
-        .then((validatedValue) => 
-        {
-            if (/\.dm$/.test(validatedValue) === false)
-                validatedValue += ".dm";
-                
-            _value = validatedValue
-        });
+        .then((validatedValue) => _value = validatedValue);
     };
 
     this.fromJSON = (value) =>
@@ -40,7 +34,10 @@ function Mods(parentGameObject)
         value.forEach((modFilename) =>
         {
             if (typeof modFilename !== "string")
-                throw new Error(`Expected string; got ${modFilename}`);
+                throw new Error(`Expected string with .dm extension; got ${modFilename}`);
+
+            if (/.dm$/i.test(value) === false)
+                modFilename += ".dm";
         });
 
         _value = value;
@@ -74,7 +71,10 @@ function Mods(parentGameObject)
 
         input.split(",").forEach((modFilename) =>
         {
-            modFilenames.push(modFilename.trim());
+            if (/\.dm$/.test(modFilename) === false)
+                modFilenames.push(modFilename.trim() + ".dm");
+
+            else modFilenames.push(modFilename.trim());
         });
 
         return _parentGame.emitPromiseToServer("VERIFY_MODS", modFilenames)
