@@ -2,7 +2,9 @@
 const fs = require("fs");
 const path = require("path");
 const fsp = require("fs").promises;
+const log = require("../logger.js");
 const config = require("../config/config.json");
+
 const pathToData = `${config.dataPath}/pending_channels.json`;
 var channelsPendingHostingByUserId = {};
 
@@ -16,7 +18,7 @@ exports.save = () =>
     return fsp.writeFile(pathToData, jsonData)
     .then(() =>
     {
-        console.log(`Pending channels data saved.`);
+        log.general(log.getVerboseLevel(), `Pending channels data saved.`);
         return Promise.resolve();
     })
     .catch((err) => Promise.reject(err));

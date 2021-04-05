@@ -1,6 +1,7 @@
 
 const fs = require("fs");
 const fsp = require("fs").promises;
+const log = require("../logger.js");
 const assert = require("../asserter.js");
 const rw = require("../reader_writer.js");
 const config = require("../config/config.json");
@@ -21,11 +22,11 @@ var trustedRoleIdKey = "trustedRoleId";
 module.exports.populateGuildDataStore = () =>
 {
     const guildDataPath = `${config.dataPath}/${config.guildDataFolder}`;
-    console.log("Loading guild data...");
+    log.general(log.getNormalLevel(), "Populating guild data store...");
 
     if (fs.existsSync(guildDataPath) === false)
     {
-        console.log("Guild data not found, creating blank directory.");
+        log.general(log.getNormalLevel(), "Guild data not found, creating blank directory.");
         fs.mkdirSync(guildDataPath);
     }
 
@@ -40,7 +41,7 @@ module.exports.populateGuildDataStore = () =>
 
             if (fs.existsSync(`${guildDataPath}/${dirName}/data.json`) === false)
             {
-                console.log(`Guild data dir exists for ${dirName}, but no data found!`);
+                log.general(log.getLeanLevel(), `Guild data dir exists for ${dirName}, but no data found!`);
                 loadedGuildData[dirName] = {};
             }
 
@@ -50,7 +51,7 @@ module.exports.populateGuildDataStore = () =>
                 parsedData = JSON.parse(jsonData);
 
                 loadedGuildData[dirName] = parsedData;
-                console.log(`Loaded guild data for ${dirName}.`);
+                log.general(log.getNormalLevel(), `Loaded guild data for ${dirName}.`);
             }
         });
     }
@@ -88,7 +89,7 @@ module.exports.clearGuildData = (guildId, discordIdToClear) =>
 
 module.exports.createGuildData = (guildId) =>
 {
-    console.log("Creating guild data...");
+    log.general(log.getNormalLevel(), "Creating guild data...");
     var guildData = {
         newsChannelId: null,
         helpChannelId: null,
@@ -102,7 +103,7 @@ module.exports.createGuildData = (guildId) =>
     };
 
     loadedGuildData[guildId] = guildData;
-    console.log("Guild bot data created.");
+    log.general(log.getNormalLevel(), "Guild bot data created.");
     return guildData;
 };
 
@@ -110,7 +111,7 @@ module.exports.removeGuildData = (guildId) =>
 {
     const pathToGuildData = `${config.dataPath}/${config.guildDataFolder}`;
 
-    console.log("Removing guild data...");
+    log.general(log.getNormalLevel(), "Removing guild data...");
     delete loadedGuildData[guildId];
 
     return Promise.resolve()
@@ -130,7 +131,7 @@ module.exports.removeGuildData = (guildId) =>
     })
     .then(() => 
     {
-        console.log(`Data for guild ${guildId} removed.`);
+        log.general(log.getNormalLevel(), `Data for guild ${guildId} removed.`);
     });
 };
 
@@ -231,13 +232,13 @@ function _saveGuildData(guildId)
     const pathToGuildData = `${config.dataPath}/${config.guildDataFolder}`;
     const stringifiedData = JSON.stringify(loadedGuildData[guildId], null, 2);
 
-    console.log(`Saving data of guild ${guildId}...`);
+    log.general(log.getVerboseLevel(), `Saving data of guild ${guildId}...`);
     return Promise.resolve()
     .then(() =>
     {
         if (fs.existsSync(`${pathToGuildData}/${guildId}`) === false)
         {
-            console.log(`Directory for guild data does not exist, creating it.`);
+            log.general(log.getVerboseLevel(), `Directory for guild data does not exist, creating it.`);
             return fsp.mkdir(`${pathToGuildData}/${guildId}`);
         }
 
@@ -245,8 +246,8 @@ function _saveGuildData(guildId)
     })
     .then(() => 
     {
-        console.log(`Writing data file...`);
+        log.general(log.getVerboseLevel(), `Writing data file...`);
         return fsp.writeFile(`${pathToGuildData}/${guildId}/data.json`, stringifiedData);
     })
-    .then(() => console.log(`Data for guild ${guildId} saved successfully.`));
+    .then(() => log.general(log.getVerboseLevel(), `Data for guild ${guildId} saved successfully.`));
 }

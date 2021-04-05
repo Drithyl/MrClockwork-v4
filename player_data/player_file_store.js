@@ -1,5 +1,6 @@
 
 const fsp = require("fs").promises;
+const log = require("../logger.js");
 const asserter = require("../asserter.js");
 const config = require("../config/config.json");
 const PlayerFile = require("./prototypes/player_file.js");
@@ -54,7 +55,7 @@ exports.clearObsoleteData = () =>
         .then(() => nextPromise())
         .catch((err) =>
         {
-            console.log(`Could not save pruned player file ${playerId}: ${err.message}\n\n${err.stack}`);
+            log.error(log.getLeanLevel(), `ERROR SAVING PRUNED PLAYER FILE ${playerId}`, err);
             nextPromise();
         });
     });
@@ -112,7 +113,7 @@ exports.getPlayerFile = (playerId) =>
 
 exports.isPlayerInGame = (playerId, gameName) => 
 {
-    console.log(playerId, gameName, _getGameData(playerId, gameName));
+    log.general(log.getVerboseLevel(), `Player ${playerId} is in game ${gameName}`, _getGameData(playerId, gameName));
     return _getGameData(playerId, gameName) != null;
 };
 

@@ -1,4 +1,5 @@
 
+const log = require("../../logger.js");
 const guildStore = require("../guild_store.js");
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
@@ -30,7 +31,7 @@ function _behaviour(commandContext)
 
     return guildStore.forEachGuildAsync((guildWrapper) => 
     {
-        console.log(`Cycling through guild ${guildWrapper.getName()}`);
+        log.general(log.getNormalLevel(), `Cycling through guild ${guildWrapper.getName()} to post news`);
         return guildWrapper.postNews(messageString)
         .catch((err) =>
         {

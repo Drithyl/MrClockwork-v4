@@ -1,32 +1,31 @@
 
-const fs = require("fs");
+const log = require("./logger.js");
 const emitter = require("./emitter.js");
-const rw = require("./reader_writer.js");
 const config = require("./config/config.json");
 var timeIntervals;
 var turnCheckIntervals;
 
 module.exports.startCounting = function()
 {
-  console.log("Starting time events.");
+  log.general(log.getNormalLevel(), "Starting time events.");
   timeIntervals = setTimeout(update, msToNextSecond());
 };
 
 module.exports.startTurnChecks = function()
 {
-  console.log("Starting turnCheck events.");
+  log.general(log.getNormalLevel(), "Starting turnCheck events.");
   turnCheckIntervals = setInterval(emitCheckTurnEvent, config.turnCheckInterval);
 };
 
 module.exports.stopTimeEvents = function()
 {
-  console.log("Stopping time events.");
+  log.general(log.getNormalLevel(), "Stopping time events.");
   clearTimeout(timeIntervals);
 };
 
 module.exports.stopTurnChecks = function()
 {
-  console.log("Stopping turnCheck events.");
+  log.general(log.getNormalLevel(), "Stopping turnCheck events.");
   clearInterval(turnCheckIntervals);
 };
 

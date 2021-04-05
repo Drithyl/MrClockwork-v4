@@ -1,6 +1,7 @@
 
 
 const fetch = require("node-fetch");
+const log = require("../logger.js");
 const config = require("../config/config.json");
 
 /** data to make the request for the authorization code */
@@ -51,7 +52,7 @@ function _fetchToken()
     .then((discordResponse) => discordResponse.json())
     .then((tokenInfo) =>
     {
-        console.log(`Token info received: `, tokenInfo);
+        log.general(log.getNormalLevel(), `Token info received after authentication`, tokenInfo);
         return Promise.resolve(tokenInfo);
     })
     .catch((err) => Promise.reject(new Error(`Error fetching token: ${err.message},\n\n${err.stack}`)));
@@ -67,7 +68,7 @@ function _fetchUserInfo(tokenInfo)
     .then((userResponse) => userResponse.json())
     .then((userInfo) =>
     {
-        console.log(`User info received: `, userInfo);
+        log.general(log.getNormalLevel(), `User info received after authentication`, userInfo);
         return Promise.resolve(userInfo);
     })
     .catch((err) => Promise.reject(new Error(`Error fetching user information: ${err.message},\n\n${err.stack}`)));

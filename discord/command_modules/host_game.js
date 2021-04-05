@@ -1,4 +1,5 @@
 
+const log = require("../../logger.js");
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
@@ -49,7 +50,7 @@ function _behaviour(commandContext)
 
         if (useDefaultsArgument != null && useDefaultsArgument === "default")
         {
-            console.log("Using default values.");
+            log.general(log.getVerboseLevel(), "Hosting game using default values.");
             return activeMenuStore.startHostGameMenu(newGameObject, true);
         }
         

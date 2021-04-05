@@ -1,6 +1,6 @@
 
+const log = require("../logger.js");
 const assert = require("../asserter.js");
-const rw = require("../reader_writer.js");
 const MessageWrapper = require("./wrappers/message_wrapper.js");
 
 module.exports.send = function(receiver, text, options = {})
@@ -30,14 +30,11 @@ module.exports.send = function(receiver, text, options = {})
         else return Promise.resolve(discordJsMessage);
     })
     .then((discordJsMessage) => Promise.resolve(new MessageWrapper(discordJsMessage)))
-    .catch((err) => Promise.reject(new Error(`Could not send message:\n\n${err.stack}`)));
-};
-
-//Same as send, but will also log the error
-module.exports.sendError = function(receiver, errorText)
-{
-    rw.log("error", errorText);
-    return module.exports.send(receiver, errorText);
+    .catch((err) => 
+    {
+        log.error(log.getNormalLevel(), `COULD NOT DELIVER MESSAGE`, err)
+        Promise.reject(new Error(`Could not deliver message: ${err.message}`));
+    });
 };
 
 function _createMessageOptionsObject(options)

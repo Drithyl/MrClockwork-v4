@@ -1,5 +1,5 @@
 
-
+const log = require("../../logger.js");
 const assert = require("../../asserter.js");
 const config = require("../../config/config.json");
 const commandData = require("./command_data.js");
@@ -122,13 +122,13 @@ function DiscordCommand(commandDataObject)
             .then(() => nextPromise())
             .catch((err) => 
             {
-                console.log(`Silent requirements not met, check ${requirementCheck} failed!`);
+                log.general(log.getNormalLevel(), `Command ${_command.getName()} silent requirements not met, check failed!`, requirementCheck, err.message);
                 Promise.resolve(false);
             });
         })
         .then(() =>
         {
-            console.log("Silent requirements met!");
+            log.general(log.getNormalLevel(), `Command ${_command.getName()} silent requirements met!`);
             return Promise.resolve(true);
         });
     }

@@ -1,4 +1,5 @@
 
+const log = require("../logger.js");
 const config = require("../config/config.json");
 const guildDataStore = require("./guild_data_store.js");
 const guildWrapperFactory = require("./guild_wrapper_factory.js");
@@ -8,22 +9,23 @@ const guildWrappers = {};
 
 module.exports.populateStore = function(discordJsGuildCollection)
 {
+    log.general(log.getNormalLevel(), `Populating guild store...`);
     return guildDataStore.populateGuildDataStore()
     .then(() => 
     {
         var guildArray = discordJsGuildCollection.array();
 
-        console.log("Finished loading guild data.");
-        console.log("Populating guild store...");
+        log.general(log.getNormalLevel(), "Finished loading guild data.");
+        log.general(log.getNormalLevel(), "Populating guild store...");
 
         return guildArray.forEachPromise((discordJsGuild, index, nextPromise) =>
         {
-            console.log(`Fetching guild...`);
+            log.general(log.getNormalLevel(), `Fetching guild...`);
             return discordJsGuild.fetch()
             .then((fetchedDiscordJsGuild) =>
             {
                 module.exports.addGuild(fetchedDiscordJsGuild);
-                console.log(`${discordJsGuild.name} added.`);
+                log.general(log.getNormalLevel(), `${discordJsGuild.name} added.`);
                 nextPromise();
             });
         });
@@ -265,31 +267,31 @@ exports.undeployBotOnGuild = (guildId) =>
     const blitzerRole = guildWrapper.getBlitzerRole();
 
     newsChannel.delete()
-    .catch((err) => console.log("Could not delete news channel: ", err));
+    .catch((err) => log.error(log.getLeanLevel(), "COULD NOT DELETE NEWS CHANNEL", err));
 
     helpChannel.delete()
-    .catch((err) => console.log("Could not delete help channel: ", err));
+    .catch((err) => log.error(log.getLeanLevel(), "COULD NOT DELETE HELP CHANNEL", err));
 
     recruitingCategory.delete()
-    .catch((err) => console.log("Could not delete recruiting category: ", err));
+    .catch((err) => log.error(log.getLeanLevel(), "COULD NOT DELETE RECRUITING CATEGORY", err));
 
     blitzRecruitingCategory.delete()
-    .catch((err) => console.log("Could not delete blitz recruiting category: ", err));
+    .catch((err) => log.error(log.getLeanLevel(), "COULD NOT DELETE BLITZ RECRUITING CATEGORY", err));
 
     gameCategory.delete()
-    .catch((err) => console.log("Could not delete game category: ", err));
+    .catch((err) => log.error(log.getLeanLevel(), "COULD NOT DELETE GAME CATEGORY", err));
 
     blitzCategory.delete()
-    .catch((err) => console.log("Could not delete blitz category: ", err));
+    .catch((err) => log.error(log.getLeanLevel(), "COULD NOT DELETE BLITZ CATEGORY", err));
 
     gameMasterRole.delete()
-    .catch((err) => console.log("Could not delete game master role: ", err));
+    .catch((err) => log.error(log.getLeanLevel(), "COULD NOT DELETE GAME MASTER ROLE", err));
 
     trustedRole.delete()
-    .catch((err) => console.log("Could not delete trusted role: ", err));
+    .catch((err) => log.error(log.getLeanLevel(), "COULD NOT DELETE TRUSTED ROLE", err));
 
     blitzerRole.delete()
-    .catch((err) => console.log("Could not delete blitzer role: ", err));
+    .catch((err) => log.error(log.getLeanLevel(), "COULD NOT DELETE BLITZER ROLE", err));
 
     return Promise.resolve();
 };
@@ -303,17 +305,17 @@ exports.updateHelpChannels = (updatedHelpString, idOfGuildToUpdate = "") =>
 
     return guildWrappers.forEachPromise((wrapper, guildId, nextPromise) =>
     {
-        console.log(`Updating guild ${wrapper.getName()}...`);
+        log.general(log.getNormalLevel(), `Updating guild ${wrapper.getName()}...`);
 
         return wrapper.updateHelpChannel(updatedHelpString)
         .then(() => 
         {
-            console.log(`${wrapper.getName()} help channel updated.`);
+            log.general(log.getNormalLevel(), `${wrapper.getName()} help channel updated.`);
             return nextPromise();
         })
         .catch((err) => 
         {
-            console.log(`Error updating ${guildWrapper.getName()}: ${err.message}`);
+            log.error(log.getLeanLevel(), `ERROR UPDATING ${guildWrapper.getName()} HELP CHANNEL`, err);
             return next(); 
         });
     });

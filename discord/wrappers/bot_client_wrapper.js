@@ -1,5 +1,6 @@
 
 const Discord = require("discord.js");
+const log = require("../../logger.js");
 const guildStore = require("../guild_store.js");
 const UserWrapper = require("./user_wrapper.js");
 const config = require("../../config/config.json");
@@ -11,11 +12,11 @@ exports.getId = () => _discordJsBotClient.user.id;
 
 exports.loginToDiscord = () => 
 {
-    console.log("Logging into Discord...");
+    log.general(log.getNormalLevel(), "Logging into Discord...");
     return _discordJsBotClient.login(config.loginToken)
     .then(() => 
     {
-        console.log("Bot logged in.");
+        log.general(log.getNormalLevel(), "Bot logged in.");
         return Promise.resolve(_discordJsBotClient.guilds.cache);
     });
 };

@@ -1,4 +1,5 @@
 
+const log = require("../../logger.js");
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
@@ -51,7 +52,7 @@ function _formatSubmittedPretenderLine(submittedPretender, commandContext)
     const pretenderOwnerId = game.getPlayerIdControllingNationInGame(nationFilename);
     const pretenderOwnerMember = guildWrapper.getGuildMemberWrapperById(pretenderOwnerId);
 
-    console.log(`Owner for ${fullNationName}: ${pretenderOwnerId}`);
+    log.general(log.getVerboseLevel(), `Owner for ${fullNationName}: ${pretenderOwnerId}`);
 
     if (pretenderOwnerId != null)
         return `${fullNationName.width(40)} ${pretenderOwnerMember.getUsername()}\n`;

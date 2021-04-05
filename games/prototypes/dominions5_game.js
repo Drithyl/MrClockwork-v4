@@ -1,5 +1,6 @@
 
 const Game = require("./game.js");
+const log = require("../../logger.js");
 const asserter = require("../../asserter.js");
 const config = require("../../config/config.json");
 const dominions5Status = require("./dominions5_status.js");
@@ -209,12 +210,12 @@ function Dominions5Game()
     {
         if (_statusEmbed != null)
             _statusEmbed.update(updatedStatus, _isEnforcingTimer)
-            .catch((err) => console.log(`Could not update status embed: ${err.message}`));
+            .catch((err) => log.error(log.getVerboseLevel(), `ERROR UPDATING ${_gameObject.getName()}'S EMBED`, err));
 
         else if (_gameObject.getChannel() != null)
             _gameObject.sendStatusEmbed()
             .then(() => _gameObject.save())
-            .catch((err) => console.log(`Could not send status embed: ${err.message}\n`, err.stack));
+            .catch((err) => log.error(log.getVerboseLevel(), `ERROR SENDING ${_gameObject.getName()}'S EMBED`, err));
     };
 
     _gameObject.emitPromiseWithGameDataToServer = (message, additionalDataObjectToSend) =>
@@ -251,7 +252,7 @@ function Dominions5Game()
                 _statusEmbed = statusEmbed;
                 return Promise.resolve();
             })
-            .catch((err) => console.log(`Could not load ${_gameObject.getName()}'s status embed: ${err.message}`));
+            .catch((err) => log.error(log.getLeanLevel(), `ERROR LOADING ${_gameObject.getName()}'S EMBED`, err));
         }
 
         return _gameObject;

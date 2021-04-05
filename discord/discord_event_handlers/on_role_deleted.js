@@ -1,12 +1,12 @@
 
-
+const log = require("../../logger.js");
 const guildStore = require("../guild_store.js");
 const botClientWrapper = require("../wrappers/bot_client_wrapper.js");
 
 
 exports.startListening = () =>
 {
-    console.log("Listening to onRoleDeleted.");
+    log.general(log.getNormalLevel(), "Listening to onRoleDeleted.");
     botClientWrapper.addOnRoleDeletedHandler((role) =>
     {
         const guildWrapper = guildStore.getGuildWrapperById(role.guild.id);
@@ -14,8 +14,8 @@ exports.startListening = () =>
         if (guildWrapper.wasDiscordElementCreatedByBot(role.id) === true)
         {
            guildWrapper.clearData(role.id)
-           .then(() => console.log(`Bot Role ${role.name} was deleted; cleared its data as well.`))
-           .catch((err) => console.log(`Error when clearing data of role ${role.name} in guild ${role.guild.id}: ${err.message}\n\n${err.stack}`));
+           .then(() => log.general(log.getNormalLevel(), `Bot Role ${role.name} was deleted; cleared its data as well.`))
+           .catch((err) => log.error(log.getLeanLevel(), `ERROR CLEARING DATA OF ROLE ${role.name} IN GUILD ${role.guild.id}`, err));
         }
     });
 };

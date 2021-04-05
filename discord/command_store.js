@@ -1,4 +1,5 @@
 
+const log = require("../logger.js");
 const rw = require("../reader_writer.js");
 const RangeError = require("../errors/custom_errors.js").RangeError;
 const commandFilesDirectoryPath = `${__dirname}/command_modules`;
@@ -6,8 +7,6 @@ const commandFilesDirectoryPath = `${__dirname}/command_modules`;
 const commandModuleFilenames = _getCommandModuleFilenamesAsArray();
 const commandPrototypes = _getCommandPrototypesAsArray(commandModuleFilenames);
 const commandStore = _getCommandObjectsAsArray(commandPrototypes);
-console.log(commandModuleFilenames);
-console.log(commandPrototypes);
 
 
 exports.isCommandInvoked = (commandContext) =>
@@ -18,12 +17,12 @@ exports.isCommandInvoked = (commandContext) =>
 
         if (command.isInvoked(commandContext) === true)
         {
-            console.log(`Command ${command.getName()} was invoked!`);
+            log.general(log.getNormalLevel(), `Command ${command.getName()} was invoked!`);
             return true;
         }
     }
 
-    console.log("No command was found that matched the requirements.");
+    log.general(log.getNormalLevel(), "No command was found that matched the requirements");
     return false;
 };
 
@@ -72,13 +71,13 @@ function _getCommandPrototypesAsArray(filenamesAsArray)
 function _getCommandObjectsAsArray(commandPrototypesArray)
 {
     var arr = [];
-    console.log("Populating command object array");
+    log.general(log.getNormalLevel(), "Populating command object array");
 
     commandPrototypesArray.forEach((CommandPrototype) =>
     {
         const commandObject = new CommandPrototype();
         arr.push(commandObject);
-        console.log(`Command object ${commandObject.getName()} created.`);
+        log.general(log.getNormalLevel(), `Command object ${commandObject.getName()} created.`);
     });
 
     return arr;

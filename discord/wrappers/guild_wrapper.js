@@ -1,4 +1,5 @@
 
+const log = require("../../logger.js");
 const messenger = require("../messenger.js");
 const guildStore = require("../guild_store.js");
 const guildDataStore = require("../guild_data_store.js");
@@ -62,14 +63,14 @@ function GuildWrapper(discordJsGuildObject)
 
         if (helpChannel == null)
         {
-            console.log(`Help channel for ${this.getName()} does not exist; cannot update.`);
+            log.general(log.getNormalLevel(), `Help channel for ${this.getName()} does not exist; cannot update.`);
             return Promise.resolve();
         }
 
         return _clearChannel(helpChannel)
         .then(() => 
         {
-            console.log(`${this.getName()}'s help channel cleared; sending new help string.`);
+            log.general(log.getVerboseLevel(), `${this.getName()}'s help channel cleared; sending new help string.`);
             messenger.send(helpChannel, updatedHelpString, { prepend: "", append: "" });
         });
     };
@@ -79,13 +80,13 @@ function GuildWrapper(discordJsGuildObject)
 
     this.findChannel = (channelId) => 
     {
-        console.log(`Searching for channel ${channelId}`);
+        log.general(log.getVerboseLevel(), `Searching for channel ${channelId}`);
         return _discordJsGuildObject.channels.resolve(channelId);
     };
 
     this.findRole = (roleId) => 
     {
-        console.log(`Searching for role ${roleId}`);
+        log.general(log.getVerboseLevel(), `Searching for role ${roleId}`);
         return _discordJsGuildObject.roles.resolve(roleId);
     };
 
@@ -101,36 +102,36 @@ function GuildWrapper(discordJsGuildObject)
 
     this.findOrCreateChannel = (existingId, ...args) =>
     {
-        console.log(`Finding channel ${existingId}...`);
+        log.general(log.getVerboseLevel(), `Finding channel ${existingId}...`);
         var existingChannel = this.findChannel(existingId);
 
         if (existingChannel != null)
         {
-            console.log(`Channel exists, resolving.`);
+            log.general(log.getVerboseLevel(), `Channel exists, resolving.`);
             return Promise.resolve(existingChannel);
         }
             
         else 
         {
-            console.log(`Channel not found`);
+            log.general(log.getVerboseLevel(), `Channel not found`);
             return this.createChannel(...args); 
         }
     };
 
     this.findOrCreateRole = (existingId, ...args) =>
     {
-        console.log(`Finding role ${existingId}...`);
+        log.general(log.getVerboseLevel(), `Finding role ${existingId}...`);
         var existingRole = this.findRole(existingId);
 
         if (existingRole != null)
         {
-            console.log(`Role exists, resolving.`);
+            log.general(log.getVerboseLevel(), `Role exists, resolving.`);
             return Promise.resolve(existingRole);
         }
 
         else
         {
-            console.log(`Role not found`);
+            log.general(log.getVerboseLevel(), `Role not found`);
             return this.createRole(...args);
         }
     };
@@ -142,7 +143,7 @@ function GuildWrapper(discordJsGuildObject)
 
     this.createChannel = (name, permissionOverwrites, parent = null) => 
     {
-        console.log(`Creating channel ${name}...`);
+        log.general(log.getVerboseLevel(), `Creating channel ${name}...`);
         return _discordJsGuildObject.channels.create(name, 
         {
             type: "text", 
@@ -151,14 +152,14 @@ function GuildWrapper(discordJsGuildObject)
         })
         .then((channel) =>
         {
-            console.log(`Channel created`);
+            log.general(log.getVerboseLevel(), `Channel created`);
             return Promise.resolve(channel);
         });
     };
 
     this.createRole = (name, mentionable, permissions) =>
     {
-        console.log(`Creating role ${name}...`);
+        log.general(log.getVerboseLevel(), `Creating role ${name}...`);
         return _discordJsGuildObject.roles.create({ 
             data:
             {
@@ -169,7 +170,7 @@ function GuildWrapper(discordJsGuildObject)
         })
         .then((role) => 
         {
-            console.log(`Role created.`);
+            log.general(log.getVerboseLevel(), `Role created.`);
             return Promise.resolve(role);
         });
     };
@@ -220,18 +221,18 @@ function GuildWrapper(discordJsGuildObject)
     {
         var _lastMessage;
 
-        console.log("Last message id: " + channel.lastMessageID);
+        log.general(log.getVerboseLevel(), "Last message id", channel.lastMessageID);
 
         if (channel.lastMessageID == null)
         {
-            console.log("Channel already empty.");
+            log.general(log.getVerboseLevel(), "Channel already empty.");
             return Promise.resolve();
         }
 
         return channel.messages.fetch(channel.lastMessageID)
         .then((lastMessage) =>
         {
-            console.log("Fetched last message " + lastMessage.id);
+            log.general(log.getVerboseLevel(), `Fetched last message ${lastMessage.id}`);
             _lastMessage = lastMessage;
             
             // Fetch all messages before last in channel
@@ -242,21 +243,21 @@ function GuildWrapper(discordJsGuildObject)
             const messageArray = messages.array();
             messageArray.push(_lastMessage);
             
-            console.log("Fetched all previous messages; total messages fetched: " + messageArray.length);
+            log.general(log.getVerboseLevel(), `Fetched previous messages; total fetched: ${messageArray.length}`);
 
             // Delete all messages
             return messageArray.forEachPromise((message, index, nextPromise) =>
             {
-                console.log("Deleting message " + channel.id);
+                log.general(log.getVerboseLevel(), `Deleting message ${channel.id}...`);
                 return message.delete()
                 .then(() => 
                 {
-                    console.log("Message deleted.");
+                    log.general(log.getVerboseLevel(), "Message deleted.");
                     return nextPromise();
                 })
                 .catch((err) => 
                 {
-                    console.log(`Could not delete: ${err.message}\n\n${err.stack}`);
+                    log.error(log.getNormalLevel(), `ERROR DELETING MESSAGE`, err);
                     Promise.reject(err)
                 });
             });

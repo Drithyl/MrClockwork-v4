@@ -1,4 +1,5 @@
 
+const log = require("../../logger.js");
 const handleDom5Error = require("../../games/dominions5_runtime_error_handler.js");
 const { TimeoutError, SocketResponseError } = require("../../errors/custom_errors");
 
@@ -59,19 +60,19 @@ function SocketWrapper(socketIoObject)
     };
 
     
-    this.listenTo("NEW_TURN", (data) => console.log(`${data.name}: New turn!`));
-    this.listenTo("STDIO_CLOSED", (data) => console.log(`${data.name}: stdio closed with code ${data.code}`));
-    this.listenTo("STDIO_DATA", (data) => console.log(`${data.name}: ${data.type} data received: ${data.data}`));
+    this.listenTo("NEW_TURN", (data) => log.general(log.getNormalLevel(), `${data.name}: New turn!`));
+    this.listenTo("STDIO_CLOSED", (data) => log.general(log.getNormalLevel(), `${data.name}: stdio closed with code ${data.code}`));
+    this.listenTo("STDIO_DATA", (data) => log.general(log.getNormalLevel(), `${data.name}: ${data.type} data received`, data));
 
     this.listenTo("STDIO_ERROR", (data) => 
     {
-        console.log(`${data.name}: ${data.type} ERROR received: ${data.error}`);
+        log.error(log.getLeanLevel(), `${data.name}: ${data.type} ERROR RECEIVED`, data);
         handleDom5Error(data.name, data.error);
     });
 
     this.listenTo("GAME_ERROR", (data) => 
     {
-        console.log(`${data.name}: reported game error: ${data.error}`);
+        log.error(log.getLeanLevel(), `${data.name} REPORTED GAME ERROR`, data);
         handleDom5Error(data.name, data.error);
     });
 }

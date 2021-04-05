@@ -1,4 +1,5 @@
 
+const log = require("../../logger.js");
 const guildStore = require("../../discord/guild_store.js");
 const hostServerStore = require("../host_server_store.js");
 const dom5Nations = require("../../json/dom5_nations.json");
@@ -20,7 +21,7 @@ exports.set = (expressApp) =>
         const guildData = [];
         const sessionParams = webSessionsStore.extractSessionParamsFromUrl(req.url);
 
-        console.log("Host game authentication params:", sessionParams);
+        log.general(log.getNormalLevel(), "host_game authentication params", sessionParams);
 
         if (webSessionsStore.isSessionValid(sessionParams) === false)
             return res.render("results_screen.ejs", { result: `Session does not exist.` });
@@ -50,11 +51,11 @@ exports.set = (expressApp) =>
         const sessionToken = values.token;
         const userId = webSessionsStore.getSessionUserId(values.token);
 
-        console.log(`Post values received:\n`, values);
+        log.general(log.getNormalLevel(), `host_game POST values received`, values);
 
         if (webSessionsStore.isSessionValid(values) === false)
         {
-            console.log("Session does not exist; cannot host.");
+            log.general(log.getNormalLevel(), "Session does not exist; cannot host.");
             return res.render("results_screen.ejs", { result: `Session does not exist.` });
         }
 
@@ -69,7 +70,7 @@ exports.set = (expressApp) =>
         })
         .catch((err) => 
         {
-            console.log(err);
+            log.error(log.getLeanLevel(), `HOST GAME ERROR`, err);
             res.render("results_screen.ejs", { result: `Error occurred when creating the game: ${err.message}` });
         });
     });
@@ -96,7 +97,7 @@ function _formatPostValues(values)
     values.thrones = `${values.level1Thrones}, ${values.level2Thrones}, ${values.level3Thrones}`;
     values.timer = `${values.timerDays}d${values.timerHours}h${values.timerMinutes}m`;
 
-    console.log(`\nFormatted POST values:\n`, values);
+    log.general(log.getNormalLevel(), `host_game formatted POST values`, values);
     return values;
 }
 

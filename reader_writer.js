@@ -1,19 +1,7 @@
 
 const fs = require("fs");
 const fsp = require("fs").promises;
-const config = require("./config/config.json");
-const logsPath = `${config.dataPath}/${config.logsFolder}`;
 
-const logTagsToPaths = {
-    "general": `${logsPath}/general.txt`,
-    "error": `${logsPath}/error.txt`,
-    "upload": `${logsPath}/upload.txt`
-};
-
-if (fs.existsSync(logsPath) === false)
-{
-	fs.mkdirSync(logsPath);
-}
 
 module.exports.copyFile = function(source, target)
 {
@@ -152,6 +140,19 @@ exports.getDirSubfolderNamesSync = (path) =>
 	return subfolderNames;
 };
 
+module.exports.append = (filePath, stringData) =>
+{
+	const dirPath = filePath.replace(/\/.+$/, "");
+
+	if (fs.existsSync(dirPath) === false)
+		return Promise.reject(new Error(`Directory ${dirPath} does not exist.`));
+
+	if (fs.existsSync(filePath) === false)
+		return fsp.writeFile(filePath, stringData);
+		
+	else return fsp.appendFile(filePath, stringData);
+};
+
 //Stringify that prevents circular references taken from https://antony.fyi/pretty-printing-javascript-objects-as-json/
 module.exports.JSONStringify = function(obj, spacing = 2)
 {
@@ -180,98 +181,3 @@ module.exports.JSONStringify = function(obj, spacing = 2)
 	cache = null;
 	return str;
 };
-
-module.exports.log = function(tags, trace, ...inputs)
-{
-	var msg = _timestamp() + "\n";
-
-	if (Array.isArray(tags) === false)
-		tags = [tags];
-
-	//no trace argument was provided
-	if (typeof trace !== "boolean")
-	{
-		if (Array.isArray(trace) === false)
-			trace = [trace];
-
-		inputs = trace.concat(inputs);
-	}
-
-	inputs.forEach((input) =>
-	{
-		if (typeof input === "string")
-		{
-			//add tab characters to each line so that they are all indented relative to the timestamp
-			input.split("\n").forEach((line) => msg += `\t${line}\n`);
-		}
-
-		else msg += `\t${_toJSON(input)}\n`;
-	});
-
-	console.log(`${msg}\n`);
-
-	if (trace === true)
-	{
-		console.log("\n\n");
-		console.trace();
-		console.log("\n\n");
-	}
-
-	tags.forEachPromise((tag, index, nextPromise) =>
-	{
-		if (logTagsToPaths[tag] == null)
-            return nextPromise();
-            
-        return Promise.resolve()
-        .then(() =>
-        {
-            if (fs.existsSync(logTagsToPaths[tag]) === false)
-                return fsp.writeFile(logTagsToPaths[tag], `${msg}\r\n\n`);
-
-            return fsp.appendFile(logTagsToPaths[tag], `${msg}\r\n\n`);
-        })
-        .then(() => nextPromise())
-        .catch((err) => console.log(err));
-	});
-};
-
-module.exports.logMemberJoin = function(username, inviteUsed, inviter)
-{
-	var d = new Date().toString().replace(" (W. Europe Standard Time)", "");
-	d = d.replace(" (Central European Standard Time)", "");
-	var str = `${username} joined the Guild using the invite ${inviteUsed}, which was created by ${inviter}.`;
-
-	fs.appendFile("memberJoin.log", d + "\r\n\n-- " + str + "\r\n\n", function (err)
-	{
-		if (err)
-		{
-			module.exports.log("error", true, {username: username, inviteUsed: inviteUsed, inviter: inviter, err: err});
-		}
-	});
-};
-
-function _timestamp()
-{
-	var now = new Date();
-	var hours = now.getHours();
-	var minutes = now.getMinutes();
-	var seconds = now.getSeconds();
-	var ms = now.getMilliseconds();
-
-	if (hours < 10)
-		hours = `0${hours}`;
-
-	if (minutes < 10)
-		minutes = `0${minutes}`;
-
-	if (seconds < 10)
-		seconds = `0${seconds}`;
-
-	if (ms < 10)
-		ms = `00${ms}`;
-
-	else if (ms < 100)
-		ms = `0${ms}`;
-
-	return `${hours}:${minutes}:${seconds}:${ms}, ${now.toDateString()}`;
-}

@@ -1,4 +1,5 @@
 
+const log = require("../../logger.js");
 const assert = require("../../asserter.js");
 
 module.exports = GameSettings;
@@ -61,12 +62,12 @@ function GameSettings(parentGame)
 
     this.loadJSONData = (jsonData) =>
     {
-        console.log("Loading JSON data...", jsonData);
+        log.general(log.getNormalLevel(), "Loading JSON data...", jsonData);
         this.forEachSetting((settingObject, settingKey) =>
         {
             var loadedValue = jsonData[settingKey];
 
-            console.log(`Loading ${settingKey}`);
+            log.general(log.getNormalLevel(), `Loading ${settingKey}`);
 
             if (loadedValue !== undefined)
                 settingObject.fromJSON(loadedValue);

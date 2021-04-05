@@ -1,5 +1,6 @@
 
 const fs = require("fs");
+const log = require("../logger.js");
 const Dominions5Game = require("./prototypes/dominions5_game.js");
 
 exports.loadGame = (pathToJSONDataFile) =>
@@ -10,7 +11,7 @@ exports.loadGame = (pathToJSONDataFile) =>
     var jsonParsedData = JSON.parse(jsonStringData);
 
     loadedGame.loadJSONData(jsonParsedData);
-    console.log("Data loaded, returning!");
+    log.general(log.getNormalLevel(), `Game data loaded, returning!`);
     return loadedGame;
 };
 

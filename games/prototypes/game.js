@@ -1,6 +1,7 @@
 
 const fs = require("fs");
 const fsp = require("fs").promises;
+const log = require("../../logger.js");
 const assert = require("../../asserter.js");
 const config = require("../../config/config.json");
 const GameSettings = require("./game_settings.js");
@@ -141,7 +142,7 @@ function Game()
     {
         ongoingGamesStore.addOngoingGame(this);
         return this.save()
-        .then(() => console.log(`Game ${this.getName()} was created successfully.`));
+        .then(() => log.general(log.getNormalLevel(), `Game ${this.getName()} was created successfully.`));
     };
 
     this.save = () =>
@@ -150,14 +151,14 @@ function Game()
         var data = JSON.stringify(this, null, 2);
         var path = `${config.dataPath}/${config.gameDataFolder}`;
 
-        //console.log(`Saving data of game ${name}...`);
+        log.general(log.getVerboseLevel(), `Saving data of game ${name}...`);
 
         return Promise.resolve()
         .then(() =>
         {
             if (fs.existsSync(`${path}/${name}`) === false)
             {
-                console.log(`Directory for game data does not exist, creating it.`);
+                log.general(log.getVerboseLevel(), `Directory for game data does not exist, creating it.`);
                 return fsp.mkdir(`${path}/${name}`);
             }
 
@@ -165,12 +166,12 @@ function Game()
         })
         .then(() => 
         {
-            //console.log(`Writing data file...`);
+            log.general(log.getVerboseLevel(), `Writing data file...`);
             return fsp.writeFile(`${path}/${name}/data.json`, data);
         })
         .then(() => 
         {
-            //console.log(`Data for game ${name} saved successfully.`);
+            log.general(log.getVerboseLevel(), `Data for game ${name} saved successfully.`);
         });
     };
 

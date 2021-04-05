@@ -1,4 +1,5 @@
 
+const log = require("../../logger.js");
 const assert = require("../../asserter.js");
 const RangeError = require("../../errors/custom_errors.js").RangeError;
 
@@ -134,13 +135,13 @@ function MenuStructure(guildMemberWrapper, contextData)
     //TODO Add the below menu commands?
     /*if (backRegexp.test(input) === true)
     {
-        console.log(`User requested to go back one step.`);
+        log.general(log.getVerboseLevel(), `User requested to go back one step.`);
         return instance.goBack();
     }
 
     else if (endRegexp.test(input) === true)
     {
-        console.log(`User requested to end instance.`);
+        log.general(log.getVerboseLevel(), `User requested to end instance.`);
         return module.exports.finish(userId);
     }*/
 }

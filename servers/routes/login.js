@@ -1,5 +1,6 @@
 
 const url = require("url");
+const log = require("../../logger.js");
 const oauth2 = require("../discord_oauth2.js");
 const webSessionsStore = require("../web_sessions_store.js");
 
@@ -10,7 +11,7 @@ exports.set = (expressApp) =>
     {
         const urlObject = new url.URL("http://www." + req.hostname + req.originalUrl);
 
-        console.log("Login request received with urlObject: " + urlObject.searchParams.get("code"));
+        log.general(log.geVerboseLevel(), `Login request received with urlObject: ${urlObject.searchParams.get("code")}`);
 
         oauth2.authenticate(urlObject)
         .then((userInfo) => 
@@ -19,9 +20,9 @@ exports.set = (expressApp) =>
             const sessionToken = webSessionsStore.createSession(userId);
 
             if (userId == null)
-                return console.log("Invalid login attempt, ignoring.");
+                return log.general(log.getVerboseLevel(), "Invalid login attempt, ignoring.");
 
-            console.log(`Authenticated! userId: ${userId}, token: ${sessionToken}`);
+            log.general(log.getVerboseLevel(), `Request authenticated! userId: ${userId}, token: ${sessionToken}`);
 
             res.render("user_home_screen.ejs", { userData: {
                 token: sessionToken, 

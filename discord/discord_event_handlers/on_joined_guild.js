@@ -1,11 +1,12 @@
 
+const log = require("../../logger.js");
 const guildStore = require("../guild_store.js");
 const botClientWrapper = require("../wrappers/bot_client_wrapper.js");
 
 
 exports.startListening = () =>
 {
-    console.log("Listening to onJoinedGuild.");
+    log.general(log.getNormalLevel(), "Listening to onJoinedGuild.");
     botClientWrapper.addOnBotJoinedGuildHandler(_onJoinedGuild);
 };
 

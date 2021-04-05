@@ -1,4 +1,5 @@
 
+const log = require("../../logger.js");
 const MenuScreen = require("./menu_screen.js");
 const MenuStructure = require("./menu_structure.js");
 const activeMenuStore = require("../active_menu_store.js");
@@ -48,7 +49,7 @@ function _loadSettingsScreensInOrder(gameObject, useDefaults = false)
 
         if (useDefaults === true)
         {
-            console.log(`Using default value '${setting.getDefault()}'`);
+            log.general(log.getVerboseLevel(), (`Loading host menu setting screen ${setting.getName()} using default values '${setting.getDefault()}'`));
             menuScreens.push(new MenuScreen(display, () => setting.setValue(setting.getDefault())));
         }
 

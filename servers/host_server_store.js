@@ -1,9 +1,12 @@
 
-const _hostServersById = {};
-
+const log = require("../logger.js");
 const HostServer = require("./prototypes/host_server.js");
 const { isInstanceOfPrototypeOrThrow } = require("../asserter.js");
 const trustedServerData = require("../config/trusted_server_data.json");
+
+
+const _hostServersById = {};
+
 
 //Populate the store with the basic known data of our servers
 exports.populate = () => _populateStore();
@@ -86,7 +89,7 @@ exports.printListOfFreeSlots = () =>
 
 function _populateStore()
 {
-    console.log("Populating host server store...");
+    log.general(log.getNormalLevel(), "Populating host server store...");
 
     for (var serverId in trustedServerData)
     {
@@ -99,7 +102,7 @@ function _addHostServer(hostServerObject)
 {
     isInstanceOfPrototypeOrThrow(hostServerObject, HostServer);
     _hostServersById[hostServerObject.getId()] = hostServerObject;
-    console.log(`Server ${hostServerObject.getName()} added to the store.`);
+    log.general(log.getNormalLevel(), `Server ${hostServerObject.getName()} added to the store.`);
 }
 
 function _removeHostServerById(idToFind) 

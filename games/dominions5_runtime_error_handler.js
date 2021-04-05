@@ -1,5 +1,5 @@
 
-const rw = require("../reader_writer.js");
+const log = require("../logger.js");
 const messenger = require("../discord/messenger.js");
 const gameStore = require("./ongoing_games_store.js");
 
@@ -56,10 +56,10 @@ module.exports = function(gameName, errStr)
     const game = gameStore.getOngoingGameByName(gameName);
 
     if (game == null)
-        return console.log(`Received error for ${gameName}, but could not find the game object: ${errStr}`);
+        return log.error(log.getNormalLevel(), `GAME ${gameName} REPORTED AN ERROR; BUT COULD NOT FIND IT IN STORE`, errStr);
 
     if (typeof errStr !== "string")
-        return console.log(`Received error call for ${gameName}, but did not receive any data about it.`);
+        return log.error(log.getNormalLevel(), `GAME ${gameName} REPORTED AN ERROR; BUT DID NOT RECEIVE DATA ABOUT IT`);
 
 
     if (failedToCreateTmpDirErrRegexp.test(errStr) === true)
@@ -106,7 +106,7 @@ module.exports = function(gameName, errStr)
 
     else
     {
-        rw.log("error", `The game ${game.getName()} reported an unknown error: ${errStr}`);
+        log.error(log.getLeanLevel(), `GAME ${game.getName()} REPORTED AN UNKNOWN ERROR`, errStr);
         sendWarning(game, `The game ${game.getName()} reported the error: ${errStr}`);
     }
 };

@@ -1,4 +1,5 @@
 
+const log = require("../../logger.js");
 const activeMenuStore = require("../active_menu_store.js");
 
 const testHostInput = [
@@ -12,14 +13,14 @@ const testHostInput = [
 
 module.exports.testHost = (hostMenu) =>
 {
-    console.log("Using test input...");
+    log.general(log.getLeanLevel(), "Using test input...");
     return testInput();
 
     function testInput(inputIndex = 0)
     {
         if (inputIndex >= testHostInput.length)
         {
-            console.log(`Finished testing`);
+            log.general(log.getLeanLevel(), `Finished testing`);
             activeMenuStore.finish(hostMenu.getId());
             return;
         }
@@ -28,7 +29,7 @@ module.exports.testHost = (hostMenu) =>
         .then(() => testInput(++inputIndex))
         .catch((err) => 
         {
-            console.log(err.message);
+            log.error(log.getLeanLevel(), `ERROR HANDLING TEST INPUT`, err);
             activeMenuStore.finish(hostMenu.getId());
         });
     }

@@ -1,5 +1,5 @@
 
-const assert = require("../asserter.js");
+const log = require("../logger.js");
 const botClientWrapper = require("../discord/wrappers/bot_client_wrapper.js");
 const { queryDominions5Game } = require("./prototypes/dominions5_status.js");
 
@@ -32,7 +32,7 @@ function _updateDom5Game(game)
         })
         .catch((err) => 
         {
-            console.log(`${gameName}\t${err.message}\n\n${err.stack}`);
+            log.error(log.getNormalLevel(), `ERROR UPDATING DOM5 GAME ${gameName}`, err);
             
             if (monitoredGames[gameName] != null)
                 _updateDom5Game(game);
@@ -45,18 +45,18 @@ function _updateCycle(game)
 {
     const lastKnownStatus = game.getLastKnownStatus();
 
-    console.log(`${game.getName()}\tupdating...`);
+    log.general(log.getVerboseLevel(), `${game.getName()}\tupdating...`);
 
     if (game.getServer() == null)
     {
-        console.log(`${game.getName()}\tno server found for this game?`);
+        log.error(log.getVerboseLevel(), `${game.getName()} UPDATE ERROR; NO SERVER OBJECT FOUND IN GAME`);
         return Promise.resolve();
     }
 
     return queryDominions5Game(game)
     .then((updatedStatus) =>
     {
-        //console.log(`${game.getName()}\tquery results received.`);
+        //log.general(log.getVerboseLevel(), `${game.getName()}\tquery results received.`);
         if (game.isEnforcingTimer() === false)
             return Promise.resolve(updatedStatus);
 
@@ -72,24 +72,29 @@ function _updateCycle(game)
         const gameEvents = _getGameEvents(updatedStatus, lastKnownStatus);
         const updateData = Object.assign(updatedStatus, gameEvents);
 
-        //console.log(`${game.getName()}\tupdating embed.`);
+        log.general(log.getVerboseLevel(), `${game.getName()}\tupdating embed.`);
         game.updateStatusEmbed(updateData);
 
 
         if (updatedStatus.isServerOnline() === false)
-            //return Promise.reject(new Error(`${game.getName()}\tserver offline; cannot update.`));
+        {
+            log.general(log.getVerboseLevel(), `${game.getName()}\tserver offline; cannot update.`);
             return Promise.resolve();
+        }
 
         else if (updatedStatus.isOnline() === false)
-            //return Promise.reject(new Error(`${game.getName()}\toffline; cannot update.`));
+        {    
+            log.general(log.getVerboseLevel(), `${game.getName()}\t offline; cannot update.`);
             return Promise.resolve();
+        }
             
         if (game.isEnforcingTimer() === true)
             _handleUpdatedStatus(game, updateData);
 
 
-        console.log(`${game.getName()}\treceived updated data:\n
-        \tcurrentStatus:\t\t${updateData.getStatus()}
+        log.general(log.getVerboseLevel(), 
+        `${game.getName()}\treceived updated data`,
+        `\tcurrentStatus:\t\t${updateData.getStatus()}
         \tcurrentMsLeft:\t\t${updateData.getMsLeft()}
         \tcurrentTurnNumber:\t${updateData.getTurnNumber()}
         \tcurrent isPaused:\t${updateData.isPaused()}\n
@@ -169,25 +174,25 @@ function _announceEvents(game, updateData)
 
     else if (updateData.didGameStart === true)
     {
-        console.log(`${gameName}\tstarted.`);
+        log.general(log.getNormalLevel(), `${gameName}\tstarted.`);
         return game.sendGameAnnouncement(`The game has started!`);
     }
 
     else if (updateData.didGameRestart === true)
     {
-        console.log(`${gameName}\trestarted.`);
+        log.general(log.getNormalLevel(), `${gameName}\trestarted.`);
         return game.sendGameAnnouncement(`The game has restarted; please submit your pretenders!`);
     }
 
     else if (updateData.isNewTurn === true)
     {
-        console.log(`${gameName}\tnew turn.`);
+        log.general(log.getNormalLevel(), `${gameName}\tnew turn.`);
         return game.sendGameAnnouncement(`Turn ${updateData.getTurnNumber()} has arrived.`);
     }
 
     else if (updateData.wasTurnRollbacked === true)
     {
-        console.log(`${gameName}\trollbacked turn.`);
+        log.general(log.getNormalLevel(), `${gameName}\trollbacked turn.`);
         return game.sendGameAnnouncement(`The game has been rollbacked to turn ${updateData.getTurnNumber()}.`);
     }
 
@@ -259,10 +264,10 @@ function _processNewTurnPreferences(game, turnNumber)
 
                 return userWrapper.sendMessage(`Find below your nation files for turn ${turnNumber}.`, { files });
             })
-            .catch((err) => console.log(`Could not send nation backups to user: ${err.message}\n\n${err.stack}`));
+            .catch((err) => log.error(log.getNormalLevel(), `ERROR SENDING NATION BACKUPS TO USER ${userWrapper.getUsername()} (${userWrapper.getId()})`, err));
         });
     })
-    .catch((err) => console.log(`Could not fetch nation files from server: ${err.message}\n\n${err.stack}`));
+    .catch((err) => log.error(log.getNormalLevel(), `ERROR FETCHING NATION BACKUP FILES`, err));
 }
 
 function _processNewHourPreferences(game, playerTurnData, hourMarkPassed)
@@ -285,9 +290,15 @@ function _processNewHourPreferences(game, playerTurnData, hourMarkPassed)
                 {
                     if (nationTurnData.isTurnDone === false || (nationTurnData.isTurnDone === true && preferences.isReceivingRemindersWhenTurnIsDone() === true))
                     {
+                        var _userWrapper;
+
                         botClientWrapper.fetchUser(file.getId())
-                        .then((userWrapper) => userWrapper.sendMessage(`There are less than ${hourMarkPassed} hours left for the next turn in ${gameName}.`))
-                        .catch((err) => console.log(`Could not send nation backups to user: ${err.message}\n\n${err.stack}`));
+                        .then((userWrapper) => 
+                        {
+                            _userWrapper = userWrapper;
+                            return _userWrapper.sendMessage(`There are less than ${hourMarkPassed} hours left for the next turn in ${gameName}.`);
+                        })
+                        .catch((err) => log.error(log.getNormalLevel(), `ERROR SENDING REMINDER TO USER ${_userWrapper.getUsername} (${_userWrapper.getId()})`, err));
     
                         break;
                     }

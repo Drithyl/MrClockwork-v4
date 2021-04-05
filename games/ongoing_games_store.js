@@ -1,5 +1,6 @@
 
 
+const log = require("../logger.js");
 const assert = require("../asserter.js");
 const rw = require("../reader_writer.js");
 const Game = require("./prototypes/game.js");
@@ -81,7 +82,7 @@ exports.deleteGame = function(gameName)
     .then(() =>
     {
         delete _ongoingGamesByName[gameName];
-        console.log(`Deleted ${gameName}'s bot data.`);
+        log.general(log.getNormalLevel(), `Deleted ${gameName}'s bot data.`);
         return Promise.resolve();
     })
     .catch((err) => Promise.reject(err));

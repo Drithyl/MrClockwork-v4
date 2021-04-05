@@ -1,6 +1,7 @@
 
 const fs = require("fs");
 const path = require("path");
+const log = require("./logger.js");
 const readline = require("readline");
 const config = require("./config/config.json");
 const exampleConfig = require("./config/example.config.json");
@@ -68,7 +69,7 @@ function _promisifiedQuestion(question, onAnswerHandler)
                 .then(() => resolve())
                 .catch((err) => 
                 {
-                    console.log(err);
+                    log.error(log.getLeanLevel(), `CONFIG QUESTION ERROR`, err);
                     _askQuestion();
                 });
             });

@@ -1,4 +1,5 @@
 
+const log = require("../../logger.js");
 const dom5Nations = require("../../json/dom5_nations.json");
 const webSessionsStore = require("../web_sessions_store.js");
 const gameStore = require("../../games/ongoing_games_store.js");
@@ -12,7 +13,7 @@ exports.set = (expressApp) =>
         
         const sessionParams = webSessionsStore.extractSessionParamsFromUrl(req.url);
 
-        console.log("Change game settings authentication params:", sessionParams);
+        log.general(log.getNormalLevel(), "change_game_settings authentication params", sessionParams);
 
         if (webSessionsStore.isSessionValid(sessionParams) === false)
             return res.render("results_screen.ejs", { result: "Session does not exist." });
@@ -32,7 +33,7 @@ exports.set = (expressApp) =>
             return game.checkIfGameStarted()
             .then((hasGameStarted) =>
             {
-                console.log("Has game started " + hasGameStarted);
+                log.general(log.getVerboseLevel(), `Has game started for settings change: ${hasGameStarted}`);
 
                 if (hasGameStarted === true)
                     return nextPromise();
@@ -63,8 +64,8 @@ exports.set = (expressApp) =>
         })
         .then(() => 
         {
-            console.log("Final data!");
-            console.log(JSON.stringify(organizedGames, null, 2));
+            log.general(log.getVerboseLevel(), "Final organized games data rendered", organizedGames);
+
             /** redirect to change_game_settings */
             res.render("change_game_settings_screen.ejs", Object.assign(sessionParams, { organizedGames: organizedGames, nations: dom5Nations }));
         });
@@ -75,11 +76,11 @@ exports.set = (expressApp) =>
         var game;
         const values = req.body;
 
-        console.log(`Post values received:\n`, values);
+        log.general(log.getNormalLevel(), `change_game_settings POST values received`, values);
 
         if (webSessionsStore.isSessionValid(values) === false)
         {
-            console.log("Session does not exist; cannot edit preferences.");
+            log.general(log.getNormalLevel(), "Session does not exist; cannot edit preferences.");
             return res.render("results_screen.ejs", { result: "Session does not exist." });
         }
 
@@ -95,7 +96,7 @@ exports.set = (expressApp) =>
             return game.kill();
         })
         .then(() => game.launch())
-        .catch((err) => console.log(err));
+        .catch((err) => log.general(log.getNormalLevel(), err));
     });
 };
 
@@ -120,6 +121,6 @@ function _formatPostValues(values)
     values.thrones = `${values.level1Thrones}, ${values.level2Thrones}, ${values.level3Thrones}`;
     values.timer = `${values.timerDays}d${values.timerHours}h${values.timerMinutes}m`;
 
-    console.log(`\nFormatted POST values:\n`, values);
+    log.general(log.getNormalLevel(), `change_game_settings formatted POST values`, values);
     return values;
 }

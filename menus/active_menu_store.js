@@ -1,12 +1,14 @@
 
+const log = require("../logger.js");
 const config = require("../config/config.json");
-const backRegexp = new RegExp(`^${config.prefix}BACK`, "i");
-const endRegexp = new RegExp(`^${config.prefix}FINISH`, "i");
-
 const HelpMenu = require("./prototypes/help_menu.js");
 const HostGameMenu = require("./prototypes/host_game_menu.js");
 const ChangeSettingsMenu = require("./prototypes/change_settings_menu.js");
 const ChangePlayerPreferencesMenu = require("./prototypes/change_player_preferences_menu.js");
+
+
+const backRegexp = new RegExp(`^${config.prefix}BACK`, "i");
+const endRegexp = new RegExp(`^${config.prefix}FINISH`, "i");
 
 var activeMenus = {};
 
@@ -16,8 +18,8 @@ module.exports.startHelpMenu = function(commandContext)
     const helpMenuInstance = new HelpMenu(commandContext);
 
     //finish any previous instances of a menu
-    deleteInstance(memberId);
-    addInstance(helpMenuInstance, memberId, "HELP");
+    _deleteInstance(memberId);
+    _addInstance(helpMenuInstance, memberId, "HELP");
 
     return helpMenuInstance.startMenu();
 };
@@ -28,8 +30,8 @@ module.exports.startHostGameMenu = function(newGameObject, useDefaults)
     const hostMenuInstance = new HostGameMenu(newGameObject, useDefaults);
 
     //finish any previous instances of a menu
-    deleteInstance(memberId);
-    addInstance(hostMenuInstance, memberId, "HOST");
+    _deleteInstance(memberId);
+    _addInstance(hostMenuInstance, memberId, "HOST");
 
     return hostMenuInstance.startMenu();
 };
@@ -42,8 +44,8 @@ module.exports.startChangeSettingsMenu = function(commandContext)
     const changeSettingsMenuInstance = new ChangeSettingsMenu(gameObject, memberWrapper);
 
     //finish any previous instances of a menu
-    deleteInstance(memberId);
-    addInstance(changeSettingsMenuInstance, memberId, "CHANGE_SETTINGS");
+    _deleteInstance(memberId);
+    _addInstance(changeSettingsMenuInstance, memberId, "CHANGE_SETTINGS");
 
     return changeSettingsMenuInstance.startMenu();
 };
@@ -54,20 +56,20 @@ module.exports.startChangePlayerPreferencesMenu = function(commandContext)
     const changePlayerPreferencesMenuInstance = new ChangePlayerPreferencesMenu(commandContext);
 
     //finish any previous instances of a menu
-    deleteInstance(memberId);
-    addInstance(changePlayerPreferencesMenuInstance, memberId, "CHANGE_PLAYER_PREFERENCES");
+    _deleteInstance(memberId);
+    _addInstance(changePlayerPreferencesMenuInstance, memberId, "CHANGE_PLAYER_PREFERENCES");
 
     return changePlayerPreferencesMenuInstance.startMenu();
 };
 
 module.exports.removeActiveInstance = function(memberId)
 {
-    deleteInstance(memberId);
+    _deleteInstance(memberId);
 };
 
 module.exports.finish = function(userId)
 {
-    console.log("Finishing menu...");
+    log.general(log.getVerboseLevel(), `Finishing menu for user ${userId}...`);
     return activeMenus[userId].instance.sendMessage(`You have closed this instance.`)
     .then(() => Promise.resolve(deleteInstance(userId)));
 };
@@ -113,13 +115,13 @@ module.exports.hasHostingInstanceWithGameNameReserved = (name) =>
     return false;
 };
 
-function addInstance(instance, userId, type)
+function _addInstance(instance, userId, type)
 {
-    console.log("Adding instance to list.");
+    log.general(log.getVerboseLevel(), `Adding ${type} menu instance to list.`);
     activeMenus[userId] = {instance, type};
 }
 
-function deleteInstance(userId)
+function _deleteInstance(userId)
 {
     if (activeMenus[userId] != null && typeof activeMenus[userId].kill === "string")
     {
@@ -127,4 +129,5 @@ function deleteInstance(userId)
     }
 
     delete activeMenus[userId];
+    log.general(log.getVerboseLevel(), `Deleted menu instance of ${userId}.`);
 }

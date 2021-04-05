@@ -5,7 +5,7 @@ require("./helper_functions.js").extendPrototypes();
 const configHelper = require("./config_helper.js");
 
 var config;
-var rw;
+var log;
 var discord;
 var expressServer;
 var gamesStore;
@@ -35,7 +35,7 @@ Promise.resolve()
 function _initializeComponents()
 {
     //import the modules required for initialization
-    rw = require("./reader_writer.js");
+    log = require("./logger.js");
     discord = require("./discord/discord.js");
     expressServer = require("./servers/express_server.js");
     gamesStore = require("./games/ongoing_games_store.js");
@@ -47,22 +47,22 @@ function _initializeComponents()
     discord.startDiscordIntegration()
     .then(() =>
     {
-        console.log("Finished Discord integration.");
+        log.general(log.getLeanLevel(), "Finished Discord integration.");
         return playerFileStore.populate();
     })
     .then(() =>
     {
-        console.log("Player data loaded.");
+        log.general(log.getLeanLevel(), "Player data loaded.");
         return Promise.resolve(hostServerStore.populate());
     })
     .then(() =>
     {
-        console.log("Finished populating server store.");
+        log.general(log.getLeanLevel(), "Finished populating server store.");
         return Promise.resolve(gamesStore.loadAll());
     })
     .then(() => 
     {
-        console.log("Games loaded.");
+        log.general(log.getLeanLevel(), "Games loaded.");
 
         if (expressServer.isHttpsAvailable() === true)
             expressServer.startListeningSsl(config.hostServerSslConnectionPort);
@@ -70,28 +70,16 @@ function _initializeComponents()
         expressServer.startListening(config.hostServerConnectionPort);
         return Promise.resolve();
     })
-    .then(() => 
-    {
-        
-        return timeEventsEmitter.startCounting();
-    })
-    .then(() => 
-    {
-        console.log("Initialized successfully.");
-    })
+    .then(() => timeEventsEmitter.startCounting())
+    .then(() => log.general(log.getLeanLevel(), "Initialized successfully."))
     .catch((err) => 
     {
-        console.log(err);
-        process.exit();
+        log.error(log.getLeanLevel(), `INITIALIZATION ERROR`, err)
+        .then(() => process.exit());
     });
 }
 
 
 //Catch process exceptions and log them here
-process.on("unhandledRejection", err =>
-{
-    console.log(err);
-    rw.log(["error"], `Uncaught Promise Error: \n${err.stack}`);
-});
-
-process.on("error", (err) => rw.log(["error"], `Process Error:\n\n${err.stack}`));
+process.on("error", (err) => log.error(log.getLeanLevel(), `PROCESS ERROR`, err));
+process.on("unhandledRejection", err => log.error(log.getLeanLevel(), `UNCAUGHT PROMISE ERROR`, err));

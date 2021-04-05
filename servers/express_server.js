@@ -1,5 +1,6 @@
 
 const _express = require("express");
+const log = require("../logger.js");
 const config = require("../config/config.json");
 
 const _expressApp = _express();
@@ -24,7 +25,7 @@ exports.startListening = (port) =>
 
     _expressHttpServer.listen(port, () => 
     {
-        console.log(`Express HTTP server running on port ${_expressHttpServer.address().port}`);
+        log.general(log.getNormalLevel(), `Express HTTP server running on port ${_expressHttpServer.address().port}`);
     });
 
     _ioObject.on("connection", (socket) => 
@@ -52,7 +53,7 @@ exports.startListeningSsl = (port) =>
 
     _expressHttpsServer.listen(port, () => 
     {
-        console.log(`Express HTTP server running on port ${_expressHttpsServer.address().port}`);
+        log.general(log.getNormalLevel(), `Express HTTP server running on port ${_expressHttpsServer.address().port}`);
     });
 };
 
@@ -63,10 +64,10 @@ function _initializeHttpsServer()
     const https = require("https");
 
     if (fs.existsSync(config.httpsCertificatePath) === false)
-        return console.log("HTTPS certificate not found; skipping HTTPS server initialization.");
+        return log.general(log.getNormalLevel(), "HTTPS certificate not found; skipping HTTPS server initialization.");
         
     if (fs.existsSync(config.httpsPrivateKeyPath) === false)
-        return console.log("HTTPS private key not found; skipping HTTPS server initialization.");
+        return log.general(log.getNormalLevel(), "HTTPS private key not found; skipping HTTPS server initialization.");
 
     
     _expressAppHttps = _express();
@@ -81,32 +82,32 @@ function _initializeHttpsServer()
         cert: certificate
     }, _expressAppHttps);
 
-    console.log("HTTPS server initialized.");
+    log.general(log.getNormalLevel(), "HTTPS server initialized.");
 }
 
 function _requestServerData(socketWrapper)
 {
-    console.log(`Connection attempt by socket ${socketWrapper.getId()}`);
+    log.general(log.getNormalLevel(), `Connection attempt by socket ${socketWrapper.getId()}`);
 
     socketWrapper.emitPromise("REQUEST_SERVER_DATA")
     .then((requestedData) =>
     {
         var hostServer;
 
-        console.log(`Socket responded.`);
+        log.general(log.getVerboseLevel(), `Socket responded.`);
 
         if (requestedData == null)
-            return console.log("Socket sent no data; ignoring.");
+            return log.general(log.getNormalLevel(), "Socket sent no data; ignoring.");
 
-        else console.log("Data sent by socket: ", requestedData);
+        else log.general(log.getNormalLevel(), "Data sent by socket: ", requestedData);
 
         if (_hostServerStore.hasHostServerById(requestedData.id) === false)
         {
-            console.log(`Unrecognized server id ${requestedData.id}; closing socket.`);
+            log.general(log.getNormalLevel(), `Unrecognized server id ${requestedData.id}; closing socket.`);
             return socketWrapper.close();
         }
 
-        console.log(`Received recognized server's data. Instantiating HostServer object.`);
+        log.general(log.getNormalLevel(), `Received recognized server's data. Instantiating HostServer object.`);
         hostServer = _hostServerStore.getHostServerById(requestedData.id);
         
         hostServer.setOnline(socketWrapper, requestedData.capacity);
@@ -114,15 +115,15 @@ function _requestServerData(socketWrapper)
         hostServer.onDisconnect(() =>
         {
             hostServer.setOffline();
-            console.log(`Server ${hostServer.getName()} disconnected.`);
+            log.general(log.getLeanLevel(), `Server ${hostServer.getName()} disconnected.`);
         });
         
-        console.log("Sending game data...");
+        log.general(log.getNormalLevel(), "Sending game data...");
 
         return hostServer.sendGameData()
-        .then(() => console.log("Server acknowledged game data. Launching games..."))
+        .then(() => log.general(log.getNormalLevel(), "Server acknowledged game data. Launching games..."))
         .then(() => hostServer.launchGames())
-        .then(() => console.log("Launch requests sent."));
+        .then(() => log.general(log.getNormalLevel(), "Launch requests sent."));
     })
-    .catch((errMessage) => console.log(`Error occurred; server not added to list: ${errMessage}`));
+    .catch((err) => log.error(log.getNormalLevel(), `ERROR WITH SOCKET REQUEST_DATA`, err));
 }

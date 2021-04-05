@@ -1,4 +1,5 @@
 
+const log = require("../../logger.js");
 const webSessionsStore = require("../web_sessions_store.js");
 const playerFileStore = require("../../player_data/player_file_store.js");
 const DominionsPreferences = require("../../player_data/prototypes/dominions_preferences.js");
@@ -12,7 +13,7 @@ exports.set = (expressApp) =>
         const dataToSend = [];
         const sessionParams = webSessionsStore.extractSessionParamsFromUrl(req.url);
 
-        console.log("Change preferences authentication params:", sessionParams);
+        log.general(log.getNormalLevel(), "edit_preferences authentication params", sessionParams);
 
         if (webSessionsStore.isSessionValid(sessionParams) === false)
             return res.render("results_screen.ejs", { result: `Session does not exist.` });
@@ -47,11 +48,11 @@ exports.set = (expressApp) =>
         const userId = webSessionsStore.getSessionUserId(values.token);
         var playerFile;
 
-        console.log(`Post values received:\n`, values);
+        log.general(log.getNormalLevel(), `edit_preferences POST values received`, values);
 
         if (webSessionsStore.isSessionValid(values) === false)
         {
-            console.log("Session does not exist; cannot edit preferences.");
+            log.general(log.getNormalLevel(), "Session does not exist; cannot edit preferences.");
             return res.render("../partials/result.ejs", { result: "Session does not exist." });
         }
 
@@ -68,17 +69,17 @@ exports.set = (expressApp) =>
             playerFile.setGamePreferences(gameName, gamePreferences);
         }
 
-        console.log(`Saving new preferences for ${userId}...`);
+        log.general(log.getNormalLevel(), `Saving new preferences for ${userId}...`);
 
         playerFile.save()
         .then(() => 
         {
-            console.log("Preferences saved.");
+            log.general(log.getNormalLevel(), "Preferences saved.");
             res.render("../partials/result.ejs", { result: "Preferences saved successfully." });
         })
         .catch((err) => 
         {
-            console.log(`Error saving preferences: ${err.message}`);
+            log.error(log.getLeanLevel(), `ERROR SAVING PREFERENCES FOR USER ${userId}`, err);
             res.render("../partials/result.ejs", { result: `Error saving preferences: ${err.message}` });
         });
     });

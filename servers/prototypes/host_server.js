@@ -1,4 +1,5 @@
 
+const log = require("../../logger.js");
 const assert = require("../../asserter.js");
 const { SocketResponseError } = require("../../errors/custom_errors.js");
 const ongoingGamesStore = require("../../games/ongoing_games_store");
@@ -91,8 +92,8 @@ function HostServer(id)
         ongoingGamesStore.getOngoingGamesOnServer(this).forEach((game) =>
         {
             game.launch()
-            .then(() => console.log(`${game.getName()} launched!`))
-            .catch((err) => console.log(`${game.getName()} error: ${err.message}`));
+            .then(() => log.general(log.getNormalLevel(), `${game.getName()} launched!`))
+            .catch((err) => log.error(log.getLeanLevel(), `${game.getName()} LAUNCH ERROR`, err));
         });
     };
 

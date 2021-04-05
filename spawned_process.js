@@ -1,4 +1,5 @@
 
+const log = require("./logger.js");
 const assert = require("./asserter.js");
 const spawn = require('child_process').spawn;
 
@@ -10,7 +11,7 @@ function SpawnedProcess(exePath, args)
     assert.isValidPathOrThrow(exePath);
     assert.isArrayOrThrow(args);
 
-    //console.log(`Spawning process at ${exePath} with args ${args}`);
+    log.general(log.getVerboseLevel(), `Spawning process`, exePath, args);
 
     const _process = spawn(exePath, args);
     _process.stderr.setEncoding("utf8");
@@ -20,47 +21,47 @@ function SpawnedProcess(exePath, args)
     
     this.onExited = (doThis) => _process.on("exit", (code, signal) => 
     {
-        //console.log(`Process exited with code ${code} and signal ${signal}`);
+        log.general(log.getVerboseLevel(), `Process exited with code ${code} and signal ${signal}`);
         if (signal == null)
             doThis(code);
     });
 
     this.onTerminated = (doThis) => _process.on("exit", (code, signal) => 
     {
-        //console.log(`Process terminated with code ${code} and signal ${signal}`);
+        log.general(log.getVerboseLevel(), `Process terminated with code ${code} and signal ${signal}`);
         if (code == null)
             doThis(signal);
     });
 
     this.onStdioExited = (doThis) => _process.on("close", (code, signal) =>
     {
-        //console.log(`Process stdio exited with code ${code} and signal ${signal}`);
+        log.general(log.getVerboseLevel(), `Process stdio exited with code ${code} and signal ${signal}`);
         if (signal == null)
             doThis(code);
     });
 
     this.onStdioTerminated = (doThis) => _process.on("close", (code, signal) =>
     {
-        //console.log(`Process stdio terminated with code ${code} and signal ${signal}`);
+        log.general(log.getVerboseLevel(), `Process stdio terminated with code ${code} and signal ${signal}`);
         if (code == null)
             doThis(signal);
     });
 
     this.onStderrData = (doThis) => _process.stderr.on("data", (data) => 
     {
-        //console.log(`Process stderr data: `, data);
+        log.general(log.getVerboseLevel(), `Process stderr emitted data`, data);
         doThis(data);
     });
 
     this.onStderrError = (doThis) => _process.stderr.on("error", (error) => 
     {
-        //console.log(`Process stderr error: `, error);
+        log.error(log.getVerboseLevel(), `PROCESS STDERR EMITTED ERROR`, error);
         doThis(error);
     });
 
     this.onStdoutData = (doThis) => _process.stdout.on("data", (data) => 
     {
-        //console.log(`Process stdout data: `, data);
+        log.general(log.getVerboseLevel(), `Process stdout emitted data`, data);
         doThis(data)
     });
 
@@ -90,7 +91,7 @@ function SpawnedProcess(exePath, args)
 
     this.onStdoutError = (doThis) => _process.stdout.on("error", (error) => 
     {
-        //console.log(`Process stdout error: `, error);
+        log.error(log.getVerboseLevel(), `PROCESS STDOUT EMITTED ERROR`, error);
         doThis(error)
     });
 }
