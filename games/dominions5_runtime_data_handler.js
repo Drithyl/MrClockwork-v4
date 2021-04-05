@@ -113,72 +113,85 @@ module.exports = function(gameName, errStr)
 
 function handleFailedToCreateTmpDir(game, errStr)
 {
+    log.general(log.getVerboseLevel(), `Handling failedToCreateTmpDir error ${errStr}`);
     sendWarning(game, `Dominions reported an error: the game instance could not be started because it failed to create a temp dir. Try killing it and launching it again.`);
 }
 
 function handleBrokenPipe(game, errStr)
 {
-
+    log.general(log.getVerboseLevel(), `Ignoring brokenPipe error ${errStr}`);
 }
 
 function handleAddressInUse(game, errStr)
 {
+    log.general(log.getVerboseLevel(), `Handling addressInUse error ${errStr}`);
     sendWarning(game, `The port used by this game is already in use. Most likely the game failed to shut down properly, so killing it and relaunching it should work.`);
 }
 
 function handleTerminated(game, errStr)
 {
-
+    log.general(log.getVerboseLevel(), `Ignoring terminated error ${errStr}`);
 }
 
 function handleNagotGickFel(game, errStr)
 {
+    log.general(log.getVerboseLevel(), `Handling nagotGickFel error ${errStr}`);
     sendWarning(game, `Dominions crashed due to an error: ${errStr}`);
 }
 
 function handleMapNotFound(game, errStr)
 {
+    log.general(log.getVerboseLevel(), `Handling mapNotFound error ${errStr}`);
+
     //this error string is pretty explicit and informative so send it as is
     sendWarning(game, errStr);
 }
 
 function handleMapImgNotFound(game, errStr)
 {
+    log.general(log.getVerboseLevel(), `Handling mapImgNotFound error ${errStr}`);
     sendWarning(game, `Dominions reported an error: One or more of the image files of the selected map could not be found. Make sure they've been uploaded and that the .map file points to the proper names.`);
 }
 
 function handleThroneInCapital(game, errStr)
 {
+    log.general(log.getVerboseLevel(), `Handling throneInCapital error ${errStr}`);
     sendWarning(game, `Dominions reported an error: A throne was probably forced to start on a player's capital. Check the pre-set starts and thrones in the .map file (original error is: bc: king has throne in capital (p43 c385 h160 vp2) [new game created])`);
 }
 
 function handleBadAiPlayer(game, errStr)
 {
+    log.general(log.getVerboseLevel(), `Handling badAiPlayer error ${errStr}`);
     sendWarning(game, `Dominions reported an error: one of the AI players has an invalid nation number.`);
 }
 
 function handleCoreDumped(game, errStr)
 {
+    log.general(log.getVerboseLevel(), `Ignoring codeDumped error ${errStr}`);
     //don't send error here as this comes coupled with other more explicit errors
 }
 
 function handleVersionTooOld(game, errStr)
 {
+    log.general(log.getVerboseLevel(), `Handling versionTooOld error ${errStr}`);
     sendWarning(game, `The game has crashed because a new Dominions version is available. Please be patient while the admins update the servers :)`);
 }
 
 function handleItemForgingErr(game, errStr)
 {
+    log.general(log.getVerboseLevel(), `Handling itemForging error ${errStr}`);
     sendWarning(game, `The game has crashed on turn generation due to an error caused by forging a bad item. This should theoretically not happen.`);
 }
 
 function handleFileCreationErr(game, errStr)
 {
-
+    log.general(log.getVerboseLevel(), `Ignoring fileCreation error ${errStr}`);
 }
 
-function handleReplacedThroneErr(game,errStr)
+function handleReplacedThroneErr(game, errStr)
 {
+    log.general(log.getVerboseLevel(), `Handling replacedThrone error ${errStr}`);
+
     if (replacedThroneErrArray.includes(game.getName()) === true)
         return;
 
@@ -206,10 +219,10 @@ function sendWarning(game, warning)
 
     if (channel != null)
     {
+        log.general(log.getVerboseLevel(), `Sending error warning to ${game.getName()}'s channel`);
         messenger.send(channel, warning)
-        .catch((err) =>
-        {
-            //do nothing in case of spam
-        });
+        .catch((err) => log.error(log.getVerboseLevel(), `ERROR sending warning`, err));
     }
+
+    else log.general(log.getVerboseLevel(), `Cannot send ${game.getName()}'s warning; channel does not exist`);
 }
