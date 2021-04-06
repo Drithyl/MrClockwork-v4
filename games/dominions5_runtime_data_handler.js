@@ -22,6 +22,9 @@ const mapNotFoundErrRegexp = new RegExp("Map\\s*specified\\s*by\\s*--mapfile", "
 //Exact error: "myloadmalloc: can't open [path].tga/rgb/png"
 const mapImgNotFoundErrRegexp = new RegExp("can\\'t\\s*open\\s*.+.(tga)|(.rgb)|(.rgb)|(.png)$", "i");
 
+//Exact error: "Can't find mod: WH_6_25.dm"
+const modNotFoundRegexp = new RegExp("can\\'t\\s*find\\s*mod", "i");
+
 //Exact error: "bc: king has throne in capital (p43 c385 h160 vp2) [new game created]"
 const throneInCapitalErrRegexp = new RegExp("king\\s*has\\s*throne\\s*in\\s*capital", "i");
 
@@ -51,7 +54,7 @@ const fileCreationErrRegexp = new RegExp("Failed\\s*to\\s*create", "i");
 const replacedThroneErrRegexp = new RegExp("no\\s*site\\s*called\\s*\\w+\\s*(\\w+)", "i");
 
 // Exact message: "Setup port [port] (clients may start), open: 35, players 0, ais 0"
-const setupMessageRegexp = new RegExp("Setup\\s*port\\s*\\d+\\s*(clients\\s*may\\s*start)", "i");
+const setupMessageRegexp = new RegExp("setup\\s*port\\s*\\d+\\s*\\(clients\\s*may\\s*start\\)", "i");
 
 const replacedThroneErrArray = [];
 
@@ -93,6 +96,9 @@ module.exports = function(gameName, message)
     else if (mapImgNotFoundErrRegexp.test(message) === true)
         handleMapImgNotFound(game, message);
 
+    else if (modNotFoundRegexp.test(message) === true)
+        handleModNotFound(game, message);
+
     else if (throneInCapitalErrRegexp.test(message) === true)
         handleThroneInCapital(game, message);
 
@@ -119,7 +125,7 @@ module.exports = function(gameName, message)
 
     else
     {
-        log.error(log.getLeanLevel(), `GAME ${game.getName()} REPORTED AN UNKNOWN MESSAGE`, message);
+        log.general(log.getLeanLevel(), `Game ${game.getName()} reported an unknown message`, message);
         sendWarning(game, `The game ${game.getName()} reported the message:\n\n${message}`);
     }
 };
@@ -164,6 +170,14 @@ function handleMapImgNotFound(game, message)
 {
     log.general(log.getVerboseLevel(), `Handling mapImgNotFound error ${message}`);
     sendWarning(game, `Dominions reported an error: One or more of the image files of the selected map could not be found. Make sure they've been uploaded and that the .map file points to the proper names.`);
+}
+
+function handleModNotFound(game, message)
+{
+    log.general(log.getVerboseLevel(), `Handling modNotFound error ${message}`);
+
+    //this error string is pretty explicit and informative so send it as is
+    sendWarning(game, message);
 }
 
 function handleThroneInCapital(game, message)
