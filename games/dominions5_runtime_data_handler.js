@@ -50,7 +50,7 @@ const fileCreationErrRegexp = new RegExp("Failed\\s*to\\s*create", "i");
 const replacedThroneErrRegexp = new RegExp("no\\s*site\\s*called\\s*\\w+\\s*(\\w+)", "i");
 
 // Exact message: "Setup port [port] (clients may start), open: 35, players 0, ais 0"
-const setupMessageRegexp = new RegExp("Setup port \\d+ (clients may start)", "i");
+const setupMessageRegexp = new RegExp("Setup\\s*port\\s*\\d+\\s*(clients\\s*may\\s*start)", "i");
 
 const replacedThroneErrArray = [];
 
@@ -61,12 +61,18 @@ module.exports = function(gameName, message)
     if (game == null)
         return log.error(log.getNormalLevel(), `GAME ${gameName} REPORTED AN ERROR; BUT COULD NOT FIND IT IN STORE`, message);
 
-    if (typeof message !== "string")
+    if (message == null)
         return log.error(log.getNormalLevel(), `GAME ${gameName} REPORTED AN ERROR; BUT DID NOT RECEIVE DATA ABOUT IT`);
 
-    // Ignore all these messages
+
+    // Probably a buffer with data, ignore it too
+    if (assert.isString(message) === false)
+        return log.general(log.getVerboseLevel(), `Ignoring ${gameName} data`, message);
+
+    // Ignore all these messages, they don't need special handling
     if (setupMessageRegexp.test(message) === true)
-        return;
+        return log.general(log.getVerboseLevel(), `Ignoring ${gameName} message ${message}`);
+
 
     if (failedToCreateTmpDirErrRegexp.test(message) === true)
         handleFailedToCreateTmpDir(game, message);
@@ -112,8 +118,8 @@ module.exports = function(gameName, message)
 
     else
     {
-        log.error(log.getLeanLevel(), `GAME ${game.getName()} REPORTED AN UNKNOWN ERROR`, message);
-        sendWarning(game, `The game ${game.getName()} reported the error:\n\n${message}`);
+        log.error(log.getLeanLevel(), `GAME ${game.getName()} REPORTED AN UNKNOWN MESSAGE`, message);
+        sendWarning(game, `The game ${game.getName()} reported the message:\n\n${message}`);
     }
 };
 

@@ -64,13 +64,7 @@ function SocketWrapper(socketIoObject)
     this.listenTo("STDIO_CLOSED", (data) => log.general(log.getNormalLevel(), `${data.name}: stdio closed with code ${data.code}`));
     this.listenTo("STDIO_DATA", (data) => 
     {
-        if (data.data.type === "Buffer")
-        {
-            log.general(log.getVerboseLevel(), `${data.name}: Ignoring ${data.type} data buffer received`);
-            return;
-        }
-
-        log.general(log.getNormalLevel(), `${data.name}: ${data.type} data received`, data.data);
+        log.general(log.getVerboseLevel(), `${data.name}: ${data.type} data received`, data.data);
         handleDom5Data(data.name, data.data);
     });
 
