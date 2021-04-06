@@ -1,5 +1,6 @@
 
 const log = require("../logger.js");
+const assert = require("../asserter.js");
 const messenger = require("../discord/messenger.js");
 const gameStore = require("./ongoing_games_store.js");
 
