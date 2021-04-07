@@ -461,15 +461,15 @@
 
     "RESTART_GAME":
     {
-        "name": "restart",
+        "name": "restartandgobacktolobby",
         "isEnabled": true,
         "gameTypesSupported": ["dom5"],
         "argumentsRequiredInfo": [],
         "optionalArguments": 0,
-        "regexpRequiredToInvoke": "RESTART",
+        "regexpRequiredToInvoke": "RESTARTANDGOBACKTOLOBBY",
         "argumentRegexpArray": [],
         "channelRequiredToInvoke": "game",
-        "helpText": "Restarts a game and goes back to turn 0, in the pretender submission lobby."
+        "helpText": "Restarts a game and goes back to turn 0, in the pretender submission lobby, where every player will have to resubmit their pretenders."
     },
 
     "ROLL_DICE":
