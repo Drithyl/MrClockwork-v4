@@ -68,7 +68,11 @@ module.exports = function(gameName, message)
 
     const dataArr = parseData(gameName, message);
 
-    dataArr.forEach((line) => handleData(game, line));
+    dataArr.forEach((line) => 
+    {
+        if (/\S+/.test(line) === true)
+            handleData(game, line);
+    });
 };
 
 
@@ -95,7 +99,7 @@ function handleData(game, message)
     const gameName = game.getName();
     
     // Ignore all these messages, they don't need special handling
-    if (setupMessageRegexp.test(message) === true)
+    if (message === "" || setupMessageRegexp.test(message) === true)
         return log.general(log.getVerboseLevel(), `Ignoring ${gameName} message ${message}`);
 
 
