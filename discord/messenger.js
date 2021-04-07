@@ -48,7 +48,7 @@ function _createMessageOptionsObject(options)
 
     //The pin() function will *not* be available in the returned discordjs message object
     //after using the send() function if the split option was used; it can't pin multiple messages
-    else if (options.pin === true)
+    if (options.pin === true)
         optionsObject.pin = true;
 
     if (attachment != null)
