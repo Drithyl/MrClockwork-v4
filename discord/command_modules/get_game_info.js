@@ -34,7 +34,7 @@ function _behaviour(commandContext)
 
     else info += organizerWrapper.getUsername();
 
-    info += settingsObject.getPublicSettingsStringList();
+    info += "\n" + settingsObject.getPublicSettingsStringList();
 
     return commandContext.respondToSender(info.toBox());
 }
