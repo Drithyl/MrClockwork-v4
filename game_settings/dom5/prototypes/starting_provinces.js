@@ -38,7 +38,7 @@ function StartingProvinces()
     {
         var value = this.getValue();
     
-        return [`--startprov`,  value];
+        return [`--startprov`, value];
     };
 
     function _validateInputFormatOrThrow(input)

@@ -50,7 +50,7 @@ function TimerSetting()
         if (hoursLeft + minutesLeft <= 0)
             return [];
     
-        return [`--hours`,  hoursLeft, `--minutes`, minutesLeft];
+        return [`--hours`, hoursLeft, `--minutes`, minutesLeft];
     };
 
     function _validateInputFormatOrThrow(input)
