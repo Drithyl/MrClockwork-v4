@@ -102,7 +102,8 @@ function GameSettings(parentGame)
                 flags = flags.concat(flag);
         });
 
-        flags.push(_parentGame.getName());
+        // Add name at the very start of the flags
+        flags.unshift(_parentGame.getName());
 
         return flags;
     };
