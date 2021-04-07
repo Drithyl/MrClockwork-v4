@@ -68,7 +68,7 @@ module.exports = function(gameName, message)
 
     const dataArr = parseData(gameName, message);
 
-    dataArr.forEach((line) => handleData(gameName, line));
+    dataArr.forEach((line) => handleData(game, line));
 };
 
 
@@ -90,8 +90,10 @@ function parseData(gameName, message)
     return message.split("\n");
 }
 
-function handleData(gameName, message)
+function handleData(game, message)
 {
+    const gameName = game.getName();
+    
     // Ignore all these messages, they don't need special handling
     if (setupMessageRegexp.test(message) === true)
         return log.general(log.getVerboseLevel(), `Ignoring ${gameName} message ${message}`);
@@ -144,8 +146,8 @@ function handleData(gameName, message)
 
     else
     {
-        log.general(log.getLeanLevel(), `Game ${game.getName()} reported an unknown message`, message);
-        sendWarning(game, `The game ${game.getName()} reported the message:\n\n${message}`);
+        log.general(log.getLeanLevel(), `Game ${gameName} reported an unknown message`, message);
+        sendWarning(game, `The game ${gameName} reported the message:\n\n${message}`);
     }
 }
 
