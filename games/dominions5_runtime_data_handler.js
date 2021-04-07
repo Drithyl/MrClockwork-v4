@@ -75,11 +75,17 @@ module.exports = function(gameName, message)
 function parseData(gameName, message)
 {
     if (message == null)
-        return log.error(log.getNormalLevel(), `GAME ${gameName} REPORTED A MESSAGE; BUT DID NOT SEND DATA.`);
+    {
+        log.error(log.getNormalLevel(), `GAME ${gameName} REPORTED A MESSAGE; BUT DID NOT SEND DATA.`);
+        return [];
+    }
 
     // Probably a buffer with data, ignore it too
     if (assert.isString(message) === false)
-        return log.general(log.getVerboseLevel(), `Ignoring ${gameName} data`, message);
+    {
+        log.general(log.getVerboseLevel(), `Ignoring ${gameName} data`, message);
+        return [];
+    }
 
     return message.split("\n");
 }
