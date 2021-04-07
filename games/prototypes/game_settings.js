@@ -91,8 +91,7 @@ function GameSettings(parentGame)
 
     this.getSettingFlags = () =>
     {
-        var server = _parentGame.getServer();
-        var flags = ["--tcpserver", "--ipadr", server.getIp(), "--port", _parentGame.getPort(), "--scoredump"];
+        var flags = ["--tcpserver", "--port", _parentGame.getPort(), "--scoredump"];
 
         this.forEachSetting((settingObject) =>
         {
