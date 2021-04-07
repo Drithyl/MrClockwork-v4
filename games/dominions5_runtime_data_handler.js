@@ -58,6 +58,7 @@ const setupMessageRegexp = new RegExp("setup\\s*port\\s*\\d+\\s*\\(clients\\s*ma
 
 const replacedThroneErrArray = [];
 
+
 module.exports = function(gameName, message)
 {
     const game = gameStore.getOngoingGameByName(gameName);
@@ -65,14 +66,26 @@ module.exports = function(gameName, message)
     if (game == null)
         return log.error(log.getNormalLevel(), `GAME ${gameName} REPORTED AN ERROR; BUT COULD NOT FIND IT IN STORE`, message);
 
-    if (message == null)
-        return log.error(log.getNormalLevel(), `GAME ${gameName} REPORTED AN ERROR; BUT DID NOT RECEIVE DATA ABOUT IT`);
+    const dataArr = parseData(gameName, message);
 
+    dataArr.forEach((line) => handleData(gameName, line));
+};
+
+
+function parseData(gameName, message)
+{
+    if (message == null)
+        return log.error(log.getNormalLevel(), `GAME ${gameName} REPORTED A MESSAGE; BUT DID NOT SEND DATA.`);
 
     // Probably a buffer with data, ignore it too
     if (assert.isString(message) === false)
         return log.general(log.getVerboseLevel(), `Ignoring ${gameName} data`, message);
 
+    return message.split("\n");
+}
+
+function handleData(gameName, message)
+{
     // Ignore all these messages, they don't need special handling
     if (setupMessageRegexp.test(message) === true)
         return log.general(log.getVerboseLevel(), `Ignoring ${gameName} message ${message}`);
@@ -128,7 +141,8 @@ module.exports = function(gameName, message)
         log.general(log.getLeanLevel(), `Game ${game.getName()} reported an unknown message`, message);
         sendWarning(game, `The game ${game.getName()} reported the message:\n\n${message}`);
     }
-};
+}
+
 
 function handleFailedToCreateTmpDir(game, message)
 {
