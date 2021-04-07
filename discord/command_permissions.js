@@ -115,7 +115,8 @@ function _assertMemberIsTrusted(commandContext)
 {
     if (commandContext.isSenderTrusted() === false &&
         commandContext.isSenderGameMaster() === false &&
-        commandContext.isSenderGuildOwner() === false)
+        commandContext.isSenderGuildOwner() === false &&
+        commandContext.isSenderDev() === false)
         throw new PermissionsError(`You must be a trusted member before you can use this command.`);
 }
 
