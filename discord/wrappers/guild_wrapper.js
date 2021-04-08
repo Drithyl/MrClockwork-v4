@@ -13,7 +13,9 @@ function GuildWrapper(discordJsGuildObject)
 
     this.getId = () => _discordJsGuildObject.id;
     this.getName = () => _discordJsGuildObject.name;
-    this.getOwner = () => _discordJsGuildObject.owner;
+    this.getOwnerID = () => _discordJsGuildObject.ownerID;
+    this.getOwner = () => this.getGuildMemberWrapperById(this.getOwnerID());
+
     this.getDiscordJsBotMemberInGuild = () => _discordJsGuildObject.me;
     this.isAvailable = () => _discordJsGuildObject.available;
 
