@@ -3,9 +3,11 @@ const log = require("../logger.js");
 const assert = require("../asserter.js");
 const MessageWrapper = require("./wrappers/message_wrapper.js");
 
+const MAX_MESSAGE_CHARACTERS = 2000;
+
 module.exports.send = function(receiver, text, options = {})
 {
-    const optionsObject = _createMessageOptionsObject(options);
+    const optionsObject = _createMessageOptionsObject(text, options);
     const filesData = _analyzeFiles(optionsObject.files);
 
     if (optionsObject.files == null && (text == null || text === ""))
@@ -24,7 +26,7 @@ module.exports.send = function(receiver, text, options = {})
     })
     .then((discordJsMessage) => 
     {
-        if (optionsObject.pin === true)
+        if (optionsObject.pin === true && assert.isFunction(discordJsMessage.pin) === true)
             return discordJsMessage.pin();
         
         else return Promise.resolve(discordJsMessage);
@@ -33,11 +35,11 @@ module.exports.send = function(receiver, text, options = {})
     .catch((err) => Promise.reject(new Error(`Could not deliver message: ${err.message}`)));
 };
 
-function _createMessageOptionsObject(options)
+function _createMessageOptionsObject(textToSend, options)
 {
     var optionsObject = {};
     var embed = _formatEmbed(options.embed);
-    var wrapper = _formatWrapper(options.prepend, options.append);
+    var wrapper = _formatWrapper(textToSend, options.prepend, options.append);
     var attachment = _formatAttachment(options.files);
 
     if (embed != null)
@@ -106,13 +108,13 @@ function _formatEmbed(embedStruct)
     return { embed: embedStruct };
 }
 
-function _formatWrapper(prepend, append)
+function _formatWrapper(textToSend, prepend, append)
 {
     var wrapperObject = { split: { prepend: "", append: "" } };
 
-    // Always split message by default rather than not sending it
-    if (prepend == null && append == null)
-        return { split: true };
+    // Split message by default rather than not sending it if it exceeds 2000 characters
+    if (prepend == null && append == null && textToSend.length <= MAX_MESSAGE_CHARACTERS)
+        return null;
 
     if (assert.isString(prepend) === true)
         wrapperObject.split.prepend = prepend;
