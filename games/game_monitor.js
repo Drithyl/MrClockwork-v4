@@ -1,5 +1,6 @@
 
 const log = require("../logger.js");
+const ongoingGameStore = require("./ongoing_games_store.js");
 const botClientWrapper = require("../discord/wrappers/bot_client_wrapper.js");
 const { queryDominions5Game } = require("./prototypes/dominions5_status.js");
 
@@ -9,13 +10,15 @@ var monitoredGames = {};
 
 exports.monitorDom5Game = (game) =>
 {
-    _updateDom5Game(game);
     monitoredGames[game.getName()] = true;
+    log.general(log.getNormalLevel(), `${game.getName()} will be monitored for updates.`);
+    _updateDom5Game(game);
 };
 
 exports.stopMonitoringDom5Game = (game) =>
 {
     delete monitoredGames[game.getName()];
+    log.general(log.getLeanLevel(), `${game.getName()} will no longer be monitored for updates.`);
 };
 
 function _updateDom5Game(game)
@@ -27,6 +30,9 @@ function _updateDom5Game(game)
         return _updateCycle(game)
         .then(() => 
         {
+            if (ongoingGameStore.hasOngoingGameByName(gameName) === false)
+                delete monitoredGames[gameName];
+
             if (monitoredGames[gameName] != null)
                 _updateDom5Game(game);
         })
