@@ -31,5 +31,5 @@ function _behaviour(commandContext)
         return commandContext.respondToCommand(`Log level is an integer from 0 to 2`);
 
     log.setLogLevel(logLevelArg);
-    return commandContext.respondToCommand(`Log level set to ${logLevelArg}.`);
+    return commandContext.respondToCommand(`Log level set to ${log.getLogLevel()}.`);
 }
