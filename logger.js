@@ -23,13 +23,14 @@ module.exports.getNormalLevel = () => NORMAL_LEVEL;
 module.exports.getVerboseLevel = () => VERBOSE_LEVEL;
 
 
+module.exports.getLogLevel = () => currentLogLevel;
 module.exports.setLogLevel = (level) =>
 {
     if (assert.isInteger(level) === false)
         return;
 
-    logLevel = level;
-    exports.general(LEAN_LEVEL, `logLevel set to ${level}.`);
+        currentLogLevel = level;
+    exports.general(LEAN_LEVEL, `logLevel set to ${currentLogLevel}.`);
 };
 
 module.exports.isLoggingToFile = () => logToFile;
@@ -39,7 +40,7 @@ module.exports.setLogToFile = (shouldLogToFile) =>
         return;
 
     logToFile = shouldLogToFile;
-    exports.general(LEAN_LEVEL, `logToFile set to ${shouldLogToFile}.`);
+    exports.general(LEAN_LEVEL, `logToFile set to ${logToFile}.`);
 };
 
 
