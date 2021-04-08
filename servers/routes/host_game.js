@@ -4,6 +4,7 @@ const guildStore = require("../../discord/guild_store.js");
 const hostServerStore = require("../host_server_store.js");
 const dom5Nations = require("../../json/dom5_nations.json");
 const webSessionsStore = require("../web_sessions_store.js");
+const gamesStore = require("../../games/ongoing_games_store.js");
 const Dominions5Game = require("../../games/prototypes/dominions5_game.js");
 
 exports.set = (expressApp) => 
@@ -71,7 +72,7 @@ exports.set = (expressApp) =>
         .catch((err) => 
         {
             log.error(log.getLeanLevel(), `HOST GAME ERROR`, err);
-            res.render("results_screen.ejs", { result: `Error occurred when creating the game: ${err.message}` });
+            res.render("results_screen.ejs", { result: `Error occurred; could not create the game: ${err.message}` });
         });
     });
 };
@@ -112,6 +113,7 @@ function _createGame(userId, values)
         return Promise.reject(new Error(`Selected server is offline; cannot host game.`));
 
     gameObject = new Dominions5Game();
+    gamesStore.addOngoingGame(gameObject);
     gameObject.setOrganizer(organizer);
     gameObject.setGuild(guild);
     gameObject.setServer(server);
@@ -125,6 +127,17 @@ function _createGame(userId, values)
     .then(() => gameObject.createNewChannel())
     .then(() => gameObject.createNewRole())
     .then(() => gameObject.pinSettingsToChannel())
-    .then(() => gameObject.finishGameCreation())
-    .then(() => Promise.resolve(gameObject));
+    .then(() => gameObject.save())
+    .then(() => log.general(log.getNormalLevel(), `Game ${gameObject.getName()} was created successfully.`))
+    .then(() => Promise.resolve(gameObject))
+    .catch((err) =>
+    {
+        if (gameObject == null)
+            return Promise.reject(err);
+
+        return gamesStore.deleteGame(gameObject.getName())
+        .then(() => gameObject.deleteRole())
+        .then(() => gameObject.deleteChannel())
+        .then(() => Promise.reject(err));
+    });
 }
