@@ -25,18 +25,10 @@ function DeleteGameAndChannelCommand()
 function _behaviour(commandContext)
 {
     const gameObject = commandContext.getGameTargetedByCommand();
-    const gameChannel = gameObject.getChannel();
-    const gameRole = gameObject.getRole();
 
     return commandContext.respondToCommand(`Deleting game...`)
-    .then(() =>gameObject.emitPromiseWithGameDataToServer("DELETE_GAME"))
+    .then(() => gameObject.emitPromiseWithGameDataToServer("DELETE_GAME"))
     .then(() => ongoingGameStore.deleteGame(gameObject.getName()))
-    .then(() =>
-    {
-        if (gameRole != null)
-            return gameRole.delete();
-
-        else return Promise.resolve();
-    })
-    .then(() => gameChannel.delete());
+    .then(() => gameObject.deleteRole())
+    .then(() => gameObject.deleteChannel());
 }

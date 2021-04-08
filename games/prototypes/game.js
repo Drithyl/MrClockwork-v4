@@ -52,6 +52,14 @@ function Game()
         _discordJsChannel = channel;
     };
 
+    this.deleteChannel = () =>
+    {
+        if (_discordJsChannel == null)
+            return Promise.resolve();
+
+        else return _discordJsChannel.delete();
+    };
+
     this.createNewChannel = () =>
     {
         return _guildWrapper.createGameChannel(`${this.getName()}`)
@@ -62,9 +70,16 @@ function Game()
             _discordJsChannel = channel
 
             if (status.isOngoing() === true)
-                channel.setParent(guildStore.getGameCategoryId(guildId));
+            {
+                log.general(log.getVerboseLevel(), `Game is ongoing; moving to started category ${guildStore.getGameCategoryId(guildId)}`);
+                return channel.setParent(guildStore.getGameCategoryId(guildId));
+            }
             
-            else channel.setParent(guildStore.getRecruitingCategoryId(guildId));
+            else
+            {
+                log.general(log.getVerboseLevel(), `Game has not started; moving to open category ${guildStore.getRecruitingCategoryId(guildId)}`);
+                return channel.setParent(guildStore.getRecruitingCategoryId(guildId));
+            }
         });
     };
 
@@ -73,6 +88,14 @@ function Game()
     this.setRole = (role) =>
     {
         _discordJsRole = role;
+    };
+
+    this.deleteRole = () =>
+    {
+        if (_discordJsRole == null)
+            return Promise.resolve();
+
+        else return _discordJsRole.delete();
     };
 
     this.createNewRole = () =>
@@ -138,12 +161,7 @@ function Game()
         return messenger.send(channel, settingsStringList.toBox(), { pin: true });
     };
 
-    this.finishGameCreation = () =>
-    {
-        ongoingGamesStore.addOngoingGame(this);
-        return this.save()
-        .then(() => log.general(log.getNormalLevel(), `Game ${this.getName()} was created successfully.`));
-    };
+    this.addToStore = () => ongoingGamesStore.addOngoingGame(this);
 
     this.save = () =>
     {
@@ -197,24 +215,30 @@ function Game()
         assert.isStringOrThrow(jsonData.name);
         assert.isIntegerOrThrow(jsonData.port);
         assert.isStringOrThrow(jsonData.serverId);
-        assert.isStringOrThrow(jsonData.organizerId);
         assert.isStringOrThrow(jsonData.guildId);
-        assert.isStringOrThrow(jsonData.channelId);
-        assert.isStringOrThrow(jsonData.roleId);
+
 
         var guild = guildStore.getGuildWrapperById(jsonData.guildId);
-        var organizer = guild.getGuildMemberWrapperById(jsonData.organizerId);
-        var channel = guild.getChannelById(jsonData.channelId);
-        var role = guild.getRoleById(jsonData.roleId);
         var server = hostServerStore.getHostServerById(jsonData.serverId);
 
+
         this.setGuild(guild);
-        this.setOrganizer(organizer);
-        this.setChannel(channel);
-        this.setRole(role);
+        this.setServer(server);
         this.setName(jsonData.name);
         this.setPort(jsonData.port);
-        this.setServer(server);
+        
+
+        if (assert.isString(jsonData.organizerId === true))
+            this.setOrganizer(guild.getGuildMemberWrapperById(jsonData.organizerId));
+
+        else this.setOrganizer(guild.getOwner());
+
+        if (assert.isString(jsonData.channelId) === true)
+            this.setChannel(guild.getChannelById(jsonData.channelId));
+
+        if (assert.isString(jsonData.roleId) === true)
+            this.setRole(guild.getRoleById(jsonData.roleId));
+
 
         _settingsObject.loadJSONData(jsonData.settings);
 
