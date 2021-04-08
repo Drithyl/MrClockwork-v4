@@ -43,7 +43,10 @@ module.exports.copyDir = function(source, target, deepCopy, extensionFilter = nu
 module.exports.deleteDir = function(path)
 {
     if (fs.existsSync(path) === false)
-        return Promise.resolve();
+	{
+		log.general(log.getLeanLevel(), `deleteDir(): Dir does not exist`, path);
+		return Promise.resolve();
+	}
         
     return fsp.readdir(path)
     .then((filenames) =>
@@ -52,7 +55,7 @@ module.exports.deleteDir = function(path)
         {
             const filepath = `${path}/${filename}`;
 
-            fsp.lstat(filepath)
+            return fsp.lstat(filepath)
             .then((stats) =>
             {
                 if (stats.isDirectory() === true)
@@ -60,11 +63,16 @@ module.exports.deleteDir = function(path)
 
                 return fsp.unlink(filepath);
             })
-            .then(() => nextPromise());
+            .then(() => nextPromise())
+			.catch((err) => Promise.reject(err));
         });
     })
     .then(() => fsp.rmdir(path))
-    .catch((err) => Promise.reject(err));
+    .catch((err) => 
+	{
+		log.error(log.getLeanLevel(), `deleteDir() ERROR`, err);
+		return Promise.reject(err)
+	});
 };
 
 //If a directory does not exist, this will create it
