@@ -1,8 +1,8 @@
 
+const log = require("../../logger.js");
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
-const ongoingGameStore = require("../../games/ongoing_games_store.js");
 
 const commandData = new CommandData("DELETE_GAME");
 
@@ -25,17 +25,13 @@ function DeleteGameCommand()
 function _behaviour(commandContext)
 {
     const gameObject = commandContext.getGameTargetedByCommand();
-    const gameRole = gameObject.getRole();
     
     return commandContext.respondToCommand(`Deleting game...`)
-    .then(() =>gameObject.emitPromiseWithGameDataToServer("DELETE_GAME"))
-    .then(() => ongoingGameStore.deleteGame(gameObject.getName()))
-    .then(() =>
+    .then(() => gameObject.deleteGame())
+    .then(() => gameObject.deleteRole())
+    .then(() => 
     {
-        if (gameRole != null)
-            return gameRole.delete();
-
-        else return Promise.resolve();
-    })
-    .then(() => commandContext.respondToCommand(`The game has been deleted.`));
+        log.general(log.getLeanLevel(), `${gameObject.getName()} and its role were deleted successfully.`);
+        commandContext.respondToCommand(`The game has been deleted.`)
+    });
 }

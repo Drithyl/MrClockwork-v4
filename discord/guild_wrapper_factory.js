@@ -6,15 +6,16 @@ const GuildWrapper = require("./wrappers/guild_wrapper.js");
 
 module.exports.wrapDiscordJsGuild = function(discordJsGuildObject)
 {
-  var id = discordJsGuildObject.id;
+  const id = discordJsGuildObject.id;
+  const guildWrapper = new GuildWrapper(discordJsGuildObject);
 
   log.general(log.getVerboseLevel(), `Wrapping ${discordJsGuildObject.name}...`);
 
   if (guildDataStore.hasGuildData(id) === false)
   {
     log.general(log.getVerboseLevel(), "No bot data found for guild.");
-    guildDataStore.createGuildData(id);
+    guildDataStore.createGuildData(guildWrapper);
   }
   
-  return new GuildWrapper(discordJsGuildObject);
+  return guildWrapper;
 };

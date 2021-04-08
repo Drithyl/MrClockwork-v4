@@ -9,7 +9,6 @@ const guildWrappers = {};
 
 module.exports.populateStore = function(discordJsGuildCollection)
 {
-    log.general(log.getNormalLevel(), `Populating guild store...`);
     return guildDataStore.populateGuildDataStore()
     .then(() => 
     {

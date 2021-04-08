@@ -113,7 +113,6 @@ function _createGame(userId, values)
         return Promise.reject(new Error(`Selected server is offline; cannot host game.`));
 
     gameObject = new Dominions5Game();
-    gamesStore.addOngoingGame(gameObject);
     gameObject.setOrganizer(organizer);
     gameObject.setGuild(guild);
     gameObject.setServer(server);
@@ -124,6 +123,7 @@ function _createGame(userId, values)
         gameObject.setPort(port);
         return gameObject.loadSettingsFromInput(values);
     })
+    .then(() => gamesStore.addOngoingGame(gameObject))
     .then(() => gameObject.createNewChannel())
     .then(() => gameObject.createNewRole())
     .then(() => gameObject.pinSettingsToChannel())
@@ -135,7 +135,7 @@ function _createGame(userId, values)
         if (gameObject == null)
             return Promise.reject(err);
 
-        return gamesStore.deleteGame(gameObject.getName())
+        return gameObject.deleteGame()
         .then(() => gameObject.deleteRole())
         .then(() => gameObject.deleteChannel())
         .then(() => Promise.reject(err));

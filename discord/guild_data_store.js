@@ -7,17 +7,21 @@ const rw = require("../reader_writer.js");
 const config = require("../config/config.json");
 const permissionOverwritesConfig = require("../json/permission_overwrites_config.json");
 
+
 const loadedGuildData = {};
 
-var newsChannelIdKey = "newsChannelId";
-var helpChannelIdKey = "helpChannelId";
-var recruitingCategoryIdKey = "recruitingCategoryId";
-var blitzRecruitingCategoryIdKey = "blitzRecruitingCategoryId";
-var gameCategoryIdKey = "gameCategoryId";
-var blitzCategoryIdKey = "blitzCategoryId";
-var blitzerRoleIdKey = "blitzerRoleId";
-var gameMasterRoleIdKey = "gameMasterRoleId";
-var trustedRoleIdKey = "trustedRoleId";
+const GUILD_ID_KEY = "guildId";
+const GUILD_NAME_KEY = "guildName";
+const NEWS_CHANNEL_ID_KEY = "newsChannelId";
+const HELP_CHANNEL_ID_KEY = "helpChannelId";
+const RECRUITING_CATEGORY_ID_KEY = "recruitingCategoryId";
+const BLITZ_RECRUITING_CATEGORY_ID_KEY = "blitzRecruitingCategoryId";
+const GAME_CATEGORY_ID_KEY = "gameCategoryId";
+const BLITZ_CATEGORY_ID_KEY = "blitzCategoryId";
+const BLITZER_ROLE_ID_KEY = "blitzerRoleId";
+const GAME_MASTER_ROLE_ID_KEY = "gameMasterRoleId";
+const TRUSTED_ROLE_ID_KEY = "trustedRoleId";
+
 
 module.exports.populateGuildDataStore = () =>
 {
@@ -41,7 +45,7 @@ module.exports.populateGuildDataStore = () =>
 
             if (fs.existsSync(`${guildDataPath}/${dirName}/data.json`) === false)
             {
-                log.general(log.getLeanLevel(), `Guild data dir exists for ${dirName}, but no data found!`);
+                log.general(log.getLeanLevel(), `Guild data dir exists for ${dirName}, but no data found; probably a recently added guild.`);
                 loadedGuildData[dirName] = {};
             }
 
@@ -87,22 +91,24 @@ module.exports.clearGuildData = (guildId, discordIdToClear) =>
     return Promise.resolve();
 };
 
-module.exports.createGuildData = (guildId) =>
+module.exports.createGuildData = (guildWrapper) =>
 {
     log.general(log.getNormalLevel(), "Creating guild data...");
     var guildData = {
-        newsChannelId: null,
-        helpChannelId: null,
-        recruitingCategoryId: null,
-        blitzRecruitingCategoryId: null,
-        gameCategoryId: null,
-        blitzCategoryId: null,
-        blitzerRoleId: null,
-        gameMasterRoleId: null,
-        trustedRoleId: null
+        [GUILD_ID_KEY]: guildWrapper.getId(),
+        [GUILD_NAME_KEY]: guildWrapper.getName(),
+        [NEWS_CHANNEL_ID_KEY]: null,
+        [HELP_CHANNEL_ID_KEY]: null,
+        [RECRUITING_CATEGORY_ID_KEY]: null,
+        [BLITZ_RECRUITING_CATEGORY_ID_KEY]: null,
+        [GAME_CATEGORY_ID_KEY]: null,
+        [BLITZ_CATEGORY_ID_KEY]: null,
+        [BLITZER_ROLE_ID_KEY]: null,
+        [GAME_MASTER_ROLE_ID_KEY]: null,
+        [TRUSTED_ROLE_ID_KEY]: null
     };
 
-    loadedGuildData[guildId] = guildData;
+    loadedGuildData[guildWrapper.getId()] = guildData;
     log.general(log.getNormalLevel(), "Guild bot data created.");
     return guildData;
 };
@@ -135,49 +141,49 @@ module.exports.removeGuildData = (guildId) =>
     });
 };
 
-module.exports.getNewsChannelId = (guildId) => _getId(guildId, newsChannelIdKey);
-module.exports.setNewsChannelId = (guildId, id) => _setId(guildId, newsChannelIdKey, id);
-module.exports.getNewsChannelBotPermissionOverwrites = (allowOrDeny) => permissionOverwritesConfig[helpChannelIdKey]["bot"][allowOrDeny];
-module.exports.getNewsChannelMemberPermissionOverwrites = (allowOrDeny) => permissionOverwritesConfig[helpChannelIdKey]["members"][allowOrDeny];
+module.exports.getNewsChannelId = (guildId) => _getFieldId(guildId, NEWS_CHANNEL_ID_KEY);
+module.exports.setNewsChannelId = (guildId, id) => _setFieldId(guildId, NEWS_CHANNEL_ID_KEY, id);
+module.exports.getNewsChannelBotPermissionOverwrites = (allowOrDeny) => permissionOverwritesConfig[HELP_CHANNEL_ID_KEY]["bot"][allowOrDeny];
+module.exports.getNewsChannelMemberPermissionOverwrites = (allowOrDeny) => permissionOverwritesConfig[HELP_CHANNEL_ID_KEY]["members"][allowOrDeny];
 
-module.exports.getHelpChannelId = (guildId) => _getId(guildId, helpChannelIdKey);
-module.exports.setHelpChannelId = (guildId, id) => _setId(guildId, helpChannelIdKey, id);
-module.exports.getHelpChannelBotPermissionOverwrites = (allowOrDeny) => permissionOverwritesConfig[newsChannelIdKey]["bot"][allowOrDeny];
-module.exports.getHelpChannelMemberPermissionOverwrites = (allowOrDeny) => permissionOverwritesConfig[newsChannelIdKey]["members"][allowOrDeny];
-
-
-module.exports.getRecruitingCategoryId = (guildId) => _getId(guildId, recruitingCategoryIdKey);
-module.exports.setRecruitingCategoryId = (guildId, id) => _setId(guildId, recruitingCategoryIdKey, id);
-module.exports.getRecruitingCategoryBotPermissionOverwrites = (allowOrDeny) => permissionOverwritesConfig[recruitingCategoryIdKey]["bot"][allowOrDeny];
-module.exports.getRecruitingCategoryMemberPermissionOverwrites = (allowOrDeny) => permissionOverwritesConfig[recruitingCategoryIdKey]["members"][allowOrDeny];
-
-module.exports.getBlitzRecruitingCategoryId = (guildId) => _getId(guildId, blitzRecruitingCategoryIdKey);
-module.exports.setBlitzRecruitingCategoryId = (guildId, id) => _setId(guildId, blitzRecruitingCategoryIdKey, id);
-module.exports.getBlitzRecruitingCategoryBotPermissionOverwrites = (allowOrDeny) => permissionOverwritesConfig[blitzRecruitingCategoryIdKey]["bot"][allowOrDeny];
-module.exports.getBlitzRecruitingCategoryMemberPermissionOverwrites = (allowOrDeny) => permissionOverwritesConfig[blitzRecruitingCategoryIdKey]["members"][allowOrDeny];
-
-module.exports.getGameCategoryId = (guildId) => _getId(guildId, gameCategoryIdKey);
-module.exports.setGameCategoryId = (guildId, id) => _setId(guildId, gameCategoryIdKey, id);
-module.exports.getGameCategoryBotPermissionOverwrites = (allowOrDeny) => permissionOverwritesConfig[gameCategoryIdKey]["bot"][allowOrDeny];
-module.exports.getGameCategoryMemberPermissionOverwrites = (allowOrDeny) => permissionOverwritesConfig[gameCategoryIdKey]["members"][allowOrDeny];
-
-module.exports.getBlitzCategoryId = (guildId) => _getId(guildId, blitzCategoryIdKey);
-module.exports.setBlitzCategoryId = (guildId, id) => _setId(guildId, blitzCategoryIdKey, id);
-module.exports.getBlitzCategoryBotPermissionOverwrites = (allowOrDeny) => permissionOverwritesConfig[blitzCategoryIdKey]["bot"][allowOrDeny];
-module.exports.getBlitzCategoryMemberPermissionOverwrites = (allowOrDeny) => permissionOverwritesConfig[blitzCategoryIdKey]["members"][allowOrDeny];
+module.exports.getHelpChannelId = (guildId) => _getFieldId(guildId, HELP_CHANNEL_ID_KEY);
+module.exports.setHelpChannelId = (guildId, id) => _setFieldId(guildId, HELP_CHANNEL_ID_KEY, id);
+module.exports.getHelpChannelBotPermissionOverwrites = (allowOrDeny) => permissionOverwritesConfig[NEWS_CHANNEL_ID_KEY]["bot"][allowOrDeny];
+module.exports.getHelpChannelMemberPermissionOverwrites = (allowOrDeny) => permissionOverwritesConfig[NEWS_CHANNEL_ID_KEY]["members"][allowOrDeny];
 
 
-module.exports.getBlitzerRoleId = (guildId) => _getId(guildId, blitzerRoleIdKey);
-module.exports.setBlitzerRoleId = (guildId, id) => _setId(guildId, blitzerRoleIdKey, id);
-module.exports.getBlitzerRolePermissionOverwrites = () => permissionOverwritesConfig[blitzerRoleIdKey];
+module.exports.getRecruitingCategoryId = (guildId) => _getFieldId(guildId, RECRUITING_CATEGORY_ID_KEY);
+module.exports.setRecruitingCategoryId = (guildId, id) => _setFieldId(guildId, RECRUITING_CATEGORY_ID_KEY, id);
+module.exports.getRecruitingCategoryBotPermissionOverwrites = (allowOrDeny) => permissionOverwritesConfig[RECRUITING_CATEGORY_ID_KEY]["bot"][allowOrDeny];
+module.exports.getRecruitingCategoryMemberPermissionOverwrites = (allowOrDeny) => permissionOverwritesConfig[RECRUITING_CATEGORY_ID_KEY]["members"][allowOrDeny];
 
-module.exports.getGameMasterRoleId = (guildId) => _getId(guildId, gameMasterRoleIdKey);
-module.exports.setGameMasterRoleId = (guildId, id) => _setId(guildId, gameMasterRoleIdKey, id);
-module.exports.getGameMasterRolePermissionOverwrites = () => permissionOverwritesConfig[gameMasterRoleIdKey];
+module.exports.getBlitzRecruitingCategoryId = (guildId) => _getFieldId(guildId, BLITZ_RECRUITING_CATEGORY_ID_KEY);
+module.exports.setBlitzRecruitingCategoryId = (guildId, id) => _setFieldId(guildId, BLITZ_RECRUITING_CATEGORY_ID_KEY, id);
+module.exports.getBlitzRecruitingCategoryBotPermissionOverwrites = (allowOrDeny) => permissionOverwritesConfig[BLITZ_RECRUITING_CATEGORY_ID_KEY]["bot"][allowOrDeny];
+module.exports.getBlitzRecruitingCategoryMemberPermissionOverwrites = (allowOrDeny) => permissionOverwritesConfig[BLITZ_RECRUITING_CATEGORY_ID_KEY]["members"][allowOrDeny];
 
-module.exports.getTrustedRoleId = (guildId) => _getId(guildId, trustedRoleIdKey);
-module.exports.setTrustedRoleId = (guildId, id) => _setId(guildId, trustedRoleIdKey, id);
-module.exports.getTrustedRolePermissionOverwrites = () => permissionOverwritesConfig[trustedRoleIdKey];
+module.exports.getGameCategoryId = (guildId) => _getFieldId(guildId, GAME_CATEGORY_ID_KEY);
+module.exports.setGameCategoryId = (guildId, id) => _setFieldId(guildId, GAME_CATEGORY_ID_KEY, id);
+module.exports.getGameCategoryBotPermissionOverwrites = (allowOrDeny) => permissionOverwritesConfig[GAME_CATEGORY_ID_KEY]["bot"][allowOrDeny];
+module.exports.getGameCategoryMemberPermissionOverwrites = (allowOrDeny) => permissionOverwritesConfig[GAME_CATEGORY_ID_KEY]["members"][allowOrDeny];
+
+module.exports.getBlitzCategoryId = (guildId) => _getFieldId(guildId, BLITZ_CATEGORY_ID_KEY);
+module.exports.setBlitzCategoryId = (guildId, id) => _setFieldId(guildId, BLITZ_CATEGORY_ID_KEY, id);
+module.exports.getBlitzCategoryBotPermissionOverwrites = (allowOrDeny) => permissionOverwritesConfig[BLITZ_CATEGORY_ID_KEY]["bot"][allowOrDeny];
+module.exports.getBlitzCategoryMemberPermissionOverwrites = (allowOrDeny) => permissionOverwritesConfig[BLITZ_CATEGORY_ID_KEY]["members"][allowOrDeny];
+
+
+module.exports.getBlitzerRoleId = (guildId) => _getFieldId(guildId, BLITZER_ROLE_ID_KEY);
+module.exports.setBlitzerRoleId = (guildId, id) => _setFieldId(guildId, BLITZER_ROLE_ID_KEY, id);
+module.exports.getBlitzerRolePermissionOverwrites = () => permissionOverwritesConfig[BLITZER_ROLE_ID_KEY];
+
+module.exports.getGameMasterRoleId = (guildId) => _getFieldId(guildId, GAME_MASTER_ROLE_ID_KEY);
+module.exports.setGameMasterRoleId = (guildId, id) => _setFieldId(guildId, GAME_MASTER_ROLE_ID_KEY, id);
+module.exports.getGameMasterRolePermissionOverwrites = () => permissionOverwritesConfig[GAME_MASTER_ROLE_ID_KEY];
+
+module.exports.getTrustedRoleId = (guildId) => _getFieldId(guildId, TRUSTED_ROLE_ID_KEY);
+module.exports.setTrustedRoleId = (guildId, id) => _setFieldId(guildId, TRUSTED_ROLE_ID_KEY, id);
+module.exports.getTrustedRolePermissionOverwrites = () => permissionOverwritesConfig[TRUSTED_ROLE_ID_KEY];
 
 
 module.exports.replaceRoleWithNew = (guildId, oldRoleId, newRoleId) =>
@@ -208,22 +214,22 @@ module.exports.replaceRoleWithNew = (guildId, oldRoleId, newRoleId) =>
 };
 
 
-function _getId(guildId, idKey)
+function _getFieldId(guildId, fieldKey)
 {
-    if (loadedGuildData[guildId] == null || loadedGuildData[guildId][idKey] == null)
+    if (loadedGuildData[guildId] == null || loadedGuildData[guildId][fieldKey] == null)
         return null;
 
-    else return loadedGuildData[guildId][idKey];
+    else return loadedGuildData[guildId][fieldKey];
 }
 
-function _setId(guildId, idKey, id)
+function _setFieldId(guildId, fieldKey, id)
 {
     if (loadedGuildData[guildId] == null)
         throw new Error(`Guild ${guildId} does not exist.`);
 
     assert.isStringOrThrow(id);
-    assert.isStringOrThrow(idKey);
-    loadedGuildData[guildId][idKey] = id;
+    assert.isStringOrThrow(fieldKey);
+    loadedGuildData[guildId][fieldKey] = id;
     return _saveGuildData(guildId);
 }
 

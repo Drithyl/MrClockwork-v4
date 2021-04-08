@@ -4,6 +4,7 @@ const log = require("../../logger.js");
 const asserter = require("../../asserter.js");
 const config = require("../../config/config.json");
 const dominions5Status = require("./dominions5_status.js");
+const ongoingGameStore = require("../ongoing_games_store.js");
 const Dominions5Settings = require("./dominions5_settings.js");
 const playerFileStore = require("../../player_data/player_file_store.js");
 const Dominions5StatusEmbed = require("./dominions5_status_embed.js");
@@ -85,15 +86,28 @@ function Dominions5Game()
         });
     };
 
+    _gameObject.deleteGame = () =>
+    {
+        return _gameObject.emitPromiseWithGameDataToServer("DELETE_GAME")
+        .then(() => _gameObject.removeAllPlayerData(_gameObject.getName()))
+        .then(() => ongoingGameStore.deleteGame(_gameObject.getName()));
+    };
+
     _gameObject.removeAllPlayerData = () =>
     {
         return _playerFiles.forEachPromise((playerFile, playerId, nextPromise) =>
         {
             playerFile.removeGameData(_gameObject.getName());
             playerFile.removeGamePreferences(_gameObject.getName());
+            log.general(log.getNormalLevel(), `Deleted ${playerId}'s ${_gameObject.getName()} data.`);
 
             return playerFile.save()
             .then(() => nextPromise());
+        })
+        .catch((err) =>
+        {
+            log.error(log.getLeanLevel(), `ERROR: Could not delete ${playerId}'s ${_gameObject.getName()} data`, err);
+            return Promise.reject(err);
         });
     };
 

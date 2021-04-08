@@ -72,20 +72,26 @@ exports.deleteGame = function(gameName)
     const game = exports.getOngoingGameByName(gameName);
     const pathToBotData = `${config.dataPath}/${config.gameDataFolder}/${gameName}`;
 
-    if (game == null)
-        return Promise.resolve();
-
-    gameMonitor.stopMonitoringDom5Game(game);
-
-    return game.removeAllPlayerData()
-    .then(() => rw.deleteDir(pathToBotData))
+    return rw.deleteDir(pathToBotData)
     .then(() =>
     {
+        if (game == null)
+        {
+            console.log(_ongoingGamesByName);
+            log.general(log.getLeanLevel(), `Game ${gameName} to delete is already null on the store`);
+            return Promise.resolve();
+        }
+
         delete _ongoingGamesByName[gameName];
+        gameMonitor.stopMonitoringDom5Game(game);
         log.general(log.getNormalLevel(), `Deleted ${gameName}'s bot data.`);
         return Promise.resolve();
     })
-    .catch((err) => Promise.reject(err));
+    .catch((err) => 
+    {
+        log.error(log.getLeanLevel(), `ERROR: Could not remove ${gameName} from the store`, err);
+        Promise.reject(err)
+    });
 };
 
 exports.getOngoingGameByName = function(nameToFind) 
