@@ -16,9 +16,9 @@ function StartingResearch()
         var value = this.getValue();
 
         if (value == true)
-            return "Random starting research";
+            return "Spread starting research";
 
-        else return "Spread starting research";
+        else return "Random starting research";
     };
     
     this.setValue = (input) =>
