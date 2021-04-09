@@ -3,6 +3,7 @@ const log = require("../../logger.js");
 const MenuScreen = require("./menu_screen.js");
 const MenuStructure = require("./menu_structure.js");
 const activeMenuStore = require("../active_menu_store.js");
+const gamesStore = require("../../games/ongoing_games_store.js");
 
 module.exports = HostMenu;
 
@@ -10,7 +11,6 @@ function HostMenu(gameObject, useDefaults = false)
 {
     const _screens = _loadSettingsScreensInOrder(gameObject, useDefaults);
     const _guildMemberWrapper = gameObject.getOrganizerMemberWrapper();
-    const _guildMemberId = _guildMemberWrapper.getId();
 
     const _menuStructure = new MenuStructure(_guildMemberWrapper);
 
@@ -22,11 +22,12 @@ function HostMenu(gameObject, useDefaults = false)
     _menuStructure.addBehaviourOnFinishedMenu(() => 
     {
         activeMenuStore.removeActiveInstance(_guildMemberWrapper.getId());
-        return gameObject.finishGameCreation()
-        .then(() => gameObject.createNewRole())
+        return gamesStore.addOngoingGame(gameObject)
         .then(() => gameObject.createNewChannel())
+        .then(() => gameObject.createNewRole())
         .then(() => gameObject.pinSettingsToChannel())
-        .then(() => gameObject.save());
+        .then(() => gameObject.save())
+        .then(() => log.general(log.getNormalLevel(), `Game ${gameObject.getName()} was created successfully.`));
     });
 
     _menuStructure.hasGameNameReserved = (name) => reservedName === name;
