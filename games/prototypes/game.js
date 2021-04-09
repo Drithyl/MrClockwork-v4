@@ -228,10 +228,14 @@ function Game()
         this.setPort(jsonData.port);
         
 
-        if (assert.isString(jsonData.organizerId === true))
+        if (assert.isString(jsonData.organizerId) === true)
             this.setOrganizer(guild.getGuildMemberWrapperById(jsonData.organizerId));
 
-        else this.setOrganizer(guild.getOwner());
+        else
+        {
+            log.general(log.getLeanLevel(), `${this.getName()}: organizer ${jsonData.organizerId} could not be fetched; setting guild owner ${guild.getOwner().getUsername()} instead.`);
+            this.setOrganizer(guild.getOwner());
+        }
 
         if (assert.isString(jsonData.channelId) === true)
             this.setChannel(guild.getChannelById(jsonData.channelId));
