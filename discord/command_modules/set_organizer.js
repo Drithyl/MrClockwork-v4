@@ -1,4 +1,5 @@
 
+const log = require("../../logger.js");
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
@@ -25,10 +26,18 @@ function _behaviour(commandContext)
 {
     const gameObject = commandContext.getGameTargetedByCommand();
     const mentionedMembers = commandContext.getMentionedMembers();
+    var newOrganizerWrapper;
 
     if (mentionedMembers.length <= 0)
         return commandContext.respondToCommand(`You must mention the member who you wish to appoint as organizer.`);
 
-    gameObject.setOrganizer(mentionedMembers[0]);
-    return commandContext.respondToCommand(`The new organizer is set.`);
+    newOrganizerWrapper = mentionedMembers[0];
+    gameObject.setOrganizer(newOrganizerWrapper);
+
+    return gameObject.save()
+    .then(() => 
+    {
+        log.general(log.getLeanLevel(), `${gameObject.getName()}: new organizer ${newOrganizerWrapper.getUsername()} set.`);
+        commandContext.respondToCommand(`The new organizer is set.`);
+    });
 }
