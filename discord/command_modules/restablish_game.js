@@ -24,18 +24,31 @@ function RestablishGameCommand()
 
 function _behaviour(commandContext)
 {
-    var commandArgumentsArray = commandContext.getCommandArgumentsArray();
-    var nameOfGameToRepair = commandArgumentsArray[0];
+    const guildWrapper = commandContext.getGuildWrapper();
+    const commandArgumentsArray = commandContext.getCommandArgumentsArray();
+    const nameOfGameToRepair = commandArgumentsArray[0];
     var gameObject;
-    var discordEnvironmentObject;
+    
 
     if (ongoingGamesStore.hasGameByName(nameOfGameToRepair) === false)
         return commandContext.respondToCommand(`No game found with this name.`);
 
     gameObject = ongoingGamesStore.getGameByName(nameOfGameToRepair);
-    discordEnvironmentObject = gameObject.getDiscordEnvironment();
 
-    return discordEnvironmentObject.restablishChannelAndRole()
-    .then(() => commandContext.respondToCommand(`The game's channel and role have been restablished.`))
-    .catch((err) => commandContext.respondToCommand(`Error occurred when restablishing the game's Discord environment:\n\n${err.message}`));
+    return Promise.resolve()
+    .then(() =>
+    {
+        if (guildWrapper.findChannel(gameObject.getChannelId()) == null)
+            return gameObject.createNewChannel();
+
+        else return Promise.resolve()
+    })
+    .then(() =>
+    {
+        if (guildWrapper.findRole(gameObject.getRoleId()) == null)
+            return gameObject.createNewRole();
+
+        else return Promise.resolve()
+    })
+    .then(() => commandContext.respondToCommand(`The game's channel and role have been restablished.`));
 }

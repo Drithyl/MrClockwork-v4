@@ -24,8 +24,7 @@ function UnsubscribeFromGameCommand()
 function _behaviour(commandContext)
 {
     const gameObject = commandContext.getGameTargetedByCommand();
-    const discordEnvironment = gameObject.getDiscordEnvironment();
-    const gameRole = discordEnvironment.getDiscordJsRole();
+    const gameRole = gameObject.getRole();
     const guildMemberWrapper = commandContext.getSenderGuildMemberWrapper();
 
     return guildMemberWrapper.removeRole(gameRole)
