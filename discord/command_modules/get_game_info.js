@@ -27,7 +27,7 @@ function _behaviour(commandContext)
     const settingsObject = targetedGame.getSettingsObject();
     const organizerWrapper = targetedGame.getOrganizer();
 
-    var info = `Ip: ${targetedGame.getIp()}:${targetedGame.getPort()}\nOrganizer:`;
+    var info = `Ip: ${targetedGame.getIp()}:${targetedGame.getPort()}\nOrganizer: `;
 
     if (organizerWrapper == null)
         info += "No organizer set";
