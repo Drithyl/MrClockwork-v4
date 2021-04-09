@@ -1,5 +1,5 @@
 
-const { text } = require("express");
+const log = require("../../../logger.js");
 const GameSetting = require("../../prototypes/game_setting.js");
 const SemanticError = require("../../../errors/custom_errors.js").SemanticError;
 
@@ -28,7 +28,8 @@ function Map(parentGameObject)
             if (/\.map$/.test(validatedValue) === false)
                 validatedValue += ".map";
                 
-            _value = validatedValue
+            _value = validatedValue;
+            log.general(log.getNormalLevel(), `${parentGameObject.getName()}: Changed setting ${this.getName()} to ${this.getReadableValue()}`);
         });
     };
 
