@@ -7,8 +7,8 @@ const ChangeSettingsMenu = require("./prototypes/change_settings_menu.js");
 const ChangePlayerPreferencesMenu = require("./prototypes/change_player_preferences_menu.js");
 
 
-const backRegexp = new RegExp(`^${config.prefix}BACK`, "i");
-const endRegexp = new RegExp(`^${config.prefix}FINISH`, "i");
+const backRegexp = new RegExp(`^${config.commandPrefix}BACK`, "i");
+const endRegexp = new RegExp(`^${config.commandPrefix}FINISH`, "i");
 
 var activeMenus = {};
 

@@ -12,10 +12,10 @@ function MenuScreen(displayText, behaviour)
     const _behaviour = behaviour;
 
     this.getDisplayText = () => _displayText;
-    this.setDisplayText = (displayStr) =>
+    this.setDisplayText = (newText) =>
     {
-        assert.isStringOrThrow(displayStr);
-        _displayText = displayStr;
+        assert.isStringOrThrow(newText);
+        _displayText = newText;
     };
 
     this.invokeBehaviour = (...args) => _behaviour(...args);

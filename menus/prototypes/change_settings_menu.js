@@ -12,7 +12,7 @@ function ChangeSettingsMenu(gameObject, memberWrapper)
     const _menuStructure = new MenuStructure(memberWrapper);
     const _screens = _createMenuScreens(_menuStructure, settingsObject);
 
-    _menuStructure.addIntroductionMessage(`Choose a number from the menu below to change a setting, or type \`${config.prefix}finish\` to finish changing settings.:\n\n`);
+    _menuStructure.addIntroductionMessage(`Choose a number from the menu below to change a setting, or type \`${config.commandPrefix}finish\` to finish changing settings.:\n\n`);
     _menuStructure.addScreens(..._screens);
 
     return _menuStructure;
