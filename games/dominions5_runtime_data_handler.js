@@ -53,8 +53,16 @@ const fileCreationErrRegexp = new RegExp("Failed\\s*to\\s*create", "i");
 //Exact error: "The game [game_name] reported the error: *** no site called [site_name] ([replaced_site_name])"
 const replacedThroneErrRegexp = new RegExp("no\\s*site\\s*called\\s*\\w+\\s*(\\w+)", "i");
 
-// Exact message: "Setup port [port] (clients may start), open: 35, players 0, ais 0"
-const setupMessageRegexp = new RegExp("setup\\s*port\\s*\\d+\\s*\\(clients\\s*may\\s*start\\)", "i");
+// Exact message: "Setup port [port] (clients may start), open: 35, players 0, ais 0"; this happens very often
+// during game setup, and when game starts, doing the countdown each time
+const setupMessageRegexp = new RegExp("setup\\s*port\\s*\\d+", "i");
+
+// Exact message: "[game name], Connections 1, No timer (quick host)"; this happens every second or so after game start
+const connectionsMessageRegexp = new RegExp("Connections\\s*\\d+", "i");
+
+// Exact message: "Aby- Rus- La-", depending on each nation name, normally preceded by the message above; also
+// happens every second after game start, as a way to keep the status
+const nationsTurnStatusMessageRegExp = new RegExp("(\\w+\\-\\s*)+", "ig");
 
 const replacedThroneErrArray = [];
 
@@ -99,7 +107,7 @@ function handleData(game, message)
     const gameName = game.getName();
     
     // Ignore all these messages, they don't need special handling
-    if (message === "" || setupMessageRegexp.test(message) === true)
+    if (isIgnorableMessage(message) === true)
         return log.general(log.getVerboseLevel(), `Ignoring ${gameName} message ${message}`);
 
 
@@ -150,9 +158,23 @@ function handleData(game, message)
 
     else
     {
-        log.general(log.getLeanLevel(), `Game ${gameName} reported an unknown message`, message);
-        sendWarning(game, `The game ${gameName} reported the message:\n\n${message}`);
+        // Don't send channel warnings if this is an unidentified message; could just clutter things up
+        log.general(log.getNormalLevel(), `Game ${gameName} reported an unknown message`, message);
+        //sendWarning(game, `The game ${gameName} reported the message:\n\n${message}`);
     }
+}
+
+function isIgnorableMessage(message)
+{
+    if (message === "" || 
+        setupMessageRegexp.test(message) === true || 
+        connectionsMessageRegexp.test(message) === true || 
+        nationsTurnStatusMessageRegExp.test(message) === true)
+    {
+        return true;
+    }
+
+    else return false;
 }
 
 
