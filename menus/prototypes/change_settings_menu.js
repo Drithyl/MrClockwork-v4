@@ -1,4 +1,5 @@
 
+const log = require("../../logger.js");
 const assert = require("../../asserter.js");
 const MenuScreen = require("./menu_screen.js");
 const config = require("../../config/config.json");
@@ -32,9 +33,17 @@ function _createMenuScreens(menuStructure, settingsObject)
 
         menuScreens.push(new MenuScreen(display, (input) =>
         {
-            setting.setValue(input);
-            _updateMainScreenDisplay(mainScreen, settingsObject);
-            menuStructure.goBackToPreviousScreen();
+            return setting.setValue(input)
+            .then(() =>
+            {
+                _updateMainScreenDisplay(mainScreen, settingsObject);
+                menuStructure.goBackToPreviousScreen();
+            })
+            .catch((err) =>
+            {
+                log.error(log.getLeanLevel(), `ERROR when changing setting ${setting.getName()} with input ${input}`, err);
+                return Promise.reject(new Error(`Error occurred changing setting: ${err.message}`));
+            })
         }));
     });
 
