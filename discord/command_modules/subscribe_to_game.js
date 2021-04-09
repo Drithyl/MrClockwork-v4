@@ -24,9 +24,11 @@ function SubscribeToGameCommand()
 function _behaviour(commandContext)
 {
     const gameObject = commandContext.getGameTargetedByCommand();
-    const discordEnvironment = gameObject.getDiscordEnvironment();
-    const gameRole = discordEnvironment.getDiscordJsRole();
+    const gameRole = gameObject.getRole();
     const guildMemberWrapper = commandContext.getSenderGuildMemberWrapper();
+
+    if (gameRole == null)
+        return commandContext.respondToCommand(`This game's role does not exist; cannot assign it.`);
 
     return guildMemberWrapper.addRole(gameRole)
     .then(() => commandContext.respondToCommand(`The game's role has been assigned to you.`));
