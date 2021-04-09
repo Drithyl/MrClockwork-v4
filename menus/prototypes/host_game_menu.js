@@ -27,7 +27,18 @@ function HostMenu(gameObject, useDefaults = false)
         .then(() => gameObject.createNewRole())
         .then(() => gameObject.pinSettingsToChannel())
         .then(() => gameObject.save())
-        .then(() => log.general(log.getNormalLevel(), `Game ${gameObject.getName()} was created successfully.`));
+        .then(() => log.general(log.getNormalLevel(), `Game ${gameObject.getName()} was created successfully.`))
+        .catch((err) =>
+        {
+            log.error(log.getLeanLevel(), `ERROR when creating ${gameObject.getName()} through hosting menu. Cleaning it up`, err);
+            if (gameObject == null)
+                return Promise.reject(err);
+    
+            return gameObject.deleteGame()
+            .then(() => gameObject.deleteRole())
+            .then(() => gameObject.deleteChannel())
+            .then(() => Promise.reject(err));
+        });
     });
 
     _menuStructure.hasGameNameReserved = (name) => reservedName === name;

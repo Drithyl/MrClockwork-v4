@@ -132,6 +132,7 @@ function _createGame(userId, values)
     .then(() => Promise.resolve(gameObject))
     .catch((err) =>
     {
+        log.error(log.getLeanLevel(), `ERROR when creating ${gameObject.getName()} through web. Cleaning it up`, err);
         if (gameObject == null)
             return Promise.reject(err);
 
