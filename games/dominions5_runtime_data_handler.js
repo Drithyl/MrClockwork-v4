@@ -13,6 +13,9 @@ const brokenPipeErrRegexp = new RegExp("broken\\s*pipe", "i");
 //Exact error: "bind: Address already in use"
 const addressInUseErrRegexp = new RegExp("address\\s*already\\s*in\\s*use", "i");
 
+//Exact error: "Network Error"
+const networkErrorErrRegexp = new RegExp("Network\\s*Error", "i");
+
 //Exact error: "Terminated"
 const terminatedErrRegexp = new RegExp("terminated", "i");
 
@@ -120,6 +123,9 @@ function handleData(game, message)
     else if (addressInUseErrRegexp.test(message) === true)
         handleAddressInUse(game, message);
 
+    else if (networkErrorErrRegexp.test(message) === true)
+        handleNetworkError(game, message);
+
     else if (terminatedErrRegexp.test(message) === true)
         handleTerminated(game, message);
 
@@ -197,6 +203,12 @@ function handleAddressInUse(game, message)
 {
     log.general(log.getVerboseLevel(), `Handling addressInUse error ${message}`);
     sendWarning(game, `The port used by this game is already in use. Most likely the game failed to shut down properly, so killing it and relaunching it should work.`);
+}
+
+function handleNetworkError(game, message)
+{
+    log.general(log.getVerboseLevel(), `Handling networkError error ${message}`);
+    sendWarning(game, `The game reported a network error.`);
 }
 
 function handleTerminated(game, message)
