@@ -202,7 +202,7 @@ function handleBrokenPipe(game, message)
 function handleAddressInUse(game, message)
 {
     log.general(log.getVerboseLevel(), `Handling addressInUse error ${message}`);
-    sendWarning(game, `The port used by this game is already in use. Most likely the game failed to shut down properly, so killing it and relaunching it should work.`);
+    sendWarning(game, `The game's port busy. Most likely the game failed to shut down properly, so killing it and relaunching it should work.`);
 }
 
 function handleNetworkError(game, message)
