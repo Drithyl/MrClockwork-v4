@@ -62,7 +62,7 @@ const connectionsMessageRegexp = new RegExp("Connections\\s*\\d+", "i");
 
 // Exact message: "Aby- Rus- La-", depending on each nation name, normally preceded by the message above; also
 // happens every second after game start, as a way to keep the status
-const nationsTurnStatusMessageRegExp = new RegExp("(\\w+\\-\\s*)+", "ig");
+const nationsTurnStatusMessageRegExp = new RegExp("(\\w+\\-\\s*)+", "i");
 
 const replacedThroneErrArray = [];
 
@@ -166,15 +166,19 @@ function handleData(game, message)
 
 function isIgnorableMessage(message)
 {
-    if (message === "" || 
-        setupMessageRegexp.test(message) === true || 
-        connectionsMessageRegexp.test(message) === true || 
-        nationsTurnStatusMessageRegExp.test(message) === true)
-    {
+    if (message === "")
         return true;
-    }
+        
+    if (setupMessageRegexp.test(message) === true)
+        return true;
 
-    else return false;
+    if (connectionsMessageRegexp.test(message) === true)
+        return true;
+    
+    if (nationsTurnStatusMessageRegExp.test(message) === true)
+        return true;
+
+    return false;
 }
 
 
