@@ -63,9 +63,9 @@ const setupMessageRegexp = new RegExp("setup\\s*port\\s*\\d+", "i");
 // Exact message: "[game name], Connections 1, No timer (quick host)"; this happens every second or so after game start
 const connectionsMessageRegexp = new RegExp("Connections\\s*\\d+", "i");
 
-// Exact message: "Aby- Rus- La-", depending on each nation name, normally preceded by the message above; also
+// Exact message: "Aby? (Rus) La-", depending on each nation name, normally preceded by the message above; also
 // happens every second after game start, as a way to keep the status
-const nationsTurnStatusMessageRegExp = new RegExp("(\\w+\\-\\s*)+", "i");
+const nationsTurnStatusMessageRegExp = new RegExp("(\\(?\\w+.\\)?\\s*)+", "i");
 
 const replacedThroneErrArray = [];
 
