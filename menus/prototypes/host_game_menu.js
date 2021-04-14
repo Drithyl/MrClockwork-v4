@@ -1,6 +1,7 @@
 
 const log = require("../../logger.js");
 const MenuScreen = require("./menu_screen.js");
+const config = require("../../config/config.json");
 const MenuStructure = require("./menu_structure.js");
 const activeMenuStore = require("../active_menu_store.js");
 const gamesStore = require("../../games/ongoing_games_store.js");
@@ -16,7 +17,7 @@ function HostMenu(gameObject, useDefaults = false)
 
     var reservedName;
 
-    _menuStructure.addIntroductionMessage(`Welcome to the Assisted Hosting System! I will be asking you for a number of settings to host your game. You can also use the website interface instead of this menu by accessing the following link: localhost:3000`);
+    _menuStructure.addIntroductionMessage(`Welcome to the Assisted Hosting System! I will be asking you for a number of settings to host your game. You can also use the website interface instead of this menu by accessing the following link: ${config.fullSecureUrl}`);
     _menuStructure.addScreens(..._screens);
     _menuStructure.addBehaviourOnInputValidated((currentScreenIndex) => _menuStructure.goToNextScreen());
     _menuStructure.addBehaviourOnFinishedMenu(() => 
