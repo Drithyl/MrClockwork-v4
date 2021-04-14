@@ -33,7 +33,7 @@ function _createMenuScreens(menuStructure, settingsObject)
 
         menuScreens.push(new MenuScreen(display, (input) =>
         {
-            return setting.setValue(input)
+            return Promise.resolve(setting.setValue(input))
             .then(() =>
             {
                 _updateMainScreenDisplay(mainScreen, settingsObject);
