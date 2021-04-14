@@ -33,7 +33,8 @@ function _behaviour(commandContext)
     {
         listAsArray.forEach((submittedPretender, index) => 
         {
-            formattedListAsString += `${submittedPretender.nationNbr}. ${_formatSubmittedPretenderLine(submittedPretender, commandContext)}`;
+            if (submittedPretender.isHuman === true)
+                formattedListAsString += `${submittedPretender.nationNbr}. ${_formatSubmittedPretenderLine(submittedPretender, commandContext)}`;
         });
 
         if (formattedListAsString === "")
