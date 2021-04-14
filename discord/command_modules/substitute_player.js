@@ -20,8 +20,7 @@ function SubstitutePlayerCommand()
         commandPermissions.assertCommandIsUsedInGameChannel,
         commandPermissions.assertGameIsOnline,
         commandPermissions.assertMemberIsOrganizer,
-        assertNationNameExists,
-        assertMemberIsOwnerOfPretender
+        assertNationNameExists
     );
 
     return substitutePlayerCommand;
@@ -59,17 +58,6 @@ function assertNationNameExists(commandContext)
 
     if (dominions5NationStore.isValidNationIdentifierInEra(nationName, eraValue) === false)
         throw new SemanticError(`Invalid nation selected. Name does not match any nation in this era.`);
-}
-
-function assertMemberIsOwnerOfPretender(commandContext)
-{
-    const gameObject = commandContext.getGameTargetedByCommand();
-    const commandArguments = commandContext.getCommandArgumentsArray();
-    const nameOfNationToBeReplaced = commandArguments[0];
-    const playerGuildMemberWrapper = commandContext.getSenderGuildMemberWrapper();
-
-    if (gameObject.isPlayerControllingNation(playerGuildMemberWrapper, nameOfNationToBeReplaced) === false)
-        throw new Error(`You are not the owner of this nation.`);
 }
 
 function extractNationNameArgument(commandContext)
