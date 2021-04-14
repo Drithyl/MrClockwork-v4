@@ -186,7 +186,6 @@ function Dominions5Game()
     {
         const timerSetting = _gameObject.getSettingsObject().getTimerSetting();
         const timePerTurnObject = timerSetting.getValue();
-        const msPerTurn = timePerTurnObject.getMsLeft();
 
         return _status;
     };
