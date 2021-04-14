@@ -54,5 +54,5 @@ function _behaviour(commandContext)
             return nextPromise();
         });
     })
-    .then(() => commandContext.respondToCommand(messageString, { files: turnFileAttachments }));
+    .then(() => commandContext.respondToSender(messageString, { files: turnFileAttachments }));
 }
