@@ -25,18 +25,25 @@ function GetListOfUndoneTurnsCommand()
 
 function _behaviour(commandContext)
 {
-    var gameObject = commandContext.getGameTargetedByCommand();
+    const gameObject = commandContext.getGameTargetedByCommand();
+    const status = gameObject.getLastKnownStatus();
+    const players = status.getPlayers();
+
     var messageString = `Below is the list of undone turns:\n\n`;
     var listString = "";
-    
-    return gameObject.getListOfUndoneTurns()
-    .then((listAsArray) =>
-    {
-        listAsArray.forEach((nationFullName) =>
-        {
-            listString += `${nationFullName}\n`;
-        });
 
-        return commandContext.respondToCommand(messageString + listString.toBox());
-    });
+    if (players == null)
+        return commandContext.respondToCommand(`List of undone turns is currently unavailable.`);
+
+
+    listString = players.reduce((playersInfo, playerData) => 
+    {
+        if (playerData.isTurnDone === false)
+            return playersInfo + `${playerData.name}\n`;
+
+        else return playersInfo;
+    }, "\n");
+
+    
+    return commandContext.respondToCommand(messageString + listString.toBox());
 }
