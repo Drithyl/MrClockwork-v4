@@ -534,7 +534,7 @@
         "argumentsRequiredInfo": ["`A mention to the new organizer (@Username#0000)`"],
         "optionalArguments": 0,
         "regexpRequiredToInvoke": "SETORGANIZER",
-        "argumentRegexpArray": ["\\d+", "@\\.+"],
+        "argumentRegexpArray": ["\\d+", "@.+"],
         "channelRequiredToInvoke": "game",
         "helpText": "Sets a member as the organizer of this game. If an organizer exists; replaces them."
     },
@@ -573,7 +573,7 @@
         "argumentsRequiredInfo": ["A number that matches the pretender's index displayed", "A mention to the player who will be taking over"],
         "optionalArguments": 0,
         "regexpRequiredToInvoke": "SUB$",
-        "argumentRegexpArray": ["\\d+", "@\\.+"],
+        "argumentRegexpArray": ["\\d+", "@.+"],
         "channelRequiredToInvoke": "game",
         "helpText": "Transfers the claim on a pretender to another player."
     },
