@@ -204,6 +204,9 @@ function Dominions5Game()
         if (asserter.isString(updatedStatus.getStatus()) === true)
             _status.setStatus(updatedStatus.getStatus());
 
+        if (asserter.isArray(updatedStatus.getPlayers()) === true)
+            _status.setPlayers(updatedStatus.getPlayers());
+
         _status.setLastUpdateTimestamp(Date.now());
 
         return _status;
