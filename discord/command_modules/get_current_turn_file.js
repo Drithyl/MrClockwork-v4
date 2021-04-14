@@ -30,32 +30,28 @@ function _behaviour(commandContext)
     const turnFileAttachments = [];
     const gameObject = commandContext.getGameTargetedByCommand();
     const gameName = gameObject.getName();
+    const status = gameObject.getLastKnownStatus();
+    const messageString = `${gameName}'s turn ${status.getTurnNumber()}:`;
 
     const playerId = commandContext.getCommandSenderId();
     const playerFile = playerFileStore.getPlayerFile(playerId);
     const playerGameData = playerFile.getGameData(gameName);
     const controlledNations = playerGameData.getNationsControlledByPlayer();
 
-    var messageString;
 
-    return gameObject.update()
-    .then((updateData) =>
+    return controlledNations.forEachPromise((nation, index, nextPromise) =>
     {
-        messageString = `${gameName}'s turn ${updateData.currentTurnNumber}:`;
-        return controlledNations.forEachPromise((nation, index, nextPromise) =>
+        const nationFilename = nation.getFilename();
+
+        return gameObject.emitPromiseWithGameDataToServer("GET_TURN_FILE", { nationFilename })
+        .then((turnFileBuffer) => 
         {
-            const nationFilename = nation.getFilename();
-
-            return gameObject.emitPromiseWithGameDataToServer("GET_TURN_FILE", { nationFilename })
-            .then((turnFileBuffer) => 
-            {
-                turnFileAttachments.push({ 
-                    attachment: turnFileBuffer, 
-                    name: `${nationFilename}_turn_${updateData.currentTurnNumber}.trn`
-                });
-
-                return nextPromise();
+            turnFileAttachments.push({
+                attachment: turnFileBuffer, 
+                name: `${nationFilename}_turn_${status.getTurnNumber()}.trn`
             });
+
+            return nextPromise();
         });
     })
     .then(() => commandContext.respondToCommand(messageString, { files: turnFileAttachments }));
