@@ -62,7 +62,12 @@ function Game()
 
     this.createNewChannel = () =>
     {
-        return _guildWrapper.createGameChannel(`${this.getName()}`)
+        return _guildWrapper.createGameChannel(`${this.getName()}`, [
+            { 
+                id: this.getOrganizerId(), 
+                allow: [ "MANAGE_MESSAGES" ]
+            }
+        ])
         .then((channel) => 
         {
             const guildId = _guildWrapper.getId();
