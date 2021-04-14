@@ -50,6 +50,9 @@ function Dominions5Game()
 
     _gameObject.isPlayerControllingNation = (playerId, nationIdentifier) => 
     {
+        if (_playerFiles[playerId] == null)
+            return false;
+            
         const playerFile = _playerFiles[playerId];
         return playerFile.isControllingNationInGame(nationIdentifier, _gameObject.getName());
     };
