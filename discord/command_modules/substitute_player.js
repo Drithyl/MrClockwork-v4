@@ -36,15 +36,19 @@ function _behaviour(commandContext)
     const gameObject = commandContext.getGameTargetedByCommand();
     const nameOfNation = extractNationNameArgument(commandContext);
     const nationObject = dominions5NationStore.getNation(nameOfNation);
+    const nationFilename = nationObject.getFilename();
     const mentionedMembers = commandContext.getMentionedMembers();
     var subPlayerWrapper;
+
+    if (gameObject.getPlayerIdControllingNationInGame(nationFilename) == null)
+        return commandContext.respondToCommand(`Nation is not claimed.`);
 
     if (mentionedMembers.length <= 0)
         return commandContext.respondToCommand(`You must mention the member who you wish to appoint as substitute.`);
 
     subPlayerWrapper = mentionedMembers[0];
 
-    return gameObject.substitutePlayerControllingNation(subPlayerWrapper.getId(), nationObject.getFilename())
+    return gameObject.substitutePlayerControllingNation(subPlayerWrapper.getId(), nationFilename)
     .then(() => commandContext.respondToCommand(`Player was replaced.`));
 }
 
