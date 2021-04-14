@@ -19,7 +19,7 @@ function SubstitutePlayerCommand()
         commandPermissions.assertMemberIsTrusted,
         commandPermissions.assertCommandIsUsedInGameChannel,
         commandPermissions.assertGameIsOnline,
-        commandPermissions.assertMemberIsPlayer,
+        commandPermissions.assertMemberIsOrganizer,
         assertNationNameExists,
         assertMemberIsOwnerOfPretender
     );
