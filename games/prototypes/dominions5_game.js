@@ -70,6 +70,9 @@ function Dominions5Game()
         const playerId = _gameObject.getPlayerIdControllingNationInGame(nationFilename);
         const playerFile = _playerFiles[playerId];
 
+        if (playerFile == null)
+            return Promise.reject(new Error(`Cannot remove control of nation, player file does not exist.`));
+
         return playerFile.removeControlOfNationInGame(nationFilename, _gameObject.getName())
         .then(() =>
         {
