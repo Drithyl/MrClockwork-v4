@@ -55,7 +55,7 @@ function TimeLeft(ms)
     if (/, $/i.test(str) === true)
         return str.replace(/, $/i, "");
 
-    return str;
+    return str.trim();
   };
 
   this.printTimeLeftShort = () =>
