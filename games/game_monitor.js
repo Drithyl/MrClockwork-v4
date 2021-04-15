@@ -153,6 +153,7 @@ function _getGameEvents(updatedStatus, lastKnownStatus)
         didGameStart:       updatedStatus.isOngoing() === true && lastKnownStatus.isInLobby() === true,
         didGameRestart:     updatedStatus.isInLobby() === true && lastKnownStatus.isOngoing() === true,
         didHourPass:        lastKnownHourMark !== currentHourMark,
+        isLastTurnHour:     lastKnownHourMark !== currentHourMark && currentHourMark === 0,
         isNewTurn:          currentTurnNumber > lastKnownTurnNumber,
         wasTurnRollbacked:  currentTurnNumber < lastKnownTurnNumber,
         lastTurnTimestamp
@@ -188,6 +189,12 @@ function _announceEvents(game, updateData)
     {
         log.general(log.getNormalLevel(), `${gameName}\trestarted.`);
         return game.sendGameAnnouncement(`The game has restarted; please submit your pretenders!`);
+    }
+
+    else if (updateData.isLastTurnHour === true)
+    {
+        log.general(log.getNormalLevel(), `${gameName}\t~1h left for new turn.`);
+        return game.sendGameAnnouncement(`There is less than an hour remaining for the new turn.`);
     }
 
     else if (updateData.isNewTurn === true)
