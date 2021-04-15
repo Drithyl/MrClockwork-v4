@@ -44,7 +44,7 @@ function _behaviour(commandContext)
 
 function _sendCurrentTimer(commandContext, timeLeft)
 {
-    return commandContext.respondToCommand(timeLeft.printTimeLeft());
+    return commandContext.respondToCommand(`${timeLeft.printTimeLeft()} left till next turn.`);
 }
 
 function _changeCurrentTimer(gameObject, commandContext, commandArguments, timeLeft)
