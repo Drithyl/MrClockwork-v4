@@ -73,7 +73,7 @@ function CommandData(commandName)
         continue;
 
       if (_isArgumentParsedByRegexp(arg, argRegexp) === false)
-        return Promise.reject(new Error(`Invalid argument <${arg}>. Expected to pass RegExp \`${argRegexp}\`.`));
+        return Promise.reject(new SemanticError(`Invalid argument <${arg}>. Expected to pass RegExp \`${argRegexp}\`.`));
     }
   };
 }
