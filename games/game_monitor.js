@@ -93,9 +93,6 @@ function _updateCycle(game)
             log.general(log.getVerboseLevel(), `${game.getName()}\t offline; cannot update.`);
             return Promise.resolve();
         }
-            
-        if (game.isEnforcingTimer() === true)
-            _handleUpdatedStatus(game, updateData);
 
 
         log.general(log.getVerboseLevel(), 
@@ -109,29 +106,15 @@ function _updateCycle(game)
         \tlastKnownTurnNumber:\t${lastKnownStatus.getTurnNumber()}
         \tlastKnown isPaused:\t${lastKnownStatus.isPaused()}`);
 
-        game.update(updateData);
 
-        return _announceEvents(game, updateData)
-        .then(() => _processPlayerPreferences(game, updateData));
+        _handleGameEvents(game, updateData)
+        game.update(updateData);
+        return Promise.resolve();
     })
     .then(() => game.save())
     .catch((err) => Promise.reject(err));
 }
 
-function _handleUpdatedStatus(game, updatedData)
-{
-    if (updatedData.isNewTurn === true || updatedData.didGameStart === true)
-    {
-        const timerSetting = game.getSettingsObject().getTimerSetting();
-        const timePerTurnObject = timerSetting.getValue();
-        const msPerTurn = timePerTurnObject.getMsLeft();
-        
-        updatedData.setMsLeft(msPerTurn);
-    }
-
-    else if (updatedData.getMsLeft() <= 0 && updatedData.isPaused() === false)
-        game.forceHost();
-}
 
 function _getGameEvents(updatedStatus, lastKnownStatus)
 {
@@ -146,16 +129,16 @@ function _getGameEvents(updatedStatus, lastKnownStatus)
 
     const events = {
 
-        didServerGoOffline: updatedStatus.isServerOnline() === false && lastKnownStatus.isServerOnline() === true,
-        didGameGoOffline:   updatedStatus.isOnline() === false && lastKnownStatus.isOnline === true,
-        isServerBackOnline: updatedStatus.isServerOnline() === true && lastKnownStatus.isServerOnline() === false,
-        isGameBackOnline:   updatedStatus.isOnline() === true && lastKnownStatus.isOnline() === false,
-        didGameStart:       updatedStatus.isOngoing() === true && lastKnownStatus.isInLobby() === true,
-        didGameRestart:     updatedStatus.isInLobby() === true && lastKnownStatus.isOngoing() === true,
-        didHourPass:        lastKnownHourMark !== currentHourMark,
-        isLastTurnHour:     lastKnownHourMark !== currentHourMark && currentHourMark === 0,
-        isNewTurn:          currentTurnNumber > lastKnownTurnNumber,
-        wasTurnRollbacked:  currentTurnNumber < lastKnownTurnNumber,
+        didServerGoOffline:     updatedStatus.isServerOnline() === false && lastKnownStatus.isServerOnline() === true,
+        didGameGoOffline:       updatedStatus.isOnline() === false && lastKnownStatus.isOnline === true,
+        isServerBackOnline:     updatedStatus.isServerOnline() === true && lastKnownStatus.isServerOnline() === false,
+        isGameBackOnline:       updatedStatus.isOnline() === true && lastKnownStatus.isOnline() === false,
+        didGameStart:           updatedStatus.isOngoing() === true && lastKnownStatus.isInLobby() === true,
+        didGameRestart:         updatedStatus.isInLobby() === true && lastKnownStatus.isOngoing() === true,
+        didHourPass:            updatedStatus.getMsLeft() != null && lastKnownHourMark !== currentHourMark,
+        isLastHourBeforeTurn:   lastKnownHourMark !== currentHourMark && currentHourMark === 0,
+        isNewTurn:              currentTurnNumber > lastKnownTurnNumber,
+        wasTurnRollbacked:      currentTurnNumber < lastKnownTurnNumber,
         lastTurnTimestamp
     };
 
@@ -165,72 +148,124 @@ function _getGameEvents(updatedStatus, lastKnownStatus)
     return events;
 }
 
-function _announceEvents(game, updateData)
+
+function _handleGameEvents(game, updateData)
 {
-    const gameName = game.getName();
+    if (game.isEnforcingTimer() === true)
+        _enforceTimer(game, updateData);
 
     /** Order of conditionals matters! A new turn or a restart must be caught before
      *  the server or the game coming back online, as those will only trigger once
      */
 
     if (updateData.didServerGoOffline === true)
-        return game.sendMessageToChannel(`Host server is offline. It will be back online shortly.`);
+        return _handleServerOffline(game);
 
     else if (updateData.didGameGoOffline === true)
-        return game.sendMessageToChannel(`Game process is offline. Use the launch command to relaunch it.`);
+        return _handleGameOffline(game);
 
     else if (updateData.didGameStart === true)
-    {
-        log.general(log.getNormalLevel(), `${gameName}\tstarted.`);
-        return game.sendGameAnnouncement(`The game has started!`);
-    }
+        return _handleGameStarted(game);
 
     else if (updateData.didGameRestart === true)
-    {
-        log.general(log.getNormalLevel(), `${gameName}\trestarted.`);
-        return game.sendGameAnnouncement(`The game has restarted; please submit your pretenders!`);
-    }
+        return _handleGameRestarted(game);
 
-    else if (updateData.isLastTurnHour === true)
-    {
-        log.general(log.getNormalLevel(), `${gameName}\t~1h left for new turn.`);
-        return game.sendGameAnnouncement(`There is less than an hour remaining for the new turn.`);
-    }
+    else if (updateData.isLastHourBeforeTurn === true)
+        return _handleLastHourBeforeTurn(game);
 
     else if (updateData.isNewTurn === true)
-    {
-        log.general(log.getNormalLevel(), `${gameName}\tnew turn.`);
-        return game.sendGameAnnouncement(`Turn ${updateData.getTurnNumber()} has arrived.`);
-    }
+        return _handleNewTurn(game, updateData);
 
     else if (updateData.wasTurnRollbacked === true)
-    {
-        log.general(log.getNormalLevel(), `${gameName}\trollbacked turn.`);
-        return game.sendGameAnnouncement(`The game has been rollbacked to turn ${updateData.getTurnNumber()}.`);
-    }
-
-    else if (updateData.isServerBackOnline === true)
-        return game.sendMessageToChannel(`Host server is online again. If the game does not go online shortly, you can relaunch it.`);
-
-    else if (updateData.isGameBackOnline === true)
-        return game.sendMessageToChannel(`Game process is back online.`);
-
-    else return Promise.resolve();
-}
-
-function _processPlayerPreferences(game, updateData)
-{
-    if (updateData.isNewTurn === true)
-        _processNewTurnPreferences(game, updateData.getTurnNumber());
+        return _handleTurnRollback(game, updateData);
 
     else if (updateData.didHourPass === true)
+        return _handleHourPassed(game, updateData);
+
+    else if (updateData.isServerBackOnline === true)
+        return _handleServerBackOnline(game);
+
+    else if (updateData.isGameBackOnline === true)
+        return _handleGameBackOnline(game);
+}
+
+function _enforceTimer(game, updatedData)
+{
+    if (updatedData.isNewTurn === true || updatedData.didGameStart === true)
     {
-        const hourMarkPassed = Math.ceil(updateData.getMsLeft() / 1000 / 3600);
-        _processNewHourPreferences(game, updateData.getPlayers(), hourMarkPassed);
+        const timerSetting = game.getSettingsObject().getTimerSetting();
+        const timePerTurnObject = timerSetting.getValue();
+        const msPerTurn = timePerTurnObject.getMsLeft();
+        
+        updatedData.setMsLeft(msPerTurn);
     }
 
-    return Promise.resolve();
+    else if (updatedData.getMsLeft() <= 0 && updatedData.isPaused() === false)
+        game.forceHost();
 }
+
+
+function _handleServerOffline(game)
+{
+    game.sendMessageToChannel(`Host server is offline. It will be back online shortly.`);
+}
+
+function _handleGameOffline(game)
+{
+    game.sendMessageToChannel(`Game process is offline. Use the launch command to relaunch it.`);
+}
+
+function _handleGameStarted(game)
+{
+    log.general(log.getNormalLevel(), `${game.getName()}\tstarted.`);
+    game.sendGameAnnouncement(`The game has started!`);
+}
+
+function _handleGameRestarted(game)
+{
+    log.general(log.getNormalLevel(), `${game.getName()}\trestarted.`);
+    game.sendGameAnnouncement(`The game has restarted; please submit your pretenders!`);
+}
+
+function _handleLastHourBeforeTurn(game)
+{
+    log.general(log.getNormalLevel(), `${game.getName()}\t~1h left for new turn.`);
+    game.sendGameAnnouncement(`There is less than an hour remaining for the new turn.`);
+}
+
+function _handleNewTurn(game, updateData)
+{
+    log.general(log.getNormalLevel(), `${game.getName()}\tnew turn.`);
+
+    game.sendGameAnnouncement(`Turn ${updateData.getTurnNumber()} has arrived.`);
+    _processNewTurnPreferences(game, updateData.getTurnNumber());
+    _processStales(game, updateData);
+}
+
+function _handleTurnRollback(game, updateData)
+{
+    log.general(log.getNormalLevel(), `${game.getName()}\trollbacked turn.`);
+    game.sendGameAnnouncement(`The game has been rollbacked to turn ${updateData.getTurnNumber()}.`);
+}
+
+function _handleHourPassed(game, updateData)
+{
+    const hourMarkPassed = Math.ceil(updateData.getMsLeft() / 1000 / 3600);
+    
+    log.general(log.getVerboseLevel(), `${game.getName()}\tHour mark ${hourMarkPassed} passed.`);
+    _processNewHourPreferences(game, updateData.getPlayers(), hourMarkPassed);
+}
+
+function _handleServerBackOnline(game)
+{
+    game.sendMessageToChannel(`Host server is online again. If the game does not go online shortly, you can relaunch it.`);
+}
+
+function _handleGameBackOnline(game)
+{
+    game.sendMessageToChannel(`Game process is back online.`);
+}
+
 
 function _processNewTurnPreferences(game, turnNumber)
 {
@@ -318,5 +353,29 @@ function _processNewHourPreferences(game, playerTurnData, hourMarkPassed)
                 }
             }
         }
+    });
+}
+
+function _processStales(game, updateData)
+{
+    var staleStr = `**${game.getName()}**'s stale data for **turn ${updateData.getTurnNumber()}**:\n\n`;
+
+    game.emitPromiseWithGameDataToServer("GET_STALES")
+    .then((staleData) =>
+    {
+        if (staleData.wentAi.length > 0)
+            staleStr += `Nations that **went AI**:\n\n${staleData.wentAi.join("\n").toBox()}\n\n`;
+        
+        if (staleData.stales.length > 0)
+            staleStr += `Nations that **staled**:\n\n${staleData.stales.join("\n").toBox()}`;
+
+        else staleStr += `No stales happened`;
+
+        return game.sendMessageToOrganizer(staleData);
+    })
+    .catch((err) => 
+    {
+        log.error(log.getLeanLevel(), `${game.getName()}\tError processing stales`, err);
+        game.sendMessageToOrganizer(staleStr + `Could not get stale data: ${err.message}`);
     });
 }
