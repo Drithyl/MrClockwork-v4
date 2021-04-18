@@ -358,24 +358,24 @@ function _processNewHourPreferences(game, playerTurnData, hourMarkPassed)
 
 function _processStales(game, updateData)
 {
-    var staleStr = `**${game.getName()}**'s stale data for **turn ${updateData.getTurnNumber()}**:\n\n`;
+    var staleMessage = `**${game.getName()}**'s stale data for **turn ${updateData.getTurnNumber()}**:\n\n`;
 
     game.emitPromiseWithGameDataToServer("GET_STALES")
     .then((staleData) =>
     {
         if (staleData.wentAi.length > 0)
-            staleStr += `Nations that **went AI**:\n\n${staleData.wentAi.join("\n").toBox()}\n\n`;
+            staleMessage += `Nations that **went AI**:\n\n${staleData.wentAi.join("\n").toBox()}\n\n`;
         
         if (staleData.stales.length > 0)
-            staleStr += `Nations that **staled**:\n\n${staleData.stales.join("\n").toBox()}`;
+            staleMessage += `Nations that **staled**:\n\n${staleData.stales.join("\n").toBox()}`;
 
-        else staleStr += `No stales happened`;
+        else staleMessage += `No stales happened`;
 
-        return game.sendMessageToOrganizer(staleData);
+        return game.sendMessageToOrganizer(staleMessage);
     })
     .catch((err) => 
     {
         log.error(log.getLeanLevel(), `${game.getName()}\tError processing stales`, err);
-        game.sendMessageToOrganizer(staleStr + `Could not get stale data: ${err.message}`);
+        game.sendMessageToOrganizer(staleMessage + `Could not get stale data: ${err.message}`);
     });
 }
