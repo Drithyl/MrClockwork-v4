@@ -1,4 +1,5 @@
 
+const assert = require("../../asserter.js");
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
@@ -26,8 +27,13 @@ function RollbackTurnCommand()
 function _behaviour(commandContext)
 {
     const targetedGame = commandContext.getGameTargetedByCommand();
+    const status = targetedGame.getLastKnowStatus();
+    const rollbackTurnNbr = status.getTurnNumber() - 1;
 
-    return targetedGame.emitPromiseWithGameDataToServer("ROLLBACK")
+    if (assert.isInteger(rollbackTurnNbr) === false || rollbackTurnNbr <= 0)
+        return commandContext.respondToCommand(`Cannot rollback; turn number '${rollbackTurnNbr}' is incorrect.`);
+
+    return targetedGame.emitPromiseWithGameDataToServer("ROLLBACK", { turnNbr: rollbackTurnNbr })
     .then(() => commandContext.respondToCommand(`The turn has been rolled back. It may take a minute or two to update properly.`))
     .catch((err) => commandContext.respondToCommand(`An error occurred:\n\n${err.message}`));
 }
