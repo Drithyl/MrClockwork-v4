@@ -27,7 +27,7 @@ function RollbackTurnCommand()
 function _behaviour(commandContext)
 {
     const targetedGame = commandContext.getGameTargetedByCommand();
-    const status = targetedGame.getLastKnowStatus();
+    const status = targetedGame.getLastKnownStatus();
     const rollbackTurnNbr = status.getTurnNumber() - 1;
 
     if (assert.isInteger(rollbackTurnNbr) === false || rollbackTurnNbr <= 0)
