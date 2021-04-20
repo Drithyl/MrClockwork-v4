@@ -29,6 +29,7 @@ function HostMenu(gameObject, useDefaults = false)
         .then(() => gameObject.pinSettingsToChannel())
         .then(() => gameObject.save())
         .then(() => log.general(log.getNormalLevel(), `Game ${gameObject.getName()} was created successfully.`))
+        .then(() => gameObject.sendMessageToOrganizer(`Game ${gameObject.getName()} was created successfully. You can connect to it at IP **${gameObject.getIp()}** and Port **${gameObject.getPort()}**. You will find its channel in the open games category, with a pinned post detailing the chosen settings.`))
         .catch((err) =>
         {
             log.error(log.getLeanLevel(), `ERROR when creating ${gameObject.getName()} through hosting menu. Cleaning it up`, err);
