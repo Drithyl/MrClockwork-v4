@@ -1,5 +1,6 @@
 
 const log = require("../../logger.js");
+const rw = require("../../reader_writer.js");
 const handleDom5Data = require("../../games/dominions5_runtime_data_handler.js");
 const { TimeoutError, SocketResponseError } = require("../../errors/custom_errors");
 
@@ -36,7 +37,7 @@ function SocketWrapper(socketIoObject)
             setTimeout(function handleTimeout()
             {
                 if (receivedResponse === false)
-                    reject(new TimeoutError(`Request ${trigger} received no response from socket. Data sent was:\n\n${data}`));
+                    reject(new TimeoutError(`Request ${trigger} received no response from socket. Data sent was:\n\n${rw.JSONStringify(data)}`));
 
             }, 60000);
         });
