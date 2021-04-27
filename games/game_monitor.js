@@ -191,7 +191,7 @@ function _handleGameEvents(game, updateData)
 
 function _enforceTimer(game, updatedData)
 {
-    if (updatedData.isNewTurn === true || updatedData.didGameStart === true)
+    if (updatedData.isNewTurn === true || updatedData.wasTurnRollbacked === true || updatedData.didGameStart === true)
     {
         const timerSetting = game.getSettingsObject().getTimerSetting();
         const timePerTurnObject = timerSetting.getValue();
