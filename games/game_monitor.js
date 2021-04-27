@@ -197,11 +197,15 @@ function _enforceTimer(game, updatedData)
         const timePerTurnObject = timerSetting.getValue();
         const msPerTurn = timePerTurnObject.getMsLeft();
         
+        log.general(log.getNormalLevel(), `Setting ${game.getName()}'s timer back to default: ${msPerTurn}ms`);
         updatedData.setMsLeft(msPerTurn);
     }
 
     else if (updatedData.getMsLeft() <= 0 && updatedData.isPaused() === false)
+    {
+        log.general(log.getNormalLevel(), `Forcing ${game.getName()}'s turn to roll...`);
         game.forceHost();
+    }
 }
 
 
