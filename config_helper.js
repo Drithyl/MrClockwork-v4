@@ -35,13 +35,6 @@ exports.askConfigQuestions = () =>
 
         config.dataPath = answer;
     }))
-    .then(() => _promisifiedQuestion("Input tmp download dir: ", (answer) =>
-    {
-        if (fs.existsSync(answer) === false)
-            return Promise.reject("Path does not exist.");
-
-        config.tmpDir = answer;
-    }))
     .then(() => _promisifiedQuestion("Input Dom5 exe path: ", (answer) =>
     {
         if (fs.existsSync(answer) === false)

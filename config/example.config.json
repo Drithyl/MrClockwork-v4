@@ -27,7 +27,6 @@
   "guildDataFolder": "guild_data",
   "playerDataFolder": "player_data",
 
-  "tmpDir": "C:/Bot/tmp",
   "pathToDom4Exe": "C:/SteamLibrary/steamapps/common/Dominions4/Dominions4.exe",
   "pathToDom5Exe": "C:/SteamLibrary/steamapps/common/Dominions5/Dominions5.exe",
 
