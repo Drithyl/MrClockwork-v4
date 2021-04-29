@@ -29,7 +29,7 @@ function _behaviour(commandContext)
         var port = gameObject.getPort();
         var hostServer = gameObject.getServer();
 
-        stringListOfGames += `${name.width(33)} ` + `${ip}:${port.toString()}`.width(22);
+        stringListOfGames += `\n${name.width(33)} ` + `${ip}:${port.toString()}`.width(22);
 
         if (hostServer == null)
         {
