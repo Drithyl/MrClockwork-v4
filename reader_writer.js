@@ -1,6 +1,7 @@
 
 const fs = require("fs");
 const fsp = require("fs").promises;
+const log = require("./logger.js");
 
 
 module.exports.copyFile = function(source, target)
@@ -47,13 +48,17 @@ module.exports.deleteDir = function(path)
 		log.general(log.getLeanLevel(), `deleteDir(): Dir does not exist`, path);
 		return Promise.resolve();
 	}
+
+	log.general(log.getLeanLevel(), `Deleting dir at path ${path}...`);
         
     return fsp.readdir(path)
     .then((filenames) =>
     {
+		log.general(log.getLeanLevel(), `Filenames read, iterating through...`);
         return filenames.forEachPromise((filename, index, nextPromise) =>
         {
             const filepath = `${path}/${filename}`;
+			log.general(log.getLeanLevel(), `Deleting file at ${filepath}...`);
 
             return fsp.lstat(filepath)
             .then((stats) =>
@@ -63,7 +68,11 @@ module.exports.deleteDir = function(path)
 
                 return fsp.unlink(filepath);
             })
-            .then(() => nextPromise())
+            .then(() => 
+			{
+				log.general(log.getLeanLevel(), `File deleted.`);
+				return nextPromise();
+			})
 			.catch((err) => Promise.reject(err));
         });
     })
