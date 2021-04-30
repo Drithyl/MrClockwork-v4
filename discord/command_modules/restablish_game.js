@@ -30,10 +30,10 @@ function _behaviour(commandContext)
     var gameObject;
     
 
-    if (ongoingGamesStore.hasGameByName(nameOfGameToRepair) === false)
+    if (ongoingGamesStore.hasOngoingGameByName(nameOfGameToRepair) === false)
         return commandContext.respondToCommand(`No game found with this name.`);
 
-    gameObject = ongoingGamesStore.getGameByName(nameOfGameToRepair);
+    gameObject = ongoingGamesStore.getOngoingGameByName(nameOfGameToRepair);
 
     return Promise.resolve()
     .then(() =>
