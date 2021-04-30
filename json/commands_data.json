@@ -79,15 +79,15 @@
 
     "DELETE_GAME":
     {
-        "name": "deletegame",
+        "name": "deletegamenotchannel",
         "isEnabled": true,
         "gameTypesSupported": ["dom5"],
         "argumentsRequiredInfo": [],
         "optionalArguments": 0,
-        "regexpRequiredToInvoke": "DELETEGAME$",
+        "regexpRequiredToInvoke": "DELETEGAMENOTCHANNEL$",
         "argumentRegexpArray": [],
         "channelRequiredToInvoke": "game",
-        "helpText": "Permanently deletes the game hosted in this channel."
+        "helpText": "Permanently deletes the game hosted in this channel, while leaving the channel intact."
     },
 
     "DELETE_GAME_AND_CHANNEL":
@@ -97,10 +97,24 @@
         "gameTypesSupported": ["dom5"],
         "argumentsRequiredInfo": [],
         "optionalArguments": 0,
-        "regexpRequiredToInvoke": "DELETEGAMEANDCHANNEL",
+        "regexpRequiredToInvoke": "DELETEGAMEANDCHANNEL$",
         "argumentRegexpArray": [],
         "channelRequiredToInvoke": "game",
         "helpText": "Permanently deletes the game hosted in this channel, as well as the channel itself."
+    },
+
+    "DELETE_GAME_BY_DM":
+    {
+        "name": "deletegamebydm",
+        "isEnabled": true,
+        "isDevOnly": true,
+        "gameTypesSupported": ["dom5"],
+        "argumentsRequiredInfo": ["A game's name"],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "DELETE$",
+        "argumentRegexpArray": ["^[A-Z_]{3,32}$"],
+        "channelRequiredToInvoke": "dm",
+        "helpText": "Permanently deletes the game and its channel and role."
     },
 
     "DELETE_PENDING_CHANNEL":
@@ -454,7 +468,7 @@
         "argumentsRequiredInfo": ["A game's name"],
         "optionalArguments": 0,
         "regexpRequiredToInvoke": "RESTABLISH",
-        "argumentRegexpArray": ["^[ !@#$%^&*()+\\-=\\[\\]{};':\"\\\\|,.<>\/?]{3,32}$"],
+        "argumentRegexpArray": ["^[A-Z_]{3,32}$"],
         "channelRequiredToInvoke": "any",
         "helpText": "Restablishes a game's deleted channel and/or role."
     },
