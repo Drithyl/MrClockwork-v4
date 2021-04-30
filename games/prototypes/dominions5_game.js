@@ -19,6 +19,7 @@ function Dominions5Game()
 
     var _statusEmbed;
     var _isEnforcingTimer = true;
+    var _isCurrentTurnRollback = false;
 
     _gameObject.setSettingsObject(new Dominions5Settings(_gameObject));
 
@@ -163,6 +164,7 @@ function Dominions5Game()
 
     _gameObject.forceHost = () => _gameObject.emitPromiseWithGameDataToServer("FORCE_HOST");
 
+    _gameObject.isCurrentTurnRollback = () => _isCurrentTurnRollback;
     _gameObject.isEnforcingTimer = () => _isEnforcingTimer;
     _gameObject.switchTimerEnforcer = () => 
     {
@@ -213,6 +215,18 @@ function Dominions5Game()
         if (asserter.isArray(updatedStatus.getPlayers()) === true)
             _status.setPlayers(updatedStatus.getPlayers());
 
+        if (updatedStatus.isNewTurn === true)
+        {
+            _isCurrentTurnRollback = false;
+            log.general(log.getNormalLevel(), `${_gameObject.getName()}\t_isCurrentRollback set to ${_isCurrentTurnRollback}`);
+        }
+
+        else if (updatedStatus.wasTurnRollbacked === true)
+        {
+            _isCurrentTurnRollback = true;
+            log.general(log.getNormalLevel(), `${_gameObject.getName()}\t_isCurrentRollback set to ${_isCurrentTurnRollback}`);
+        }
+
         _status.setLastUpdateTimestamp(Date.now());
 
         return _status;
@@ -231,7 +245,7 @@ function Dominions5Game()
     _gameObject.updateStatusEmbed = (updatedStatus) => 
     {
         if (_statusEmbed != null)
-            _statusEmbed.update(updatedStatus, _isEnforcingTimer)
+            _statusEmbed.update(_gameObject, updatedStatus, _isEnforcingTimer)
             .catch((err) => log.error(log.getVerboseLevel(), `ERROR UPDATING ${_gameObject.getName()}'S EMBED`, err));
 
         else if (_gameObject.getChannel() != null)
@@ -257,6 +271,9 @@ function Dominions5Game()
 
         if (asserter.isBoolean(jsonData.isEnforcingTimer) === true)
             _isEnforcingTimer = jsonData.isEnforcingTimer;
+
+        if (asserter.isBoolean(jsonData.isCurrentTurnRollback) === true)
+            _isCurrentTurnRollback = jsonData.isCurrentTurnRollback;
 
         if (Array.isArray(jsonData.playerData) === true)
         {
@@ -290,6 +307,7 @@ function Dominions5Game()
             jsonData.statusEmbedId = _statusEmbed.getMessageId();
             
         jsonData.isEnforcingTimer = _isEnforcingTimer;
+        jsonData.isCurrentTurnRollback = _isCurrentTurnRollback;
 
         jsonData.playerData = [];
         _playerFiles.forEachItem((playerFile, playerId) => jsonData.playerData.push(playerId));

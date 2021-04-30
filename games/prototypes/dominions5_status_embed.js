@@ -63,7 +63,7 @@ function Dominions5StatusEmbed(embedWrapper)
 
     // updateData is an instance of Dominions5Status, enhanced with some new 
     // boolean event properties which stem from the game_monitor.js code
-    this.update = (updateData, isBotEnforced = true) =>
+    this.update = (game, updateData, isBotEnforced = true) =>
     {
         const timeLeft = updateData.getTimeLeft();
 
@@ -86,7 +86,10 @@ function Dominions5StatusEmbed(embedWrapper)
             else _embed.replaceField(1, TURN_HEADER, "unavailable", true);
 
 
-            if (updateData.isPaused() === true)
+            if (game.isCurrentTurnRollback() === true)
+                _embed.editField(2, TIMER_HEADER, `rollback turn; must be force hosted to roll`);
+
+            else if (updateData.isPaused() === true)
                 _embed.editField(2, TIMER_HEADER, `paused ${(isBotEnforced) ? "(bot-enforced)" : "(game-enforced)"}`);
 
             else if (asserter.isInteger(updateData.getMsLeft()) === true)
@@ -97,22 +100,27 @@ function Dominions5StatusEmbed(embedWrapper)
 
             if (asserter.isArray(updateData.getPlayers()) === true)
             {
-                const playerStr = updateData.getPlayers().reduce((playersInfo, playerData) => 
+                if (updateData.areAllTurnsDone() === true)
+                    _embed.editField(3, UNDONE_TURNS_HEADER, `all turns done`);
+
+                else
                 {
-                    if (playerData.isTurnDone === false)
-                        return playersInfo + `${playerData.name}\n`;
+                    const playerStr = updateData.getPlayers().reduce((playersInfo, playerData) => 
+                    {
+                        if (playerData.isTurnDone === false)
+                            return playersInfo + `${playerData.name}\n`;
 
-                    else return playersInfo;
-                }, "\n");
+                        else return playersInfo;
+                    }, "\n");
 
-                _embed.editField(3, UNDONE_TURNS_HEADER, playerStr);
+                    _embed.editField(3, UNDONE_TURNS_HEADER, playerStr);
+                }
             }
 
             else _embed.editField(3, UNDONE_TURNS_HEADER, "unavailable");
         }
 
         else _embed.editField(0, STATUS_HEADER, updateData.getStatus(), true);
-
 
         return _embed.update();
     };

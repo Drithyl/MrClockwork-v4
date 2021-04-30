@@ -121,6 +121,14 @@ function Dominions5Status()
             _players = players;
     };
 
+    this.areAllTurnsDone = () =>
+    {
+        if (assert.isArray(_players) === false || _players.length <= 0)
+            return false;
+
+        return _players.find((player) => player.isTurnDone === false) == null;
+    };
+
     this.getLastTurnTimestamp = () => _lastTurnTimestamp;
     this.setLastTurnTimestamp = (timestamp) =>
     {

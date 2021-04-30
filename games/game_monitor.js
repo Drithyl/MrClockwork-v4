@@ -130,7 +130,7 @@ function _getGameEvents(updatedStatus, lastKnownStatus)
     const events = {
 
         didServerGoOffline:     updatedStatus.isServerOnline() === false && lastKnownStatus.isServerOnline() === true,
-        didGameGoOffline:       updatedStatus.isOnline() === false && lastKnownStatus.isOnline === true,
+        didGameGoOffline:       updatedStatus.isOnline() === false && lastKnownStatus.isOnline() === true,
         isServerBackOnline:     updatedStatus.isServerOnline() === true && lastKnownStatus.isServerOnline() === false,
         isGameBackOnline:       updatedStatus.isOnline() === true && lastKnownStatus.isOnline() === false,
         didGameStart:           updatedStatus.isOngoing() === true && lastKnownStatus.isInLobby() === true,
@@ -179,6 +179,9 @@ function _handleGameEvents(game, updateData)
     else if (updateData.wasTurnRollbacked === true)
         return _handleTurnRollback(game, updateData);
 
+    else if (updateData.areAllTurnsDone() === true && game.isCurrentTurnRollback() === false)
+        return _handleAllTurnsDone(game, updateData);
+
     else if (updateData.didHourPass === true)
         return _handleHourPassed(game, updateData);
 
@@ -188,6 +191,7 @@ function _handleGameEvents(game, updateData)
     else if (updateData.isGameBackOnline === true)
         return _handleGameBackOnline(game);
 }
+
 
 function _enforceTimer(game, updatedData)
 {
@@ -203,11 +207,9 @@ function _enforceTimer(game, updatedData)
 
     else if (updatedData.getMsLeft() <= 0 && updatedData.isPaused() === false)
     {
-        log.general(log.getNormalLevel(), `Forcing ${game.getName()}'s turn to roll...`);
-        game.forceHost();
+        _handleAllTurnsDone(game, updateData);
     }
 }
-
 
 function _handleServerOffline(game)
 {
@@ -250,6 +252,12 @@ function _handleTurnRollback(game, updateData)
 {
     log.general(log.getNormalLevel(), `${game.getName()}\trollbacked turn.`);
     game.sendGameAnnouncement(`The game has been rollbacked to turn ${updateData.getTurnNumber()}.`);
+}
+
+function _handleAllTurnsDone(game, updateData)
+{
+    log.general(log.getNormalLevel(), `${game.getName()}\t Forcing turn to roll...`);
+    game.forceHost();
 }
 
 function _handleHourPassed(game, updateData)
