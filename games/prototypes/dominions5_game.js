@@ -95,9 +95,9 @@ function Dominions5Game()
 
     _gameObject.deleteGame = () =>
     {
-        return _gameObject.emitPromiseWithGameDataToServer("DELETE_GAME")
+        return ongoingGameStore.deleteGame(_gameObject.getName())
         .then(() => _gameObject.removeAllPlayerData(_gameObject.getName()))
-        .then(() => ongoingGameStore.deleteGame(_gameObject.getName()));
+        .then(() => _gameObject.emitPromiseWithGameDataToServer("DELETE_GAME"));
     };
 
     _gameObject.removeAllPlayerData = () =>
