@@ -161,7 +161,7 @@ function _findGameByChannel(channelId)
     {
         let game = _ongoingGamesByName[name];
 
-        if (game.getChannelId() === channelId)
+        if (game.getChannelId() != null && game.getChannelId() === channelId)
             return game;
     }
 }
