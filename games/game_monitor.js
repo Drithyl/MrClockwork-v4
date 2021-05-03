@@ -107,7 +107,7 @@ function _updateCycle(game)
         \tlastKnown isPaused:\t${lastKnownStatus.isPaused()}`);
 
 
-        _handleGameEvents(game, updateData)
+        _handleGameEvents(game, updateData);
         game.update(updateData);
         return Promise.resolve();
     })
