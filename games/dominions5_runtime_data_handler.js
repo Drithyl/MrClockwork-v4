@@ -67,6 +67,8 @@ const connectionsMessageRegexp = new RegExp("Connections\\s*\\d+", "i");
 // happens every second after game start, as a way to keep the status
 const nationsTurnStatusMessageRegExp = new RegExp("^(\\(?\\w+(\\)|\\?|\\-|\\+)\\s*)+$", "i");
 
+const generatingNextTurnMessageRegExp = new RegExp("Generating next turn", "i");
+
 const replacedThroneErrArray = [];
 
 
@@ -161,6 +163,9 @@ function handleData(game, message)
 
     else if (replacedThroneErrRegexp.test(message) === true)
         handleReplacedThroneErr(game, message);
+
+    else if (generatingNextTurnMessageRegExp.test(message) === true)
+        handleGeneratingNextTurn(game, message);
 
     else
     {
@@ -288,6 +293,12 @@ function handleReplacedThroneErr(game, message)
 
     replacedThroneErrArray.push(game.getName());
     sendWarning(game, `A site was replaced in this mod but Dominions considers it an error. This has no impact in the game other than this warning message:\n\n${message}`);
+}
+
+function handleGeneratingNextTurn(game, message)
+{
+    log.general(log.getNormalLevel(), `${game.getName()}\tGenerating new turn...`);
+    game.sendMessageToChannel(`Generating new turn; this *can* take a while...`);
 }
 
 function addToHistory(game, message)
