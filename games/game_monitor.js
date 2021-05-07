@@ -193,19 +193,19 @@ function _handleGameEvents(game, updateData)
 }
 
 
-function _enforceTimer(game, updatedData)
+function _enforceTimer(game, updateData)
 {
-    if (updatedData.isNewTurn === true || updatedData.wasTurnRollbacked === true || updatedData.didGameStart === true)
+    if (updateData.isNewTurn === true || updateData.wasTurnRollbacked === true || updateData.didGameStart === true)
     {
         const timerSetting = game.getSettingsObject().getTimerSetting();
         const timePerTurnObject = timerSetting.getValue();
         const msPerTurn = timePerTurnObject.getMsLeft();
         
         log.general(log.getNormalLevel(), `Setting ${game.getName()}'s timer back to default: ${msPerTurn}ms`);
-        updatedData.setMsLeft(msPerTurn);
+        updateData.setMsLeft(msPerTurn);
     }
 
-    else if (updatedData.getMsLeft() <= 0 && updatedData.isPaused() === false)
+    else if (updateData.getMsLeft() <= 0 && updateData.isPaused() === false)
     {
         _handleAllTurnsDone(game, updateData);
     }
