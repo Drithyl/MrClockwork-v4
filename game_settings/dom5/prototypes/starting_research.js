@@ -41,9 +41,9 @@ function StartingResearch()
         var value = this.getValue();
     
         if (value == true)
-            return [];
+            return [`--norandres`];
     
-        else return [`--norandres`];
+        else return [];
     };
 
     function _validateInputFormatOrThrow(input)
