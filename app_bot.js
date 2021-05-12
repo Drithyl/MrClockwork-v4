@@ -82,4 +82,6 @@ function _initializeComponents()
 
 //Catch process exceptions and log them here
 process.on("error", (err) => log.error(log.getLeanLevel(), `PROCESS ERROR`, err));
-process.on("unhandledRejection", err => log.error(log.getLeanLevel(), `UNCAUGHT PROMISE ERROR`, err));
+process.on("beforeExit", (code) => log.general(log.getLeanLevel(), `PROCESS WILL EXIST WITH CODE ${code}`));
+process.on("unhandledRejection", err => log.error(log.getLeanLevel(), `UNHANDLED REJECTION ERROR`, err));
+process.on("uncaughtException", err => log.error(log.getLeanLevel(), `UNCAUGHT EXCEPTION ERROR`, err));
