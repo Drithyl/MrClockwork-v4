@@ -181,7 +181,7 @@ function _handleGameEvents(game, updateData)
 
     // Double check that game is ongoing when checking if all turns are done, otherwise the
     // statusdump will give false positives, since all nations show up with controller 0
-    else if (game.isCurrentTurnRollback() === false && updatedStatus.isOngoing() === true)
+    else if (game.isCurrentTurnRollback() === false && updateData.isOngoing() === true)
     {
         // This check will emit an event to the slave server to verify the statusdump
         // Reason being that tcpquery data does not show dead nations and considers them
