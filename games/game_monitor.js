@@ -179,7 +179,7 @@ function _handleGameEvents(game, updateData)
     else if (updateData.wasTurnRollbacked === true)
         return _handleTurnRollback(game, updateData);
 
-    if (game.isCurrentTurnRollback() === false)
+    else if (game.isCurrentTurnRollback() === false)
     {
         // This check will emit an event to the slave server to verify the statusdump
         // Reason being that tcpquery data does not show dead nations and considers them
