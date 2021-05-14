@@ -179,10 +179,26 @@ function _handleGameEvents(game, updateData)
     else if (updateData.wasTurnRollbacked === true)
         return _handleTurnRollback(game, updateData);
 
-    else if (updateData.areAllTurnsDone() === true && game.isCurrentTurnRollback() === false)
-        return _handleAllTurnsDone(game, updateData);
+    if (game.isCurrentTurnRollback() === false)
+    {
+        // This check will emit an event to the slave server to verify the statusdump
+        // Reason being that tcpquery data does not show dead nations and considers them
+        // undone turns; so they will block new turns. Statusdump shows this info as -1 controller
+        log.general(log.getVerboseLevel(), `${game.getName()}\tChecking with slave if all turns are done...`);
+        return _checkIfAllTurnsAreDone(game)
+        .then((areAllTurnsDone) =>
+        {
+            if (areAllTurnsDone === true)
+            {
+                log.general(log.getNormalLevel(), `${game.getName()}\tAll turns done`);
+                _handleAllTurnsDone(game, updateData);
+            }
 
-    else if (updateData.didHourPass === true)
+            else log.general(log.getVerboseLevel(), `${game.getName()}\tSome turns are undone`);
+        });
+    }
+
+    if (updateData.didHourPass === true)
         return _handleHourPassed(game, updateData);
 
     else if (updateData.isServerBackOnline === true)
@@ -389,5 +405,22 @@ function _processStales(game, updateData)
     {
         log.error(log.getLeanLevel(), `${game.getName()}\tError processing stales`, err);
         game.sendMessageToOrganizer(staleMessage + `Could not get stale data: ${err.message}`);
+    });
+}
+
+function _checkIfAllTurnsAreDone(game)
+{
+    return game.emitPromiseWithGameDataToServer("GET_UNDONE_TURNS")
+    .then((undoneTurns) =>
+    {
+        if (undoneTurns.length <= 0)
+            return Promise.resolve(true);
+
+        else return Promise.resolve(false);
+    })
+    .catch((err) => 
+    {
+        log.error(log.getLeanLevel(), `${game.getName()}\tError checking if all turns are done`, err);
+        return Promise.resolve(false);
     });
 }

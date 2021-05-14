@@ -126,10 +126,10 @@ function Dominions5Status()
         if (assert.isArray(_players) === false || _players.length <= 0)
             return false;
 
-        return _players.find((player) => player.isHuman === true && player.isTurnDone === false) == null;
+        return _players.find((player) => player.isTurnDone === false && player.isAi === false) == null;
     };
 
-    this.getLastTurnTimestamp = () => _lastTurnTimestamp;
+    this.getLastTurnTimestamp = () => _lastTurnTimestamp; 
     this.setLastTurnTimestamp = (timestamp) =>
     {
         if (assert.isInteger(timestamp) === true)
@@ -278,7 +278,7 @@ function _parsePlayers(tcpQueryResponse)
             var isTurnDone = false;
             var isAi = false;
 
-            if (turnStatus === "AI controlled" || turnStatus === "played")
+            if (turnStatus === "played")
                 isTurnDone = true;
                 
             if (turnStatus === "AI controlled")
