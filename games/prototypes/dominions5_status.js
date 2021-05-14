@@ -126,7 +126,7 @@ function Dominions5Status()
         if (assert.isArray(_players) === false || _players.length <= 0)
             return false;
 
-        return _players.find((player) => player.isTurnDone === false) == null;
+        return _players.find((player) => player.isHuman === true && player.isTurnDone === false) == null;
     };
 
     this.getLastTurnTimestamp = () => _lastTurnTimestamp;
