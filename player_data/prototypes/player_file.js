@@ -61,7 +61,7 @@ function PlayerFile(playerId)
     this.getControlledNationsInGame = (gameName) =>
     {
         if (this.hasGameData(gameName) === false)
-            return false;
+            return [];
 
         const gameData = this.getGameData(gameName);
         return gameData.getNationsControlledByPlayer();
