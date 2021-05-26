@@ -102,6 +102,7 @@ module.exports.addGuild = (discordJsGuild) =>
     var guildId = guildWrapper.getId();
 
     guildWrappers[guildId] = guildWrapper;
+    return guildWrapper;
 };
 
 module.exports.removeGuild = (discordJsGuild) =>
