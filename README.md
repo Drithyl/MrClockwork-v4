@@ -6,7 +6,8 @@ command menus (host game, change settings, set player preferences), game-specifi
 (game channels now have a pinned post which gets updated by the bot with the last known timer, turn, status, undone turns, etc. every few seconds), and more.
 
 This release is intended to be the final version of the bot, and will be properly maintained and kept up to date, to make it easier for others to look into
-the code and collaborate if they so desire. New features and commands will be added over time as necessary.
+the code and collaborate if they so desire. New features and commands will be added over time as necessary. This means that repositories for the previous Mr. Clockwork
+versions will now become obsolete.
 
 This is only one of two parts of the codebase. This part specifically handles the Discord integration and acts as the master in the hierarchy, keeping track of
 all required data (games hosted, player preferences, guilds, etc) and updating the status of the games. The so-called Hosting Slave, found at 
