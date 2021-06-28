@@ -36,7 +36,22 @@ exports.hasHostServerById = (...args) => _findServerById(...args) != null;
 exports.getHostServerByName = (...args) => _findServerByName(...args);
 exports.hasHostServerByName = (...args) => _findServerByName(...args) != null;
 
-exports.getAvailableServers = () =>
+exports.getOnlineServers = () =>
+{
+    var servers = [];
+
+    for (var id in _hostServersById)
+    {
+        var hostServerObject = _hostServersById[id];
+
+        if (hostServerObject.isOnline() === true)
+            servers.push(hostServerObject);
+    }
+
+    return servers;
+};
+
+exports.getAvailableServersClientData = () =>
 {
     var servers = [];
 
