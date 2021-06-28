@@ -144,6 +144,20 @@
         "helpText": "Deletes all the maps on a target server which are currently not used by any ongoing game."
     },
 
+    "DELETE_UNUSED_MODS":
+    {
+        "name": "deleteunusedmods",
+        "isEnabled": true,
+        "isDevOnly": true,
+        "gameTypesSupported": [],
+        "argumentsRequiredInfo": ["`A server's name`"],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "deleteunusedmods",
+        "argumentRegexpArray": ["\\w+"],
+        "channelRequiredToInvoke": "dm",
+        "helpText": "Deletes all the mods on a target server which are currently not used by any ongoing game."
+    },
+
     "DEPLOY_BOT":
     {
         "name": "deploy",
