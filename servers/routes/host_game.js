@@ -27,7 +27,7 @@ exports.set = (expressApp) =>
         if (webSessionsStore.isSessionValid(sessionParams) === false)
             return res.render("results_screen.ejs", { result: `Session does not exist.` });
 
-        availableServers = hostServerStore.getAvailableServers();
+        availableServers = hostServerStore.getAvailableServersClientData();
         guildsWhereUserIsMember = guildStore.getGuildsWhereUserIsMember(sessionParams.userId);
 
         guildsWhereUserIsMember.forEach((wrapper) =>
