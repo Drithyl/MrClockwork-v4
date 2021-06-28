@@ -6,6 +6,7 @@ const configHelper = require("./config_helper.js");
 
 var config;
 var log;
+var cleaner;
 var discord;
 var expressServer;
 var gamesStore;
@@ -36,6 +37,7 @@ function _initializeComponents()
 {
     //import the modules required for initialization
     log = require("./logger.js");
+    cleaner = require("./cleaner.js");
     discord = require("./discord/discord.js");
     expressServer = require("./servers/express_server.js");
     gamesStore = require("./games/ongoing_games_store.js");
@@ -68,6 +70,7 @@ function _initializeComponents()
             expressServer.startListeningSsl(config.hostServerSslConnectionPort);
 
         expressServer.startListening(config.hostServerConnectionPort);
+        cleaner.startCleaningInterval();
         return Promise.resolve();
     })
     .then(() => timeEventsEmitter.startCounting())
