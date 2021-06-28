@@ -30,6 +30,56 @@ function extendPrototypes()
         });
     };
 
+    Array.prototype.forAllPromises = function(asyncFn, breakOnError = true)
+    {
+        var self = this;
+        var results = [];
+        var left = self.length;
+
+        if (left <= 0)
+            return Promise.resolve([]);
+
+        return new Promise((resolve) =>
+        {
+            var errorOccurred = false;
+
+            for (var i = 0; i < left; i++)
+            {
+                var item = self[i];
+
+                Promise.resolve(asyncFn(item, i, self))
+                .then((result) =>
+                {
+                    if (breakOnError === false || errorOccurred === false)
+                    {
+                        left--;
+                        results.push(result);
+
+                        if (left <= 0)
+                            resolve(results);
+                    }
+                })
+                .catch((err) =>
+                {
+                    if (breakOnError === true)
+                    {
+                        errorOccurred = true;
+                        reject(err, results);
+                    }
+
+                    else
+                    {
+                        left--;
+                        results.push(err);
+
+                        if (left <= 0)
+                            resolve(results);
+                    }
+                });
+            }
+        });
+    };
+
     Object.defineProperty(Object.prototype, "forEachItem",
     {
         value: function(asyncFn)
@@ -65,6 +115,59 @@ function extendPrototypes()
                         reject(err);
                     });
                 })();
+            });
+        }
+    });
+
+    Object.defineProperty(Object.prototype, "forAllPromises",
+    {
+        value: function(asyncFn, breakOnError = true)
+        {
+            var self = this;
+            var results = [];
+            var keyArray = Object.keys(self);
+            var left = keyArray.length;
+
+            if (left <= 0)
+                return Promise.resolve([]);
+
+            return new Promise((resolve, reject) =>
+            {
+                for (var i = 0; i < left; i++)
+                {
+                    var key = keyArray[i];
+                    var item = self[key];
+
+                    Promise.resolve(asyncFn(item, i, self))
+                    .then((result) =>
+                    {
+                        if (breakOnError === false || errorOccurred === false)
+                        {
+                            left--;
+                            results.push(result);
+
+                            if (left <= 0)
+                                resolve(results);
+                        }
+                    })
+                    .catch((err) =>
+                    {
+                        if (breakOnError === true)
+                        {
+                            errorOccurred = true;
+                            reject(err, results);
+                        }
+
+                        else
+                        {
+                            left--;
+                            results.push(err);
+
+                            if (left <= 0)
+                                resolve(results);
+                        }
+                    });
+                }
             });
         }
     });
