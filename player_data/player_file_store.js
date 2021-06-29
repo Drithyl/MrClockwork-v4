@@ -14,16 +14,14 @@ exports.populate = () =>
     return fsp.readdir(`${config.dataPath}/${config.playerDataFolder}`)
     .then((filenames) =>
     {
-        return filenames.forEachPromise((filename, index, nextPromise) =>
+        return filenames.forAllPromises((filename) =>
         {
             fsp.readFile(`${config.dataPath}/${config.playerDataFolder}/${filename}`, "utf8")
             .then((fileData) =>
             {
                 const parsedJSON = JSON.parse(fileData);
                 const playerFile = PlayerFile.loadFromJSON(parsedJSON);
-
                 _playerFileStore[playerFile.getId()] = playerFile;
-                return nextPromise();
             })
             .catch((err) => Promise.reject(err));
         });
@@ -33,7 +31,7 @@ exports.populate = () =>
 
 exports.clearObsoleteData = () =>
 {
-    return _playerFileStore.forEachPromise((playerFile, playerId, nextPromise) =>
+    return _playerFileStore.forAllPromises((playerFile, playerId) =>
     {
         var wasDataCleared = false;
         const gameDataList = playerFile.getAllGameData();
@@ -49,15 +47,10 @@ exports.clearObsoleteData = () =>
         });
 
         if (wasDataCleared === false)
-            return nextPromise();
+            return;
         
         return exports.savePlayerFile(playerId)
-        .then(() => nextPromise())
-        .catch((err) =>
-        {
-            log.error(log.getLeanLevel(), `ERROR SAVING PRUNED PLAYER FILE ${playerId}`, err);
-            nextPromise();
-        });
+        .catch((err) => log.error(log.getLeanLevel(), `ERROR SAVING PRUNED PLAYER FILE ${playerId}`, err));
     });
 };
 

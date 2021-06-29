@@ -27,7 +27,6 @@ function GetCurrentTurnFileCommand()
 
 function _behaviour(commandContext)
 {
-    const turnFileAttachments = [];
     const gameObject = commandContext.getGameTargetedByCommand();
     const gameName = gameObject.getName();
     const status = gameObject.getLastKnownStatus();
@@ -41,21 +40,19 @@ function _behaviour(commandContext)
     return commandContext.respondToCommand(`The turnfile will be sent to you by DM shortly.`)
     .then(() =>
     {
-        return controlledNations.forEachPromise((nation, index, nextPromise) =>
+        return controlledNations.forAllPromises((nation) =>
         {
             const nationFilename = nation.getFilename();
     
             return gameObject.emitPromiseWithGameDataToServer("GET_TURN_FILE", { nationFilename })
             .then((turnFileBuffer) => 
             {
-                turnFileAttachments.push({
+                return {
                     attachment: turnFileBuffer, 
                     name: `${nationFilename}_turn_${status.getTurnNumber()}.trn`
-                });
-    
-                return nextPromise();
+                };
             });
         })
     })
-    .then(() => commandContext.respondToSender(messageString, { files: turnFileAttachments }));
+    .then((turnFileAttachments) => commandContext.respondToSender(messageString, { files: turnFileAttachments }));
 }

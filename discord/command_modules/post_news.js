@@ -29,14 +29,10 @@ function _behaviour(commandContext)
     //ignore spaces and join all arguments together, since they are a whole message to post
     var messageString = commandArgumentsArray.join(" ");
 
-    return guildStore.forEachGuildAsync((guildWrapper) => 
+    return guildStore.forAllGuilds((guildWrapper) => 
     {
         log.general(log.getNormalLevel(), `Cycling through guild ${guildWrapper.getName()} to post news`);
         return guildWrapper.postNews(messageString)
-        .catch((err) =>
-        {
-            commandContext.respondToCommand(`Error occurred when posting to ${guildWrapper.getName()}:\n\n${err.message}`);
-            return Promise.resolve();
-        });
+        .catch((err) => commandContext.respondToCommand(`Error occurred when posting to ${guildWrapper.getName()}:\n\n${err.message}`));
     });
 }

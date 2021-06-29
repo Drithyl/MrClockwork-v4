@@ -17,7 +17,7 @@ module.exports.populateStore = function(discordJsGuildCollection)
         log.general(log.getNormalLevel(), "Finished loading guild data.");
         log.general(log.getNormalLevel(), "Populating guild store...");
 
-        return guildArray.forEachPromise((discordJsGuild, index, nextPromise) =>
+        return guildArray.forAllPromises((discordJsGuild) =>
         {
             log.general(log.getNormalLevel(), `Fetching guild...`);
             return discordJsGuild.fetch()
@@ -25,7 +25,7 @@ module.exports.populateStore = function(discordJsGuildCollection)
             {
                 module.exports.addGuild(fetchedDiscordJsGuild);
                 log.general(log.getNormalLevel(), `${discordJsGuild.name} added.`);
-                nextPromise();
+                return Promise.resolve();
             });
         });
     });
@@ -87,12 +87,11 @@ module.exports.forEachGuild = (fnToCall) =>
     }
 };
 
-module.exports.forEachGuildAsync = (promiseToCall) =>
+module.exports.forAllGuilds = (promiseToCall) =>
 {
-    return guildWrappers.forEachPromise((guildWrapper, index, nextPromise) =>
+    return guildWrappers.forAllPromises((guildWrapper, index, arr) =>
     {
-        return promiseToCall(guildWrapper, index, nextPromise)
-        .then(() => nextPromise());
+        return promiseToCall(guildWrapper, index, arr);
     });
 };
 
@@ -303,20 +302,13 @@ exports.updateHelpChannels = (updatedHelpString, idOfGuildToUpdate = "") =>
     if (guildToUpdate != null)
         return guildToUpdate.updateHelpChannel(updatedHelpString);
 
-    return guildWrappers.forEachPromise((wrapper, guildId, nextPromise) =>
+    return guildWrappers.forAllPromises((wrapper) =>
     {
         log.general(log.getNormalLevel(), `Updating guild ${wrapper.getName()}...`);
 
         return wrapper.updateHelpChannel(updatedHelpString)
-        .then(() => 
-        {
-            log.general(log.getNormalLevel(), `${wrapper.getName()} help channel updated.`);
-            return nextPromise();
-        })
-        .catch((err) => 
-        {
-            log.error(log.getLeanLevel(), `ERROR UPDATING ${guildWrapper.getName()} HELP CHANNEL`, err);
-            return next(); 
-        });
-    });
+        .then(() => log.general(log.getNormalLevel(), `${wrapper.getName()} help channel updated.`))
+        .catch((err) => log.error(log.getLeanLevel(), `ERROR UPDATING ${guildWrapper.getName()} HELP CHANNEL`, err));
+
+    }, false);
 };

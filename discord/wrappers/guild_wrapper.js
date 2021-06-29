@@ -248,19 +248,15 @@ function GuildWrapper(discordJsGuildObject)
             log.general(log.getVerboseLevel(), `Fetched previous messages; total fetched: ${messageArray.length}`);
 
             // Delete all messages
-            return messageArray.forEachPromise((message, index, nextPromise) =>
+            return messageArray.forAllPromises((message) =>
             {
                 log.general(log.getVerboseLevel(), `Deleting message ${channel.id}...`);
                 return message.delete()
-                .then(() => 
-                {
-                    log.general(log.getVerboseLevel(), "Message deleted.");
-                    return nextPromise();
-                })
+                .then(() => log.general(log.getVerboseLevel(), "Message deleted."))
                 .catch((err) => 
                 {
                     log.error(log.getNormalLevel(), `ERROR DELETING MESSAGE`, err);
-                    Promise.reject(err)
+                    return Promise.reject(err);
                 });
             });
         });

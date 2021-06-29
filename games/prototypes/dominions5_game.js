@@ -86,10 +86,9 @@ function Dominions5Game()
 
     _gameObject.removeNationClaims = () =>
     {
-        return _playerFiles.forEachPromise((playerFile, playerId, nextPromise) =>
+        return _playerFiles.forAllPromises((playerFile) =>
         {
-            return playerFile.removeControlOfAllNationsInGame(_gameObject.getName())
-            .then(() => nextPromise());
+            return playerFile.removeControlOfAllNationsInGame(_gameObject.getName());
         });
     };
 
@@ -102,14 +101,12 @@ function Dominions5Game()
 
     _gameObject.removeAllPlayerData = () =>
     {
-        return _playerFiles.forEachPromise((playerFile, playerId, nextPromise) =>
+        return _playerFiles.forAllPromises((playerFile, playerId) =>
         {
             playerFile.removeGameData(_gameObject.getName());
             playerFile.removeGamePreferences(_gameObject.getName());
             log.general(log.getNormalLevel(), `Deleted ${playerId}'s ${_gameObject.getName()} data.`);
-
-            return playerFile.save()
-            .then(() => nextPromise());
+            return playerFile.save();
         })
         .catch((err) =>
         {
