@@ -22,7 +22,7 @@ function _behaviour(commandContext)
     var stringIntroduction = "Find the list of games below:\n\n";
     var stringListOfGames = "";
 
-    return arrayOfOngoingGames.forAllPromises((gameObject) =>
+    return arrayOfOngoingGames.forEachPromise((gameObject, index, nextPromise) =>
     {
         var name = gameObject.getName();
         var ip = gameObject.getIp();
@@ -32,10 +32,16 @@ function _behaviour(commandContext)
         stringListOfGames += `\n${name.width(33)} ` + `${ip}:${port.toString()}`.width(22);
 
         if (hostServer == null)
+        {
             stringListOfGames += `${"Server Dead".width(28)} Offline`;
+            return nextPromise();
+        }
 
         else if (hostServer.isOnline() === false)
+        {
             stringListOfGames += `Server Offline (${hostServer.getName()})`.width(28) + " Offline";
+            return nextPromise();
+        }
 
         else 
         {
@@ -43,9 +49,14 @@ function _behaviour(commandContext)
             .then((isOnline) =>
             {
                 var onlineStr = (isOnline === true) ? "Online" : "Offline";
+                
                 stringListOfGames += `${hostServer.getName().width(28)} ${onlineStr}`;
+                return nextPromise();
             });
         }
     })
-    .then(() => commandContext.respondToCommand(stringIntroduction + stringListOfGames.toBox()));
+    .then(() =>
+    {
+        return commandContext.respondToCommand(stringIntroduction + stringListOfGames.toBox());
+    });
 }
