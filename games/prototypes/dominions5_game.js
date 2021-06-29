@@ -110,7 +110,7 @@ function Dominions5Game()
         })
         .catch((err) =>
         {
-            log.error(log.getLeanLevel(), `ERROR: Could not delete ${playerId}'s ${_gameObject.getName()} data`, err);
+            log.error(log.getLeanLevel(), `ERROR: Could not delete some of ${_gameObject.getName()}'s player's data`, err);
             return Promise.reject(err);
         });
     };
