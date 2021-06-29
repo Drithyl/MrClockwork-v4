@@ -20,7 +20,7 @@ module.exports.copyDir = function(source, target, deepCopy, extensionFilter = nu
 	return fsp.readdir(source)
 	.then((filenames) => 
 	{
-		return filenames.forEachPromise((filename, index, nextPromise) =>
+		return filenames.forAllPromises((filename) =>
 		{
 			return Promise.resolve()
 			.then(() =>
@@ -34,11 +34,65 @@ module.exports.copyDir = function(source, target, deepCopy, extensionFilter = nu
 
 				//ignore file and loop
 				else return Promise.resolve();
-			})
-			.then(() => nextPromise());
+			});
 		});
     })
     .catch((err) => Promise.reject(err));
+};
+
+module.exports.walkDir = function(dir)
+{
+	const results = [];
+	const path = require('path');
+
+	return _walk(dir);
+
+	function _walk(dir)
+	{
+		return new Promise((resolve, reject) =>
+		{
+			fsp.readdir(dir)
+			.then((list) =>
+			{
+				var pending = list.length;
+
+				if (pending <= 0)
+					return resolve(results);
+
+				list.forEach((file) =>
+				{
+					file = path.resolve(dir, file);
+
+					fsp.stat(file)
+					.then((stat) =>
+					{
+						if (stat.isDirectory() === true)
+						{
+							_walk(file)
+							.then((res) => 
+							{
+								results.concat(res);
+								pending--;
+
+								if (pending <= 0)
+									return resolve(results);
+							});
+						}
+
+						else
+						{
+							results.push(file);
+							pending--;
+
+							if (pending <= 0)
+								return resolve(results);
+						}
+					});
+				})
+			})
+			.catch((err) => reject(err));
+		});
+	}
 };
 
 module.exports.deleteDir = function(path)
@@ -55,12 +109,12 @@ module.exports.deleteDir = function(path)
     .then((filenames) =>
     {
 		log.general(log.getLeanLevel(), `Filenames read, iterating through...`);
-        return filenames.forEachPromise((filename, index, nextPromise) =>
+        return filenames.forAllPromises((filename) =>
         {
             const filepath = `${path}/${filename}`;
 			log.general(log.getLeanLevel(), `Deleting file at ${filepath}...`);
 
-            return fsp.lstat(filepath)
+            return fsp.stat(filepath)
             .then((stats) =>
             {
                 if (stats.isDirectory() === true)
@@ -71,7 +125,7 @@ module.exports.deleteDir = function(path)
             .then(() => 
 			{
 				log.general(log.getLeanLevel(), `File deleted.`);
-				return nextPromise();
+				return Promise.resolve();
 			})
 			.catch((err) => Promise.reject(err));
         });
