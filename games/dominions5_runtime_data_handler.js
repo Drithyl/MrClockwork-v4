@@ -69,7 +69,8 @@ const nationsTurnStatusMessageRegExp = new RegExp("^(\\(?\\*?\\w+(\\)|\\?|\\-|\\
 
 const generatingNextTurnMessageRegExp = new RegExp("Generating next turn", "i");
 
-const replacedThroneErrArray = [];
+const messageHistory = {};
+const DEBOUNCE_MS = 600000;
 
 
 module.exports = function(gameName, message)
@@ -238,7 +239,7 @@ function handleMapNotFound(game, message)
 function handleMapImgNotFound(game, message)
 {
     log.general(log.getVerboseLevel(), `Handling mapImgNotFound error ${message}`);
-    sendWarning(game, `Dominions reported an error: One or more of the image files of the selected map could not be found. Make sure they've been uploaded and that the .map file points to the proper names.`);
+    debounce(game, `Dominions reported an error: One or more of the image files of the selected map could not be found. Make sure they've been uploaded and that the .map file points to the proper names.`);
 }
 
 function handleModNotFound(game, message)
@@ -291,8 +292,7 @@ function handleReplacedThroneErr(game, message)
     if (replacedThroneErrArray.includes(game.getName()) === true)
         return;
 
-    replacedThroneErrArray.push(game.getName());
-    sendWarning(game, `A site was replaced in this mod but Dominions considers it an error. This has no impact in the game other than this warning message:\n\n${message}`);
+    debounce(game, `A site was replaced in this mod but Dominions considers it an error. This has no impact in the game other than this warning message:\n\n${message}`);
 }
 
 function handleGeneratingNextTurn(game, message)
@@ -301,17 +301,30 @@ function handleGeneratingNextTurn(game, message)
     game.sendMessageToChannel(`Generating new turn; this *can* take a while...`);
 }
 
-function addToHistory(game, message)
+
+function debounce(game, message)
 {
-    errorHistory[game.getName()] = Date.now();
+    if (wasLastErrorSentRecently(game.getName(), message) === true)
+        return;
+
+    addToHistory(game.getName(), message);
+    sendWarning(game, message);
 }
 
-function wasLastErrorSentRecently(game)
+function addToHistory(gameName, message)
 {
-    if (errorHistory[game.getName()] == null)
+    if (messageHistory[gameName] == null)
+        messageHistory[gameName] = {};
+
+    messageHistory[gameName][message] = Date.now();
+}
+
+function wasLastErrorSentRecently(gameName, message)
+{
+    if (messageHistory[gameName] == null || messageHistory[gameName][message] == null)
         return false;
 
-    if (Date.now() - errorHistory[game.getName()] <= 60000)
+    if (Date.now() - messageHistory[gameName][message] <= DEBOUNCE_MS)
         return true;
 }
 
