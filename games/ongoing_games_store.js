@@ -72,6 +72,11 @@ exports.deleteGame = function(gameName)
     const game = exports.getOngoingGameByName(gameName);
     const pathToBotData = `${config.dataPath}/${config.gameDataFolder}/${gameName}`;
 
+    // Stop monitoring game as first step, because game updates force game data saves,
+    // which might result in the game data not actually being deleted, as a save triggers
+    // right after being deleted and recreates the files
+    gameMonitor.stopMonitoringDom5Game(game);
+
     return rw.deleteDir(pathToBotData)
     .then(() =>
     {
@@ -83,7 +88,6 @@ exports.deleteGame = function(gameName)
         }
 
         delete _ongoingGamesByName[gameName];
-        gameMonitor.stopMonitoringDom5Game(game);
         log.general(log.getNormalLevel(), `Deleted ${gameName}'s bot data.`);
         return Promise.resolve();
     })
