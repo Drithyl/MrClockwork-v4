@@ -239,7 +239,7 @@ function handleMapNotFound(game, message)
 function handleMapImgNotFound(game, message)
 {
     log.general(log.getVerboseLevel(), `Handling mapImgNotFound error ${message}`);
-    debounce(game, `Dominions reported an error: One or more of the image files of the selected map could not be found. Make sure they've been uploaded and that the .map file points to the proper names.`);
+    debounce(game, `Dominions reported an error: One or more of the image files of the selected map could not be found. Make sure they've been uploaded and that the .map file points to the proper names:\n\n${message}`);
 }
 
 function handleModNotFound(game, message)
