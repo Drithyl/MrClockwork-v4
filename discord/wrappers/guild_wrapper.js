@@ -187,10 +187,17 @@ function GuildWrapper(discordJsGuildObject)
     this.getChannelByName = (channelName) => _discordJsGuildObject.channels.cache.find("name", channelName);
 
     this.getDiscordJsGuildMemberById = (memberId) => _discordJsGuildObject.member(memberId);
+    this.fetchDiscordJsGuildMemberById = (memberId) => _discordJsGuildObject.members.fetch(memberId);
     this.getGuildMemberWrapperById = (memberId) => 
     {
         var discordJsGuildMember = this.getDiscordJsGuildMemberById(memberId);
         return new GuildMemberWrapper(discordJsGuildMember, this);
+    };
+
+    this.fetchGuildMemberWrapperById = (memberId) => 
+    {
+        return this.fetchDiscordJsGuildMemberById(memberId)
+        .then((discordJsGuildMember) => new GuildMemberWrapper(discordJsGuildMember, this));
     };
 
     this.isMember = (userId) => this.getDiscordJsGuildMemberById(userId) != null;

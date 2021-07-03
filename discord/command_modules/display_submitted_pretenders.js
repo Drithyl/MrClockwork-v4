@@ -28,7 +28,7 @@ function _behaviour(commandContext)
     var formattedListAsString = "";
     var game = commandContext.getGameTargetedByCommand();
     
-    return game.getSubmittedNations()
+    return game.fetchSubmittedNations()
     .then((listAsArray) => 
     {
         listAsArray.forEach((submittedPretender, index) => 
@@ -44,20 +44,16 @@ function _behaviour(commandContext)
     });
 }
 
-function _formatSubmittedPretenderLine(submittedPretender, commandContext)
+function _formatSubmittedPretenderLine(submittedPretender)
 {
-    const nationFilename = submittedPretender.filename;
     const fullNationName = submittedPretender.fullName;
-    const guildWrapper = commandContext.getGuildWrapper();
-    const game = commandContext.getGameTargetedByCommand();
-    const pretenderOwnerId = game.getPlayerIdControllingNationInGame(nationFilename);
-    const pretenderOwnerMember = guildWrapper.getGuildMemberWrapperById(pretenderOwnerId);
+    const pretenderOwnerMember = submittedPretender.owner;
 
-    log.general(log.getVerboseLevel(), `Owner for ${fullNationName}: ${pretenderOwnerId}`);
-
-    if (pretenderOwnerId != null)
+    if (pretenderOwnerMember != null)
+    {
+        log.general(log.getVerboseLevel(), `Owner for ${fullNationName}: ${pretenderOwnerMember.getId()}`);
         return `${fullNationName.width(40)} ${pretenderOwnerMember.getUsername()}\n`;
+    }
 
-    else
-        return `${fullNationName}\n`;
+    else return `${fullNationName}\n`;
 }

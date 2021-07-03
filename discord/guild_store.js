@@ -51,22 +51,24 @@ module.exports.getGuildsWhereUserIsMember = (userId) =>
     return guildsWhereUserIsMember;
 };
 
-module.exports.getGuildClientData = (userId) =>
+module.exports.fetchGuildClientData = (userId) =>
 {
     var guildData = [];
 
-    for (var id in guildWrappers)
+    return guildWrappers.forAllPromises((guild) =>
     {
         var guild = guildWrappers[id];
         var id = guild.getId();
         var name = guild.getName();
-        var member = guild.getGuildMemberWrapperById(userId);
 
-        if (guild.memberHasTrustedRole(member) === true || guild.memberHasGameMasterRole(member) === true || guild.memberIsOwner(userId) === true)
-            guildData.push({ id, name });
-    }
-
-    return guildData;
+        return guild.fetchGuildMemberWrapperById(userId)
+        .then((member) =>
+        {
+            if (guild.memberHasTrustedRole(member) === true || guild.memberHasGameMasterRole(member) === true || guild.memberIsOwner(userId) === true)
+                guildData.push({ id, name });
+        });
+    })
+    .then(() => Promise.resolve(guildData));
 };
 
 module.exports.getRecruitingCategoryId = (guildId) => guildDataStore.getRecruitingCategoryId(guildId);

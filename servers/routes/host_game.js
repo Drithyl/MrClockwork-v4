@@ -106,18 +106,21 @@ function _createGame(userId, values)
 {
     var gameObject;
     const guild = guildStore.getGuildWrapperById(values.guild);
-    const organizer = guild.getGuildMemberWrapperById(userId);
     const server = hostServerStore.getHostServerByName(values.server);
 
     if (server == null || server.isOnline() === false)
         return Promise.reject(new Error(`Selected server is offline; cannot host game.`));
 
     gameObject = new Dominions5Game();
-    gameObject.setOrganizer(organizer);
     gameObject.setGuild(guild);
     gameObject.setServer(server);
 
-    return server.reserveGameSlot()
+    return guild.fetchGuildMemberWrapperById(userId)
+    .then((memberWrapper) =>
+    {
+        gameObject.setOrganizer(memberWrapper);
+        return server.reserveGameSlot();
+    })
     .then((port) =>
     {
         gameObject.setPort(port);

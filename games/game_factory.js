@@ -1,5 +1,5 @@
 
-const fs = require("fs");
+const fsp = require("fs").promises;
 const log = require("../logger.js");
 const Dominions5Game = require("./prototypes/dominions5_game.js");
 
@@ -7,12 +7,14 @@ exports.loadGame = (pathToJSONDataFile) =>
 {
     var loadedGame = new Dominions5Game();
 
-    var jsonStringData = fs.readFileSync(pathToJSONDataFile);
-    var jsonParsedData = JSON.parse(jsonStringData);
-
-    loadedGame.loadJSONData(jsonParsedData);
-    log.general(log.getNormalLevel(), `Game data loaded, returning!`);
-    return loadedGame;
+    return fsp.readFile(pathToJSONDataFile)
+    .then((jsonStringData) => 
+    {
+        var jsonParsedData = JSON.parse(jsonStringData);
+        loadedGame.loadJSONData(jsonParsedData);
+        log.general(log.getNormalLevel(), `Game data loaded, returning!`);
+        return loadedGame;
+    });
 };
 
 exports.createDominions5Game = (reservedPort, hostServer, guildWrapper, organizerWrapper) =>

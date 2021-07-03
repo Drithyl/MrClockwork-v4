@@ -17,12 +17,12 @@ exports.loadAll = function()
     var pathToGameDataDir = `${config.dataPath}/${config.gameDataFolder}`;
     var gameDirNames = rw.getDirSubfolderNamesSync(pathToGameDataDir);
     
-    return gameDirNames.forEach((gameDirName) =>
+    return gameDirNames.forAllPromises((gameDirName) =>
     {
         var gameJSONDataPath = `${pathToGameDataDir}/${gameDirName}/data.json`;
-        var loadedGame = gameFactory.loadGame(gameJSONDataPath);
         
-        exports.addOngoingGame(loadedGame);
+        return gameFactory.loadGame(gameJSONDataPath)
+        .then((loadedGame) => exports.addOngoingGame(loadedGame));
     });
 };
 

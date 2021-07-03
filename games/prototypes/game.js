@@ -113,6 +113,7 @@ function Game()
     this.getOrganizerId = () => (_organizerWrapper == null) ? null : _organizerWrapper.getId();
     this.setOrganizer = (organizerWrapper) =>
     {
+        assert.isObjectOrThrow(organizerWrapper);
         _organizerWrapper = organizerWrapper;
     };
 
@@ -239,26 +240,29 @@ function Game()
         this.setName(jsonData.name);
         this.setPort(jsonData.port);
         
-
-        if (assert.isString(jsonData.organizerId) === true)
-            this.setOrganizer(guild.getGuildMemberWrapperById(jsonData.organizerId));
-
-        else
+        return guild.fetchGuildMemberWrapperById(jsonData.organizerId)
+        .then((organizerWrapper) =>
         {
-            log.general(log.getLeanLevel(), `${this.getName()}: organizer ${jsonData.organizerId} could not be fetched; setting guild owner ${guild.getOwner().getUsername()} instead.`);
-            this.setOrganizer(guild.getOwner());
-        }
+            if (assert.isObject(organizerWrapper) === true)
+                this.setOrganizer(organizerWrapper);
 
-        if (assert.isString(jsonData.channelId) === true)
-            this.setChannel(guild.getChannelById(jsonData.channelId));
+            else
+            {
+                log.general(log.getLeanLevel(), `${this.getName()}: organizer ${jsonData.organizerId} could not be fetched; setting guild owner ${guild.getOwner().getUsername()} instead.`);
+                this.setOrganizer(guild.getOwner());
+            }
 
-        if (assert.isString(jsonData.roleId) === true)
-            this.setRole(guild.getRoleById(jsonData.roleId));
+            if (assert.isString(jsonData.channelId) === true)
+                this.setChannel(guild.getChannelById(jsonData.channelId));
+
+            if (assert.isString(jsonData.roleId) === true)
+                this.setRole(guild.getRoleById(jsonData.roleId));
 
 
-        _settingsObject.loadJSONData(jsonData.settings);
+            _settingsObject.loadJSONData(jsonData.settings);
 
-        return this;
+            return this;
+        });
     };
 
     this.toJSONSuper = () =>

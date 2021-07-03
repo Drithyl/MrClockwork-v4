@@ -26,7 +26,24 @@ function Dominions5Game()
     _gameObject.getGameType = () => config.dom5GameTypeName;
     _gameObject.getDataPackage = () => _createGameDataPackage();
 
-    _gameObject.getSubmittedNations = () => _gameObject.emitPromiseWithGameDataToServer("GET_SUBMITTED_PRETENDERS");
+    _gameObject.fetchSubmittedNations = () =>
+    {
+        return _gameObject.emitPromiseWithGameDataToServer("GET_SUBMITTED_PRETENDERS")
+        .then((nationArray) =>
+        {
+            return nationArray.forAllPromises((nation) =>
+            {
+                const pretenderOwnerId = game.getPlayerIdControllingNationInGame(nation.nationFilename);
+
+                if (pretenderOwnerId == null)
+                    return;
+
+                return guildWrapper.fetchGuildMemberWrapperById(pretenderOwnerId)
+                .then((pretenderOwnerMember) => nation.owner = pretenderOwnerMember);
+            })
+            .then(() => Promise.resolve(nationArray));
+        });
+    }
 
     _gameObject.checkIfNationIsSubmitted = (nationFilename) =>
     {
@@ -261,37 +278,39 @@ function Dominions5Game()
 
     _gameObject.loadJSONData = (jsonData) =>
     {
-        _gameObject.loadJSONDataSuper(jsonData);
-
-        if (asserter.isObject(jsonData.status) === true)
-            _status.fromJSON(jsonData.status);
-
-        if (asserter.isBoolean(jsonData.isEnforcingTimer) === true)
-            _isEnforcingTimer = jsonData.isEnforcingTimer;
-
-        if (asserter.isBoolean(jsonData.isCurrentTurnRollback) === true)
-            _isCurrentTurnRollback = jsonData.isCurrentTurnRollback;
-
-        if (Array.isArray(jsonData.playerData) === true)
+        return _gameObject.loadJSONDataSuper(jsonData)
+        .then(() =>
         {
-            jsonData.playerData.forEach((playerId) =>
-            {
-                _playerFiles[playerId] = playerFileStore.getPlayerFile(playerId);
-            });
-        }
+            if (asserter.isObject(jsonData.status) === true)
+                _status.fromJSON(jsonData.status);
 
-        if (jsonData.statusEmbedId != null && _gameObject.getChannel() != null)
-        {
-            Dominions5StatusEmbed.loadExisting(_gameObject.getChannel(), jsonData.statusEmbedId)
-            .then((statusEmbed) => 
-            {
-                _statusEmbed = statusEmbed;
-                return Promise.resolve();
-            })
-            .catch((err) => log.error(log.getLeanLevel(), `ERROR LOADING ${_gameObject.getName()}'S EMBED`, err));
-        }
+            if (asserter.isBoolean(jsonData.isEnforcingTimer) === true)
+                _isEnforcingTimer = jsonData.isEnforcingTimer;
 
-        return _gameObject;
+            if (asserter.isBoolean(jsonData.isCurrentTurnRollback) === true)
+                _isCurrentTurnRollback = jsonData.isCurrentTurnRollback;
+
+            if (Array.isArray(jsonData.playerData) === true)
+            {
+                jsonData.playerData.forEach((playerId) =>
+                {
+                    _playerFiles[playerId] = playerFileStore.getPlayerFile(playerId);
+                });
+            }
+
+            if (jsonData.statusEmbedId != null && _gameObject.getChannel() != null)
+            {
+                Dominions5StatusEmbed.loadExisting(_gameObject.getChannel(), jsonData.statusEmbedId)
+                .then((statusEmbed) => 
+                {
+                    _statusEmbed = statusEmbed;
+                    return Promise.resolve();
+                })
+                .catch((err) => log.error(log.getLeanLevel(), `ERROR LOADING ${_gameObject.getName()}'S EMBED`, err));
+            }
+
+            return _gameObject;
+        });
     };
 
     _gameObject.toJSON = () =>
