@@ -28,7 +28,7 @@
   },
   "homepage": "https://github.com/Drithyl/MrClockwork-v4#readme",
   "dependencies": {
-    "discord.js": "^12.3.1",
+    "discord.js": "^12.5.3",
     "ejs": "^3.1.5",
     "express": "^4.17.1",
     "socket.io": "^2.3.0",
