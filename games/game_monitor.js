@@ -27,15 +27,14 @@ function _updateDom5Game(game)
 
     setTimeout(() => 
     {
-        return _updateCycle(game)
-        .then(() => 
-        {
-            if (ongoingGameStore.hasOngoingGameByName(gameName) === false)
-                delete monitoredGames[gameName];
+        if (ongoingGameStore.hasOngoingGameByName(gameName) === false)
+            delete monitoredGames[gameName];
 
-            if (monitoredGames[gameName] != null)
-                _updateDom5Game(game);
-        })
+        if (monitoredGames[gameName] == null)
+            return;
+        
+        return _updateCycle(game)
+        .then(() => _updateDom5Game(game))
         .catch((err) => 
         {
             log.error(log.getNormalLevel(), `ERROR UPDATING DOM5 GAME ${gameName}`, err);
