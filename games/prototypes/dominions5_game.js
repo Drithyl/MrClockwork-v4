@@ -264,7 +264,6 @@ function Dominions5Game()
 
         else if (_gameObject.getChannel() != null)
             _gameObject.sendStatusEmbed()
-            .then(() => _gameObject.save())
             .catch((err) => log.error(log.getVerboseLevel(), `ERROR SENDING ${_gameObject.getName()}'S EMBED`, err));
     };
 
