@@ -9,6 +9,7 @@ const messenger = require("../../discord/messenger.js");
 const guildStore = require("../../discord/guild_store.js");
 const ongoingGamesStore = require("../ongoing_games_store.js");
 const hostServerStore = require("../../servers/host_server_store.js");
+const SemanticError = require("../../errors/custom_errors.js").SemanticError;
 
 module.exports = Game;
 
