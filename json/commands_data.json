@@ -470,7 +470,7 @@
         "optionalArguments": 0,
         "regexpRequiredToInvoke": "REPLACE",
         "argumentRegexpArray": ["\\w+", "\\w+"],
-        "channelRequiredToInvoke": "any",
+        "channelRequiredToInvoke": "guild",
         "helpText": "Replaces one of the basic bot roles created for this Discord guild by a different existing role. Useful if the guild already has a trusted role for members and doesn't want to use the bot's Trusted role, for example."
     },
 

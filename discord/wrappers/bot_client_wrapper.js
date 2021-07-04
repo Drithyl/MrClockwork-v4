@@ -1,11 +1,22 @@
 
-const Discord = require("discord.js");
+const { Client, Intents } = require("discord.js");
 const log = require("../../logger.js");
 const guildStore = require("../guild_store.js");
 const UserWrapper = require("./user_wrapper.js");
 const config = require("../../config/config.json");
 
-const _discordJsBotClient = new Discord.Client();
+// As of DiscordJS v13, these intents are **required**; read more here:
+// https://discordjs.guide/popular-topics/intents.html#enabling-intents
+const myIntents = new Intents().add(
+    "GUILDS",
+    "GUILD_MEMBERS",
+    "GUILD_MESSAGES",
+    "DIRECT_MESSAGES"
+);
+
+const _discordJsBotClient = new Client({
+    intents: myIntents
+});
 
 
 exports.getId = () => _discordJsBotClient.user.id;
@@ -41,6 +52,15 @@ exports.addOnBotReconnectingHandler = (handler) => _discordJsBotClient.on("recon
 exports.addOnDebugInfoHandler = (handler) => _discordJsBotClient.on("debug", (info) => handler(info));
 exports.addOnWarningHandler = (handler) => _discordJsBotClient.on("warn", (warning) => handler(warning));
 exports.addOnBotErrorHandler = (handler) => _discordJsBotClient.on("error", (error) => handler(error));
+
+exports.addOnCommandInteractionReceivedHandler = (handler) => 
+{
+    _discordJsBotClient.on("interaction", (discordJsInteraction) => 
+    {
+        if (discordJsInteraction.isCommand() === true)
+            handler(discordJsInteraction);
+    });
+};
 
 exports.addOnBotJoinedGuildHandler = (handler) =>
 {

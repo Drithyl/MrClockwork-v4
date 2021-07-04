@@ -1,0 +1,629 @@
+{
+    "CURRENT_TIMER":
+    {
+        "name": "timer",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "game",
+        "description": "Check (when used without arguments) or change the timer of the current turn.",
+        "options": [
+            {
+                "name": "input",
+                "type": "STRING",
+                "description": "Change the timer, i.e. `3d20h30m`, or a single integer for hours (`0` to pause).",
+                "required": false
+            }
+        ]
+    },
+
+    "DEFAULT_TIMER":
+    {
+        "name": "dtimer",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "game",
+        "description": "Check (when used without arguments) or change the default timer.",
+        "options": [
+            {
+                "name": "input",
+                "type": "STRING",
+                "description": "Change the default timer, i.e. `3d20h30m`, or a single integer for hours (`0` to pause).",
+                "required": false
+            }
+        ]
+    },
+
+    "CHANGE_PLAYER_PREFERENCES":
+    {
+        "name": "preferences",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "any",
+        "description": "Displays the player game preferences menu (global preferences if used by DM)."
+    },
+
+    "CHANGE_SETTINGS":
+    {
+        "name": "settings",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "game",
+        "description": "[Game-organizer-only] Change game settings, provided the game hasn't started yet."
+    },
+
+    "CLAIM_PRETENDER":
+    {
+        "name": "claim",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "game",
+        "description": "Claims a submitted pretender. Gives access to turn backups or turn reminders.",
+        "options": [
+            {
+                "name": "nation_number",
+                "type": "INTEGER",
+                "description": "A number that matches the pretender's index displayed by the `pretenders` command.",
+                "required": true
+            }
+        ]
+    },
+
+    "CREATE_GAME_CHANNEL":
+    {
+        "name": "channel",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "guild",
+        "description": "Creates a game channel to discuss settings before actually hosting a game.",
+        "options": [
+            {
+                "name": "channel_name",
+                "type": "STRING",
+                "description": "A channel name",
+                "required": true
+            }
+        ]
+    },
+
+    "DELETE_GAME":
+    {
+        "name": "deletegamenotchannel",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "game",
+        "description": "Permanently deletes the game hosted in this channel, while leaving the channel intact."
+    },
+
+    "DELETE_GAME_AND_CHANNEL":
+    {
+        "name": "deletegameandchannel",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "game",
+        "description": "Permanently deletes the game hosted in this channel, as well as the channel itself."
+    },
+
+    "DELETE_GAME_BY_DM":
+    {
+        "name": "deletegamebydm",
+        "isEnabled": true,
+        "isDevOnly": true,
+        "channelRequiredToInvoke": "dm",
+        "description": "[Dev-only] Permanently deletes the given game and its channel and role.",
+        "options": [
+            {
+                "name": "game_name",
+                "type": "STRING",
+                "description": "A game's name",
+                "required": true
+            }
+        ]
+    },
+
+    "DELETE_PENDING_CHANNEL":
+    {
+        "name": "deletependingchannel",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "guild",
+        "description": "Deletes the last channel that was created via the createchannel command."
+    },
+
+    "DELETE_UNUSED_MAPS":
+    {
+        "name": "deleteunusedmaps",
+        "isEnabled": true,
+        "isDevOnly": true,
+        "channelRequiredToInvoke": "dm",
+        "description": "[Dev-only] Deletes the maps on a target server which are currently not used by any ongoing game.",
+        "options": [
+            {
+                "name": "server_name",
+                "type": "STRING",
+                "description": "A server's name",
+                "required": true
+            }
+        ]
+    },
+
+    "DELETE_UNUSED_MODS":
+    {
+        "name": "deleteunusedmods",
+        "isEnabled": true,
+        "isDevOnly": true,
+        "channelRequiredToInvoke": "dm",
+        "description": "[Dev-only] Deletes the mods on a target server which are currently not used by any ongoing game.",
+        "options": [
+            {
+                "name": "server_name",
+                "type": "STRING",
+                "description": "A server's name",
+                "required": true
+            }
+        ]
+    },
+
+    "DEPLOY_BOT":
+    {
+        "name": "deploy",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "guild",
+        "description": "[Guild-owner-only] Deploy bot channels and roles. Can be used to restore categories and roles."
+    },
+
+    "DISPLAY_SUBMITTED_PRETENDERS":
+    {
+        "name": "pretenders",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "game",
+        "description": "Displays a list of submitted pretenders. Use their numbers for other pretender commands."
+    },
+
+    "FORCE_HOST":
+    {
+        "name": "forcehost",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "game",
+        "description": "[Game-organizer-only] In a game channel, forces a turn to roll immediately."
+    },
+
+    "GET_CURRENT_TURN_FILE":
+    {
+        "name": "turnfile",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "game",
+        "description": "[Game-player-only] Requests the claimed nation's current turn file, which is then sent by DM."
+    },
+
+    "GET_DOM5_MAPS_ON_SERVER":
+    {
+        "name": "dom5maps",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "any",
+        "description": "Prints a list of the Dominions 5 maps available on the given server.",
+        "options": [
+            {
+                "name": "server_name",
+                "type": "STRING",
+                "description": "A server's name",
+                "required": true
+            }
+        ]
+    },
+
+    "GET_DOM5_MODS_ON_SERVER":
+    {
+        "name": "dom5mods",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "any",
+        "description": "Prints a list of the Dominions 5 mods available on the given server.",
+        "options": [
+            {
+                "name": "server_name",
+                "type": "STRING",
+                "description": "A server's name",
+                "required": true
+            }
+        ]
+    },
+
+    "GET_DOM5_NATIONS":
+    {
+        "name": "dom5nations",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "any",
+        "description": "Prints a list of all the Dominions 5's nations and their nation_numbers and filenames."
+    },
+
+    "GET_DOM5_SCORES":
+    {
+        "name": "scores",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "game",
+        "description": "Get current turn's scores file. Only available if visible scoregraphs, or games which have ended."
+    },
+
+    "GET_GAME_INFO":
+    {
+        "name": "info",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "game",
+        "description": "In a game channel, prints this game's information and settings."
+    },
+
+    "GET_GAMES_BY_LAST_HOSTED":
+    {
+        "name": "getgamesbylasthosted",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "any",
+        "description": "Prints a list of hosted games in this guild, or all games if sent by DM, sorted by last turn date."
+    },
+
+    "GET_LIST_OF_HOSTED_GAMES":
+    {
+        "name": "games",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "any",
+        "description": "Prints a list of all hosted games in this Discord guild, or all games if the command is sent by DM."
+    },
+
+    "GET_LIST_OF_UNDONE_TURNS":
+    {
+        "name": "undone",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "game",
+        "description": "In a game channel, prints a list nations whose turns' are undone or unfinished."
+    },
+
+    "GET_LIST_OF_FREE_HOSTING_SLOTS":
+    {
+        "name": "capacity",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "any",
+        "description": "Prints the list of servers with the number of free hosting slots in each."
+    },
+
+    "GET_PATREON_LINK":
+    {
+        "name": "patreon",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "any",
+        "description": "Prints a link to the Patreon for those who wish to support the project. Thank you!"
+    },
+
+    "GET_SETTING_VALUE_ACROSS_GAMES":
+    {
+        "name": "values",
+        "isEnabled": true,
+        "isDevOnly": true,
+        "channelRequiredToInvoke": "dm",
+        "description": "[Dev-only] Receive a list of the values of a setting currently in use in every Dominions game.",
+        "options": [
+            {
+                "name": "setting_key",
+                "type": "STRING",
+                "description": "A game setting key",
+                "required": true
+            }
+        ]
+    },
+
+    "HELP":
+    {
+        "name": "help",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "any",
+        "description": "Print a list of the available commands."
+    },
+
+    "HOST_DOM5_GAME":
+    {
+        "name": "host",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "guild",
+        "description": "Host a Dom5 game. You will be asked a series of settings by DM to configure it."
+    },
+
+    "HOST_DOM5_GAME_WEB":
+    {
+        "name": "host_web",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "guild",
+        "description": "Host a Dom5 game using the website interface."
+    },
+
+    "KILL_GAME_PROCESS":
+    {
+        "name": "kill",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "game",
+        "description": "Shuts down the game's process. Useful to relaunch it to fix common errors. Doesn't delete anything."
+    },
+
+    "LAUNCH_GAME_PROCESS":
+    {
+        "name": "launch",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "game",
+        "description": "In a game channel, launches a game's process. Use if the bot mentions the **game** being offline."
+    },
+
+    "POST_NEWS":
+    {
+        "name": "post",
+        "isEnabled": true,
+        "isDevOnly": true,
+        "channelRequiredToInvoke": "dm",
+        "description": "[Dev-only] Posts a message across all clockwork_news channels.",
+        "options": [
+            {
+                "name": "news_message",
+                "type": "STRING",
+                "description": "The message to post on the news channels of associated guilds.",
+                "required": true
+            }
+        ]
+    },
+
+    "PRUNE_DATA":
+    {
+        "name": "prunedata",
+        "isEnabled": true,
+        "isDevOnly": true,
+        "channelRequiredToInvoke": "dm",
+        "description": "[Dev-only] Prunes obsolete player data, like leftover game data or preferences from games."
+    },
+
+    "REMOVE_PRETENDER":
+    {
+        "name": "remove",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "game",
+        "description": "In a game channel, removes a submitted pretender for this game.",
+        "options": [
+            {
+                "name": "nation_number",
+                "type": "INTEGER",
+                "description": "A number that matches the pretender's index displayed; a.k.a. the nation_number.",
+                "required": true
+            }
+        ]
+    },
+
+    "REPLACE_BOT_ROLE":
+    {
+        "name": "replace",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "guild",
+        "description": "[Guild-owner-only] Replaces one of the bot roles by a different existing role.",
+        "options": [
+            {
+                "name": "old_role_id",
+                "type": "ROLE",
+                "description": "The bot's role id to be replaced.",
+                "required": true
+            },
+            {
+                "name": "new_role_id",
+                "type": "ROLE",
+                "description": "The new role's id to take its place.",
+                "required": true
+            }
+        ]
+    },
+
+    "RESTABLISH_GAME":
+    {
+        "name": "restablish",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "any",
+        "description": "Restablishes a game's deleted channel and/or role by creating new ones if none are found.",
+        "options": [
+            {
+                "name": "game_name",
+                "type": "STRING",
+                "description": "A game's name.",
+                "required": true
+            }
+        ]
+    },
+
+    "RESTART_GAME":
+    {
+        "name": "restartandgobacktolobby",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "game",
+        "description": "[Game-organizer-only] Restarts the game back to the pretender lobby; players must resubmit."
+    },
+
+    "ROLL_DICE":
+    {
+        "name": "roll",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "any",
+        "description": "Rolls dice.",
+        "options": [
+            {
+                "name": "roll_input",
+                "type": "STRING",
+                "description": "A roll. Adding a `+` after a dice expression will make them explosive, i.e. `5d6++10d10+`.",
+                "required": true
+            }
+        ]
+    },
+
+    "ROLLBACK_TURN":
+    {
+        "name": "rollback",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "game",
+        "description": "[Game-organizer-only] Rollbacks to the previous turn. Only keeps backups of a few turns back."
+    },
+
+    "SET_LOG_LEVEL":
+    {
+        "name": "setloglevel",
+        "isEnabled": true,
+        "isDevOnly": true,
+        "channelRequiredToInvoke": "dm",
+        "description": "[Dev-only] Sets the verbosity level of the logging functions to the console and files.",
+        "options": [
+            {
+                "name": "verbosity_level",
+                "type": "INTEGER",
+                "description": "The numerical level of logging verbosity, inclusive from 0 (lean) to 2 (verbose).",
+                "required": true
+            }
+        ]
+    },
+
+    "SET_LOG_TO_FILE":
+    {
+        "name": "setlogtofile",
+        "isEnabled": true,
+        "isDevOnly": true,
+        "channelRequiredToInvoke": "dm",
+        "description": "[Dev-only] Sets whether the bot will log its prints to files.",
+        "options": [
+            {
+                "name": "boolean",
+                "type": "BOOLEAN",
+                "description": "True or false, or 1 or 0: whether to log to a file",
+                "required": true
+            }
+        ]
+    },
+
+    "SET_ORGANIZER":
+    {
+        "name": "setorganizer",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "game",
+        "description": "Sets a member as the organizer of this game. If an organizer exists; replaces them.",
+        "options": [
+            {
+                "name": "member_mention",
+                "type": "MENTIONABLE",
+                "description": "A mention to the new organizer (@Username#0000).",
+                "required": true
+            }
+        ]
+    },
+
+    "START_GAME":
+    {
+        "name": "start",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "game",
+        "description": "[Game-organizer-only] Starts the game. Can take long depending on size (even > 20 minutes)."
+    },
+
+    "SUBSCRIBE_TO_GAME":
+    {
+        "name": "subscribe",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "game",
+        "description": "Assigns yourself the role of the game. Claiming a pretender assigns it automatically."
+    },
+
+    "SUBSTITUTE_PLAYER":
+    {
+        "name": "sub",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "game",
+        "description": "[Game-organizer-only] Transfers the claim on a pretender to another player.",
+        "options": [
+            {
+                "name": "nation_number",
+                "type": "INTEGER",
+                "description": "A nation number that matches the pretender's index displayed by the pretenders command.",
+                "required": true
+            },
+            {
+                "name": "member_mention",
+                "type": "MENTIONABLE",
+                "description": "A mention to the player who will be taking over (@Username#0000).",
+                "required": true
+            }
+        ]
+    },
+
+    "SWITCH_TIMER_ENFORCER":
+    {
+        "name": "switchtimerenforcer",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "game",
+        "description": "[Game-organizer-only] Switches from bot-enforced timer to game-enforced timer, and vice versa."
+    },
+
+    "UNCLAIM_PRETENDER":
+    {
+        "name": "unclaim",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "game",
+        "description": "Removes your claim from your submitted pretender (without deleting the submitted pretender)."
+    },
+
+    "UNDEPLOY_BOT":
+    {
+        "name": "undeploybotfromguild",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "guild",
+        "description": "[Guild-owner-only] CAREFUL. Will attempt to delete ALL deployment from bot."
+    },
+
+    "UNSUBSCRIBE_FROM_GAME":
+    {
+        "name": "unsubscribe",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "game",
+        "description": "Removes the role of a game from yourself. Unclaiming/removing pretender does this."
+    },
+
+    "UPDATE_HELP_CHANNELS":
+    {
+        "name": "updatehelp",
+        "isEnabled": true,
+        "isDevOnly": true,
+        "channelRequiredToInvoke": "dm",
+        "description": "[Dev-only] Re-writes the help information on the guild's help channel.",
+        "options": [
+            {
+                "name": "guild_id",
+                "type": "STRING",
+                "description": "A guild ID, if only one channel requires updating.",
+                "required": false
+            }
+        ]
+    },
+
+    "UPLOAD_FILE_TO_SERVER":
+    {
+        "name": "upload",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "any",
+        "description": "Upload map or mod to the server through google drive.",
+        "longDescription": "Upload map or mod to the server through google drive. To use it, you must specify whether the package is a mod or map, add the google drive file sharing link at the end of the command (which can be found when you right click a file on the drive website and click on Get Shareable Link), and the server's name where you're uploading it. The package must be a .zip file containing the mod or map as is meant to be extracted into the mods or maps folder. If files with the same name exist in the server, they will be overwritten if they are mod image files, but .dm and map-related files will *not* be overwritten so as to not have an impact on ongoing games using that mod or map. To upload an updated version of a mod, just make sure you change the name to add the version number to it so it does not conflict. You can upload more than one map and mod in the same zipfile, just make sure they are all zipped in the same structure in which it'll be extracted to the maps or mods folder.",
+        "options": [
+            {
+                "name": "type",
+                "type": "STRING",
+                "description": "The type of file you're uploading",
+                "required": true,
+                "choices":[
+                    {
+                        "name": "Map",
+                        "value": "map"
+                    },
+                    {
+                        "name": "Mod",
+                        "value": "mod"
+                    }
+                ]
+            },
+            {
+                "name": "link",
+                "type": "STRING",
+                "description": "A google drive file ID or link.",
+                "required": true
+            },
+            {
+                "name": "server_name",
+                "type": "STRING",
+                "description": "A server's name.",
+                "required": true
+            }
+        ]
+    }
+}

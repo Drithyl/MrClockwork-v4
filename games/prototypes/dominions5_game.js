@@ -47,7 +47,7 @@ function Dominions5Game()
 
     _gameObject.checkIfNationIsSubmitted = (nationFilename) =>
     {
-        return _gameObject.getSubmittedNations()
+        return _gameObject.fetchSubmittedNations()
         .then((list) => Promise.resolve(list.find((nation) => nationFilename === nation.filename) != null));
     };
 

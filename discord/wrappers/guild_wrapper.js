@@ -37,6 +37,8 @@ function GuildWrapper(discordJsGuildObject)
     this.memberHasTrustedRole = (guildMemberWrapper) => guildMemberWrapper.hasRole(guildDataStore.getTrustedRoleId(this.getId())) === true;
     this.memberHasBlitzerRole = (guildMemberWrapper) => guildMemberWrapper.hasRole(guildDataStore.getBlitzerRoleId(this.getId())) === true;
     this.memberHasGameMasterRole = (guildMemberWrapper) => guildMemberWrapper.hasRole(guildDataStore.getBlitzerRoleId(this.getId())) === true;
+    this.createCommand = (data) => _discordJsGuildObject.commands.create(data);
+    this.setCommands = (bulkData) => _discordJsGuildObject.commands.set(bulkData);
     
     this.wasDiscordElementCreatedByBot = (discordId) =>
     {
@@ -186,7 +188,11 @@ function GuildWrapper(discordJsGuildObject)
     this.getRoleByName = (roleName) => _discordJsGuildObject.roles.cache.find("name", roleName);
     this.getChannelByName = (channelName) => _discordJsGuildObject.channels.cache.find("name", channelName);
 
+<<<<<<< Updated upstream
     this.getDiscordJsGuildMemberById = (memberId) => _discordJsGuildObject.member(memberId);
+=======
+    this.getDiscordJsGuildMemberById = (memberId) => _discordJsGuildObject.members.cache.get(memberId);
+>>>>>>> Stashed changes
     this.fetchDiscordJsGuildMemberById = (memberId) => _discordJsGuildObject.members.fetch(memberId);
     this.getGuildMemberWrapperById = (memberId) => 
     {
@@ -222,6 +228,7 @@ function GuildWrapper(discordJsGuildObject)
         
         return guildDataStore.replaceRoleWithNew(this.getId(), idOfRoleToBeReplaced, idOfRoleToTakeItsPlace);
     };
+
 
     /** The channel.bulkDelete method does not work since it cannot delete messages
      *  older than 14 days, even with the boolean option set to true.

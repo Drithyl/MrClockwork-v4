@@ -1,25 +1,29 @@
 
+const assert = require("../../asserter.js");
 const messenger = require("../messenger.js");
 
 module.exports = GuildMemberWrapper;
 
 function GuildMemberWrapper(discordJsGuildMemberObject, guildWrapper)
 {
-  const _discordJsGuildMemberObject = discordJsGuildMemberObject;
-  const _guildWrapper = guildWrapper;
+    const _discordJsGuildMemberObject = discordJsGuildMemberObject;
+    const _guildWrapper = guildWrapper;
 
-  this.getGuildWrapper = () => _guildWrapper;
+    assert.isObjectOrThrow(discordJsGuildMemberObject);
+    assert.isObjectOrThrow(guildWrapper);
 
-  this.getId = () => discordJsGuildMemberObject.id;
-  this.getUsername = () => discordJsGuildMemberObject.user.username;
-  this.getGuildId = () => _guildWrapper.getGuildId();
+    this.getGuildWrapper = () => _guildWrapper;
 
-  this.hasRole = (discordRoleId) => _discordJsGuildMemberObject.roles.cache.get(discordRoleId) != null;
-  this.addRole = (discordRoleObject) => _discordJsGuildMemberObject.roles.add(discordRoleObject);
-  this.removeRole = (discordRoleObject) => _discordJsGuildMemberObject.roles.remove(discordRoleObject);
-  this.getHighestDiscordRolePosition = () => _discordJsGuildMemberObject.highest.position;
+    this.getId = () => _discordJsGuildMemberObject.id;
+    this.getUsername = () => _discordJsGuildMemberObject.user.username;
+    this.getGuildId = () => _guildWrapper.getGuildId();
 
-  this.getLastMessageInGuild = () => _discordJsGuildMemberObject.lastMessage;
+    this.hasRole = (discordRoleId) => _discordJsGuildMemberObject.roles.cache.get(discordRoleId) != null;
+    this.addRole = (discordRoleObject) => _discordJsGuildMemberObject.roles.add(discordRoleObject);
+    this.removeRole = (discordRoleObject) => _discordJsGuildMemberObject.roles.remove(discordRoleObject);
+    this.getHighestDiscordRolePosition = () => _discordJsGuildMemberObject.highest.position;
 
-  this.sendMessage = (...args) => messenger.send(_discordJsGuildMemberObject, ...args);
+    this.getLastMessageInGuild = () => _discordJsGuildMemberObject.lastMessage;
+
+    this.sendMessage = (...args) => messenger.send(_discordJsGuildMemberObject, ...args);
 }
