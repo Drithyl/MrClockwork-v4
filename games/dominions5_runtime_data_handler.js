@@ -288,10 +288,6 @@ function handleFileCreationErr(game, message)
 function handleReplacedThroneErr(game, message)
 {
     log.general(log.getVerboseLevel(), `Handling replacedThrone error ${message}`);
-
-    if (replacedThroneErrArray.includes(game.getName()) === true)
-        return;
-
     debounce(game, `A site was replaced in this mod but Dominions considers it an error. This has no impact in the game other than this warning message:\n\n${message}`);
 }
 
