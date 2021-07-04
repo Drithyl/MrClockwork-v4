@@ -474,6 +474,19 @@
         "helpText": "Replaces one of the basic bot roles created for this Discord guild by a different existing role. Useful if the guild already has a trusted role for members and doesn't want to use the bot's Trusted role, for example."
     },
 
+    "RESET_PORT":
+    {
+        "name": "resetport",
+        "isEnabled": true,
+        "gameTypesSupported": [],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "RESETPORT",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "game",
+        "helpText": "Assigns a new port to the game (or the same one if it's found to be free)."
+    },
+
     "RESTABLISH_GAME":
     {
         "name": "restablish",
