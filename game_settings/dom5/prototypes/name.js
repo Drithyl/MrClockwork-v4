@@ -4,7 +4,10 @@ const ongoingGamesStore = require("../../../games/ongoing_games_store.js");
 const SemanticError = require("../../../errors/custom_errors.js").SemanticError;
 
 const _blacklistedNames = [
-    "global"
+    "global",
+    "newlords",
+    "debug",
+    "grep"
 ];
 
 const key = "name";
@@ -56,7 +59,7 @@ function Name()
         if (_blacklistedNames.includes(input.toLowerCase()) === true)
             throw new SemanticError(`This name is a blacklisted keyword.`);
 
-        return input;
+        return input.toLowerCase();
     }
 }
 
