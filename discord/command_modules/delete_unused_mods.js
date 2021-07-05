@@ -59,7 +59,7 @@ function _behaviour(commandContext)
     .then((deletedMods) => 
     {
         const deletedModsStringList = deletedMods.join("\n").toBox();
-        commandContext.respondToCommand(`The following mods were deleted:\n\n${deletedModsStringList}`);
+        return commandContext.respondToCommand(`The following mod files were deleted:`, { files: { filename: "deleted_mods.txt", attachment: Buffer.from(deletedModsStringList, "utf8") }});
     })
     .catch((err) => commandContext.respondToCommand(`Error occurred: ${err.message}\n\n${err.stack}`));
 }

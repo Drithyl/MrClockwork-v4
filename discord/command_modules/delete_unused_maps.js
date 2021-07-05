@@ -59,7 +59,7 @@ function _behaviour(commandContext)
     .then((deletedMaps) => 
     {
         const deletedMapsStringList = deletedMaps.join("\n").toBox();
-        commandContext.respondToCommand(`The following maps were deleted:\n\n${deletedMapsStringList}`);
+        return commandContext.respondToCommand(`The following map files were deleted:`, { files: { filename: "deleted_maps.txt", attachment: Buffer.from(deletedMapsStringList, "utf8") }});
     })
     .catch((err) => commandContext.respondToCommand(`Error occurred: ${err.message}\n\n${err.stack}`));
 }
