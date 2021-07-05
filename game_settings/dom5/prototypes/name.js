@@ -24,8 +24,6 @@ function Name()
         return this.getValue();
     };
     
-    this.canBeChangedAfterCreation = () => false;
-    
     this.setValue = (input) =>
     {
         const validatedValue = _validateInputFormatOrThrow(input);

@@ -46,7 +46,7 @@ function GameSettings(parentGame)
     {
         this.forEachSetting((settingObject, key) =>
         {
-            if (settingObject.canBeChangedAfterCreation() === true)
+            if (settingObject.canBeChanged() === true)
                 fnToCallOnSettings(settingObject, key);
         });
     };
@@ -55,7 +55,7 @@ function GameSettings(parentGame)
     {
         this.forEachSetting((settingObject, key) =>
         {
-            if (settingObject.canBeChangedAfterCreation() === true && settingObject.isPublic() === true)
+            if (settingObject.canBeChanged() === true && settingObject.isPublic() === true)
                 fnToCallOnSettings(settingObject, key);
         });
     };

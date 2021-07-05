@@ -5,7 +5,9 @@
         "name": "AI Nations",
         "defaultInput": "17 difficult, 18 mighty, 19 master",
         "description": "Sets which nations will be AI-controlled. Type 'none' for no AI-controlled nation, or type a list, separating each nation with a comma (,). The format is the following: `'nation number' 'difficulty', 'nation number' 'difficulty', etc`. The difficulties available are `easy`, `normal`, `difficult`, `mighty`, `master`, and `impossible`. An example would be: `82 impossible, 50 master, 45 difficult`.`",
-        "expectedInputFormatRegexp": "^(NONE)|(\\d\\d*\\d*\\s*(easy|normal|difficult|mighty|master|impossible)\\s*)(,\\s*\\d\\d*\\d*\\s*(easy|normal|difficult|mighty|master|impossible)\\s*)*$"
+        "expectedInputFormatRegexp": "^(NONE)|(\\d\\d*\\d*\\s*(easy|normal|difficult|mighty|master|impossible)\\s*)(,\\s*\\d\\d*\\d*\\s*(easy|normal|difficult|mighty|master|impossible)\\s*)*$",
+        "canBeChanged": false,
+        "isPublic": true
     },
 
     "artifactForging":
@@ -13,7 +15,9 @@
         "name": "Artifact Forging",
         "defaultInput": "0",
         "description": "0 = players can only forge one artifact per turn\n1 = players can forge more than one artifact per turn",
-        "expectedInputFormatRegexp": "^\\d$"
+        "expectedInputFormatRegexp": "^\\d$",
+        "canBeChanged": true,
+        "isPublic": true
     },
 
     "ascensionPoints":
@@ -21,7 +25,9 @@
         "name": "Ascension Points",
         "defaultInput": "8",
         "description": "The total must be equal or lower than the sum of the throne points chosen, and above 0.",
-        "expectedInputFormatRegexp": "^\\d?\\d$"
+        "expectedInputFormatRegexp": "^\\d?\\d$",
+        "canBeChanged": true,
+        "isPublic": true
     },
 
     "cataclysm":
@@ -29,7 +35,9 @@
         "name": "Cataclysm",
         "defaultInput": "80",
         "description": "An integer from 0 to 999 (inclusive).",
-        "expectedInputFormatRegexp": "^\\d?\\d?\\d$"
+        "expectedInputFormatRegexp": "^\\d?\\d?\\d$",
+        "canBeChanged": true,
+        "isPublic": true
     },
 
     "defaultAiLevel":
@@ -37,7 +45,9 @@
         "name": "Default AI Level",
         "defaultInput": "6",
         "description": "0 = no going AI\n1 = easy\n2 = normal\n3 = difficult\n4 = mighty\n5 = master\n6 = impossible",
-        "expectedInputFormatRegexp": "^\\d$"
+        "expectedInputFormatRegexp": "^\\d$",
+        "canBeChanged": true,
+        "isPublic": true
     },
 
     "disciples":
@@ -45,7 +55,9 @@
         "name": "Disciples",
         "defaultInput": "0",
         "description": "(You will have to set up the teams yourself on the pretender lobby) (**WARNING:** if you are using a map with pre-defined nation starts for a disciples game, select 1, as clustered will mess the special starts)\n\n0 = off\n1 = on\n2 = on, with clustered starts",
-        "expectedInputFormatRegexp": "^\\d$"
+        "expectedInputFormatRegexp": "^\\d$",
+        "canBeChanged": true,
+        "isPublic": true
     },
 
     "era":
@@ -53,7 +65,9 @@
         "name": "Era",
         "defaultInput": "1",
         "description": "1 = Early Age\n2 = Middle Age\n3 = Late Age",
-        "expectedInputFormatRegexp": "^\\d$"
+        "expectedInputFormatRegexp": "^\\d$",
+        "canBeChanged": false,
+        "isPublic": true
     },
 
     "eventRarity":
@@ -61,7 +75,9 @@
         "name": "Event Rarity",
         "defaultInput": "1",
         "description": "1 = common\n2 = rare",
-        "expectedInputFormatRegexp": "^\\d$"
+        "expectedInputFormatRegexp": "^\\d$",
+        "canBeChanged": true,
+        "isPublic": true
     },
 
     "globalSlots":
@@ -69,7 +85,8 @@
         "name": "Global Slots",
         "defaultInput": "5",
         "description": "An integer from 3 to 9 (inclusive).",
-        "expectedInputFormatRegexp": "^\\d$"
+        "expectedInputFormatRegexp": "^\\d$",
+        "isPublic": true
     },
 
     "goldModifier":
@@ -77,7 +94,9 @@
         "name": "Gold Modifier",
         "defaultInput": "100",
         "description": "A percentage from 50 to 300 (inclusive).",
-        "expectedInputFormatRegexp": "^\\d?\\d\\d%?$"
+        "expectedInputFormatRegexp": "^\\d?\\d\\d%?$",
+        "canBeChanged": true,
+        "isPublic": true
     },
 
     "hallOfFame":
@@ -85,7 +104,9 @@
         "name": "Hall of Fame",
         "defaultInput": "15",
         "description": "An integer from 5 to 20 (inclusive).",
-        "expectedInputFormatRegexp": "^\\d?\\d$"
+        "expectedInputFormatRegexp": "^\\d?\\d$",
+        "canBeChanged": true,
+        "isPublic": true
     },
 
     "independentsStrength":
@@ -93,7 +114,9 @@
         "name": "Independents' Strength",
         "defaultInput": "5",
         "description": "An integer from 0 to 9 (inclusive).",
-        "expectedInputFormatRegexp": "^\\d$"
+        "expectedInputFormatRegexp": "^\\d$",
+        "canBeChanged": true,
+        "isPublic": true
     },
 
     "magicSites":
@@ -101,7 +124,9 @@
         "name": "Magic Sites",
         "defaultInput": "60",
         "description": "An integer from 0 to 75 (inclusive).",
-        "expectedInputFormatRegexp": "^\\d?\\d$"
+        "expectedInputFormatRegexp": "^\\d?\\d$",
+        "canBeChanged": true,
+        "isPublic": true
     },
 
     "map":
@@ -109,7 +134,9 @@
         "name": "Mapfile",
         "defaultInput": "peliwyr",
         "description": "The filename of the map to use.",
-        "expectedInputFormatRegexp": "^\\w+(\\.map)?$"
+        "expectedInputFormatRegexp": "^\\w+(\\.map)?$",
+        "canBeChanged": true,
+        "isPublic": true
     },
 
     "masterPassword":
@@ -117,7 +144,9 @@
         "name": "Master Password",
         "defaultInput": "1234",
         "description": "Must not contain spaces or special characters other than underscores. Must be 3 to 20 characters long.",
-        "expectedInputFormatRegexp": "^\\w+|_{3, 20}$"
+        "expectedInputFormatRegexp": "^\\w+|_{3, 20}$",
+        "canBeChanged": false,
+        "isPublic": false
     },
 
     "mods":
@@ -125,7 +154,9 @@
         "name": "Mods",
         "defaultInput": "DomEnhanced1_67.dm, WH_6_24.dm",
         "description": "Type `none` for no mods, or copy and paste (letter-case counts) one or more mod filenames, separated by commas (,).",
-        "expectedInputFormatRegexp": "^(none)|((\\w+(.dm)?)(,\\s*\\w+(.dm)?)*)$"
+        "expectedInputFormatRegexp": "^(none)|((\\w+(.dm)?)(,\\s*\\w+(.dm)?)*)$",
+        "canBeChanged": true,
+        "isPublic": true
     },
 
     "name":
@@ -133,7 +164,9 @@
         "name": "Game Name",
         "defaultInput": "defaultGame",
         "description": "Game name must be unique. No spaces or special characters other than underscores allowed. Must be 3 to 32 characters long.",
-        "expectedInputFormatRegexp": "^\\w+|_{3, 32}$"
+        "expectedInputFormatRegexp": "^\\w+|_{3, 32}$",
+        "canBeChanged": false,
+        "isPublic": true
     },
 
     "recruitmentModifier":
@@ -141,7 +174,9 @@
         "name": "Recruitment Modifier",
         "defaultInput": "100",
         "description": "A percentage from 50 to 300 (inclusive).",
-        "expectedInputFormatRegexp": "^\\d?\\d\\d%?$"
+        "expectedInputFormatRegexp": "^\\d?\\d\\d%?$",
+        "canBeChanged": true,
+        "isPublic": true
     },
 
     "researchSpeed":
@@ -149,7 +184,9 @@
         "name": "Research Speed",
         "defaultInput": "2",
         "description": "0 = very easy\n1 = easy\n2 = normal\n3 = hard\n4 = very hard",
-        "expectedInputFormatRegexp": "^\\d$"
+        "expectedInputFormatRegexp": "^\\d$",
+        "canBeChanged": true,
+        "isPublic": true
     },
 
     "resourcesModifier":
@@ -157,7 +194,9 @@
         "name": "Resources Modifier",
         "defaultInput": "100",
         "description": "A percentage from 50 to 300 (inclusive).",
-        "expectedInputFormatRegexp": "^\\d?\\d\\d%?$"
+        "expectedInputFormatRegexp": "^\\d?\\d\\d%?$",
+        "canBeChanged": true,
+        "isPublic": true
     },
 
     "scoregraphs":
@@ -165,7 +204,9 @@
         "name": "Scoregraphs",
         "defaultInput": "1",
         "description": "0 = disabled (will remove any information on other nations, even through magic sites)\n1 = off\n2 = on.",
-        "expectedInputFormatRegexp": "^\\d$"
+        "expectedInputFormatRegexp": "^\\d$",
+        "canBeChanged": true,
+        "isPublic": true
     },
 
     "startingProvinces":
@@ -173,7 +214,9 @@
         "name": "Starting Provinces",
         "defaultInput": "1",
         "description": "An integer from 1 to 9 (inclusive).",
-        "expectedInputFormatRegexp": "^\\d$"
+        "expectedInputFormatRegexp": "^\\d$",
+        "canBeChanged": true,
+        "isPublic": true
     },
 
     "startingResearch":
@@ -181,7 +224,9 @@
         "name": "Starting Research",
         "defaultInput": "1",
         "description": "0 = random schools\n1 = spread among all schools",
-        "expectedInputFormatRegexp": "^\\d$"
+        "expectedInputFormatRegexp": "^\\d$",
+        "canBeChanged": true,
+        "isPublic": true
     },
 
     "storyEvents":
@@ -189,7 +234,9 @@
         "name": "Story Events",
         "defaultInput": "2",
         "description": "0 = off\n1 = minor events only\n2 = full events",
-        "expectedInputFormatRegexp": "^\\d$"
+        "expectedInputFormatRegexp": "^\\d$",
+        "canBeChanged": true,
+        "isPublic": true
     },
 
     "suppliesModifier":
@@ -197,7 +244,9 @@
         "name": "Supplies Modifier",
         "defaultInput": "100",
         "description": "A percentage from 50 to 300 (inclusive).",
-        "expectedInputFormatRegexp": "^\\d?\\d\\d%?$"
+        "expectedInputFormatRegexp": "^\\d?\\d\\d%?$",
+        "canBeChanged": true,
+        "isPublic": true
     },
 
     "thrones":
@@ -205,7 +254,9 @@
         "name": "Thrones",
         "defaultInput": "6,3,1",
         "description": "Separated by commas, the number of level 1 thrones (inclusive from 0 to 20), the number of level 2 thrones (inclusive from 0 to 15), and the number of level 3 thrones (inclusive from 0 to 10). At least one must be above 0, and the total points must be equal or more than the ascension points required.",
-        "expectedInputFormatRegexp": "^\\d+,\\s*\\d+,\\s*\\d+\\s*$"
+        "expectedInputFormatRegexp": "^\\d+,\\s*\\d+,\\s*\\d+\\s*$",
+        "canBeChanged": true,
+        "isPublic": true
     },
 
     "timer":
@@ -213,7 +264,9 @@
         "name": "Turn Timer",
         "defaultInput": "1d12h",
         "description": "Use the following format: `1d12h30m`, where `d` are the days, `h` the hours and `m` the minutes. If you type only an integer, like '32', it will be interpreted as hours",
-        "expectedInputFormatRegexp": "^(([0-9]|1[0-9]|2[0-3])|((\\d+d(ay)?)?(([0-9]|1[0-9]|2[0-3])h(ours?)?)?(([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])m(inutes?)?)?))$"
+        "expectedInputFormatRegexp": "^(([0-9]|1[0-9]|2[0-3])|((\\d+d(ay)?)?(([0-9]|1[0-9]|2[0-3])h(ours?)?)?(([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])m(inutes?)?)?))$",
+        "canBeChanged": false,
+        "isPublic": true
     }
 
 }

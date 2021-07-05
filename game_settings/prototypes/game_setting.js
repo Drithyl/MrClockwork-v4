@@ -13,6 +13,8 @@ function GameSetting(key)
     const _name = data.name;
     const _description = data.description;
     const _defaultValue = data.defaultInput;
+    const _canBeChanged = data.canBeChanged;
+    const _isPublic = data.isPublic;
     const _expectedInputFormatRegexp = new RegExp(data.expectedInputFormatRegexp, "i");
 
     this.getKey = () => _key;
@@ -22,8 +24,8 @@ function GameSetting(key)
     this.getParseRegexp = () => _regexp;
     this.getPrompt = () => `**${this.getName()}:**\n\n${this.getDescription()}`;
 
-    this.isPublic = () => true;
-    this.canBeChangedAfterCreation = () => true;
+    this.canBeChanged = () => _canBeChanged;
+    this.isPublic = () => _isPublic;
 
     this.isExpectedFormat = (inputStr) => 
     {
