@@ -39,7 +39,7 @@ function extendPrototypes()
         if (left <= 0)
             return Promise.resolve([]);
 
-        return new Promise((resolve) =>
+        return new Promise((resolve, reject) =>
         {
             var errorOccurred = false;
 
