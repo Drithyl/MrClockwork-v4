@@ -28,12 +28,14 @@ function Dominions5Game()
 
     _gameObject.fetchSubmittedNations = () =>
     {
+        const guildWrapper = _gameObject.getGuild();
+
         return _gameObject.emitPromiseWithGameDataToServer("GET_SUBMITTED_PRETENDERS")
         .then((nationArray) =>
         {
             return nationArray.forAllPromises((nation) =>
             {
-                const pretenderOwnerId = game.getPlayerIdControllingNationInGame(nation.nationFilename);
+                const pretenderOwnerId = _gameObject.getPlayerIdControllingNationInGame(nation.nationFilename);
 
                 if (pretenderOwnerId == null)
                     return;
@@ -43,7 +45,7 @@ function Dominions5Game()
             })
             .then(() => Promise.resolve(nationArray));
         });
-    }
+    };
 
     _gameObject.checkIfNationIsSubmitted = (nationFilename) =>
     {
