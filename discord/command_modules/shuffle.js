@@ -34,13 +34,13 @@ function _behaviour(commandContext)
         elementsToShuffle = mentionedMembers.map((memberWrapper) => memberWrapper.getNameInGuild());
 
     elementsToShuffle = _shuffle(elementsToShuffle);
-    return commandContext.respondToCommand(`Below is your suffled list:\n\n${elementsToShuffle.join("\n").toBox()}`);
+    return commandContext.respondToCommand(`Below is your suffled list:\n\n${_list(elementsToShuffle).toBox()}`);
 }
 
 
-function _shuffle(memberArray)
+function _shuffle(array)
 {
-    var currentIndex = memberArray.length;
+    var currentIndex = array.length;
 
     // While there remain elements to shuffle...
     while (currentIndex !== 0) {
@@ -50,8 +50,15 @@ function _shuffle(memberArray)
         currentIndex--;
 
         // And swap it with the current element.
-        [memberArray[currentIndex], memberArray[randomIndex]] = [memberArray[randomIndex], memberArray[currentIndex]];
+        [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
     }
 
-    return memberArray;
+    return array;
+}
+
+function _list(array)
+{
+    var str = "";
+    array.forEach((elem, i) => str += `${i}. \t${elem}\n`);
+    return str;
 }
