@@ -34,7 +34,7 @@ function _behaviour(commandContext)
         elementsToShuffle = mentionedMembers.map((memberWrapper) => memberWrapper.getNameInGuild());
 
     elementsToShuffle = _shuffle(elementsToShuffle);
-    return commandContext.respondToCommand(`Below is your suffled list:\n\n${_list(elementsToShuffle).toBox()}`);
+    return commandContext.respondToCommand(_list(elementsToShuffle).toBox());
 }
 
 
