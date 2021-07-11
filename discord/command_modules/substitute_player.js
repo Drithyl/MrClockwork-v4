@@ -26,11 +26,6 @@ function SubstitutePlayerCommand()
     return substitutePlayerCommand;
 }
 
-/*TODO: I'm getting rid of the pretender display requirement. Instead,
-the command to display pretenders can be used to check the names of nations
-that have a pretender file submitted, to easily copy and paste it for this command,
-but it does not necessarily need to be used if one already knows the nation name
-of the pretender submitted, which will be checked within the game.substitutePlayer() function*/
 function _behaviour(commandContext)
 {
     const gameObject = commandContext.getGameTargetedByCommand();
