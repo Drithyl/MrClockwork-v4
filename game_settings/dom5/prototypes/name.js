@@ -3,11 +3,11 @@ const GameSetting = require("../../prototypes/game_setting.js");
 const ongoingGamesStore = require("../../../games/ongoing_games_store.js");
 const SemanticError = require("../../../errors/custom_errors.js").SemanticError;
 
-const _blacklistedNames = [
-    "global",
-    "newlords",
-    "debug",
-    "grep"
+const _blacklistedPatterns = [
+    /^global$/i,
+    /^newlords$/i,
+    /^debug$/i,
+    /^grep$/i
 ];
 
 const key = "name";
@@ -54,8 +54,11 @@ function Name()
         if (Name.prototype.isExpectedFormat(input) === false)
             throw new SemanticError(`Invalid value format for the game's name.`);
 
-        if (_blacklistedNames.includes(input.toLowerCase()) === true)
-            throw new SemanticError(`This name is a blacklisted keyword.`);
+        _blacklistedPatterns.forEach((regex) => 
+        {
+            if (regex.test(input) === true)
+                throw new SemanticError(`This name is a blacklisted keyword.`);
+        });
 
         return input.toLowerCase();
     }
