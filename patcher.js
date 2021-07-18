@@ -48,7 +48,6 @@ function _patchV3Game(jsonData)
 
     try
     {
-        console.log("WHOS HERE", jsonData.name);
         _assertAndAssign(v4Data, "name", jsonData.name, assert.isStringOrThrow);
         _assertAndAssign(v4Data, "port", +jsonData.port, assert.isIntegerOrThrow);
         _assertAndAssign(v4Data, "serverId", jsonData.serverToken, assert.isStringOrThrow);
