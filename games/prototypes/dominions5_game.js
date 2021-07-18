@@ -310,7 +310,7 @@ function Dominions5Game()
                 .catch((err) => log.error(log.getLeanLevel(), `ERROR LOADING ${_gameObject.getName()}'S EMBED`, err));
             }
 
-            return _gameObject;
+            return Promise.resolve(_gameObject);
         });
     };
 

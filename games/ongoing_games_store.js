@@ -22,7 +22,8 @@ exports.loadAll = function()
         var gameJSONDataPath = `${pathToGameDataDir}/${gameDirName}/data.json`;
         
         return gameFactory.loadGame(gameJSONDataPath)
-        .then((loadedGame) => exports.addOngoingGame(loadedGame));
+        .then((loadedGame) => exports.addOngoingGame(loadedGame))
+        .catch((err) => log.error(log.getLeanLevel(), `Error loading game`, err));
     });
 };
 
@@ -135,7 +136,7 @@ exports.getArrayOfGames = function()
         let game = _ongoingGamesByName[name];
         arr.push(game);
     }
-
+    
     return arr;
 };
 

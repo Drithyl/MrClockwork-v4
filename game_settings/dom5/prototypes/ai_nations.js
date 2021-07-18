@@ -46,8 +46,11 @@ function AiNations(parentGameObject)
         _value = aiNations;
     };
 
-    this.fromJSON = (value) =>
+    this.fromJSON = (value, needsPatching = false) =>
     {
+        if (needsPatching === true)
+            value = _patchFromV3(value);
+            
         if (typeof value !== "object")
             throw new Error(`Expected object; got ${value}`);
 
@@ -121,6 +124,14 @@ function AiNations(parentGameObject)
         });
 
         return aiNations;
+    }
+
+    function _patchFromV3(value)
+    {
+        if (/^none$/i.test(value) === true)
+            return {};
+
+        else return value;
     }
 }
 

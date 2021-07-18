@@ -26,8 +26,11 @@ function Mods(parentGameObject)
         .then((validatedValue) => _value = validatedValue);
     };
 
-    this.fromJSON = (value) =>
+    this.fromJSON = (value, needsPatching = false) =>
     {
+        if (needsPatching === true)
+            value = _patchFromV3(value);
+            
         if (Array.isArray(value) === false)
             throw new Error(`Expected array of strings; got ${value}`);
 
@@ -79,6 +82,14 @@ function Mods(parentGameObject)
 
         return _parentGame.emitPromiseToServer("VERIFY_MODS", modFilenames)
         .then(() => Promise.resolve(modFilenames));
+    }
+
+    function _patchFromV3(value)
+    {
+        if (Array.isArray(value) === true)
+            return value;
+
+        else return [];
     }
 }
 

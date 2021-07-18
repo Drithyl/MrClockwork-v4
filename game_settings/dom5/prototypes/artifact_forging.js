@@ -26,12 +26,15 @@ function ArtifactForging()
         _value = validatedValue;
     };
 
-    this.fromJSON = (artifactForging) =>
+    this.fromJSON = (value, needsPatching = false) =>
     {
-        if (typeof artifactForging !== "boolean")
-            throw new Error(`artifactForging expected boolean; got ${artifactForging}`);
+        if (needsPatching === true)
+            value = _patchFromV3(value);
+            
+        if (typeof value !== "boolean")
+            throw new Error(`artifactForging expected boolean; got ${value}`);
 
-        _value = artifactForging;
+        _value = value;
     };
 
     this.translateValueToCmdFlag = () =>
@@ -56,6 +59,14 @@ function ArtifactForging()
             return true;
 
         else throw new SemanticError(`Unexpected value for the artifact forging: ${input}`);
+    }
+
+    function _patchFromV3(value)
+    {
+        if (+value == 1)
+            return true;
+        
+        else return false;
     }
 }
 

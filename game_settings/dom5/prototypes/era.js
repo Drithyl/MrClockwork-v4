@@ -36,10 +36,10 @@ function Era()
 
     this.fromJSON = (value) =>
     {
-        if (Number.isInteger(value) === false)
-            throw new Error(`Expected integer; got ${value}`);
+        if (Number.isInteger(+value) === false)
+            throw new Error(`Expected integer; got ${+value}`);
 
-        _value = value;
+        _value = +value;
     };
 
     this.translateValueToCmdFlag = () =>

@@ -26,10 +26,13 @@ function TimerSetting()
         _value = validatedValue;
     };
 
-    this.fromJSON = (msLeft) =>
+    this.fromJSON = (msLeft, needsPatching = false) =>
     {
         const timeLeft = new TimeLeft(0);
 
+        if (needsPatching === true)
+            msLeft = _patchFromV3(msLeft);
+            
         if (isNaN(+msLeft) === true)
             throw new Error(`Expected number; got ${msLeft}`);
 
@@ -58,6 +61,25 @@ function TimerSetting()
         const timeLeft = TimeLeft.fromStringInput(input);
 
         return timeLeft;
+    }
+
+    function _patchFromV3(v3TimerObj)
+    {
+        var timerInMs = 0;
+
+        if (Number.isInteger(+v3TimerObj.days) === true)
+            timerInMs += +v3TimerObj.days * 24 * 3600 * 1000;
+            
+        if (Number.isInteger(+v3TimerObj.hours) === true)
+            timerInMs += +v3TimerObj.hours * 3600 * 1000;
+
+        if (Number.isInteger(+v3TimerObj.minutes) === true)
+            timerInMs += +v3TimerObj.minutes * 60 * 1000;
+
+        if (timerInMs <= 0)
+            return 115200000;  // 32h as default timer if above conversion fails
+
+        else return timerInMs;
     }
 }
 
