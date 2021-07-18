@@ -36,7 +36,7 @@ function GuildWrapper(discordJsGuildObject)
     this.memberIsOwner = (memberId) => memberId === _discordJsGuildObject.ownerID;
     this.memberHasTrustedRole = (guildMemberWrapper) => guildMemberWrapper.hasRole(guildDataStore.getTrustedRoleId(this.getId())) === true;
     this.memberHasBlitzerRole = (guildMemberWrapper) => guildMemberWrapper.hasRole(guildDataStore.getBlitzerRoleId(this.getId())) === true;
-    this.memberHasGameMasterRole = (guildMemberWrapper) => guildMemberWrapper.hasRole(guildDataStore.getBlitzerRoleId(this.getId())) === true;
+    this.memberHasGameMasterRole = (guildMemberWrapper) => guildMemberWrapper.hasRole(guildDataStore.getGameMasterRoleId(this.getId())) === true;
     
     this.wasDiscordElementCreatedByBot = (discordId) =>
     {
