@@ -34,6 +34,7 @@ exports.addOnRoleDeletedHandler = (handler) => _discordJsBotClient.on("roleDelet
 
 exports.addOnMessageReceivedHandler = (handler) => _discordJsBotClient.on("message", (discordJsMessage) => handler(discordJsMessage));
 exports.addOnMessageDeletedHandler = (handler) => _discordJsBotClient.on("messageDelete", (discordJsMessage) => handler(discordJsMessage));
+exports.addOnReactionAddedHandler = (handler) => _discordJsBotClient.on("messageReactionAdd", (discordJsMessageReaction, discordJsUser) => handler(discordJsMessageReaction, discordJsUser));
 
 exports.addOnBotDisconnectedHandler = (handler) => _discordJsBotClient.on("disconnect", () => handler());
 exports.addOnBotReconnectingHandler = (handler) => _discordJsBotClient.on("reconnecting", () => handler());

@@ -184,19 +184,6 @@
         "helpText": "Displays a list of submitted pretenders in the game hosted in the channel. You can then claim a pretender, unclaim it, remove it or designate a substitute for it."
     },
 
-    "SHUFFLE":
-    {
-        "name": "shuffle",
-        "isEnabled": true,
-        "gameTypesSupported": ["dom5"],
-        "argumentsRequiredInfo": ["`A space-separated list of things, i.e mentions or numbers"],
-        "optionalArguments": 0,
-        "regexpRequiredToInvoke": "SHUFFLE",
-        "argumentRegexpArray": ["(.+\\s*)+"],
-        "channelRequiredToInvoke": "guild",
-        "helpText": "Shuffles a list of space-separated elements, i.e. mentions to members to create a draft order, or just words or numbers."
-    },
-
     "FORCE_HOST":
     {
         "name": "forcehost",
@@ -377,7 +364,7 @@
         "regexpRequiredToInvoke": "HELP",
         "argumentRegexpArray": [],
         "channelRequiredToInvoke": "any",
-        "helpText": "Print a list of the available commands."
+        "helpText": "Get a FAQ on the functionality of the bot."
     },
 
     "HOST_DOM5_GAME":
@@ -591,6 +578,19 @@
         "argumentRegexpArray": ["\\d+", "@.+"],
         "channelRequiredToInvoke": "game",
         "helpText": "Sets a member as the organizer of this game. If an organizer exists; replaces them."
+    },
+
+    "SHUFFLE":
+    {
+        "name": "shuffle",
+        "isEnabled": true,
+        "gameTypesSupported": ["dom5"],
+        "argumentsRequiredInfo": ["`A space-separated list of things, i.e mentions or numbers"],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "SHUFFLE",
+        "argumentRegexpArray": ["(.+\\s*)+"],
+        "channelRequiredToInvoke": "guild",
+        "helpText": "Shuffles a list of space-separated elements, i.e. mentions to members to create a draft order, or just words or numbers."
     },
 
     "START_GAME":
