@@ -309,6 +309,7 @@ function Game()
         jsonObject.guildId = _guildId;
         jsonObject.channelId = _channelId;
         jsonObject.roleId = _roleId;
+        jsonObject.version = "4";
         return jsonObject;
     };
 }
