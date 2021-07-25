@@ -553,20 +553,6 @@
         "helpText": "[Dev Only] Sets the verbosity level of the logging functions to the console and files, with values ranging from 0 (lean) to 2 (verbose)."
     },
 
-    "SET_LOG_TO_FILE":
-    {
-        "name": "setlogtofile",
-        "isEnabled": true,
-        "isDevOnly": true,
-        "gameTypesSupported": [],
-        "argumentsRequiredInfo": ["True or false, or 1 or 0: whether to log to a file"],
-        "optionalArguments": 0,
-        "regexpRequiredToInvoke": "SETLOGTOFILE",
-        "argumentRegexpArray": ["^((TRUE)|(FALSE))|(1|0)$"],
-        "channelRequiredToInvoke": "dm",
-        "helpText": "[Dev Only] Sets whether the bot will log its prints to files."
-    },
-
     "SET_ORGANIZER":
     {
         "name": "setorganizer",
@@ -643,6 +629,34 @@
         "argumentRegexpArray": [],
         "channelRequiredToInvoke": "game",
         "helpText": "Switches from bot-enforced timer to game-enforced timer, and vice versa. The former means the bot will control the game timer and force host the game when the timer reaches zero. In this mode, the in-game Dominions timer won't be visible, but it should be more robust and reliable. The latter delegates the timer to Dominions and simply reads the current timer information off of the game's output, thus showing an ingame timer as well."
+    },
+
+    "TOGGLE_CLEANER":
+    {
+        "name": "togglecleaner",
+        "isEnabled": true,
+        "isDevOnly": true,
+        "gameTypesSupported": [],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "TOGGLECLEANER",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "dm",
+        "helpText": "[Dev Only] Sets whether the bot will regularly clean unused map and mod files."
+    },
+
+    "TOGGLE_LOG_TO_FILE":
+    {
+        "name": "togglelogtofile",
+        "isEnabled": true,
+        "isDevOnly": true,
+        "gameTypesSupported": [],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "TOGGLELOGTOFILE",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "dm",
+        "helpText": "[Dev Only] Sets whether the bot will log its prints to files."
     },
 
     "UNCLAIM_PRETENDER":
