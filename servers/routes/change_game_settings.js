@@ -18,57 +18,41 @@ exports.set = (expressApp) =>
         if (webSessionsStore.isSessionValid(sessionParams) === false)
             return res.render("results_screen.ejs", { result: "Session does not exist." });
 
-        ongoingGames = gameStore.getArrayOfGames();
+        ongoingGames = gameStore.getGamesWhereUserIsOrganizer(sessionParams.userId);
 
-        return ongoingGames.forEachPromise((game, i, nextPromise) =>
+        return ongoingGames.forAllPromises(async (game) =>
         {
+            var hasGameStarted;
             var hostServer;
             var gameSettings;
             var maps;
             var mods;
 
-            if (game.getOrganizerId() !== sessionParams.userId)
-                return nextPromise();
+            hasGameStarted = await game.checkIfGameStarted();
+            
+            log.general(log.getVerboseLevel(), `Has game started for settings change: ${hasGameStarted}`);
 
-            return game.checkIfGameStarted()
-            .then((hasGameStarted) =>
-            {
-                log.general(log.getVerboseLevel(), `Has game started for settings change: ${hasGameStarted}`);
+            if (hasGameStarted === true)
+                return;
 
-                if (hasGameStarted === true)
-                    return nextPromise();
-
-                hostServer = game.getServer();
-                gameSettings = game.getSettingsObject();
+            hostServer = game.getServer();
+            gameSettings = game.getSettingsObject();
+            maps = await hostServer.getDom5MapsOnServer();
+            mods = await hostServer.getDom5ModsOnServer();
                 
-                return hostServer.getDom5MapsOnServer()
-            })
-            .then((mapList) =>
-            {
-                maps = mapList;
-                return hostServer.getDom5ModsOnServer();
-            })
-            .then((modList) =>
-            {
-                mods = modList;
-
-                organizedGames[game.getName()] = { 
-                    serverName: hostServer.getName(), 
-                    settings: gameSettings.toEjsData(),
-                    maps,
-                    mods
-                };
-
-                return nextPromise();
-            });
+            organizedGames[game.getName()] = { 
+                serverName: hostServer.getName(), 
+                settings: gameSettings.toEjsData(),
+                maps,
+                mods
+            };
         })
-        .then(() => 
+        .then(() =>
         {
             log.general(log.getVerboseLevel(), "Final organized games data rendered", organizedGames);
-
-            /** redirect to change_game_settings */
             res.render("change_game_settings_screen.ejs", Object.assign(sessionParams, { organizedGames: organizedGames, nations: dom5Nations }));
-        });
+        })
+        .catch((err) => res.render("change_game_settings_screen.ejs", Object.assign(sessionParams, { error: `Error occurred while fetching game's data: ${err.message}` })));
     });
 
     expressApp.post("/change_game_settings", (req, res) =>

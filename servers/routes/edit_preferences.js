@@ -53,7 +53,7 @@ exports.set = (expressApp) =>
         if (webSessionsStore.isSessionValid(values) === false)
         {
             log.general(log.getNormalLevel(), "Session does not exist; cannot edit preferences.");
-            return res.render("../partials/result.ejs", { result: "Session does not exist." });
+            return res.render("../partials/results_screen.ejs", { result: "Session does not exist." });
         }
 
         playerFile = playerFileStore.getPlayerFile(userId);
@@ -75,12 +75,12 @@ exports.set = (expressApp) =>
         .then(() => 
         {
             log.general(log.getNormalLevel(), "Preferences saved.");
-            res.render("../partials/result.ejs", { result: "Preferences saved successfully." });
+            res.render("../partials/results_screen.ejs", { result: "Preferences saved successfully." });
         })
         .catch((err) => 
         {
             log.error(log.getLeanLevel(), `ERROR SAVING PREFERENCES FOR USER ${userId}`, err);
-            res.render("../partials/result.ejs", { result: `Error saving preferences: ${err.message}` });
+            res.render("../partials/results_screen.ejs", { result: `Error saving preferences: ${err.message}` });
         });
     });
 };

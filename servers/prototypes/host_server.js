@@ -59,7 +59,7 @@ function HostServer(id)
     this.onDisconnect = (fnToCall) => 
     {
         if (_isOnline === false)
-            throw new SocketResponseError(`Socket is offline.`);
+            throw new SocketResponseError(`Server is offline.`);
 
         return _socketWrapper.onDisconnect(fnToCall);
     };
@@ -67,14 +67,14 @@ function HostServer(id)
     this.emitPromise = (...args) => 
     {
         if (_isOnline === false)
-            return Promise.reject(new SocketResponseError(`Socket is offline.`));
+            return Promise.reject(new SocketResponseError(`Server is offline.`));
 
         return _socketWrapper.emitPromise(...args);
     };
     this.listenTo = (...args) => 
     {
         if (_isOnline === false)
-            return Promise.reject(new SocketResponseError(`Socket is offline.`));
+            return Promise.reject(new SocketResponseError(`Server is offline.`));
             
         return _socketWrapper.listenTo(...args);
     };
@@ -130,6 +130,6 @@ function HostServer(id)
     {
         return this.emitPromise("GET_MOD_LIST")
         .then((mapList) => Promise.resolve(mapList))
-        .catch((err) => Promise.reject(new Error(`Could not retrieve the list of maps: ${err.message}`)));
+        .catch((err) => Promise.reject(new Error(`Could not retrieve the list of mods: ${err.message}`)));
     };
 }

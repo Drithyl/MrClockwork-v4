@@ -1,0 +1,56 @@
+
+
+<% if (typeof games === "object" && Array.isArray(games) === true && games.length > 0) { %>
+
+    <!-- Data Tables Scripts and Style -->
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css">
+
+    <table class="table data-table table-striped table-bordered" style="width: 100%; border: 1px solid red;">
+        <thead>
+            <tr>
+                <th class="th-sm" data-sortable="true">Game Name</th>
+                <th class="th-sm" data-sortable="true">Guild</th>
+                <th class="th-sm" data-sortable="true">Server</th>
+                <th class="th-sm" data-sortable="true">Address</th>
+                <th class="th-sm" data-sortable="true">Status</th>
+                <th class="th-sm" data-sortable="true">Turn Nbr</th>
+                <th class="th-sm" data-sortable="true">Timer</th>
+            </tr>
+        </thead>
+        <tbody>
+        
+            <% games.forEach((gameData) => { %>
+
+                <tr>
+                    <td><%=gameData.name %></td>
+                    <td><%=gameData.guild %></td>
+                    <td><%=gameData.server %></td>
+                    <td><%=gameData.ip %>:<%=gameData.port %></td>
+                    <td><%=gameData.status %></td>
+                    <td><%=gameData.turnNumber %></td>
+
+                    <% if (typeof gameData.isPaused === "boolean" && gameData.isPaused === true) { %>
+
+                        <td>Paused</td>
+
+                    <% } else if (typeof gameData.timeLeft === "string") { %>
+                        
+                        <td><%=gameData.timeLeft %></td>
+
+                    <% } %>
+                </tr>
+
+            <% }); %>
+
+        </tbody>
+    </table>
+
+    <script>
+        $(".data-table").DataTable();
+    </script>
+
+<% } else { %>
+    <p>You haven't yet hosted any games!</p>
+<% } %>

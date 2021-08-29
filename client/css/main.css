@@ -124,6 +124,20 @@ footer {
     padding-bottom: 1%;
 }
 
+.bg {
+    /* The image used */
+  background-image: url("img/gears.png");
+
+  /* Full height */
+  height: 100%;
+  width: 100%;
+
+  /* Center and scale the image nicely */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
 /* Main section is the center space showing the actual content in each webpage */
 .main_section {
     padding: 2%;
