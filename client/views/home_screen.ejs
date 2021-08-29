@@ -1,22 +1,56 @@
 
-
 <%- include('../partials/head.ejs')-%>
-<%- include('../partials/body_start.ejs')-%>
+<%- include('../partials/navbar.ejs')-%>
 
 <!-- Discord Oauth2 flow: https://discordjs.guide/oauth2/#putting-it-together -->
 
-<div id="info">Welcome!</div>
+<div id="body" class="h-100" style="background-image:url('img/background.png'); background-repeat: no-repeat; border: 1px solid red;">
 
-<% if (typeof oAuth2Url === "string") { %>
+    <!--<div class="z-index-1">
+        <img src="img/background.png" id="backgroundImg" class="img-fluid">
+    </div>-->
 
-    <button type="button" class="btn btn-dark btn-lg"><a id="login" href="<%=oAuth2Url %>">Identify Yourself</a></button>
+    <div class="container" style="border: 1px solid red;">
 
-<% } else { %>
 
-    <p>Discord login not available at the moment</p>
+        <div id="presentationDiv" class="row text-h-centered">
+            <div class="col-sm" style="border: 1px solid red;">
+                <img src="img/hound.png" class="img-fluid w-50" alt="Mr. Clockwork logo" style="border: 1px solid red;">
+            </div>
 
-<% } %>
+            <div class="col-sm-8" style="border: 1px solid red;">
+                <h1>Clockwork v4 is here!</h1>
+                <p>Mr. Clockwork is a Discord bot built specifically to help players host their <a href="https://store.steampowered.com/app/722060/Dominions_5__Warriors_of_the_Faith/">Dominions 5</a> games. Featuring integrated live game status updates, player preferences, map and mod uploading and more, the bot commands several dedicated servers to provide hosting space for a game in which each match can easily last several months.</p>
+            </div>
+        </div>
 
+        <div id="identifyDiv" class="row" style="border: 1px solid red;">
+
+            <div class="col-sm text-h-centered" style="border: 1px solid red;">
+                <h3>Serving 666 members</h6>
+                <h3>In 69 servers</h6>
+            </div>
+
+            <div class="col-sm-8 d-flex justify-content-center align-items-center" style="border: 1px solid red;">
+
+                <% if (typeof oAuth2Url === "string") { %>
+
+                    <a href="<%=oAuth2Url %>" class="btn btn-secondary rounded-pill w-50"  style="border: 1px solid red;">
+                        <img src="img/discord-logo.png" alt="Discord logo" style="max-width: 50px; border: 1px solid red;">
+                        Go to Dashboard
+                    </a>
+
+                <% } else { %>
+
+                    <p>Discord login unavailable</p>
+
+                <% } %>
+
+            </div>
+            
+        </div>
+    </div>
+</div>
 
 <script>
 
@@ -80,5 +114,5 @@
 
 </script>
 
-<%- include('../partials/body_end.ejs')-%>
+
 <%- include('../partials/footer.ejs')-%>

@@ -1,26 +1,41 @@
 
 
 <%- include('../partials/head.ejs')-%>
-<%- include('../partials/body_start.ejs')-%>
+<%- include('../partials/navbar.ejs')-%>
 
-<form id="preferences_form">
 
-    <input type="hidden" name="token" value="<%=(typeof token === "string") ? token : "none"%>"/>
+<div id="body" class="h-100" style="background-image:url('img/background.png'); background-repeat: no-repeat; border: 1px solid red;">
 
-    <%- include('../partials/preferences_list.ejs')-%>
+    <div class="container card" style="border: 1px solid red;">
 
-    <%- include('../partials/game_preferences.ejs')-%>
+        <div class="card-header" style="border: 1px solid red;">
 
-    <div class="form-group row">
-        <div class="col-sm-10">
-            <button type="submit" class="btn btn-dark btn-lg">Save preferences</button>
+            <span>Change your preferences</span>
+
         </div>
+
+    <div class="card-body row d-flex align-items-center flex-column" style="border: 1px solid red;">
+
+        <form id="preferences_form">
+
+            <input type="hidden" name="token" value="<%=(typeof token === "string") ? token : "none"%>"/>
+        
+            <%- include('../partials/preferences_list.ejs')-%>
+        
+            <%- include('../partials/game_preferences.ejs')-%>
+        
+            <div class="form-group row">
+                <div class="col-sm-10">
+                    <button type="submit" class="btn btn-dark btn-lg">Save preferences</button>
+                </div>
+            </div>
+        
+            <script src="js/update_preferences.js"></script>
+            
+        </form>
+
     </div>
+</div>
 
-    <script src="js/update_preferences.js"></script>
-    
-</form>
 
-<%- include('../partials/body_end.ejs')-%>
 <%- include('../partials/footer.ejs')-%>
-                    
