@@ -2,6 +2,7 @@
 const path = require("path");
 
 const indexRoute = require("./routes/index.js");
+const resultRoute = require("./routes/result.js");
 const guildsRoute = require("./routes/guilds.js");
 const loginRoute = require("./routes/login.js");
 const mapsRoute = require("./routes/maps.js");
@@ -31,6 +32,7 @@ exports.setRoutes = (expressApp) =>
     indexRoute.set(expressApp);
     guildsRoute.set(expressApp);
     loginRoute.set(expressApp);
+    resultRoute.set(expressApp);
     mapsRoute.set(expressApp);
     modsRoute.set(expressApp);
     nationsRoute.set(expressApp);

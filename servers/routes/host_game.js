@@ -60,22 +60,25 @@ exports.set = (expressApp) =>
             return res.render("results_screen.ejs", { result: `Session does not exist.` });
         }
 
-        webSessionsStore.removeSession(sessionToken);
         _formatPostValues(values);
 
         _createGame(userId, values)
         .then((game) => 
         {
-            res.render("results_screen.ejs", { result: "Game has been hosted! Find the corresponding channel in the selected Discord guild." });
+            webSessionsStore.redirectToResult(res, sessionToken, 
+                "Game has been hosted! Find the corresponding channel in the selected Discord guild.");
+
             return game.launch();
         })
         .catch((err) => 
         {
             log.error(log.getLeanLevel(), `HOST GAME ERROR`, err);
-            res.render("results_screen.ejs", { result: `Error occurred; could not create the game: ${err.message}` });
+            return webSessionsStore.redirectToResult(res, sessionToken, 
+                `Error occurred while creating the game. It might still have been created successfully: ${err.message}`);
         });
     });
 };
+
 
 function _formatPostValues(values)
 {
@@ -136,6 +139,7 @@ function _createGame(userId, values)
     .catch((err) =>
     {
         log.error(log.getLeanLevel(), `ERROR when creating ${gameObject.getName()} through web. Cleaning it up`, err);
+        
         if (gameObject == null)
             return Promise.reject(err);
 

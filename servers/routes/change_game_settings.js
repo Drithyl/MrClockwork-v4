@@ -76,11 +76,16 @@ exports.set = (expressApp) =>
         return game.loadSettingsFromInput(values)
         .then(() =>
         {
-            res.render("results_screen.ejs", { result: "Settings were changed." });
+            webSessionsStore.redirectToResult(res, sessionToken, "Settings were changed.");
             return game.kill();
         })
         .then(() => game.launch())
-        .catch((err) => log.general(log.getNormalLevel(), err));
+        .catch((err) =>
+        {
+            log.error(log.getLeanLevel(), `CHANGE GAME SETTINGS ERROR:`, err);
+            return webSessionsStore.redirectToResult(res, sessionToken, 
+                `Error occurred while changing game settings: ${err.message}`);
+        });
     });
 };
 

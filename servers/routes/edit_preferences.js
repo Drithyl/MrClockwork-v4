@@ -45,6 +45,7 @@ exports.set = (expressApp) =>
     expressApp.post("/edit_preferences", (req, res) =>
     {
         const values = req.body;
+        const sessionToken = values.token;
         const userId = webSessionsStore.getSessionUserId(values.token);
         var playerFile;
 
@@ -58,8 +59,6 @@ exports.set = (expressApp) =>
 
         playerFile = playerFileStore.getPlayerFile(userId);
 
-        webSessionsStore.removeSession(values.token);
-        delete values.token;
 
         for (var gameName in values)
         {
@@ -75,12 +74,13 @@ exports.set = (expressApp) =>
         .then(() => 
         {
             log.general(log.getNormalLevel(), "Preferences saved.");
-            res.render("../partials/results_screen.ejs", { result: "Preferences saved successfully." });
+            return webSessionsStore.redirectToResult(res, sessionToken, "Preferences saved successfully.");
         })
         .catch((err) => 
         {
             log.error(log.getLeanLevel(), `ERROR SAVING PREFERENCES FOR USER ${userId}`, err);
-            res.render("../partials/results_screen.ejs", { result: `Error saving preferences: ${err.message}` });
+            return webSessionsStore.redirectToResult(res, sessionToken, 
+                `Error saving preferences: ${err.message}`);
         });
     });
 };
