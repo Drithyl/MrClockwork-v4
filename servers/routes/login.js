@@ -20,12 +20,13 @@ exports.set = (expressApp) =>
             var playedGames;
             var organizedGames;
             const userId = userInfo.id;
-            const sessionToken = webSessionsStore.createSession(userId);
 
             if (userId == null)
                 return log.general(log.getVerboseLevel(), "Invalid login attempt, ignoring.");
 
             log.general(log.getVerboseLevel(), `Request authenticated! userId: ${userId}, token: ${sessionToken}`);
+            
+            const sessionToken = webSessionsStore.createSession(userId);
 
             playedGames = _getPlayedGamesData(userId);
             organizedGames = _getOrganizedGamesData(userId);
