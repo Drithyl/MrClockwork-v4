@@ -54,7 +54,7 @@ $("#preferences_form").submit(function(event)
 function _formDataToJson(serializedArray)
 {
     const jsonData = {
-        token: serializedArray.shift().value
+        sessionId: serializedArray.shift().value
     };
 
     serializedArray.forEach((dataObject) =>
