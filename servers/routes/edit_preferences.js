@@ -11,16 +11,18 @@ exports.set = (expressApp) =>
         var playerFile;
         var gamePreferences;
         const dataToSend = [];
-        const sessionParams = webSessionsStore.extractSessionParamsFromUrl(req.url);
+        const session = webSessionsStore.getSessionFromUrlParams(req.url);
 
-        log.general(log.getNormalLevel(), "edit_preferences authentication params", sessionParams);
-
-        if (webSessionsStore.isSessionValid(sessionParams) === false)
+        if (session == null)
             return res.render("results_screen.ejs", { result: `Session does not exist.` });
 
+        
+        const userId = session.getUserId();
+        const sessionId = session.getSessionId();
+        
         try
         {
-            playerFile = playerFileStore.getPlayerFile(sessionParams.userId);
+            playerFile = playerFileStore.getPlayerFile(userId);
             gamePreferences = playerFile.getAllGamePreferences();
 
             gamePreferences.forEachItem((preferences, gameName) =>
@@ -29,13 +31,17 @@ exports.set = (expressApp) =>
             });
             
             /** redirect to edit_preferences */
-            res.render("edit_preferences_screen.ejs", Object.assign(sessionParams, { gamePreferences: dataToSend }));
+            res.render("edit_preferences_screen.ejs", Object.assign({ 
+                userId,
+                sessionId,
+                gamePreferences: dataToSend 
+            }));
         }
 
         catch(err)
         {
             if (err.name === "InvalidDiscordIdError")
-            res.render("results_screen.ejs", { result: "Session expired or Discord ID is invalid." });
+                res.render("results_screen.ejs", { result: "Session expired or Discord ID is invalid." });
 
             else res.render("results_screen.ejs", { result: err.message });
         }
@@ -45,18 +51,19 @@ exports.set = (expressApp) =>
     expressApp.post("/edit_preferences", (req, res) =>
     {
         const values = req.body;
-        const sessionToken = values.token;
-        const userId = webSessionsStore.getSessionUserId(values.token);
+        const sessionId = values.sessionId;
+        const session = webSessionsStore.getSession(sessionId);
         var playerFile;
 
         log.general(log.getNormalLevel(), `edit_preferences POST values received`, values);
 
-        if (webSessionsStore.isSessionValid(values) === false)
+        if (session == null)
         {
             log.general(log.getNormalLevel(), "Session does not exist; cannot edit preferences.");
             return res.render("../partials/results_screen.ejs", { result: "Session does not exist." });
         }
 
+        const userId = session.getUserId();
         playerFile = playerFileStore.getPlayerFile(userId);
 
 
@@ -74,13 +81,14 @@ exports.set = (expressApp) =>
         .then(() => 
         {
             log.general(log.getNormalLevel(), "Preferences saved.");
-            return webSessionsStore.redirectToResult(res, sessionToken, "Preferences saved successfully.");
+            session.storeSessionData("Preferences saved successfully.");
+            session.redirectTo("result", res);
         })
         .catch((err) => 
         {
             log.error(log.getLeanLevel(), `ERROR SAVING PREFERENCES FOR USER ${userId}`, err);
-            return webSessionsStore.redirectToResult(res, sessionToken, 
-                `Error saving preferences: ${err.message}`);
+            session.storeSessionData(`Error saving preferences: ${err.message}`);
+            session.redirectTo("result", res);
         });
     });
 };

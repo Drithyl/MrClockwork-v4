@@ -10,15 +10,14 @@ exports.set = (expressApp) =>
     {
         var ongoingGames;
         const organizedGames = {};
-        
-        const sessionParams = webSessionsStore.extractSessionParamsFromUrl(req.url);
+        const session = webSessionsStore.getSessionFromUrlParams(req.url);
 
-        log.general(log.getNormalLevel(), "change_game_settings authentication params", sessionParams);
-
-        if (webSessionsStore.isSessionValid(sessionParams) === false)
+        if (session == null)
             return res.render("results_screen.ejs", { result: "Session does not exist." });
 
-        ongoingGames = gameStore.getGamesWhereUserIsOrganizer(sessionParams.userId);
+        const userId = session.getUserId();
+        const sessionId = session.getSessionId();
+        ongoingGames = gameStore.getGamesWhereUserIsOrganizer(userId);
 
         return ongoingGames.forAllPromises(async (game) =>
         {
@@ -50,25 +49,31 @@ exports.set = (expressApp) =>
         .then(() =>
         {
             log.general(log.getVerboseLevel(), "Final organized games data rendered", organizedGames);
-            res.render("change_game_settings_screen.ejs", Object.assign(sessionParams, { organizedGames: organizedGames, nations: dom5Nations }));
+            res.render("change_game_settings_screen.ejs", Object.assign({ 
+                userId,
+                sessionId,
+                organizedGames: organizedGames, 
+                nations: dom5Nations 
+            }));
         })
-        .catch((err) => res.render("change_game_settings_screen.ejs", Object.assign(sessionParams, { error: `Error occurred while fetching game's data: ${err.message}` })));
+        .catch((err) => res.render("results_screen.ejs", { result: `Error occurred while fetching game's data: ${err.message}` }));
     });
 
     expressApp.post("/change_game_settings", (req, res) =>
     {
         var game;
         const values = req.body;
+        const sessionId = values.sessionId;
+        const session = webSessionsStore.getSession(sessionId);
 
         log.general(log.getNormalLevel(), `change_game_settings POST values received`, values);
 
-        if (webSessionsStore.isSessionValid(values) === false)
+        if (session == null)
         {
             log.general(log.getNormalLevel(), "Session does not exist; cannot edit preferences.");
             return res.render("results_screen.ejs", { result: "Session does not exist." });
         }
 
-        webSessionsStore.removeSession(values.token);
         game = gameStore.getOngoingGameByName(values.gameName);
 
         _formatPostValues(values);
@@ -76,15 +81,16 @@ exports.set = (expressApp) =>
         return game.loadSettingsFromInput(values)
         .then(() =>
         {
-            webSessionsStore.redirectToResult(res, sessionToken, "Settings were changed.");
+            session.storeSessionData("Settings were changed.");
+            session.redirectTo("result", res);
             return game.kill();
         })
         .then(() => game.launch())
         .catch((err) =>
         {
             log.error(log.getLeanLevel(), `CHANGE GAME SETTINGS ERROR:`, err);
-            return webSessionsStore.redirectToResult(res, sessionToken, 
-                `Error occurred while changing game settings: ${err.message}`);
+            session.storeSessionData(`Error occurred while changing game settings: ${err.message}`);
+            session.redirectTo("result", res);
         });
     });
 };

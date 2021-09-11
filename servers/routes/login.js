@@ -24,22 +24,32 @@ exports.set = (expressApp) =>
             if (userId == null)
                 return log.general(log.getVerboseLevel(), "Invalid login attempt, ignoring.");
 
-            const sessionToken = webSessionsStore.createSession(userId);
-            log.general(log.getVerboseLevel(), `Request authenticated! userId: ${userId}, token: ${sessionToken}`);
+            const session = webSessionsStore.createSession(userId);
+            const sessionId = session.getSessionId();
+            log.general(log.getVerboseLevel(), `Request authenticated! userId: ${userId}, sessionId: ${sessionId}`);
 
             playedGames = _getPlayedGamesData(userId);
             organizedGames = _getOrganizedGamesData(userId);
-
             console.log(organizedGames);
+            
+            session.storeSessionData({
+                sessionId, 
+                userId,
+                playedGames,
+                organizedGames
+            });
+
+            session.redirectTo("user_home_screen", res);
+            /*webSessionsStore.redirectToResult(res, sessionId, "Settings were changed.");
 
             res.render("user_home_screen.ejs", { 
                 userData: {
-                    token: sessionToken, 
+                    sessionId, 
                     userId,
                     playedGames,
                     organizedGames
                 }
-            });
+            });*/
         })
         .catch((err) => res.render("results_screen.ejs", { result: `Error occurred: ${err.message}` }));
     });
