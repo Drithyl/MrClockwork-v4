@@ -8,7 +8,7 @@
 
     <div class="container card" style="border: 1px solid red;">
 
-        <% if (typeof userData !== "object" || typeof userData.token !== "string" || typeof userData.userId !== "string") { %>
+        <% if (typeof sessionData !== "object" || typeof sessionData.sessionId !== "string" || typeof sessionData.userId !== "string") { %>
 
             <div>
                 <b>Session id:</b> <b>BAD SESSION!</b><br>
@@ -16,15 +16,13 @@
 
         <% } else { %>
 
-            <script>
-                sessionStorage.setItem("token", userData.token);
-            </script>
+            <script src="../js/store_session_id.js"></script>
 
             <div class="card-body row d-flex align-items-center justify-content-around flex-row" style="border: 1px solid red;">
 
                 <div class="col-3">
                     <form id="host_game_screen_form" action="/host_game" method="GET" style="border: 1px solid red;">
-                        <input type="hidden" name="token" value="<%=(typeof userData === "object") ? userData.token : "none"%>"/>
+                        <input type="hidden" name="sessionId" value="<%=(typeof sessionData === "object") ? sessionData.sessionId : "none"%>"/>
                         <button type="submit" class="btn w-100 btn-secondary rounded-pill" style="border: 1px solid red;">
     
                                 <img src="img/throne.png" class="" alt="Discord logo" style="max-width: 50px; border: 1px solid red;">
@@ -35,7 +33,7 @@
                 
                 <div class="col-3">
                     <form id="change_settings_screen_form" action="/change_game_settings" method="GET" style="border: 1px solid red;">
-                        <input type="hidden" name="token" value="<%=(typeof userData === "object") ? userData.token : "none"%>"/>
+                        <input type="hidden" name="sessionId" value="<%=(typeof sessionData === "object") ? sessionData.sessionId : "none"%>"/>
                         <button type="submit" class="btn w-100 btn-secondary rounded-pill" style="border: 1px solid red;">
                             <img src="img/key.png" alt="Discord logo" style="max-width: 50px; border: 1px solid red;">
                             Change game settings
@@ -45,7 +43,7 @@
                 
                 <div class="col-3">
                     <form id="edit_preferences_screen_form" action="/edit_preferences" method="GET" style="border: 1px solid red;">
-                        <input type="hidden" name="token" value="<%=(typeof userData === "object") ? userData.token : "none"%>"/>
+                        <input type="hidden" name="sessionId" value="<%=(typeof sessionData === "object") ? sessionData.sessionId : "none"%>"/>
                         <button type="submit" class="btn w-100 btn-secondary rounded-pill" style="border: 1px solid red;">
                             <img src="img/candlestick.png" alt="Discord logo" style="max-width: 50px; border: 1px solid red;">
                             Edit game preferences
@@ -57,7 +55,7 @@
         <% } %>
     </div>
     
-    <% if (typeof userData === "object" && typeof userData.token === "string" && typeof userData.userId === "string") { %>
+    <% if (typeof sessionData === "object" && typeof sessionData.sessionId === "string" && typeof sessionData.userId === "string") { %>
 
         <div class="container card" style="border: 1px solid red;">
 
@@ -68,10 +66,10 @@
     
             <div id="hostedGamesCardBody" class="card-body d-flex flex-row align-items-center justify-content-center" style="border: 1px solid red;">
 
-                <%- include('../partials/game_table.ejs', { games: (userData != null) ? userData.organizedGames : null })-%>
+                <%- include('../partials/game_table.ejs', { games: (sessionData != null) ? sessionData.organizedGames : null })-%>
 
                 <!--
-                <%- include('../partials/game_cards.ejs', { games: (userData != null) ? userData.organizedGames : null })-%>
+                <%- include('../partials/game_cards.ejs', { games: (sessionData != null) ? sessionData.organizedGames : null })-%>
                 -->
 
             </div>
@@ -87,10 +85,10 @@
     
             <div class="card-body d-flex flex-row align-items-center justify-content-center" style="border: 1px solid red;">
     
-                <%- include('../partials/game_table.ejs', { games: (userData != null) ? userData.playedGames : null })-%>
+                <%- include('../partials/game_table.ejs', { games: (sessionData != null) ? sessionData.playedGames : null })-%>
 
                 <!--
-                <%- include('../partials/game_cards.ejs', { games: (userData != null) ? userData.playedGames : null })-%>
+                <%- include('../partials/game_cards.ejs', { games: (sessionData != null) ? sessionData.playedGames : null })-%>
                 -->
             </div>
         </div>
