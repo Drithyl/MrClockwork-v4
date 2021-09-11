@@ -126,7 +126,7 @@ footer {
 
 .bg {
     /* The image used */
-  background-image: url("img/gears.png");
+  background-image: url("../img/gears.png");
 
   /* Full height */
   height: 100%;
