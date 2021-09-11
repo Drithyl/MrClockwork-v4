@@ -18,7 +18,8 @@
 
         <form id="preferences_form">
 
-            <input type="hidden" name="token" value="<%=(typeof token === "string") ? token : "none"%>"/>
+            <input type="hidden" name="sessionId" value="<%=(typeof sessionId === "string") ? sessionId : "none"%>"/>
+            <script src="../js/load_session_id.js"></script>
         
             <%- include('../partials/preferences_list.ejs')-%>
         
