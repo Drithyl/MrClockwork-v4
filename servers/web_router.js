@@ -14,6 +14,7 @@ const hostGameRoute = require("./routes/host_game.js");
 const updatePartialsRoute = require("./routes/update_partials.js");
 const editPreferencesRoute = require("./routes/edit_preferences.js");
 const changeGameSettingsRoute = require("./routes/change_game_settings.js");
+const cookieParser = require("cookie-parser");
 
 exports.setMiddlewares = (expressApp, express) =>
 {
@@ -22,6 +23,7 @@ exports.setMiddlewares = (expressApp, express) =>
     expressApp.use(express.static(path.join(__dirname + "/../client")));
     expressApp.use(express.json());
     expressApp.use(express.urlencoded());
+    expressApp.use(cookieParser());
 
     expressApp.set("views", path.join(__dirname + "/../client/views"));
     expressApp.set("view engine", "ejs");
