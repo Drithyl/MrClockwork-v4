@@ -10,7 +10,9 @@ exports.set = (expressApp) =>
     {
         var ongoingGames;
         const organizedGames = {};
-        const session = webSessionsStore.getSessionFromUrlParams(req.url);
+
+        // Fetch session from either the URL params or the cookies, wherever we can find the sessionId
+        const session = webSessionsStore.getSessionFromUrlParams(req) ?? webSessionsStore.getSessionFromCookies(req);
 
         if (session == null)
             return res.render("results_screen.ejs", { result: "Session does not exist." });
@@ -63,8 +65,9 @@ exports.set = (expressApp) =>
     {
         var game;
         const values = req.body;
-        const sessionId = values.sessionId;
-        const session = webSessionsStore.getSession(sessionId);
+
+        // Fetch session from either the URL params or the cookies, wherever we can find the sessionId
+        const session = webSessionsStore.getSessionFromBody(req) ?? webSessionsStore.getSessionFromCookies(req);
 
         log.general(log.getNormalLevel(), `change_game_settings POST values received`, values);
 

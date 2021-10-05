@@ -9,7 +9,8 @@ exports.set = (expressApp) =>
     
     expressApp.get("/result", (req, res) =>
     {
-        const session = webSessionsStore.getSessionFromUrlParams(req.url);
+        // Fetch session from either the URL params or the cookies, wherever we can find the sessionId
+        const session = webSessionsStore.getSessionFromUrlParams(req) ?? webSessionsStore.getSessionFromCookies(req);
 
         if (session == null)
         {

@@ -20,9 +20,11 @@ exports.set = (expressApp) =>
         var guildsWhereUserIsMember;
 
         const guildData = [];
-        const session = webSessionsStore.getSessionFromUrlParams(req.url);
 
-        if (session === null)
+        // Fetch session from either the URL params or the cookies, wherever we can find the sessionId
+        const session = webSessionsStore.getSessionFromUrlParams(req) ?? webSessionsStore.getSessionFromCookies(req);
+
+        if (session == null)
             return res.render("results_screen.ejs", { result: `Session does not exist.` });
 
         const userId = session.getUserId();
@@ -51,8 +53,9 @@ exports.set = (expressApp) =>
     expressApp.post("/host_game", (req, res) =>
     {
         const values = req.body;
-        const sessionId = values.sessionId;
-        const session = webSessionsStore.getSession(sessionId);
+
+        // Fetch session from either the URL params or the cookies, wherever we can find the sessionId
+        const session = webSessionsStore.getSessionFromBody(req) ?? webSessionsStore.getSessionFromCookies(req);
 
         log.general(log.getNormalLevel(), `host_game POST values received`, values);
 

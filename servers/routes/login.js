@@ -2,12 +2,19 @@
 const url = require("url");
 const log = require("../../logger.js");
 const oauth2 = require("../discord_oauth2.js");
+const config = require("../../config/config.json");
 const webSessionsStore = require("../web_sessions_store.js");
 const ongoingGames = require("../../games/ongoing_games_store.js");
 
 
 exports.set = (expressApp) => 
 {
+    expressApp.get("/authenticate", (req, res) =>
+    {
+        res.redirect(config.oAuth2Url);
+    });
+
+
     expressApp.get("/login", (req, res) =>
     {
         const urlObject = new url.URL("http://www." + req.hostname + req.originalUrl);
@@ -26,7 +33,8 @@ exports.set = (expressApp) =>
 
             const session = webSessionsStore.createSession(userId);
             const sessionId = session.getSessionId();
-            log.general(log.getVerboseLevel(), `Request authenticated! userId: ${userId}, sessionId: ${sessionId}`);
+            res.cookie("sessionId", sessionId);
+            log.general(log.getVerboseLevel(), `Request authenticated! userId: ${userId}, sessionId: ${sessionId}, cookie set`);
 
             playedGames = _getPlayedGamesData(userId);
             organizedGames = _getOrganizedGamesData(userId);
@@ -40,16 +48,6 @@ exports.set = (expressApp) =>
             });
 
             session.redirectTo("user_home_screen", res);
-            /*webSessionsStore.redirectToResult(res, sessionId, "Settings were changed.");
-
-            res.render("user_home_screen.ejs", { 
-                userData: {
-                    sessionId, 
-                    userId,
-                    playedGames,
-                    organizedGames
-                }
-            });*/
         })
         .catch((err) => res.render("results_screen.ejs", { result: `Error occurred: ${err.message}` }));
     });

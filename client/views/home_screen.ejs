@@ -1,17 +1,12 @@
 
 <%- include('../partials/head.ejs')-%>
-<%- include('../partials/navbar.ejs')-%>
+<%- include('../partials/navbar.ejs', {page: "home"})-%>
 
 <!-- Discord Oauth2 flow: https://discordjs.guide/oauth2/#putting-it-together -->
 
-<div id="body" class="h-100" style="background-image:url('img/background.png'); background-repeat: no-repeat; border: 1px solid red;">
+<div id="body" class="h-100 bg" style="border: 1px solid red;">
 
-    <!--<div class="z-index-1">
-        <img src="img/background.png" id="backgroundImg" class="img-fluid">
-    </div>-->
-
-    <div class="container" style="border: 1px solid red;">
-
+    <div class="container card-bg" style="border: 1px solid red;">
 
         <div id="presentationDiv" class="row text-h-centered">
             <div class="col-sm" style="border: 1px solid red;">
@@ -33,18 +28,10 @@
 
             <div class="col-sm-8 d-flex justify-content-center align-items-center" style="border: 1px solid red;">
 
-                <% if (typeof oAuth2Url === "string") { %>
-
-                    <a href="<%=oAuth2Url %>" class="btn btn-secondary rounded-pill w-50"  style="border: 1px solid red;">
-                        <img src="img/discord-logo.png" alt="Discord logo" style="max-width: 50px; border: 1px solid red;">
-                        Go to Dashboard
-                    </a>
-
-                <% } else { %>
-
-                    <p>Discord login unavailable</p>
-
-                <% } %>
+                <a href="/authenticate" class="btn btn-secondary rounded-pill"  style="border: 1px solid red;">
+                    <img src="img/discord-logo.png" alt="Discord logo" style="max-width: 50px; border: 1px solid red;">
+                    Go to Dashboard
+                </a>
 
             </div>
             

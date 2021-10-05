@@ -10,6 +10,6 @@ exports.set = (expressApp) =>
         if (req.secure === false && expressServer.isHttpsAvailable() === true)
             return res.redirect(config.fullSecureUrl);
 
-        res.render("home_screen.ejs", { oAuth2Url: config.oAuth2Url });
+        res.render("home_screen.ejs");
     });
 };

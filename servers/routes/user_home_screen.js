@@ -6,7 +6,8 @@ exports.set = (expressApp) =>
 {
     expressApp.get("/user_home_screen", (req, res) =>
     {
-        const session = webSessionsStore.getSessionFromUrlParams(req.url);
+        // Fetch session from either the URL params or the cookies, wherever we can find the sessionId
+        const session = webSessionsStore.getSessionFromUrlParams(req) ?? webSessionsStore.getSessionFromCookies(req);
 
         if (session == null)
             return res.render("results_screen.ejs", { result: "Session does not exist!" });

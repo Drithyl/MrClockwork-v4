@@ -11,7 +11,9 @@ exports.set = (expressApp) =>
         var playerFile;
         var gamePreferences;
         const dataToSend = [];
-        const session = webSessionsStore.getSessionFromUrlParams(req.url);
+
+        // Fetch session from either the URL params or the cookies, wherever we can find the sessionId
+        const session = webSessionsStore.getSessionFromUrlParams(req) ?? webSessionsStore.getSessionFromCookies(req);
 
         if (session == null)
             return res.render("results_screen.ejs", { result: `Session does not exist.` });
@@ -50,10 +52,11 @@ exports.set = (expressApp) =>
 
     expressApp.post("/edit_preferences", (req, res) =>
     {
-        const values = req.body;
-        const sessionId = values.sessionId;
-        const session = webSessionsStore.getSession(sessionId);
         var playerFile;
+        const values = req.body;
+
+        // Fetch session from either the URL params or the cookies, wherever we can find the sessionId
+        const session = webSessionsStore.getSessionFromBody(req) ?? webSessionsStore.getSessionFromCookies(req);
 
         log.general(log.getNormalLevel(), `edit_preferences POST values received`, values);
 
