@@ -29,14 +29,16 @@ exports.set = (expressApp) =>
             var maps;
             var mods;
 
+            hostServer = game.getServer();
+
+            if (hostServer.isOnline() === false)
+                return;
+
             hasGameStarted = await game.checkIfGameStarted();
-            
-            log.general(log.getVerboseLevel(), `Has game started for settings change: ${hasGameStarted}`);
 
             if (hasGameStarted === true)
                 return;
 
-            hostServer = game.getServer();
             gameSettings = game.getSettingsObject();
             maps = await hostServer.getDom5MapsOnServer();
             mods = await hostServer.getDom5ModsOnServer();
