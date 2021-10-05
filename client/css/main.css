@@ -125,17 +125,23 @@ footer {
 }
 
 .bg {
-    /* The image used */
-  background-image: url("../img/gears.png");
+    background-image: url("../img/gears.png");
+    height: 100%;
+    width: 100%;
 
-  /* Full height */
-  height: 100%;
-  width: 100%;
+    /* Center and scale the image nicely */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
 
-  /* Center and scale the image nicely */
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
+.btn {
+    border-radius: 50px;
+}
+
+.card-bg {
+    background-color: #5D5C61;
+    width: 100%;
 }
 
 /* Main section is the center space showing the actual content in each webpage */
