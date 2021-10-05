@@ -15,13 +15,31 @@ module.exports.createSession = (userId) =>
 
 module.exports.getSession = (sessionId) =>
 {
+    console.log(`Searching existing sessions with ${sessionId}`);
+    console.log(_sessions);
     return _sessions[sessionId];
 };
 
-module.exports.getSessionFromUrlParams = (reqUrl) =>
+module.exports.getSessionFromUrlParams = (req) =>
 {
-    const urlObject = url.parse(reqUrl, true);
+    const urlObject = url.parse(req.url, true);
     const sessionId = urlObject.query.sessionId;
+    const session = exports.getSession(sessionId);
+    return session;
+};
+
+module.exports.getSessionFromBody = (req) =>
+{
+    const body = req.body;
+    const sessionId = body.sessionId;
+    const session = exports.getSession(sessionId);
+    return session;
+};
+
+module.exports.getSessionFromCookies = (req) =>
+{
+    const cookies = req.cookies;
+    const sessionId = cookies.sessionId;
     const session = exports.getSession(sessionId);
     return session;
 };
