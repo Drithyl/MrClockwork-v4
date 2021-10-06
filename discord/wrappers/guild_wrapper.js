@@ -13,8 +13,8 @@ function GuildWrapper(discordJsGuildObject)
 
     this.getId = () => _discordJsGuildObject.id;
     this.getName = () => _discordJsGuildObject.name;
-    this.getOwnerID = () => _discordJsGuildObject.ownerID;
-    this.getOwner = () => this.getGuildMemberWrapperById(this.getOwnerID());
+    this.getOwnerId = () => _discordJsGuildObject.ownerId;
+    this.getOwner = () => this.getGuildMemberWrapperById(this.getOwnerId());
 
     this.getDiscordJsBotMemberInGuild = () => _discordJsGuildObject.me;
     this.isAvailable = () => _discordJsGuildObject.available;
@@ -33,7 +33,7 @@ function GuildWrapper(discordJsGuildObject)
     this.getBlitzerRole = () => _discordJsGuildObject.roles.cache.get(guildDataStore.getBlitzerRoleId(this.getId()));
 
 
-    this.memberIsOwner = (memberId) => memberId === _discordJsGuildObject.ownerID;
+    this.memberIsOwner = (memberId) => memberId === _discordJsGuildObject.ownerId;
     this.memberHasTrustedRole = (guildMemberWrapper) => guildMemberWrapper.hasRole(guildDataStore.getTrustedRoleId(this.getId())) === true;
     this.memberHasBlitzerRole = (guildMemberWrapper) => guildMemberWrapper.hasRole(guildDataStore.getBlitzerRoleId(this.getId())) === true;
     this.memberHasGameMasterRole = (guildMemberWrapper) => guildMemberWrapper.hasRole(guildDataStore.getGameMasterRoleId(this.getId())) === true;
@@ -230,15 +230,15 @@ function GuildWrapper(discordJsGuildObject)
     {
         var _lastMessage;
 
-        log.general(log.getVerboseLevel(), "Last message id", channel.lastMessageID);
+        log.general(log.getVerboseLevel(), "Last message id", channel.lastMessageId);
 
-        if (channel.lastMessageID == null)
+        if (channel.lastMessageId == null)
         {
             log.general(log.getVerboseLevel(), "Channel already empty.");
             return Promise.resolve();
         }
 
-        return channel.messages.fetch(channel.lastMessageID)
+        return channel.messages.fetch(channel.lastMessageId)
         .then((lastMessage) =>
         {
             log.general(log.getVerboseLevel(), `Fetched last message ${lastMessage.id}`);
