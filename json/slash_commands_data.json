@@ -476,23 +476,6 @@
         ]
     },
 
-    "SET_LOG_TO_FILE":
-    {
-        "name": "setlogtofile",
-        "isEnabled": true,
-        "isDevOnly": true,
-        "channelRequiredToInvoke": "dm",
-        "description": "[Dev-only] Sets whether the bot will log its prints to files.",
-        "options": [
-            {
-                "name": "boolean",
-                "type": "BOOLEAN",
-                "description": "True or false, or 1 or 0: whether to log to a file",
-                "required": true
-            }
-        ]
-    },
-
     "SET_ORGANIZER":
     {
         "name": "setorganizer",
@@ -504,6 +487,22 @@
                 "name": "member_mention",
                 "type": "MENTIONABLE",
                 "description": "A mention to the new organizer (@Username#0000).",
+                "required": true
+            }
+        ]
+    },
+
+    "SHUFFLE":
+    {
+        "name": "shuffle",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "guild",
+        "description": "Shuffles a list of space-separated elements, i.e. mentions to members to create a draft order.",
+        "options": [
+            {
+                "name": "list",
+                "type": "STRING",
+                "description": "A space-separated list of things, i.e mentions or numbers",
                 "required": true
             }
         ]
@@ -553,6 +552,22 @@
         "isEnabled": true,
         "channelRequiredToInvoke": "game",
         "description": "[Game-organizer-only] Switches from bot-enforced timer to game-enforced timer, and vice versa."
+    },
+
+    "TOGGLE_CLEANER":
+    {
+        "name": "togglecleaner",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "dm",
+        "description": "[Dev-only] Sets whether the bot will regularly clean unused map and mod files."
+    },
+
+    "TOGGLE_LOG_TO_FILE":
+    {
+        "name": "togglelogtofile",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "game",
+        "description": "[Dev-only] Sets whether the bot will log its prints to files."
     },
 
     "UNCLAIM_PRETENDER":
