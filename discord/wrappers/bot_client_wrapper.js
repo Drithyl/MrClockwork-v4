@@ -32,7 +32,7 @@ exports.addOnGuildDeletedHandler = (handler) => _discordJsBotClient.on("guildBec
 exports.addOnChannelDeletedHandler = (handler) => _discordJsBotClient.on("channelDelete", (discordJsChannel) => handler(discordJsChannel));
 exports.addOnRoleDeletedHandler = (handler) => _discordJsBotClient.on("roleDelete", (discordJsChannel) => handler(discordJsChannel));
 
-exports.addOnMessageReceivedHandler = (handler) => _discordJsBotClient.on("message", (discordJsMessage) => handler(discordJsMessage));
+exports.addOnMessageReceivedHandler = (handler) => _discordJsBotClient.on("messageCreate", (discordJsMessage) => handler(discordJsMessage));
 exports.addOnMessageDeletedHandler = (handler) => _discordJsBotClient.on("messageDelete", (discordJsMessage) => handler(discordJsMessage));
 exports.addOnReactionAddedHandler = (handler) => _discordJsBotClient.on("messageReactionAdd", (discordJsMessageReaction, discordJsUser) => handler(discordJsMessageReaction, discordJsUser));
 
