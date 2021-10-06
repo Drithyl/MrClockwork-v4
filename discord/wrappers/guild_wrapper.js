@@ -249,7 +249,7 @@ function GuildWrapper(discordJsGuildObject)
         })
         .then((messages) =>
         {
-            const messageArray = messages.array();
+            const messageArray = [...messages.values()];
             messageArray.push(_lastMessage);
             
             log.general(log.getVerboseLevel(), `Fetched previous messages; total fetched: ${messageArray.length}`);
