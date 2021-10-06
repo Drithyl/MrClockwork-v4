@@ -12,7 +12,7 @@ module.exports.populateStore = function(discordJsGuildCollection)
     return guildDataStore.populateGuildDataStore()
     .then(() => 
     {
-        var guildArray = discordJsGuildCollection.array();
+        var guildArray = [...discordJsGuildCollection.values()];
 
         log.general(log.getNormalLevel(), "Finished loading guild data.");
         log.general(log.getNormalLevel(), "Populating guild store...");
