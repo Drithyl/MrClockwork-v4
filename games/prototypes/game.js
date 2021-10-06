@@ -175,7 +175,7 @@ function Game()
     };
 
     this.sendMessageToChannel = (text) => messenger.send(_discordJsChannel, text);
-    this.sendGameAnnouncement = (text) => messenger.send(_discordJsChannel, `${_discordJsRole} ${text}`);
+    this.sendGameAnnouncement = (text) => messenger.send(_discordJsChannel, `${_discordJsRole.toString()} ${text}`);
     this.sendMessageToOrganizer = (text) => 
     {
         if (_organizerWrapper != null)
