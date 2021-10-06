@@ -105,7 +105,7 @@ function _formatEmbed(embedStruct)
     if (embedStruct == null)
         return null;
 
-    return { embed: embedStruct };
+    return { embeds: [ embedStruct] };
 }
 
 function _formatWrapper(textToSend, prepend, append)
