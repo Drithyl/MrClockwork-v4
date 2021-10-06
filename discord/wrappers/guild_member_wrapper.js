@@ -21,7 +21,5 @@ function GuildMemberWrapper(discordJsGuildMemberObject, guildWrapper)
   this.removeRole = (discordRoleObject) => _discordJsGuildMemberObject.roles.remove(discordRoleObject);
   this.getHighestDiscordRolePosition = () => _discordJsGuildMemberObject.highest.position;
 
-  this.getLastMessageInGuild = () => _discordJsGuildMemberObject.lastMessage;
-
   this.sendMessage = (...args) => messenger.send(_discordJsGuildMemberObject, ...args);
 }
