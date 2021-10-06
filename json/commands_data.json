@@ -364,7 +364,7 @@
         "regexpRequiredToInvoke": "HELP",
         "argumentRegexpArray": [],
         "channelRequiredToInvoke": "any",
-        "helpText": "Print a list of the available commands."
+        "helpText": "Get a FAQ on the functionality of the bot."
     },
 
     "HOST_DOM5_GAME":
@@ -474,6 +474,19 @@
         "helpText": "Replaces one of the basic bot roles created for this Discord guild by a different existing role. Useful if the guild already has a trusted role for members and doesn't want to use the bot's Trusted role, for example."
     },
 
+    "RESET_PORT":
+    {
+        "name": "resetport",
+        "isEnabled": true,
+        "gameTypesSupported": [],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "RESETPORT",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "game",
+        "helpText": "Assigns a new port to the game (or the same one if it's found to be free)."
+    },
+
     "RESTABLISH_GAME":
     {
         "name": "restablish",
@@ -540,20 +553,6 @@
         "helpText": "[Dev Only] Sets the verbosity level of the logging functions to the console and files, with values ranging from 0 (lean) to 2 (verbose)."
     },
 
-    "SET_LOG_TO_FILE":
-    {
-        "name": "setlogtofile",
-        "isEnabled": true,
-        "isDevOnly": true,
-        "gameTypesSupported": [],
-        "argumentsRequiredInfo": ["True or false, or 1 or 0: whether to log to a file"],
-        "optionalArguments": 0,
-        "regexpRequiredToInvoke": "SETLOGTOFILE",
-        "argumentRegexpArray": ["^((TRUE)|(FALSE))|(1|0)$"],
-        "channelRequiredToInvoke": "dm",
-        "helpText": "[Dev Only] Sets whether the bot will log its prints to files."
-    },
-
     "SET_ORGANIZER":
     {
         "name": "setorganizer",
@@ -565,6 +564,19 @@
         "argumentRegexpArray": ["\\d+", "@.+"],
         "channelRequiredToInvoke": "game",
         "helpText": "Sets a member as the organizer of this game. If an organizer exists; replaces them."
+    },
+
+    "SHUFFLE":
+    {
+        "name": "shuffle",
+        "isEnabled": true,
+        "gameTypesSupported": ["dom5"],
+        "argumentsRequiredInfo": ["`A space-separated list of things, i.e mentions or numbers"],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "SHUFFLE",
+        "argumentRegexpArray": ["(.+\\s*)+"],
+        "channelRequiredToInvoke": "guild",
+        "helpText": "Shuffles a list of space-separated elements, i.e. mentions to members to create a draft order, or just words or numbers."
     },
 
     "START_GAME":
@@ -617,6 +629,34 @@
         "argumentRegexpArray": [],
         "channelRequiredToInvoke": "game",
         "helpText": "Switches from bot-enforced timer to game-enforced timer, and vice versa. The former means the bot will control the game timer and force host the game when the timer reaches zero. In this mode, the in-game Dominions timer won't be visible, but it should be more robust and reliable. The latter delegates the timer to Dominions and simply reads the current timer information off of the game's output, thus showing an ingame timer as well."
+    },
+
+    "TOGGLE_CLEANER":
+    {
+        "name": "togglecleaner",
+        "isEnabled": true,
+        "isDevOnly": true,
+        "gameTypesSupported": [],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "TOGGLECLEANER",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "dm",
+        "helpText": "[Dev Only] Sets whether the bot will regularly clean unused map and mod files."
+    },
+
+    "TOGGLE_LOG_TO_FILE":
+    {
+        "name": "togglelogtofile",
+        "isEnabled": true,
+        "isDevOnly": true,
+        "gameTypesSupported": [],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "TOGGLELOGTOFILE",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "dm",
+        "helpText": "[Dev Only] Sets whether the bot will log its prints to files."
     },
 
     "UNCLAIM_PRETENDER":

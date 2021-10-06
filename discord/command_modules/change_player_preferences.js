@@ -1,8 +1,8 @@
 
+const config = require("../../config/config.json");
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
-const activeMenuStore = require("../../menus/active_menu_store.js");
 
 const commandData = new CommandData("CHANGE_PLAYER_PREFERENCES");
 
@@ -23,5 +23,5 @@ function ChangePlayerPreferencesCommand()
 
 function _behaviour(commandContext)
 {
-    return activeMenuStore.startChangePlayerPreferencesMenu(commandContext);
+    return commandContext.respondToCommand(`You can change your preferences by accessing the bot's website at ${config.fullSecureUrl}`);
 }

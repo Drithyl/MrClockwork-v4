@@ -40,7 +40,7 @@ function _behaviour(commandContext)
 
 function getListOfModsOnServerAndSend(serverObject, commandContext)
 {
-    var introductionString = "Below is the list of maps available:\n\n";
+    var introductionString = "Below is the list of mods available:\n\n";
     var stringList = "";
 
     return serverObject.getDom5ModsOnServer()

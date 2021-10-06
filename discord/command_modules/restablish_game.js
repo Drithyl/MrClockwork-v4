@@ -16,7 +16,7 @@ function RestablishGameCommand()
 
     restablishGameCommand.addRequirements(
         commandPermissions.assertMemberIsTrusted,
-        commandPermissions.assertMemberIsOrganizer
+        commandPermissions.assertMemberIsGameMaster
     );
 
     return restablishGameCommand;

@@ -72,6 +72,7 @@ function MessageWrapper(discordJsMessageObject)
     };
 
     this.edit = (newText, editedEmbed) => _discordJsMessageObject.edit(newText, editedEmbed);
+    this.react = (emojiResolvable) => _discordJsMessageObject.react(emojiResolvable);
 }
 
 MessageWrapper.fetchFromChannel = (channel, messageId) =>

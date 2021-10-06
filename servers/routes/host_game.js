@@ -20,15 +20,17 @@ exports.set = (expressApp) =>
         var guildsWhereUserIsMember;
 
         const guildData = [];
-        const sessionParams = webSessionsStore.extractSessionParamsFromUrl(req.url);
 
-        log.general(log.getNormalLevel(), "host_game authentication params", sessionParams);
+        // Fetch session from either the URL params or the cookies, wherever we can find the sessionId
+        const session = webSessionsStore.getSessionFromUrlParams(req) ?? webSessionsStore.getSessionFromCookies(req);
 
-        if (webSessionsStore.isSessionValid(sessionParams) === false)
+        if (session == null)
             return res.render("results_screen.ejs", { result: `Session does not exist.` });
 
+        const userId = session.getUserId();
+        const sessionId = session.getSessionId();
         availableServers = hostServerStore.getAvailableServersClientData();
-        guildsWhereUserIsMember = guildStore.getGuildsWhereUserIsMember(sessionParams.userId);
+        guildsWhereUserIsMember = guildStore.getGuildsWhereUserIsMember(userId);
 
         guildsWhereUserIsMember.forEach((wrapper) =>
         {
@@ -39,7 +41,9 @@ exports.set = (expressApp) =>
         });
         
         /** redirect to host_game */
-        res.render("host_game_screen.ejs", Object.assign(sessionParams, {
+        res.render("host_game_screen.ejs", Object.assign({
+            userId,
+            sessionId,
             guilds: guildData, 
             servers: availableServers,
             nations: dom5Nations
@@ -49,33 +53,37 @@ exports.set = (expressApp) =>
     expressApp.post("/host_game", (req, res) =>
     {
         const values = req.body;
-        const sessionToken = values.token;
-        const userId = webSessionsStore.getSessionUserId(values.token);
+
+        // Fetch session from either the URL params or the cookies, wherever we can find the sessionId
+        const session = webSessionsStore.getSessionFromBody(req) ?? webSessionsStore.getSessionFromCookies(req);
 
         log.general(log.getNormalLevel(), `host_game POST values received`, values);
 
-        if (webSessionsStore.isSessionValid(values) === false)
+        if (session == null)
         {
             log.general(log.getNormalLevel(), "Session does not exist; cannot host.");
             return res.render("results_screen.ejs", { result: `Session does not exist.` });
         }
 
-        webSessionsStore.removeSession(sessionToken);
+        const userId = session.getUserId();
         _formatPostValues(values);
 
         _createGame(userId, values)
         .then((game) => 
         {
-            res.render("results_screen.ejs", { result: "Game has been hosted! Find the corresponding channel in the selected Discord guild." });
+            session.storeSessionData("Game has been hosted! Find the corresponding channel in the selected Discord guild.");
+            session.redirectTo("result", res);
             return game.launch();
         })
         .catch((err) => 
         {
             log.error(log.getLeanLevel(), `HOST GAME ERROR`, err);
-            res.render("results_screen.ejs", { result: `Error occurred; could not create the game: ${err.message}` });
+            session.storeSessionData(`Error occurred while creating the game. It might still have been created successfully: ${err.message}`);
+            session.redirectTo("result", res);
         });
     });
 };
+
 
 function _formatPostValues(values)
 {
@@ -136,6 +144,7 @@ function _createGame(userId, values)
     .catch((err) =>
     {
         log.error(log.getLeanLevel(), `ERROR when creating ${gameObject.getName()} through web. Cleaning it up`, err);
+        
         if (gameObject == null)
             return Promise.reject(err);
 

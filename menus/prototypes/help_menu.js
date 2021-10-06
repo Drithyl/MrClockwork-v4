@@ -1,36 +1,54 @@
 
-const MenuStructure = require("./menu_structure.js");
-const commandStore = require("../../discord/command_store.js");
+const helpMenuEntries = require("../../json/help_menu_entries.json");
 
-exports.startHelpMenu = (guildMemberWrapper) =>
+module.exports = HelpMenu;
+
+function HelpMenu(userWrapper)
 {
-    const _menuStructure = new MenuStructure(guildMemberWrapper);
-    _createHelpScreen(_menuStructure);
-    return _menuStructure;
-};
+    const _userWrapper = userWrapper;
+    const _helpIntro = _composeHelpIntro();
+    
+    this.startMenu = () =>
+    {
+        return _userWrapper.sendMessage(_helpIntro)
+        .then((messageWrapper) => 
+        {
+            return helpMenuEntries.forEachPromise((entry, i, nextPromise) =>
+            {
+                if (entry.EMOJI == null)
+                    return nextPromise();
 
-function _createHelpScreen(menuStructureObject)
-{
-    var id = "HELP_SCREEN";
-    var display = _createMainScreenDisplay();
+                return messageWrapper.react(entry.EMOJI)
+                .then(() => nextPromise());
+            });
+        });
+    };
 
-    menuStructureObject.addFirstScreen(id, display, _mainScreenBehaviour);
+    this.handleReaction = (emoji, reactedMessageWrapper) =>
+    {
+        var reactedEntry = helpMenuEntries.find((entry) => entry.EMOJI == emoji.name);
+
+        if (typeof reactedEntry === "object")
+            return reactedMessageWrapper.respond(`*\n*\n*\n**__${reactedEntry.ENTRY}__**\n\n${reactedEntry.INFO}`);
+    };
+
+    this.handleInput = () =>
+    {
+
+    };
 }
 
-function _createHelpScreenDisplay()
+function _composeHelpIntro()
 {
-    var displayText = "Below is the numbered list of all the commands available. Type a command's index to see more details:\n\n";
+    var intro = "";
 
-    commandStore.forEachCommand((command, index) =>
+    helpMenuEntries.forEach((entry) =>
     {
-        displayText += `${index}. ${command.getShortHelpText()}\n`;
+        if (typeof entry === "string")
+            intro += entry + "\n\n";
+
+        else intro += `${entry.EMOJI} **${entry.ENTRY}**\n\n`
     });
 
-    return displayText;
-}
-
-function _mainScreenBehaviour(userSelectedCommandIndex)
-{
-    var selectedCommand = commandStore.getCommandByIndex(userSelectedCommandIndex);
-    return selectedCommand.getHelpText();
+    return intro;
 }

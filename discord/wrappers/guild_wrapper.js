@@ -13,8 +13,9 @@ function GuildWrapper(discordJsGuildObject)
 
     this.getId = () => _discordJsGuildObject.id;
     this.getName = () => _discordJsGuildObject.name;
-    this.getOwnerID = () => _discordJsGuildObject.ownerID;
-    this.getOwner = () => this.getGuildMemberWrapperById(this.getOwnerID());
+    this.getOwnerId = () => _discordJsGuildObject.ownerId;
+    this.getOwner = () => this.getGuildMemberWrapperById(this.getOwnerId());
+    this.getMemberCount = () => _discordJsGuildObject.memberCount;
 
     this.getDiscordJsBotMemberInGuild = () => _discordJsGuildObject.me;
     this.isAvailable = () => _discordJsGuildObject.available;
@@ -33,10 +34,11 @@ function GuildWrapper(discordJsGuildObject)
     this.getBlitzerRole = () => _discordJsGuildObject.roles.cache.get(guildDataStore.getBlitzerRoleId(this.getId()));
 
 
-    this.memberIsOwner = (memberId) => memberId === _discordJsGuildObject.ownerID;
+    this.memberIsOwner = (memberId) => memberId === _discordJsGuildObject.ownerId;
     this.memberHasTrustedRole = (guildMemberWrapper) => guildMemberWrapper.hasRole(guildDataStore.getTrustedRoleId(this.getId())) === true;
     this.memberHasBlitzerRole = (guildMemberWrapper) => guildMemberWrapper.hasRole(guildDataStore.getBlitzerRoleId(this.getId())) === true;
-    this.memberHasGameMasterRole = (guildMemberWrapper) => guildMemberWrapper.hasRole(guildDataStore.getBlitzerRoleId(this.getId())) === true;
+    this.memberHasGameMasterRole = (guildMemberWrapper) => guildMemberWrapper.hasRole(guildDataStore.getGameMasterRoleId(this.getId())) === true;
+  
     this.createCommand = (data) => _discordJsGuildObject.commands.create(data);
     this.setCommands = (bulkData) => _discordJsGuildObject.commands.set(bulkData);
     
@@ -164,13 +166,10 @@ function GuildWrapper(discordJsGuildObject)
     this.createRole = (name, mentionable, permissions) =>
     {
         log.general(log.getVerboseLevel(), `Creating role ${name}...`);
-        return _discordJsGuildObject.roles.create({ 
-            data:
-            {
+        return _discordJsGuildObject.roles.create({
             name,
             mentionable,
             permissions
-            }
         })
         .then((role) => 
         {
@@ -188,11 +187,7 @@ function GuildWrapper(discordJsGuildObject)
     this.getRoleByName = (roleName) => _discordJsGuildObject.roles.cache.find("name", roleName);
     this.getChannelByName = (channelName) => _discordJsGuildObject.channels.cache.find("name", channelName);
 
-<<<<<<< Updated upstream
-    this.getDiscordJsGuildMemberById = (memberId) => _discordJsGuildObject.member(memberId);
-=======
     this.getDiscordJsGuildMemberById = (memberId) => _discordJsGuildObject.members.cache.get(memberId);
->>>>>>> Stashed changes
     this.fetchDiscordJsGuildMemberById = (memberId) => _discordJsGuildObject.members.fetch(memberId);
     this.getGuildMemberWrapperById = (memberId) => 
     {
@@ -237,15 +232,15 @@ function GuildWrapper(discordJsGuildObject)
     {
         var _lastMessage;
 
-        log.general(log.getVerboseLevel(), "Last message id", channel.lastMessageID);
+        log.general(log.getVerboseLevel(), "Last message id", channel.lastMessageId);
 
-        if (channel.lastMessageID == null)
+        if (channel.lastMessageId == null)
         {
             log.general(log.getVerboseLevel(), "Channel already empty.");
             return Promise.resolve();
         }
 
-        return channel.messages.fetch(channel.lastMessageID)
+        return channel.messages.fetch(channel.lastMessageId)
         .then((lastMessage) =>
         {
             log.general(log.getVerboseLevel(), `Fetched last message ${lastMessage.id}`);
@@ -256,7 +251,7 @@ function GuildWrapper(discordJsGuildObject)
         })
         .then((messages) =>
         {
-            const messageArray = messages.array();
+            const messageArray = [...messages.values()];
             messageArray.push(_lastMessage);
             
             log.general(log.getVerboseLevel(), `Fetched previous messages; total fetched: ${messageArray.length}`);

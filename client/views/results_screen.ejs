@@ -1,12 +1,29 @@
 
+
 <%- include('../partials/head.ejs')-%>
-<%- include('../partials/body_start.ejs')-%>
+<%- include('../partials/navbar.ejs')-%>
 
-<p id="result">
 
-    <%= (typeof result === "string") ? result : "" %>
+<div id="body" class="h-100 bg" style="border: 1px solid red;">
 
-</p>
+    <div class="container card" style="border: 1px solid red;">
 
-<%- include('../partials/body_end.ejs')-%>
+        <div class="card-header" style="border: 1px solid red;">
+
+            <span></span>
+
+        </div>
+
+        <div class="card-body row d-flex align-items-center flex-column" style="border: 1px solid red;">
+        
+            <p id="result">
+                <%= (typeof result === "string") ? result : "" %>
+            </p>
+
+        </div>
+    </div>
+    
+</div>
+
+
 <%- include('../partials/footer.ejs')-%>

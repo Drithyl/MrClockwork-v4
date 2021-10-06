@@ -28,8 +28,11 @@ function StartingResearch()
         _value = validatedValue;
     };
 
-    this.fromJSON = (value) =>
+    this.fromJSON = (value, needsPatching = false) =>
     {
+        if (needsPatching === true)
+            value = _patchFromV3(value);
+            
         if (typeof value !== "boolean")
             throw new Error(`Expected boolean; got ${value}`);
 
@@ -58,6 +61,14 @@ function StartingResearch()
             return true;
 
         else throw new SemanticError(`Unexpected value for the starting research: ${input}`);
+    }
+
+    function _patchFromV3(value)
+    {
+        if (+value === 0)
+            return false;
+
+        else return true;
     }
 }
 

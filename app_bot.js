@@ -8,6 +8,7 @@ var config;
 var log;
 var cleaner;
 var discord;
+var patcher;
 var expressServer;
 var gamesStore;
 var timeEventsEmitter;
@@ -39,6 +40,7 @@ function _initializeComponents()
     log = require("./logger.js");
     cleaner = require("./cleaner.js");
     discord = require("./discord/discord.js");
+    patcher = require("./patcher.js");
     expressServer = require("./servers/express_server.js");
     gamesStore = require("./games/ongoing_games_store.js");
     timeEventsEmitter = require("./time_events_emitter.js");
@@ -60,6 +62,11 @@ function _initializeComponents()
     .then(() =>
     {
         log.general(log.getLeanLevel(), "Finished populating server store.");
+        return Promise.resolve(patcher.patchV3Games());
+    })
+    .then(() =>
+    {
+        log.general(log.getLeanLevel(), "Finished patching v3 games.");
         return Promise.resolve(gamesStore.loadAll());
     })
     .then(() => 
@@ -85,6 +92,5 @@ function _initializeComponents()
 
 //Catch process exceptions and log them here
 process.on("error", (err) => log.error(log.getLeanLevel(), `PROCESS ERROR`, err));
-process.on("beforeExit", (code) => log.general(log.getLeanLevel(), `PROCESS WILL EXIT WITH CODE ${code}`));
 process.on("unhandledRejection", err => log.error(log.getLeanLevel(), `UNHANDLED REJECTION ERROR`, err));
 process.on("uncaughtException", err => log.error(log.getLeanLevel(), `UNCAUGHT EXCEPTION ERROR`, err));

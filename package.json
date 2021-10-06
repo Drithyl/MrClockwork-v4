@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint .",
-    "start": "node app.js"
+    "start": "node app_bot.js"
   },
   "repository": {
     "type": "git",
@@ -28,13 +28,14 @@
   },
   "homepage": "https://github.com/Drithyl/MrClockwork-v4#readme",
   "dependencies": {
-    "discord.js": "^13.0.0-dev.fe6cc0c.1625227356",
-    "ejs": "^3.1.6",
+    "cookie-parser": "^1.4.5",
+    "discord.js": "^13.2.0",
+    "ejs": "^3.1.5",
     "express": "^4.17.1",
-    "socket.io": "^2.4.1",
-    "uuid": "^8.3.2"
+    "socket.io": "^2.3.0",
+    "uuid": "^8.3.1"
   },
   "devDependencies": {
-    "eslint": "^7.29.0"
+    "eslint": "^7.11.0"
   }
 }

@@ -9,6 +9,7 @@ const messenger = require("../../discord/messenger.js");
 const guildStore = require("../../discord/guild_store.js");
 const ongoingGamesStore = require("../ongoing_games_store.js");
 const hostServerStore = require("../../servers/host_server_store.js");
+const SemanticError = require("../../errors/custom_errors.js").SemanticError;
 
 module.exports = Game;
 
@@ -21,6 +22,9 @@ function Game()
     var _settingsObject;
     var _discordJsChannel;
     var _discordJsRole;
+    var _roleId;
+    var _guildId;
+    var _channelId;
 
     this.getName = () => 
     {
@@ -39,25 +43,35 @@ function Game()
     };
 
     this.getGuild = () => _guildWrapper;
-    this.getGuildId = () => _guildWrapper.getId();
+    this.getGuildId = () => _guildId;
     this.setGuild = (guildWrapper) =>
     {
-        _guildWrapper = guildWrapper;
+        if (assert.isObject(guildWrapper) === true && assert.isString(guildWrapper.getId()) === true)
+        {
+            _guildWrapper = guildWrapper;
+            _guildId = guildWrapper.getId();
+        }
     };
 
     this.getChannel = () => _discordJsChannel;
-    this.getChannelId = () => (_discordJsChannel == null) ? null : _discordJsChannel.id;
+    this.getChannelId = () => _channelId;
     this.setChannel = (channel) =>
     {
-        _discordJsChannel = channel;
+        if (assert.isObject(channel) === true && assert.isString(channel.id) === true)
+        {
+            _discordJsChannel = channel;
+            _channelId = channel.id;
+        }
     };
 
     this.deleteChannel = () =>
     {
+        _channelId = null;
+
         if (_discordJsChannel == null)
             return Promise.resolve();
 
-        else return _discordJsChannel.delete();
+        return _discordJsChannel.delete();
     };
 
     this.createNewChannel = () =>
@@ -72,7 +86,8 @@ function Game()
         {
             const guildId = _guildWrapper.getId();
             const status = this.getLastKnownStatus();
-            _discordJsChannel = channel
+            
+            this.setChannel(channel);
 
             if (status.isOngoing() === true)
             {
@@ -89,24 +104,30 @@ function Game()
     };
 
     this.getRole = () => _discordJsRole;
-    this.getRoleId = () =>  (_discordJsRole == null) ? null : _discordJsRole.id;
+    this.getRoleId = () =>  _roleId;
     this.setRole = (role) =>
     {
-        _discordJsRole = role;
+        if (assert.isObject(role) === true && assert.isString(role.id) === true)
+        {
+            _discordJsRole = role;
+            _roleId = role.id;
+        }
     };
 
     this.deleteRole = () =>
     {
+        _roleId = null;
+
         if (_discordJsRole == null)
             return Promise.resolve();
 
-        else return _discordJsRole.delete();
+        return _discordJsRole.delete();
     };
 
     this.createNewRole = () =>
     {
         return _guildWrapper.createGameRole(`${this.getName()} Player`)
-        .then((role) => _discordJsRole = role);
+        .then((role) => this.setRole(role));
     };
 
     this.getOrganizer = () => _organizerWrapper;
@@ -154,7 +175,7 @@ function Game()
     };
 
     this.sendMessageToChannel = (text) => messenger.send(_discordJsChannel, text);
-    this.sendGameAnnouncement = (text) => messenger.send(_discordJsChannel, `${_discordJsRole} ${text}`);
+    this.sendGameAnnouncement = (text) => messenger.send(_discordJsChannel, `${_discordJsRole.toString()} ${text}`);
     this.sendMessageToOrganizer = (text) => 
     {
         if (_organizerWrapper != null)
@@ -230,17 +251,29 @@ function Game()
         assert.isStringOrThrow(jsonData.serverId);
         assert.isStringOrThrow(jsonData.guildId);
 
-
         var guild = guildStore.getGuildWrapperById(jsonData.guildId);
         var server = hostServerStore.getHostServerById(jsonData.serverId);
+
+        if (guild == null)
+            return Promise.reject(new Error(`Guild with id ${jsonData.guildId} cannot be found; skipping game ${jsonData.name}`));
 
 
         this.setGuild(guild);
         this.setServer(server);
         this.setName(jsonData.name);
         this.setPort(jsonData.port);
-        
+
         return guild.fetchGuildMemberWrapperById(jsonData.organizerId)
+        .catch((err) =>
+        {
+            if (assert.isObject(guild.getOwner()) === true)
+            {
+                log.general(log.getLeanLevel(), `${jsonData.name}'s organizer cannot be found; setting guild owner as organizer.`);
+                return Promise.resolve(guild.getOwner());
+            }
+
+            else return Promise.reject(err);
+        })
         .then((organizerWrapper) =>
         {
             if (assert.isObject(organizerWrapper) === true)
@@ -259,7 +292,7 @@ function Game()
                 this.setRole(guild.getRoleById(jsonData.roleId));
 
 
-            _settingsObject.loadJSONData(jsonData.settings);
+            _settingsObject.loadJSONData(jsonData.settings, jsonData.needsPatching);
 
             return this;
         });
@@ -273,9 +306,10 @@ function Game()
         jsonObject.serverId = (_hostServer != null) ? _hostServer.getId() : _serverId;
         jsonObject.settings = _settingsObject.toJSON();
         jsonObject.organizerId = _organizerWrapper.getId();
-        jsonObject.guildId = _guildWrapper.getId();
-        jsonObject.channelId = (_discordJsChannel == null) ? null : _discordJsChannel.id;
-        jsonObject.roleId = (_discordJsRole == null) ? null : _discordJsRole.id;
+        jsonObject.guildId = _guildId;
+        jsonObject.channelId = _channelId;
+        jsonObject.roleId = _roleId;
+        jsonObject.version = "4";
         return jsonObject;
     };
 }

@@ -48,8 +48,10 @@ function _behaviour(commandContext)
     .then((statusMessage) => server.emitPromise("UPLOAD_FILE", { type: fileType, fileId: googleDriveId }))
     .then((responseData) => 
     {
+        const formattedData = _formatResponseData(responseData);
+
         return commandContext.respondToCommand(`Download complete! Details will be sent to your DMs.`)
-        .then(() => commandContext.respondToSender(_formatResponseData(responseData), { prepend: "```", append: "```" }));
+        .then(() => commandContext.respondToSender(`Find the details of your upload attached below:`, { files: { filename: "uploaded_files.txt", attachment: Buffer.from(formattedData, "utf8") }}));
     });
 }
 

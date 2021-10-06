@@ -1,6 +1,7 @@
 *.ini
 *.bat
 *.txt
+*.out
 
 # Sensitive config data
 config/config.json

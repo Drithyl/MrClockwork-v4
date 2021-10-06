@@ -1,53 +1,55 @@
 
 const url = require("url");
-const uuidv4 = require("uuid").v4;
+const WebSession = require("./prototypes/web_session.js");
 
 const _sessions = {};
 
-module.exports.createSession = (userId, data) =>
+module.exports.createSession = (userId) =>
 {
-    const token = uuidv4();
-    _sessions[token] = {userId, data, token};
-    return token;
+    const session = new WebSession(userId);
+    const sessionId = session.getSessionId();
+
+    _sessions[sessionId] = session;
+    return session;
 };
 
-module.exports.doesSessionExist = (token) =>
+module.exports.getSession = (sessionId) =>
 {
-    return _sessions[token] != null && _sessions[token].token === token;
+    console.log(`Searching existing sessions with ${sessionId}`);
+    console.log(_sessions);
+    return _sessions[sessionId];
 };
 
-module.exports.removeSession = (token) =>
+module.exports.getSessionFromUrlParams = (req) =>
 {
-    delete _sessions[token];
+    const urlObject = url.parse(req.url, true);
+    const sessionId = urlObject.query.sessionId;
+    const session = exports.getSession(sessionId);
+    return session;
 };
 
-module.exports.getSessionUserId = (token) =>
+module.exports.getSessionFromBody = (req) =>
 {
-    if (_sessions[token] == null)
-        return null;
-
-    return _sessions[token].userId;  
+    const body = req.body;
+    const sessionId = body.sessionId;
+    const session = exports.getSession(sessionId);
+    return session;
 };
 
-module.exports.getSessionData = (token) =>
+module.exports.getSessionFromCookies = (req) =>
 {
-    if (_sessions[token] == null)
-        return null;
-        
-    return _sessions[token].data;  
+    const cookies = req.cookies;
+    const sessionId = cookies.sessionId;
+    const session = exports.getSession(sessionId);
+    return session;
 };
 
-module.exports.extractSessionParamsFromUrl = (reqUrl) =>
+module.exports.doesSessionExist = (sessionId) =>
 {
-    const urlObject = url.parse(reqUrl, true);
-    const token = urlObject.query.token;
-    const userId = exports.getSessionUserId(token);
-
-    return { userId, token };
+    return _sessions[sessionId] != null && _sessions[sessionId].getSessionId() === sessionId;
 };
 
-module.exports.isSessionValid = (authenticationParams) =>
+module.exports.removeSession = (sessionId) =>
 {
-    const token = authenticationParams.token;
-    return exports.doesSessionExist(token);
+    delete _sessions[sessionId];
 };

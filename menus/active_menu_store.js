@@ -15,7 +15,8 @@ var activeMenus = {};
 module.exports.startHelpMenu = function(commandContext)
 {
     const memberId = commandContext.getCommandSenderId();
-    const helpMenuInstance = new HelpMenu(commandContext);
+    const userWrapper = commandContext.getSenderUserWrapper();
+    const helpMenuInstance = new HelpMenu(userWrapper);
 
     //finish any previous instances of a menu
     _deleteInstance(memberId);
@@ -85,6 +86,12 @@ module.exports.handleInput = function(userId, messageWrapper)
     const input = messageWrapper.getMessageContent();
 
     activeMenuInstance.handleInput(input);
+};
+
+module.exports.handleReaction = function(userId, emoji, reactedMessageWrapper)
+{
+    const activeMenuInstance = activeMenus[userId].instance;
+    activeMenuInstance.handleReaction(emoji, reactedMessageWrapper);
 };
 
 module.exports.isUserInMenu = function(userId)

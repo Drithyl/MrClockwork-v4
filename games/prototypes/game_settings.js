@@ -46,7 +46,7 @@ function GameSettings(parentGame)
     {
         this.forEachSetting((settingObject, key) =>
         {
-            if (settingObject.canBeChangedAfterCreation() === true)
+            if (settingObject.canBeChanged() === true)
                 fnToCallOnSettings(settingObject, key);
         });
     };
@@ -55,12 +55,12 @@ function GameSettings(parentGame)
     {
         this.forEachSetting((settingObject, key) =>
         {
-            if (settingObject.canBeChangedAfterCreation() === true && settingObject.isPublic() === true)
+            if (settingObject.canBeChanged() === true && settingObject.isPublic() === true)
                 fnToCallOnSettings(settingObject, key);
         });
     };
 
-    this.loadJSONData = (jsonData) =>
+    this.loadJSONData = (jsonData, needsPatching = false) =>
     {
         log.general(log.getNormalLevel(), "Loading JSON data...", jsonData);
         this.forEachSetting((settingObject, settingKey) =>
@@ -70,7 +70,7 @@ function GameSettings(parentGame)
             log.general(log.getNormalLevel(), `Loading ${settingKey}`);
 
             if (loadedValue !== undefined)
-                settingObject.fromJSON(loadedValue);
+                settingObject.fromJSON(loadedValue, needsPatching);
 
             else throw new Error(`${settingKey} is undefined.`);
         });

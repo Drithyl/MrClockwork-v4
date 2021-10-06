@@ -55,7 +55,7 @@ exports.set = (expressApp) =>
             ejs.renderFile("./client/partials/settings/map_list.ejs", { maps }, (err, compiledHthml) =>
             {
                 if (err)
-                    res.send(`Error when fetching mods: ${err.message}`);
+                    res.send(`Error when fetching maps: ${err.message}`);
     
                 res.send(compiledHthml);
             });

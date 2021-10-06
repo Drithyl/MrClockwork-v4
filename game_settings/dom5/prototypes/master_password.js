@@ -15,9 +15,6 @@ function MasterPassword()
     {
         return this.getValue();
     };
-
-    this.isPublic = () => false;
-    this.canBeChangedAfterCreation = () => false;
     
     this.setValue = (input) =>
     {

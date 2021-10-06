@@ -10,65 +10,57 @@ exports.set = (expressApp) =>
     {
         var ongoingGames;
         const organizedGames = {};
-        
-        const sessionParams = webSessionsStore.extractSessionParamsFromUrl(req.url);
 
-        log.general(log.getNormalLevel(), "change_game_settings authentication params", sessionParams);
+        // Fetch session from either the URL params or the cookies, wherever we can find the sessionId
+        const session = webSessionsStore.getSessionFromUrlParams(req) ?? webSessionsStore.getSessionFromCookies(req);
 
-        if (webSessionsStore.isSessionValid(sessionParams) === false)
+        if (session == null)
             return res.render("results_screen.ejs", { result: "Session does not exist." });
 
-        ongoingGames = gameStore.getArrayOfGames();
+        const userId = session.getUserId();
+        const sessionId = session.getSessionId();
+        ongoingGames = gameStore.getGamesWhereUserIsOrganizer(userId);
 
-        return ongoingGames.forEachPromise((game, i, nextPromise) =>
+        return ongoingGames.forAllPromises(async (game) =>
         {
+            var hasGameStarted;
             var hostServer;
             var gameSettings;
             var maps;
             var mods;
 
-            if (game.getOrganizerId() !== sessionParams.userId)
-                return nextPromise();
+            hostServer = game.getServer();
 
-            return game.checkIfGameStarted()
-            .then((hasGameStarted) =>
-            {
-                log.general(log.getVerboseLevel(), `Has game started for settings change: ${hasGameStarted}`);
+            if (hostServer.isOnline() === false)
+                return;
 
-                if (hasGameStarted === true)
-                    return nextPromise();
+            hasGameStarted = await game.checkIfGameStarted();
 
-                hostServer = game.getServer();
-                gameSettings = game.getSettingsObject();
+            if (hasGameStarted === true)
+                return;
+
+            gameSettings = game.getSettingsObject();
+            maps = await hostServer.getDom5MapsOnServer();
+            mods = await hostServer.getDom5ModsOnServer();
                 
-                return hostServer.getDom5MapsOnServer()
-            })
-            .then((mapList) =>
-            {
-                maps = mapList;
-                return hostServer.getDom5ModsOnServer();
-            })
-            .then((modList) =>
-            {
-                mods = modList;
-
-                organizedGames[game.getName()] = { 
-                    serverName: hostServer.getName(), 
-                    settings: gameSettings.toEjsData(),
-                    maps,
-                    mods
-                };
-
-                return nextPromise();
-            });
+            organizedGames[game.getName()] = { 
+                serverName: hostServer.getName(), 
+                settings: gameSettings.toEjsData(),
+                maps,
+                mods
+            };
         })
-        .then(() => 
+        .then(() =>
         {
             log.general(log.getVerboseLevel(), "Final organized games data rendered", organizedGames);
-
-            /** redirect to change_game_settings */
-            res.render("change_game_settings_screen.ejs", Object.assign(sessionParams, { organizedGames: organizedGames, nations: dom5Nations }));
-        });
+            res.render("change_game_settings_screen.ejs", Object.assign({ 
+                userId,
+                sessionId,
+                organizedGames: organizedGames, 
+                nations: dom5Nations 
+            }));
+        })
+        .catch((err) => res.render("results_screen.ejs", { result: `Error occurred while fetching game's data: ${err.message}` }));
     });
 
     expressApp.post("/change_game_settings", (req, res) =>
@@ -76,15 +68,17 @@ exports.set = (expressApp) =>
         var game;
         const values = req.body;
 
+        // Fetch session from either the URL params or the cookies, wherever we can find the sessionId
+        const session = webSessionsStore.getSessionFromBody(req) ?? webSessionsStore.getSessionFromCookies(req);
+
         log.general(log.getNormalLevel(), `change_game_settings POST values received`, values);
 
-        if (webSessionsStore.isSessionValid(values) === false)
+        if (session == null)
         {
             log.general(log.getNormalLevel(), "Session does not exist; cannot edit preferences.");
             return res.render("results_screen.ejs", { result: "Session does not exist." });
         }
 
-        webSessionsStore.removeSession(values.token);
         game = gameStore.getOngoingGameByName(values.gameName);
 
         _formatPostValues(values);
@@ -92,11 +86,17 @@ exports.set = (expressApp) =>
         return game.loadSettingsFromInput(values)
         .then(() =>
         {
-            res.render("results_screen.ejs", { result: "Settings were changed." });
+            session.storeSessionData("Settings were changed.");
+            session.redirectTo("result", res);
             return game.kill();
         })
         .then(() => game.launch())
-        .catch((err) => log.general(log.getNormalLevel(), err));
+        .catch((err) =>
+        {
+            log.error(log.getLeanLevel(), `CHANGE GAME SETTINGS ERROR:`, err);
+            session.storeSessionData(`Error occurred while changing game settings: ${err.message}`);
+            session.redirectTo("result", res);
+        });
     });
 };
 

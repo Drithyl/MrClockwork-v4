@@ -122,7 +122,9 @@ function _assertMemberIsTrusted(commandContext)
 
 function _assertMemberIsGameMaster(commandContext)
 {
-    if (commandContext.isSenderGameMaster() === false)
+    if (commandContext.isSenderGameMaster() === false &&
+        commandContext.isSenderGuildOwner() === false &&
+        commandContext.isSenderDev() === false)
         throw new PermissionsError(`You must be a Game Master to use this command.`);
 }
 

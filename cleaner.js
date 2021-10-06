@@ -1,21 +1,41 @@
 
 const log = require("./logger.js");
+const config = require("./config/config.json");
 const hostServerStore = require("./servers/host_server_store.js");
 const ongoingGamesStore = require("./games/ongoing_games_store.js");
 
 var modsAndMapsCleaningInterval;
+const UTC_DAYS_TO_CLEAN = [3, 6];
+const UTC_HOUR_TO_CLEAN = 22;
 const ONE_HOUR = 3600000;
+var isCleaningEnabled = config.isCleaningEnabled;
 
+
+module.exports.toggleIsCleaningEnabled = () =>
+{
+    isCleaningEnabled = !isCleaningEnabled;
+    log.general(log.getLeanLevel(), `isCleaningEnabled set to ${isCleaningEnabled}`);
+    return isCleaningEnabled;
+};
 
 module.exports.startCleaningInterval = () =>
 {
     modsAndMapsCleaningInterval = setInterval(() =>
     {
         const dateNow = new Date(Date.now());
+        const currentUtcDay = dateNow.getUTCDay();
+        const currentUtcHour = dateNow.getUTCHours();
 
-        // Do the cleaning every Sunday at 22:00 UTC
-        if (dateNow.getUTCDay() !== 0 || dateNow.getUTCHours() !== 22)
-            return;
+        
+        if (isCleaningEnabled === false)
+            return log.general(log.getLeanLevel(), `isCleaningEnabled is false; skipping cleaning interval.`);
+
+        if (UTC_DAYS_TO_CLEAN.includes(currentUtcDay) === false)
+            return log.general(log.getLeanLevel(), `Current day is ${currentUtcDay}, days to clean are ${UTC_DAYS_TO_CLEAN}; skipping cleaning interval.`);
+
+        if (currentUtcHour !== UTC_HOUR_TO_CLEAN)
+            return log.general(log.getLeanLevel(), `Current hour is ${currentUtcHour}, hour to clean is ${UTC_HOUR_TO_CLEAN}; skipping cleaning interval.`);
+
 
         log.general(log.getLeanLevel(), `Process to clean unused files starting...`);
         exports.cleanUnusedMaps();

@@ -1,0 +1,41 @@
+
+<% if (typeof games === "object" && Array.isArray(games) === true && games.length > 0) { %>
+                    
+    <% games.forEach((gameData) => { %>
+
+        <div class="card game-card">
+            <div class="card-header">
+                <%=gameData.name %>
+            </div>
+
+            <div class="card-body">
+                <p>
+                    <b>Guild:</b> <%=gameData.guild %><br>
+                    <b>Server:</b> <%=gameData.server %><br>
+                    <b>Address:</b> <%=gameData.ip %>:<%=gameData.port %><br>
+                    <b>Status:</b> <%= gameData.status %><br>
+
+                    <% if (typeof gameData.turnNumber === "number" && gameData.turnNumber > 0) { %>
+                        
+                        <b>Current Turn:</b> <%=gameData.turnNumber %><br>
+
+                    <% } if (typeof gameData.isPaused === "boolean" && gameData.isPaused === true) { %>
+
+                        <b>Timer:</b> Paused
+
+                    <% } else if (typeof gameData.timeLeft === "string") { %>
+                        
+                        <b>Timer:</b> <%=gameData.timeLeft %>
+
+                    <% } %>
+                    
+                </p>
+            </div>
+            
+        </div>
+
+    <% }); %>
+
+<% } else { %>
+    <p>You're not participating in any games. If you are, make sure you have claimed your pretender!</p>
+<% } %>

@@ -13,17 +13,17 @@ function GuildMemberWrapper(discordJsGuildMemberObject, guildWrapper)
     assert.isObjectOrThrow(guildWrapper);
 
     this.getGuildWrapper = () => _guildWrapper;
-
-    this.getId = () => _discordJsGuildMemberObject.id;
-    this.getUsername = () => _discordJsGuildMemberObject.user.username;
+  
+    this.getId = () => discordJsGuildMemberObject.id;
+    this.getUsername = () => discordJsGuildMemberObject.user.username;
+    this.getNickname = () => discordJsGuildMemberObject.nickname;
+    this.getNameInGuild = () => (this.getNickname() != null) ? this.getNickname() : this.getUsername();
     this.getGuildId = () => _guildWrapper.getGuildId();
 
     this.hasRole = (discordRoleId) => _discordJsGuildMemberObject.roles.cache.get(discordRoleId) != null;
     this.addRole = (discordRoleObject) => _discordJsGuildMemberObject.roles.add(discordRoleObject);
     this.removeRole = (discordRoleObject) => _discordJsGuildMemberObject.roles.remove(discordRoleObject);
     this.getHighestDiscordRolePosition = () => _discordJsGuildMemberObject.highest.position;
-
-    this.getLastMessageInGuild = () => _discordJsGuildMemberObject.lastMessage;
 
     this.sendMessage = (...args) => messenger.send(_discordJsGuildMemberObject, ...args);
 }

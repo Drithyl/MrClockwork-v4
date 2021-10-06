@@ -22,7 +22,8 @@ exports.loadAll = function()
         var gameJSONDataPath = `${pathToGameDataDir}/${gameDirName}/data.json`;
         
         return gameFactory.loadGame(gameJSONDataPath)
-        .then((loadedGame) => exports.addOngoingGame(loadedGame));
+        .then((loadedGame) => exports.addOngoingGame(loadedGame))
+        .catch((err) => log.error(log.getLeanLevel(), `Error loading game`, err));
     });
 };
 
@@ -135,7 +136,7 @@ exports.getArrayOfGames = function()
         let game = _ongoingGamesByName[name];
         arr.push(game);
     }
-
+    
     return arr;
 };
 
@@ -149,6 +150,36 @@ exports.forEachGame = function(fnToApply)
         fnToApply(game, name);
     }
 };
+
+exports.filterGames = function(fnToApply)
+{
+    const filteredGames = [];
+    assert.isFunctionOrThrow(fnToApply);
+
+    for (var name in _ongoingGamesByName)
+    {
+        let game = _ongoingGamesByName[name];
+        if (fnToApply(game, name) === true)
+            filteredGames.push(game);
+    }
+
+    return filteredGames;
+};
+
+exports.getGamesWhereUserIsPlayer = function(userId)
+{
+    const games = exports.filterGames((game) => game.memberIsPlayer(userId) === true);
+    console.log(`User ${userId} has pretenders claimed in following games:\n\n${games.reduce((list, game) => list += `${game.getName()}\n`, "")}`);
+    return games;
+}
+
+exports.getGamesWhereUserIsOrganizer = function(userId)
+{
+    const games = exports.filterGames((game) => game.getOrganizerId() === userId);
+    console.log(`User ${userId} is organizer in following games:\n\n${games.reduce((list, game) => list += `${game.getName()}\n`, "")}`);
+    return games;
+}
+
 
 function _findGameByName(nameToFind)
 {
