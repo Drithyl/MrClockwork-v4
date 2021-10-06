@@ -162,13 +162,10 @@ function GuildWrapper(discordJsGuildObject)
     this.createRole = (name, mentionable, permissions) =>
     {
         log.general(log.getVerboseLevel(), `Creating role ${name}...`);
-        return _discordJsGuildObject.roles.create({ 
-            data:
-            {
+        return _discordJsGuildObject.roles.create({
             name,
             mentionable,
             permissions
-            }
         })
         .then((role) => 
         {
