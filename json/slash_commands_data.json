@@ -403,6 +403,14 @@
         ]
     },
 
+    "RESET_PORT":
+    {
+        "name": "resetport",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "guild",
+        "description": "[Organizer-only] Assigns a new port to the game (or the same one if it's found to be free)."
+    },
+
     "RESTABLISH_GAME":
     {
         "name": "restablish",
