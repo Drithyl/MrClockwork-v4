@@ -31,8 +31,8 @@ function MessageEmbedWrapper(discordJsEmbed, messageWrapper)
             return;
 
         _discordJsEmbed.spliceFields(index, 1, {
-            name: fieldName,
-            value: fieldValue,
+            name: fieldName.toString(),
+            value: fieldValue.toString(),
             inline
         });
     };
@@ -46,8 +46,8 @@ function MessageEmbedWrapper(discordJsEmbed, messageWrapper)
         else 
         {
             _discordJsEmbed.spliceFields(index, 1, {
-                name: fieldName,
-                value: fieldValue,
+                name: fieldName.toString(),
+                value: fieldValue.toString(),
                 inline
             });
         }

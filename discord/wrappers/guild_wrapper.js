@@ -38,6 +38,9 @@ function GuildWrapper(discordJsGuildObject)
     this.memberHasTrustedRole = (guildMemberWrapper) => guildMemberWrapper.hasRole(guildDataStore.getTrustedRoleId(this.getId())) === true;
     this.memberHasBlitzerRole = (guildMemberWrapper) => guildMemberWrapper.hasRole(guildDataStore.getBlitzerRoleId(this.getId())) === true;
     this.memberHasGameMasterRole = (guildMemberWrapper) => guildMemberWrapper.hasRole(guildDataStore.getGameMasterRoleId(this.getId())) === true;
+  
+    this.createCommand = (data) => _discordJsGuildObject.commands.create(data);
+    this.setCommands = (bulkData) => _discordJsGuildObject.commands.set(bulkData);
     
     this.wasDiscordElementCreatedByBot = (discordId) =>
     {
@@ -220,6 +223,7 @@ function GuildWrapper(discordJsGuildObject)
         
         return guildDataStore.replaceRoleWithNew(this.getId(), idOfRoleToBeReplaced, idOfRoleToTakeItsPlace);
     };
+
 
     /** The channel.bulkDelete method does not work since it cannot delete messages
      *  older than 14 days, even with the boolean option set to true.

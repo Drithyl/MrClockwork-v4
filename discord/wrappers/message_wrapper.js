@@ -31,7 +31,7 @@ function MessageWrapper(discordJsMessageObject)
 
         _discordJsMessageObject.mentions.members.each((guildMember) =>
         {
-            const guildMemberWrapper = guild.getGuildMemberWrapperById(guildMember.id);
+            const guildMemberWrapper = new GuildMemberWrapper(guildMember, guild);
             guildMemberWrappers.push(guildMemberWrapper);
         });
 

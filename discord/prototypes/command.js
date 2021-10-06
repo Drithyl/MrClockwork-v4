@@ -26,12 +26,13 @@ function DiscordCommand(commandDataObject)
     this.getArrayOfArgumentRegexp = (...args) => _data.getArrayOfArgumentRegexp(...args);
     this.getRegexpRequiredToInvoke = (...args) => _data.getRegexpRequiredToInvoke(...args);
     this.getChannelRequiredToInvoke = (...args) => _data.getChannelRequiredToInvoke(...args);
-    this.areArgumentsRequired = () => this.getArrayOfArgumentRegexp().length > 0;
+    this.areArgumentsRequired = () => _data.areArgumentsRequired();
+    this.getSlashCommandData = () => _data.getSlashCommandData();
 
-    this.getHelpText = (...args) => _data.getHelpText(...args);
+    this.getDescription = (...args) => _data.getDescription(...args);
     this.getFormattedHelp = () =>
     {
-        var helpString = this.getHelpText();
+        var helpString = this.getDescription();
         var formatedHelp = `-------------------\n\n**${config.commandPrefix}${this.getName()}**\n\n${helpString}\n\n`;
 
         formatedHelp += `\`Where can it be used?:\` ${this.getChannelRequiredToInvoke()} channel\n\n`;
@@ -81,11 +82,14 @@ function DiscordCommand(commandDataObject)
 
     this.isInvoked = (commandContext) => 
     {
-        var commandString = commandContext.getCommandString();
+        var commandString = commandContext.getCommandName();
         var commandRegexpToInvoke = this.getRegexpRequiredToInvoke();
 
         if (_isCommandUsedInValidChannel(commandContext) === false)
             return false;
+
+        if (commandContext.isCommandInteraction != null)
+            return true;
 
         return commandRegexpToInvoke.test(commandString);
     };

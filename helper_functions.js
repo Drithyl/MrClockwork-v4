@@ -127,6 +127,7 @@ function extendPrototypes()
             var results = [];
             var keyArray = Object.keys(self);
             var left = keyArray.length;
+            var errorOccurred = false;
 
             if (left <= 0)
                 return Promise.resolve([]);
