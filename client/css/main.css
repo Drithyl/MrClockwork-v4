@@ -83,21 +83,23 @@
 
 /**** COLOR SCHEME END ****/
 
-/* Titles used mainly in the index and about waterpolo sections */
 h1 {
-    font-size: 34px;
+    font-size: 30px;
     font-family: "Arial Black", Gadget, sans-serif;
 }
 
-/* Subtitles mainly used in the index and about waterpolo sections */
 h2 {
     font-size: 24px;
-    font-family: "Arial Black", Gadget, sans-serif; 
+    font-family: "Arial", Gadget, sans-serif; 
 }
 
-/* Smaller headlines used in the news cards */
+h3 {
+    font-size: 20px;
+    font-family: "Arial", Gadget, sans-serif; 
+}
+
 h5 {
-    font-family: "Arial Black", Gadget, sans-serif;
+    font-family: "Arial", Gadget, sans-serif;
 }
 
 /* Footer headlines used as picture footers */
@@ -110,18 +112,6 @@ p, span {
     
     text-align: justify;
     font-family: Tahoma, Geneva, sans-serif;
-}
-
-/* Alignment and margins for unordered lists used in staff cards and about waterpolo section */
-ul {
-    text-align: start;
-    margin-left: 5%;
-}
-
-/* Footer padding and color */
-footer {
-    padding-top: 1%;
-    padding-bottom: 1%;
 }
 
 .bg {
@@ -140,69 +130,31 @@ footer {
 }
 
 .card-bg {
-    background-color: #5D5C61;
+    background-color: #7394BF;
     width: 100%;
 }
 
-/* Main section is the center space showing the actual content in each webpage */
-.main_section {
-    padding: 2%;
+.navbar {
+    padding: 0px;
+    margin: 0px;
+    justify-content: flex-start;
+}
+
+.navbar-brand {
+    padding: 0px;
+    margin: 0px;
+    height: 4%;
+    width: 12%;
 }
 
 .nav-item {
     display: flex;
     justify-content: center;  
     flex-direction: column;
-    margin: 1%;
-}
-
-/* Any headlines which require to be centered */
-.headline {
-    margin: 3%;
-    text-align: center;
-    vertical-align: middle;
-}
-
-/* Text meant to be displayed under images */
-.img_footer {
-    text-align: center;
-    vertical-align: middle;
-}
-
-/* Some extra paddings and margins for better vibility */
-.card-img-top {
-    padding: 1%;
 }
 
 .card.flex-row {
     margin: 3%;
-}
-
-.card-block {
-    margin-bottom: 2%;
-}
-
-.card-footer {
-    margin-top: 1%;
-}
-
-.staff_card {
-    margin: 2%;
-}
-
-.video_embed_div {
-    margin-bottom: 2%;
-}
-
-/* Turn mouse cursor to a pointer over gallery images to indicate that they can be clicked to open the modal */
-.gallery_item {
-    cursor: pointer;
-}
-
-/* Helper class */
-.side_padding {
-    margin-left: 3%;
-    margin-right: 3%;
 }
 
 /* helper to center text vertically or horizontally */
@@ -219,7 +171,6 @@ footer {
 
 /* helper to center images horizontally */
 .centered-ele {
-
     margin-left: auto;
     margin-right: auto;
     text-align: center; 
@@ -232,13 +183,6 @@ footer {
     align-items: center;
 }
 
-/* flex container for easy alignment of inside elements in vertical direction */
-.flex_container_col {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
 /* flex container for easy alignment of inside elements */
 .flex_justify_start {
     justify-content: start;
@@ -246,10 +190,6 @@ footer {
 
 .margin_right_sm {
     margin-right: 3%;
-}
-
-.margin_right_xs {
-    margin-right: 2%;
 }
 
 /* Responsive media query for big screens */
