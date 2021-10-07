@@ -1,7 +1,6 @@
 
 const config = require("../../config/config.json");
 const expressServer = require("../express_server.js");
-const botClient = require("../../discord/wrappers/bot_client_wrapper.js");
 const guildStore = require("../../discord/guild_store.js");
 
 
