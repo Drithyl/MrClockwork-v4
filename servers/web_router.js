@@ -2,6 +2,7 @@
 const path = require("path");
 
 const indexRoute = require("./routes/index.js");
+const statusRoute = require("./routes/status.js");
 const userHomeScreenRoute = require("./routes/user_home_screen.js");
 const resultRoute = require("./routes/result.js");
 const guildsRoute = require("./routes/guilds.js");
@@ -33,6 +34,7 @@ exports.setMiddlewares = (expressApp, express) =>
 exports.setRoutes = (expressApp) =>
 {
     indexRoute.set(expressApp);
+    statusRoute.set(expressApp);
     userHomeScreenRoute.set(expressApp);
     guildsRoute.set(expressApp);
     loginRoute.set(expressApp);

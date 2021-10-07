@@ -1,0 +1,46 @@
+
+<%- include('../partials/head.ejs')-%>
+<%- include('../partials/navbar.ejs', {page: "status"})-%>
+
+
+<div id="body" class="h-100 bg" style="border: 1px solid red;">
+
+        <!-- Statistics -->
+        <div id="statisticsDiv" class="row" style="border: 1px solid red;">
+
+            <div class="col-sm d-flex flex-row align-items-center justify-content-center" style="border: 1px solid red;">
+
+                <div>
+                    <table class="table table-dark text-h-centered" style="border: 1px solid red;">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col">Game Server</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Available Slots</th>
+                                <th scope="col">Max. Slots</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+    
+                            <% servers.forEach((server) => { %>
+    
+                                <tr>
+                                    <td><%=server.name %></td>
+                                    <td><%=server.status %></td>
+                                    <td><%=server.availableSlots %></td>
+                                    <td><%=server.maxSlots %></td>
+                                </tr>
+                
+                            <% }); %>
+    
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer.ejs')-%>
