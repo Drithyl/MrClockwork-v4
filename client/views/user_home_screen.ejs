@@ -4,9 +4,9 @@
 <%- include('../partials/navbar.ejs', {page: "dashboard"})-%>
 
 
-<div id="body" class="h-100 bg" style="border: 1px solid red;">
+<div id="body" class="h-100 bg">
 
-    <div class="container card" style="border: 1px solid red;">
+    <div class="container card">
 
         <% if (typeof sessionData !== "object" || typeof sessionData.sessionId !== "string" || typeof sessionData.userId !== "string") { %>
 
@@ -18,12 +18,12 @@
 
             <script src="../js/store_session_id.js"></script>
 
-            <div class="card-body row d-flex align-items-center justify-content-around flex-row" style="border: 1px solid red;">
+            <div class="card-body row d-flex align-items-center justify-content-around flex-row">
 
                 <div class="col-3">
-                    <form id="host_game_screen_form" action="/host_game" method="GET" style="border: 1px solid red;">
+                    <form id="host_game_screen_form" action="/host_game" method="GET">
                         <input type="hidden" name="sessionId" value="<%=(typeof sessionData === "object") ? sessionData.sessionId : "none"%>"/>
-                        <button type="submit" class="btn w-100 btn-secondary rounded-pill" style="border: 1px solid red;">
+                        <button type="submit" class="btn w-100 btn-secondary rounded-pill">
     
                                 <img src="img/throne.png" class="" alt="Discord logo" style="max-width: 50px; border: 1px solid red;">
                                 Host a new game
@@ -32,9 +32,9 @@
                 </div>
                 
                 <div class="col-3">
-                    <form id="change_settings_screen_form" action="/change_game_settings" method="GET" style="border: 1px solid red;">
+                    <form id="change_settings_screen_form" action="/change_game_settings" method="GET">
                         <input type="hidden" name="sessionId" value="<%=(typeof sessionData === "object") ? sessionData.sessionId : "none"%>"/>
-                        <button type="submit" class="btn w-100 btn-secondary rounded-pill" style="border: 1px solid red;">
+                        <button type="submit" class="btn w-100 btn-secondary rounded-pill">
                             <img src="img/key.png" alt="Discord logo" style="max-width: 50px; border: 1px solid red;">
                             Change game settings
                         </button>
@@ -42,9 +42,9 @@
                 </div>
                 
                 <div class="col-3">
-                    <form id="edit_preferences_screen_form" action="/edit_preferences" method="GET" style="border: 1px solid red;">
+                    <form id="edit_preferences_screen_form" action="/edit_preferences" method="GET">
                         <input type="hidden" name="sessionId" value="<%=(typeof sessionData === "object") ? sessionData.sessionId : "none"%>"/>
-                        <button type="submit" class="btn w-100 btn-secondary rounded-pill" style="border: 1px solid red;">
+                        <button type="submit" class="btn w-100 btn-secondary rounded-pill">
                             <img src="img/candlestick.png" alt="Discord logo" style="max-width: 50px; border: 1px solid red;">
                             Edit game preferences
                         </button>
@@ -57,14 +57,14 @@
     
     <% if (typeof sessionData === "object" && typeof sessionData.sessionId === "string" && typeof sessionData.userId === "string") { %>
 
-        <div class="container card" style="border: 1px solid red;">
+        <div class="container card">
 
-            <div class="card-header d-flex flex-row align-items-center" style="border: 1px solid red;">
+            <div class="card-header d-flex flex-row align-items-center">
                 <img src="img/scepter.png" alt="Discord logo" style="max-width: 50px; border: 1px solid red;">
-                <p style="border: 1px solid red;"><b>Hosted Games</b></p>
+                <p><b>Hosted Games</b></p>
             </div>
     
-            <div id="hostedGamesCardBody" class="card-body d-flex flex-row align-items-center justify-content-center" style="border: 1px solid red;">
+            <div id="hostedGamesCardBody" class="card-body d-flex flex-row align-items-center justify-content-center">
 
                 <%- include('../partials/game_table.ejs', { games: (sessionData != null) ? sessionData.organizedGames : null })-%>
 
@@ -76,14 +76,14 @@
         </div>
 
 
-        <div class="container card" style="border: 1px solid red;">
+        <div class="container card">
 
-            <div class="card-header d-flex flex-row align-items-center" style="border: 1px solid red;">
+            <div class="card-header d-flex flex-row align-items-center">
                 <img src="img/sword.png" alt="Discord logo" style="max-width: 50px; border: 1px solid red;">
                 <p><b>Games you are playing</b></p>
             </div>
     
-            <div class="card-body d-flex flex-row align-items-center justify-content-center" style="border: 1px solid red;">
+            <div class="card-body d-flex flex-row align-items-center justify-content-center">
     
                 <%- include('../partials/game_table.ejs', { games: (sessionData != null) ? sessionData.playedGames : null })-%>
 
