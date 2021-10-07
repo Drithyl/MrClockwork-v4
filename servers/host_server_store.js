@@ -51,6 +51,12 @@ exports.getOnlineServers = () =>
     return servers;
 };
 
+exports.forEachServer = (fnToCall) =>
+{
+    for (var id in _hostServersById)
+        fnToCall(_hostServersById[id]);
+};
+
 exports.getAvailableServersClientData = () =>
 {
     var servers = [];
