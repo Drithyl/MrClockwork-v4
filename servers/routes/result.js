@@ -18,7 +18,7 @@ exports.set = (expressApp) =>
             return res.render(SCREEN_PATH, { result: `A problem occurred; this user session could not be found. Your request might still have been fulfilled.` });
         }
 
-        log.general(log.getNormalLevel(), `Connection ${req.ip} redirected here with sessionId ${session.getId()}`);
+        log.general(log.getNormalLevel(), `Connection ${req.ip} redirected here with sessionId ${session.getSessionId()}`);
 
         const data = session.getSessionData();
 
