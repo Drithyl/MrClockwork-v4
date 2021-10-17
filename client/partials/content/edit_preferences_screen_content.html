@@ -1,0 +1,35 @@
+<div id="editPrefsDiv" class="row d-flex align-items-center cwContainer">
+
+    <div class="card shadow-sm clockworkCardWide p-0">
+    
+        <div class="card-header bg-dark">
+            <i class="bi bi-sliders"></i> <span class="headerTitle">Change your preferences</span>
+        </div>
+    
+        <div class="card-body">
+        
+            <form id="preferences_form">
+        
+                <input type="hidden" name="sessionId" value="<%=(typeof sessionId === "string") ? sessionId : "none"%>"/>
+                <script src="../../js/load_session_id.js"></script>
+            
+                <%- include('../preferences_list.ejs')-%>
+                <%- include('../game_preferences.ejs')-%>
+                
+                <div class="row mt-5">
+                    <div class="col-sm-10">
+                        <button type="submit" class="btn btn-dark btn-md">
+                            <i class="bi bi-sliders"></i>Save preferences
+                        </button>
+                    </div>
+                </div>
+
+                <script src="../js/update_preferences.js"></script>
+                
+            </form>
+        
+        </div>
+    
+    </div>
+
+</div>

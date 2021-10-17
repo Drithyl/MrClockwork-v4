@@ -1,17 +1,18 @@
-
-
-<div id="ai_input_div" class="form-group">
+<div id="ai_input_div" class="row mb-2">
 
     <!-- Must use typeof to check if variable exists at all, since it might be undefined -->
     <% if (typeof nations === "object" && Array.isArray(nations) === false) { %>
         
+        <legend class="col-form-label col-sm-3 pt-0">AI Nations</legend>
+        
         <% for (var eraNbr in nations) { %>
-            
-            <div id="ai_<%=eraNbr%>_container" name="ai_select_container" <% if (typeof gameSettings === "object" && gameSettings.era != eraNbr) { %> style="display:none;" <% } %> >
-                <label for="input_ai_<%=eraNbr%>">AI Nations</label>
-                <select id="input_ai_<%=eraNbr%>" name="aiNations" class="form-control selectpicker" data-size="8" multiple data-selected-text-format="count">
+
+            <div id="ai_<%=eraNbr%>_container" class="col-sm-9" name="ai_select_container" <% if (typeof gameSettings === "object" && gameSettings.era != eraNbr) { %> style="display:none;" <% } %> >
+                
+                <select id="input_ai_<%=eraNbr%>" name="aiNations" class="cwSelect form-control selectpicker" data-size="8" multiple data-selected-text-format="count">
                     
                     <% nations[eraNbr].forEach((nation) => { %>
+                    
                         <optgroup label="<%=nation.name %>" data-max-options="1">
                             <option name="nation" data-subtext="easy"       value="<%=nation.number %> easy"        <% if (typeof gameSettings === "object" && gameSettings.aiNations[nation.number] != null && gameSettings.aiNations[nation.number] === "easy") { %> selected <% } %> ><%=nation.name %></option>
                             <option name="nation" data-subtext="normal"     value="<%=nation.number %> normal"      <% if (typeof gameSettings === "object" && gameSettings.aiNations[nation.number] != null && gameSettings.aiNations[nation.number] === "normal") { %> selected <% } %> ><%=nation.name %></option>
@@ -24,6 +25,7 @@
                     <% }); %>
 
                 </select>
+                
             </div>
 
         <% } %>
@@ -31,19 +33,25 @@
 
     <!-- Update AI list based on chosen era -->
     <script src="../../js/update_ai_partial.js"></script>
+    
 </div>
 
-<div class="form-group">
-    <label for="input_default_ai">Difficulty level when player goes AI</label>
-    <select id="input_default_ai" name="defaultAiLevel" class="form-control selectpicker">
-
-        <option value="0" <% if (typeof gameSettings === "object" && gameSettings.defaultAiLevel == 0) { %> selected <% } %> >No going AI allowed</option>
-        <option value="1" <% if (typeof gameSettings === "object" && gameSettings.defaultAiLevel == 1) { %> selected <% } %> >Easy AI</option>
-        <option value="2" <% if (typeof gameSettings === "object" && gameSettings.defaultAiLevel == 2) { %> selected <% } %> >Normal AI</option>
-        <option value="3" <% if (typeof gameSettings === "object" && gameSettings.defaultAiLevel == 3) { %> selected <% } %> >Difficult AI</option>
-        <option value="4" <% if (typeof gameSettings === "object" && gameSettings.defaultAiLevel == 4) { %> selected <% } %> >Mighty AI</option>
-        <option value="5" <% if (typeof gameSettings === "object" && gameSettings.defaultAiLevel == 5) { %> selected <% } %> >Master AI</option>
-        <option value="6" <% if (typeof gameSettings === "object" && gameSettings.defaultAiLevel == 6) { %> selected <% } %> >Impossible AI</option>
-
-    </select>
+<div class="row mb-2">
+    
+    <legend class="col-form-label col-sm-3 pt-0">Difficulty level when player goes AI</legend>
+    
+    <div class="col-sm-9">
+        <select id="input_default_ai" name="defaultAiLevel" class="form-control selectpicker w-100">
+    
+            <option value="0" <% if (typeof gameSettings === "object" && gameSettings.defaultAiLevel == 0) { %> selected <% } %> >No going AI allowed</option>
+            <option value="1" <% if (typeof gameSettings === "object" && gameSettings.defaultAiLevel == 1) { %> selected <% } %> >Easy AI</option>
+            <option value="2" <% if (typeof gameSettings === "object" && gameSettings.defaultAiLevel == 2) { %> selected <% } %> >Normal AI</option>
+            <option value="3" <% if (typeof gameSettings === "object" && gameSettings.defaultAiLevel == 3) { %> selected <% } %> >Difficult AI</option>
+            <option value="4" <% if (typeof gameSettings === "object" && gameSettings.defaultAiLevel == 4) { %> selected <% } %> >Mighty AI</option>
+            <option value="5" <% if (typeof gameSettings === "object" && gameSettings.defaultAiLevel == 5) { %> selected <% } %> >Master AI</option>
+            <option value="6" <% if (typeof gameSettings === "object" && gameSettings.defaultAiLevel == 6) { %> selected <% } %> >Impossible AI</option>
+    
+        </select>
+    </div>
+    
 </div>

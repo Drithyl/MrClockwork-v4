@@ -1,37 +1,36 @@
-
-
-<fieldset class="form-group">
-    <div class="row">
-        <legend class="col-form-label col-sm-2 pt-0">Era</legend>
-        <div class="col-sm-10">
-            
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="era" id="era_radio_ea" value="1" 
-                    <% if (typeof gameSettings !== "object" || (typeof gameSettings === "object" && gameSettings.era == 1)) { %> checked <% } %> 
-                >
-                <label class="form-check-label" for="era_radio_ea">
-                    Early Age
-                </label>
-            </div>
-            
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="era" id="era_radio_ma" value="2" 
-                    <% if (typeof gameSettings === "object" && gameSettings.era == 2) { %> checked <% } %> 
-                >
-                <label class="form-check-label" for="era_radio_ma">
-                    Middle Age
-                </label>
-            </div>
-            
-            <div class="form-check disabled">
-                <input class="form-check-input" type="radio" name="era" id="era_radio_la" value="3" 
-                    <% if (typeof gameSettings === "object" && gameSettings.era == 3) { %> checked <% } %> 
-                >
-                <label class="form-check-label" for="era_radio_la">
-                    Late Age
-                </label>
-            </div>
-            
+<div class="row mb-2">
+    
+    <legend class="col-form-label col-sm-3 pt-0">Era</legend>
+    
+    <div class="col-sm-9">
+        
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="era" id="era_radio_ea" value="1" 
+                <% if (typeof gameSettings !== "object" || (typeof gameSettings === "object" && gameSettings.era == 1)) { %> checked <% } %> 
+            >
+            <label class="form-check-label" for="era_radio_ea">
+                Early Age
+            </label>
         </div>
+        
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="era" id="era_radio_ma" value="2" 
+                <% if (typeof gameSettings === "object" && gameSettings.era == 2) { %> checked <% } %> 
+            >
+            <label class="form-check-label" for="era_radio_ma">
+                Middle Age
+            </label>
+        </div>
+        
+        <div class="form-check disabled">
+            <input class="form-check-input" type="radio" name="era" id="era_radio_la" value="3" 
+                <% if (typeof gameSettings === "object" && gameSettings.era == 3) { %> checked <% } %> 
+            >
+            <label class="form-check-label" for="era_radio_la">
+                Late Age
+            </label>
+        </div>
+        
     </div>
-</fieldset>
+    
+</div>

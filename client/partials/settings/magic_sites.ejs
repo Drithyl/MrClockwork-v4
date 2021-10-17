@@ -1,10 +1,11 @@
-
-
-<div class="form-group row">
-    <label for="input_magic_sites" class="col-sm-2 col-form-label">Magic Sites Frequency</label>
-    <div class="col-sm-10">
-        <input type="number" id="input_magic_sites" name="magicSites" min="0" max="75" pattern="\d\d?"
+<div class="row mb-2">
+    
+    <legend class="col-form-label col-sm-3 pt-0">Magic Sites Frequency</legend>
+    
+    <div class="col-sm-9">
+        <input class="form-control w-auto"  type="number" id="input_magic_sites" name="magicSites" min="0" max="75" pattern="\d\d?"
             <% if (typeof gameSettings === "object" && typeof gameSettings.magicSites === "number") { %> value=<%=gameSettings.magicSites %> <% } else { %> value="60" <% } %>
         >
     </div>
+    
 </div>

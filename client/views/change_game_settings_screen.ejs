@@ -1,90 +1,30 @@
-
-
 <%- include('../partials/head.ejs')-%>
-<%- include('../partials/navbar.ejs', {page: "settings"})-%>
+<%- include('../partials/navbar.ejs')-%>
 
-<div id="body" class="h-100 bg">
-
-    <div class="container card">
-
-        <div class="card-header">
-
-            <span>Change game settings</span>
-
-        </div>
-
-        <div class="card-body row d-flex align-items-center flex-column">
-
-            <% if (typeof error === "string") { %>
-
-                <p><%=error %></p>
-
-            <% } else if (typeof organizedGames !== "object" || Array.isArray(organizedGames) === true) { %>
+  <body>
+    
+    <div class="container-fluid">
+          
+          <div class="row">
+            
+            <%- include('../partials/sidebar.ejs', {page: "settings"})-%>
+        
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+              
+              <div class="align-items-left pt-3 pb-2 mb-3">
                 
-                <p>A problem occurred. No game data received from server.</p>
-
-            <% } else if (Object.keys(organizedGames).length <= 0) { %>
+                <%- include('../partials/content/change_game_settings_screen_content.html')-%>
                 
-                <p>You have no organized games or all your organized games have already started.</p>
-
-            <% } else { %>
-
-                <form id="change_game_settings_form" action="/change_game_settings" method="POST" >
-
-                    <input type="hidden" name="sessionId" value="<%=(typeof sessionId === "string") ? sessionId : "none"%>"/>
-                    <script src="../js/load_session_id.js"></script>
-
-                    <%- include('../partials/game_settings_list.ejs')-%>
-
-                    <% Object.keys(organizedGames).forEach(function(gameName, i) {%>
-                        
-                        <% const gameSettings = organizedGames[gameName].settings; %>
-                        <% const serverName = organizedGames[gameName].serverName; %>
-                        <% const maps = organizedGames[gameName].maps; %>
-                        <% const mods = organizedGames[gameName].mods; %>
-
-                        <div id="<%=gameName%>_container" <% if (i > 0) { %> style="display:none;" <% } %> >
-
-                            <%- include('../partials/settings/era.ejs', { gameSettings })-%>
-                            <%- include('../partials/settings/ai.ejs', { gameSettings, nations })-%>
-                            <%- include('../partials/settings/mod_list.ejs', { gameSettings, mods })-%>
-                            <%- include('../partials/settings/map_list.ejs', { gameSettings, maps })-%>                
-                            <%- include('../partials/settings/modifiers.ejs', { gameSettings })-%>
-                            <%- include('../partials/settings/starting_provinces.ejs', { gameSettings })-%>
-                            <%- include('../partials/settings/cataclysm.ejs', { gameSettings })-%>
-                            <%- include('../partials/settings/global_slots.ejs', { gameSettings })-%>
-                            <%- include('../partials/settings/hall_of_fame.ejs', { gameSettings })-%>
-                            <%- include('../partials/settings/independents_strength.ejs', { gameSettings })-%>
-                            <%- include('../partials/settings/magic_sites.ejs', { gameSettings })-%>
-                            <%- include('../partials/settings/thrones.ejs', { gameSettings })-%>
-                            <%- include('../partials/settings/research.ejs', { gameSettings })-%>
-                            <%- include('../partials/settings/artifact_forging.ejs', { gameSettings })-%>
-                            <%- include('../partials/settings/events.ejs', { gameSettings })-%>
-                            <%- include('../partials/settings/scoregraphs.ejs', { gameSettings })-%>
-                            <%- include('../partials/settings/disciples.ejs', { gameSettings })-%>
-                            <%- include('../partials/settings/timer.ejs', { gameSettings })-%>
-                            
-                            <!-- Script to update maps and mods based on server -->
-                            <script src="../js/update_mod_and_map_partials.js"></script>
-                        </div>
-                    <% }); %>
-                    
-                    <div class="form-group row">
-                        <div class="col-sm-10">
-                            <button type="submit" class="btn btn-dark btn-lg">Change Settings</button>
-                        </div>
-                    </div>
-                    
-                    <!-- Host Script -->
-                    <script src="../js/update_game_setting_changes.js"></script>
-
-                </form>
-
-            <% } %>
-
-        </div>
-    </div>
-</div>
-
-
-<%- include('../partials/footer.ejs')-%>
+              </div>
+              
+              <%- include('../partials/footer.ejs')-%>
+              
+            </main>
+    
+          </div>
+      
+      </div>
+    
+    </body>
+  
+</html>

@@ -1,40 +1,44 @@
-
-
-<!-- Must use typeof to check if variable exists at all, since it might be undefined -->
-<% if (typeof gamePreferences === "object" && Array.isArray(gamePreferences) === true && gamePreferences.length > 0) { %>
-    <% gamePreferences.forEach((preferences, i) => {%>
-        
-        <div id="<%=preferences.name%>_container" style="display:none;">
- 
-            <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="<%=preferences.name%>_scores_checkbox" name="<%=preferences.name%>.receiveScores" <% if (preferences.receiveScores) { %> checked <% } %>>
-                <label class="form-check-label" for="<%=preferences.name%>_scores_checkbox">Receive scores file each turn?</label>
-            </div>
-        
-            <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="<%=preferences.name%>_backups_checkbox" name="<%=preferences.name%>.receiveBackups" <% if (preferences.receiveBackups) { %> checked <% } %>>
-                <label class="form-check-label" for="<%=preferences.name%>_backups_checkbox">Receive turn backup each turn?</label>
-            </div>
-        
-            <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="<%=preferences.name%>_reminder_when_turn_done_checkbox" name="<%=preferences.name%>.receiveReminderWhenTurnIsDone" <% if (preferences.receiveReminderWhenTurnIsDone) { %> checked <% } %>>
-                <label class="form-check-label" for="<%=preferences.name%>_reminder_when_turn_done_checkbox">Receive timer reminders even when the turn is marked as finished?</label>
-            </div>
-        
-            <select id="<%=preferences.name%>_input_reminders" name="<%=preferences.name%>.reminders" class="form-control selectpicker" multiple>
-        
-                <% for (var i = 2; i < 25; i++) {%>
-                    <% if (preferences.reminders.includes(i) === true) { %>
-                        <option name="<%=preferences.name%>.reminders" value="<%=i%>" selected><%=i%></option>
-                    <% } else { %>
-                        <option name="<%=preferences.name%>.reminders" value="<%=i%>"><%=i%></option>
+<div id="ai_input_div" class="row mb-2">
+    
+    <legend class="col-form-label col-sm-3 pt-0"></legend>
+    
+    <!-- Must use typeof to check if variable exists at all, since it might be undefined -->
+    <% if (typeof gamePreferences === "object" && Array.isArray(gamePreferences) === true && gamePreferences.length > 0) { %>
+        <% gamePreferences.forEach((preferences, i) => {%>
+            
+            <div id="<%=preferences.name%>_container" class=" col-sm-9" style="display:none;">
+     
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="<%=preferences.name%>_scores_checkbox" name="<%=preferences.name%>.receiveScores" <% if (preferences.receiveScores) { %> checked <% } %>>
+                    <label class="form-check-label" for="<%=preferences.name%>_scores_checkbox">Receive scores file each turn?</label>
+                </div>
+            
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="<%=preferences.name%>_backups_checkbox" name="<%=preferences.name%>.receiveBackups" <% if (preferences.receiveBackups) { %> checked <% } %>>
+                    <label class="form-check-label" for="<%=preferences.name%>_backups_checkbox">Receive turn backup each turn?</label>
+                </div>
+            
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="<%=preferences.name%>_reminder_when_turn_done_checkbox" name="<%=preferences.name%>.receiveReminderWhenTurnIsDone" <% if (preferences.receiveReminderWhenTurnIsDone) { %> checked <% } %>>
+                    <label class="form-check-label" for="<%=preferences.name%>_reminder_when_turn_done_checkbox">Receive timer reminders even when the turn is marked as finished?</label>
+                </div>
+            
+                <select id="<%=preferences.name%>_input_reminders" name="<%=preferences.name%>.reminders" class="form-control selectpicker mt-4" multiple>
+            
+                    <% for (var i = 2; i < 25; i++) {%>
+                        <% if (preferences.reminders.includes(i) === true) { %>
+                            <option name="<%=preferences.name%>.reminders" value="<%=i%>" selected><%=i%></option>
+                        <% } else { %>
+                            <option name="<%=preferences.name%>.reminders" value="<%=i%>"><%=i%></option>
+                        <% } %>
                     <% } %>
-                <% } %>
-        
-            </select>
+            
+                </select>
+    
+            </div>
+    
+        <% }); %>
+    
+    <% } %>
 
-        </div>
-
-    <% }); %>
-
-<% } %>
+</div>

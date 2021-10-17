@@ -1,10 +1,11 @@
-
-
-<div class="form-group row">
-    <label for="input_cataclysm" class="col-sm-2 col-form-label">Cataclysm starts at turn:</label>
-    <div class="col-sm-10">
-        <input type="number" id="input_cataclysm" name="cataclysm" min="0" max="999" pattern="\d\d?\d?"
+<div class="row mb-2">
+    
+    <legend class="col-form-label col-sm-3 pt-0">Cataclysm starts at turn:</legend>
+    
+    <div class="col-sm-9">
+        <input class="form-control w-auto" type="number" id="input_cataclysm" name="cataclysm" min="0" max="999" pattern="\d\d?\d?"
             <% if (typeof gameSettings === "object" && typeof gameSettings.cataclysm === "number") { %> value=<%=gameSettings.cataclysm %> <% } else { %> value="0" <% } %>
         >
     </div>
+    
 </div>
