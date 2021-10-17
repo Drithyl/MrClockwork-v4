@@ -1,0 +1,44 @@
+<!-- Statistics -->
+<div id="statisticsDiv" class="row d-flex pl-lg-5 pl-md-4">
+
+    <div class="card shadow-sm clockworkCardWide p-0">
+    
+        <div class="card-header bg-dark">
+            <i class="bi bi-server"></i><span class="headerTitle">Server Status</span>
+        </div>
+        
+        <div class="card-body">
+        
+            <table class="table align-middle cwTable shadow-sm">
+            
+                <thead class="thead">
+                    <tr>
+                        <th scope="col">Game Server</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Available Slots</th>
+                        <th scope="col">Max. Slots</th>
+                    </tr>
+                </thead>
+                
+                <tbody class="cwTableBody">
+        
+                    <% servers.forEach((server) => { %>
+        
+                        <tr>
+                            <td><%=server.name %></td>
+                            <td><%=server.status %></td>
+                            <td><%=server.availableSlots %></td>
+                            <td><%=server.maxSlots %></td>
+                        </tr>
+        
+                    <% }); %>
+        
+                </tbody>
+                
+                </table>
+        
+            </div>
+
+        </div>
+
+</div>

@@ -1,86 +1,30 @@
-
-
 <%- include('../partials/head.ejs')-%>
-<%- include('../partials/navbar.ejs', {page: "host"})-%>
+<%- include('../partials/navbar.ejs')-%>
 
-<div id="body" class="h-100 bg">
-
-    <div class="container card">
-
-        <div class="card-header">
-
-            <span>Host your own game</span>
-
-        </div>
-
-        <div class="card-body row d-flex align-items-center flex-column">
+  <body>
+    
+    <div class="container-fluid">
+          
+          <div class="row">
+            
+            <%- include('../partials/sidebar.ejs', {page: "host"})-%>
         
-            <!-- Must use typeof to check if variable exists at all, since it might be undefined -->
-            <% if (typeof servers !== "object" || Array.isArray(servers) === false || servers.length <= 0) { %>
-
-                <p><b>No server slots available, or all servers are offline. Cannot host game.</b></p>
-
-            <% } else { %>
-
-                <form id="host_game_form" action="/host_game" method="POST" >
-
-                    <input type="hidden" name="sessionId" value="<%=(typeof sessionId === "string") ? sessionId : "none"%>"/>
-                    <script src="../js/load_session_id.js"></script>
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+              
+              <div class="align-items-left pt-3 pb-2 mb-3">
                 
-                    <div class="form-group row">
-                        <label for="input_game_name" class="col-sm-2 col-form-label">Game Name</label>
-                        <div class="col-sm-10">
-                            <input type="name" class="form-control" id="input_game_name" name="name" required minlength="3" maxlength="32" pattern="^[^ !@#$%^&*()+\-=\[\]{};\x27:\x22\\|,.<>\/?]+$">
-                        </div>
-                    </div>
-                    
-                    <div class="form-group row">
-                        <label for="input_master_password" class="col-sm-2 col-form-label">Master Password</label>
-                        <div class="col-sm-10">
-                            <input type="password" class="form-control" id="input_master_password" name="masterPassword" required minlength="3" maxlength="20" pattern="^[^ !@#$%^&*()+\-=\[\]{};\x27:\x22\\|,.<>\/?]+$">
-                        </div>
-                    </div>
+                <%- include('../partials/content/host_game_screen_content.html')-%>
                 
-                    
-                    <%- include('../partials/guild_list.ejs')-%>
-                    <%- include('../partials/server_list.ejs')-%>
-                
-                    <%- include('../partials/settings/era.ejs')-%>
-                    <%- include('../partials/settings/ai.ejs', { nations })-%>
-                    <%- include('../partials/settings/mod_list.ejs')-%>
-                    <%- include('../partials/settings/map_list.ejs')-%>
-                    <%- include('../partials/settings/modifiers.ejs')-%>
-                    <%- include('../partials/settings/starting_provinces.ejs')-%>
-                    <%- include('../partials/settings/cataclysm.ejs')-%>
-                    <%- include('../partials/settings/global_slots.ejs')-%>
-                    <%- include('../partials/settings/hall_of_fame.ejs')-%>
-                    <%- include('../partials/settings/independents_strength.ejs')-%>
-                    <%- include('../partials/settings/magic_sites.ejs')-%>
-                    <%- include('../partials/settings/thrones.ejs')-%>
-                    <%- include('../partials/settings/research.ejs')-%>
-                    <%- include('../partials/settings/artifact_forging.ejs')-%>
-                    <%- include('../partials/settings/events.ejs')-%>
-                    <%- include('../partials/settings/scoregraphs.ejs')-%>
-                    <%- include('../partials/settings/disciples.ejs')-%>
-                    <%- include('../partials/settings/timer.ejs')-%>
-                    
-                    
-                    <div class="form-group row">
-                        <div class="col-sm-10">
-                            <button type="submit" class="btn btn-dark btn-lg">Host a new game</button>
-                        </div>
-                    </div>
-                
-                    <!-- Script to update mods and maps list based on selected server -->
-                    <script src="../js/update_mod_and_map_partials.js"></script>
-                    
-                </form>
-
-            <% } %>
-
-        </div>
-    </div>
-</div>
-
-
-<%- include('../partials/footer.ejs')-%>
+              </div>
+              
+              <%- include('../partials/footer.ejs')-%>
+              
+            </main>
+    
+          </div>
+      
+      </div>
+    
+    </body>
+    
+</html>

@@ -1,10 +1,11 @@
-
-
-<div class="form-group row">
-    <label for="input_independents_strength" class="col-sm-2 col-form-label">Independent's Strength</label>
-    <div class="col-sm-10">
-        <input type="number" id="input_independents_strength" name="independentsStrength" min="0" max="9" pattern="\d"
+<div class="row mb-2">
+    
+    <legend class="col-form-label col-sm-3 pt-0">Independent's Strength</legend>
+    
+    <div class="col-sm-9">
+        <input class="form-control w-auto"  type="number" id="input_independents_strength" name="independentsStrength" min="0" max="9" pattern="\d"
             <% if (typeof gameSettings === "object" && typeof gameSettings.independentsStrength === "number") { %> value=<%=gameSettings.independentsStrength %> <% } else { %> value="5" <% } %>
         >
     </div>
+    
 </div>

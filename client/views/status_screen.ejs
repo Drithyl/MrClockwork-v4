@@ -1,46 +1,30 @@
-
 <%- include('../partials/head.ejs')-%>
-<%- include('../partials/navbar.ejs', {page: "status"})-%>
+<%- include('../partials/navbar.ejs')-%>
 
-
-<div id="body" class="h-100 bg">
-
-        <!-- Statistics -->
-        <div id="statisticsDiv" class="row">
-
-            <div class="col-sm d-flex flex-row align-items-center justify-content-center">
-
-                <div>
-                    <table class="table table-dark text-h-centered">
-                        <thead class="thead-dark">
-                            <tr>
-                                <th scope="col">Game Server</th>
-                                <th scope="col">Status</th>
-                                <th scope="col">Available Slots</th>
-                                <th scope="col">Max. Slots</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-    
-                            <% servers.forEach((server) => { %>
-    
-                                <tr>
-                                    <td><%=server.name %></td>
-                                    <td><%=server.status %></td>
-                                    <td><%=server.availableSlots %></td>
-                                    <td><%=server.maxSlots %></td>
-                                </tr>
+<body>
+  
+  <div class="container-fluid">
+        
+        <div class="row">
+          
+            <%- include('../partials/sidebar.ejs', {page: "status"})-%>
+        
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+              
+              <div class="pt-3 pb-2 mb-3">
                 
-                            <% }); %>
+                <%- include('../partials/content/status_screen_content.html')-%>
+                
+              </div>
+              
+              <%- include('../partials/footer.ejs')-%>
+              
+            </main>
     
-                        </tbody>
-                    </table>
-                </div>
+          </div>
+      
+      </div>
+  
+  </body>
 
-            </div>
-            
-        </div>
-    </div>
-</div>
-
-<%- include('../partials/footer.ejs')-%>
+</html>

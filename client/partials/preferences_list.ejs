@@ -1,21 +1,30 @@
-
-<label for="input_game">Edit preferences for:</label>
-<select id="input_game" class="form-control selectpicker">
-
-    <!-- Must use typeof to check if variable exists at all, since it might be undefined -->
-    <% if (typeof gamePreferences === "object" && Array.isArray(gamePreferences) === true && gamePreferences.length > 0) { %>
-
-        <option disabled selected value> -- Select preferences to edit -- </option>
-
-        <% gamePreferences.forEach((preferences, i) => {%>
-
-            <option value="<%=preferences.name%>"><%=preferences.name%></option>
-
-        <% }); %>
-    <% } else { %>
-
-        <p><b>No games available.</b></p>
-
-    <% } %>
+<div id="ai_input_div" class="row mb-4">
     
-</select>
+    <legend class="col-form-label col-sm-3 pt-0">Edit preferences for:</legend>
+    
+    <div class="col-sm-9">
+        
+        <select id="input_game" class="form-control selectpicker">
+        
+            <!-- Must use typeof to check if variable exists at all, since it might be undefined -->
+            <% if (typeof gamePreferences === "object" && Array.isArray(gamePreferences) === true && gamePreferences.length > 0) { %>
+        
+                <option disabled selected value> -- Select preferences to edit -- </option>
+        
+                <% gamePreferences.forEach((preferences, i) => {%>
+        
+                    <option value="<%=preferences.name%>"><%=preferences.name%></option>
+        
+                <% }); %>
+                
+            <% } else { %>
+        
+                <p><b>No games available.</b></p>
+        
+            <% } %>
+            
+        </select>
+        
+    </div>
+    
+</div>

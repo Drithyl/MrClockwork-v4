@@ -1,27 +1,28 @@
+<div class="row mb-2">
+    
+    <legend class="col-form-label col-sm-3 pt-0">Discord Guild</legend>
+    
+    <div id="guild_input_container" class="col-sm-9">
 
+        <!-- Must use typeof to check if variable exists at all, since it might be undefined -->
+        <% if (typeof guilds === "object" && Array.isArray(guilds) === true && guilds.length > 0) { %>
+            <% guilds.forEach((guildData, i) => {%>
 
-<fieldset class="form-group">
-    <div class="row">
-        <legend class="col-form-label col-sm-2 pt-0">Discord Guild</legend>
-        <div id="guild_input_container" class="col-sm-10">
+                <div class="form-check">
+                    
+                    <input class="form-check-input" type="radio" name="guild" id="guild_radio_<%=guildData.id %>" value="<%=guildData.id %>" <% if (i === 0) { %> checked <% } %> >
+                    <label class="form-check-label" for="guild_radio_<%=guildData.id %>">
+                        <%=guildData.name %>
+                    </label>
+                    
+                </div>
 
-            <!-- Must use typeof to check if variable exists at all, since it might be undefined -->
-            <% if (typeof guilds === "object" && Array.isArray(guilds) === true && guilds.length > 0) { %>
-                <% guilds.forEach((guildData, i) => {%>
+            <% }); %>
 
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="guild" id="guild_radio_<%=guildData.id %>" value="<%=guildData.id %>" <% if (i === 0) { %> checked <% } %> >
-                        <label class="form-check-label" for="guild_radio_<%=guildData.id %>">
-                            <%=guildData.name %>
-                        </label>
-                    </div>
-
-                <% }); %>
-
-            <% } else { %>
-                <p><b>No guilds available. Did you authorize the bot?</b></p>
-            <% } %>
-            
-        </div>
+        <% } else { %>
+            <span class="cwError">No guilds available. Did you authorize the bot?</span>
+        <% } %>
+        
     </div>
-</fieldset>
+    
+</div>

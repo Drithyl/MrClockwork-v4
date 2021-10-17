@@ -1,0 +1,77 @@
+<div id="hostGameDiv" class="row d-flex align-items-center cwContainer">
+
+    <div class="card shadow-sm clockworkCardWide p-0">
+
+        <div class="card-header bg-dark">
+
+            <i class="bi bi-hdd-network-fill"></i> <span class="headerTitle">Host your own game</span>
+
+        </div>
+
+        <div class="card-body">
+        
+            <!-- Must use typeof to check if variable exists at all, since it might be undefined -->
+            <% if (typeof servers !== "object" || Array.isArray(servers) === false || servers.length <= 0) { %>
+
+                <p><b>No server slots available, or all servers are offline. Cannot host game.</b></p>
+
+            <% } else { %>
+
+                <form id="host_game_form" action="/host_game" method="POST" >
+
+                    <input type="hidden" name="sessionId" value="<%=(typeof sessionId === "string") ? sessionId : "none"%>"/>
+                    <script src="../js/load_session_id.js"></script>
+                
+                    <div class="row mb-2">
+                        <label for="input_game_name" class="col-sm-3 col-form-label">Game Name</label>
+                        <div class="col-sm-9">
+                            <input type="name" class="form-control" id="input_game_name" name="name" required minlength="3" maxlength="32" pattern="^[^ !@#$%^&*()+\-=\[\]{};\x27:\x22\\|,.<>\/?]+$">
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-2">
+                        <label for="input_master_password" class="col-sm-3 col-form-label">Master Password</label>
+                        <div class="col-sm-9">
+                            <input type="password" class="form-control" id="input_master_password" name="masterPassword" required minlength="3" maxlength="20" pattern="^[^ !@#$%^&*()+\-=\[\]{};\x27:\x22\\|,.<>\/?]+$">
+                        </div>
+                    </div>
+
+                    <%- include('../guild_list.ejs')-%>
+                    <%- include('../server_list.ejs')-%>
+                    <%- include('../settings/era.ejs')-%>
+                    <%- include('../settings/ai.ejs', { nations })-%>
+                    <%- include('../settings/mod_list.ejs')-%>
+                    <%- include('../settings/map_list.ejs')-%>
+                    <%- include('../settings/modifiers.ejs')-%>
+                    <%- include('../settings/starting_provinces.ejs')-%>
+                    <%- include('../settings/cataclysm.ejs')-%>
+                    <%- include('../settings/global_slots.ejs')-%>
+                    <%- include('../settings/hall_of_fame.ejs')-%>
+                    <%- include('../settings/independents_strength.ejs')-%>
+                    <%- include('../settings/magic_sites.ejs')-%>
+                    <%- include('../settings/thrones.ejs')-%>
+                    <%- include('../settings/research.ejs')-%>
+                    <%- include('../settings/artifact_forging.ejs')-%>
+                    <%- include('../settings/events.ejs')-%>
+                    <%- include('../settings/scoregraphs.ejs')-%>
+                    <%- include('../settings/disciples.ejs')-%>
+                    <%- include('../settings/timer.ejs')-%>
+
+                    <div class="row mt-5">
+                        <div class="col-sm-10">
+                            <button type="submit" class="btn btn-dark btn-md">
+                                <i class="bi bi-hdd-network-fill"></i>Host a new game
+                            </button>
+                        </div>
+                    </div>
+                
+                    <!-- Script to update mods and maps list based on selected server -->
+                    <script src="../../js/update_mod_and_map_partials.js"></script>
+                    
+                </form>
+
+            <% } %>
+
+        </div>
+    </div>
+</div>

@@ -8,7 +8,7 @@
 
     /* Main background color */
     body {
-        background: #5D5C61;
+        background: #303138;
     }
 
     /* Smaller headlines used in the news cards */
@@ -28,22 +28,36 @@
 
     /* Footer padding and color */
     footer {
-        background: #046062;
+        
     }
-
-    /* Header containing banner and navbar */
-    .page_header {
-        background-image: linear-gradient(#123, #123C69);
+    
+    /* sidebar background and links*/
+    .navBGDark {
+        background: #3c4148;
     }
-
-    /* The columns around the main section are buffers, unify the colour of all. These are not shown on small screens */
-    .buffer_left {
-        background-image: linear-gradient(to right, #7395AE, #7394BF);
+    
+    #sidebarMenu .nav-link{
+        color: white;
     }
-
-    /* The columns around the main section are buffers, unify the colour of all. These are not shown on small screens */
-    .buffer_right {
-        background-image: linear-gradient(to left, #7395AE, #7394BF);
+    
+    #sidebarMenu .active{
+        background: #2c2f35;
+        border-bottom: solid rgb(135, 0, 0) 2px;
+    }
+    
+    .bi {
+        margin-right: .125rem;
+        color:grey;
+    }
+    
+    /* text styles for home page */
+    #presentationDiv a {
+        color: white;
+        text-decoration: underline;
+    }
+    
+    #presentationDiv a:hover {
+        color:rgb(135, 0, 0);
     }
 
     /* Main section and footer both share this colour */
@@ -77,52 +91,143 @@
     }
 
     /* Color of links within the footer */
-    .footer_link {
-        color: #003166;
+    .footerText {
+        font-size: .65rem;
     }
+    
+    /* image styles */
+    .discordLogo {
+        max-width: 40px;
+    }
+
+/* button bar style */
+.gameButtonBar {
+    margin-left: 3rem;
+}
+
+/* card styles */
+.clockworkCard {
+    background: #3c4148;
+    max-width: 50%;
+    margin-left: 3rem;
+}
+
+.clockworkCardWide{
+    background: #3c4148;
+    max-width: 75%;
+    margin-left: 3rem;
+}
+
+.card-header {
+    border-bottom: solid rgb(135, 0, 0) 2px;
+}
+
+.headerTitle {
+    color: white;
+    margin-left: .25rem;
+}
+
+a[role=option] .text{
+    color:black;
+}
+
+/* table styles */
+.cwTable {
+    background-color: #7c7c7c;
+    border: solid 1px black;
+}
+
+.cwTable .thead {
+    color: white;
+    background: #3c4148;
+}
+
+.cwTableBody {
+    color: white;
+}
+
+.cwTableBody tr {
+    border-style: none;
+}
+
+.table > :not(:first-child) {
+   border-style: none; /* we need to overload this bootstrap style as I don't like how it looks */
+}
+
+/* classes for form elements */
+.cwContainer .col-form-label {
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.cwContainer input[type="number"] {
+    min-width: 100px;
+}
+
+.cwContainer label {
+    color: white;
+}
+
+.cwLegend {
+    color:white;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.cwTableRow label {
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.dropdown-header .text {
+   color:black;
+}
+
+.check-mark{
+   color: rgb(135, 0, 0);
+}
 
 /**** COLOR SCHEME END ****/
 
 h1 {
     font-size: 30px;
     font-family: "Arial Black", Gadget, sans-serif;
+    color: white;
 }
 
 h2 {
     font-size: 24px;
     font-family: "Arial", Gadget, sans-serif; 
+    color: white;
 }
 
 h3 {
     font-size: 20px;
     font-family: "Arial", Gadget, sans-serif; 
+    color: white;
 }
 
 h5 {
     font-family: "Arial", Gadget, sans-serif;
+    color: white;
 }
 
 /* Footer headlines used as picture footers */
 h6 {
     font-size: 10x;
+    color: white;
 }
 
 /* General text style */
 p, span {
-    
     text-align: justify;
     font-family: Tahoma, Geneva, sans-serif;
+    color: white;
 }
 
 .bg {
-    background-image: url("../img/gears.png");
-    height: 100%;
-    width: 100%;
 
-    /* Center and scale the image nicely */
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
 }
 
 .btn {
