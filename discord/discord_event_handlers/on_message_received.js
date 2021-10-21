@@ -56,13 +56,13 @@ function _handleCommandError(messageWrapper, err)
 {
     if (assert.isSemanticError(err) === true)
     {
-        log.general(log.getNormalLevel(), `Invalid command format by user`, err.message);
+        log.general(log.getNormalLevel(), `Invalid command format by user`, err);
         return messageWrapper.respond(`Invalid command format: ${err.message}`);
     }
 
     if (assert.isPermissionsError(err) === true)
     {
-        log.general(log.getNormalLevel(), `Invalid command permissions on user`, err.message);
+        log.general(log.getNormalLevel(), `Invalid command permissions on user`, err);
         return messageWrapper.respond(`Invalid permissions: ${err.message}`);
     }
 
