@@ -485,7 +485,7 @@
         "options": [
             {
                 "name": "member_mention",
-                "type": "MENTIONABLE",
+                "type": "USER",
                 "description": "A mention to the new organizer (@Username#0000).",
                 "required": true
             }
@@ -539,7 +539,7 @@
             },
             {
                 "name": "member_mention",
-                "type": "MENTIONABLE",
+                "type": "USER",
                 "description": "A mention to the player who will be taking over (@Username#0000).",
                 "required": true
             }
