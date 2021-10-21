@@ -56,7 +56,7 @@ exports.addOnBotErrorHandler = (handler) => _discordJsBotClient.on("error", (err
 
 exports.addOnCommandInteractionReceivedHandler = (handler) => 
 {
-    _discordJsBotClient.on("interaction", (discordJsInteraction) => 
+    _discordJsBotClient.on("interactionCreate", (discordJsInteraction) => 
     {
         if (discordJsInteraction.isCommand() === true)
             handler(discordJsInteraction);
