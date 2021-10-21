@@ -16,7 +16,8 @@ function DeleteGameAndChannelCommand()
 
     deleteGameCommand.addRequirements(
         commandPermissions.assertMemberIsTrusted,
-        commandPermissions.assertMemberIsOrganizer
+        commandPermissions.assertMemberIsOrganizer,
+        commandPermissions.assertCommandIsUsedInGameChannel
     );
 
     return deleteGameCommand;
