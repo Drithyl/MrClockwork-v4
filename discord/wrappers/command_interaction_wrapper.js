@@ -1,10 +1,10 @@
 
 
+const messenger = require("../messenger.js");
 const config = require("../../config/config.json");
 const InteractionWrapper = require("./interaction_wrapper.js");
 const { SemanticError } = require("../../errors/custom_errors");
 const ongoingGamesStore = require("../../games/ongoing_games_store.js");
-
 
 
 module.exports = CommandInteractionWrapper;
@@ -13,12 +13,12 @@ function CommandInteractionWrapper(discordJsInteractionObject)
 {
     const _discordJsInteractionObject = discordJsInteractionObject;
     const _interactionWrapper = new InteractionWrapper(_discordJsInteractionObject);
-    const _gameTargetedByCommand = ongoingGamesStore.getOngoingGameByChannel(_targetChannelObject.id);
+    const _gameTargetedByCommand = ongoingGamesStore.getOngoingGameByChannel(discordJsInteractionObject.channelId);
 
     _interactionWrapper.getCommand = () => _discordJsInteractionObject.command;
-    _interactionWrapper.getCommandId = () => _discordJsInteractionObject.commandID;
-    _interactionWrapper.getCommandName = () => _discordJsInteractionObject.commandName;
-    _interactionWrapper.getOptions = () => _discordJsInteractionObject.options;
+    _interactionWrapper.getCommandId = () => _discordJsInteractionObject.commandId;
+    _interactionWrapper.getCommandString = () => _discordJsInteractionObject.commandName;
+    _interactionWrapper.getOptions = () => _discordJsInteractionObject.options.data;
     _interactionWrapper.isCommandInteraction = () => true;
 
     _interactionWrapper.isDeferred = () => _discordJsInteractionObject.deferred;
@@ -30,8 +30,10 @@ function CommandInteractionWrapper(discordJsInteractionObject)
     _interactionWrapper.editReply = (newMessageString, options) => _discordJsInteractionObject.editReply(Object.assign({content: newMessageString}, options));
     _interactionWrapper.fetchReply = () => _discordJsInteractionObject.fetchReply();
     _interactionWrapper.followUp = (messageString) => _discordJsInteractionObject.followUp(Object.assign({content: messageString}, options));
-    _interactionWrapper.reply = (messageString, options) => _discordJsInteractionObject.reply(Object.assign({content: messageString}, options));
-    _interactionWrapper.respondToSender = (...args) => _interactionWrapper.getSenderUserWrapper().sendMessage(...args);
+    //_interactionWrapper.reply = (messageString, options) => _discordJsInteractionObject.reply(Object.assign({content: messageString}, options));
+    _interactionWrapper.reply = (...args) => messenger.replyToInteraction(_discordJsInteractionObject, ...args);
+    _interactionWrapper.respondToSender = (text) => _interactionWrapper.reply(text, { ephemeral: true });
+    _interactionWrapper.respondToCommand = (...args) => _interactionWrapper.reply(...args);
 
     _interactionWrapper.isGameCommand = () => _gameTargetedByCommand != null;
     _interactionWrapper.getGameTargetedByCommand = () => _gameTargetedByCommand;
@@ -92,6 +94,39 @@ function CommandInteractionWrapper(discordJsInteractionObject)
 
         return game.memberIsPlayer(senderId);
     };
+
+    _interactionWrapper.getCommandArgumentsArray = () => 
+    {
+        const options = _interactionWrapper.getOptions();
+        const argsArray = [];
+        options.forEach((option) => argsArray.push(option.value));
+        return argsArray;
+    };
+
+    _interactionWrapper.getMentionedMembers = (optionName) => 
+    {
+        const mentionedMember = _interactionWrapper.getOptions.getUser(optionName);
+
+        if (mentionedMember == null)
+            return [];
+
+        else return [ mentionedMember ];
+    };
+
+    _interactionWrapper.getMessageContent = () => 
+    {
+        const name = _interactionWrapper.getCommandString();
+        const options = _interactionWrapper.getOptions();
+        var content = name + " ";
+
+        options.forEach((option) => content += " " + option.value.toString());
+
+        return content;
+    }
+    
+    _interactionWrapper.getCommandSenderId = () => _interactionWrapper.getSenderId();
+    _interactionWrapper.getCommandSenderUsername = () => _interactionWrapper.getSenderUsername();
+    _interactionWrapper.getGameTargetedByCommand = () => _gameTargetedByCommand;
 
     return _interactionWrapper;
 }

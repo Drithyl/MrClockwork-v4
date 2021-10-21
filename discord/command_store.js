@@ -56,8 +56,8 @@ exports.invokeCommandInteraction = (commandInteractionWrapper) =>
     {
         var command = commandStore[i];
 
-        if (command.isInvoked(commandContext) === true)
-            return command.invoke(commandContext)
+        if (command.isInvoked(commandInteractionWrapper) === true)
+            return command.invoke(commandInteractionWrapper)
             .catch((err) => Promise.reject(err));
     }
 };

@@ -22,7 +22,7 @@ module.exports.send = function(receiver, text, options = {})
         if (filesData.isTotalSizeTooLarge === true)
             return _sendMessageAndAttachmentsSeparately(receiver, text, optionsObject);
 
-        else return receiver.send(text, optionsObject);
+        else return receiver.send(optionsObject);
     })
     .then((discordJsMessage) => 
     {
@@ -35,12 +35,30 @@ module.exports.send = function(receiver, text, options = {})
     .catch((err) => Promise.reject(new Error(`Could not deliver message: ${err.message}`)));
 };
 
+module.exports.replyToInteraction = (interaction, text, options = {}) =>
+{
+    const optionsObject = _createMessageOptionsObject(text, options);
+    const filesData = _analyzeFiles(optionsObject.files);
+
+    if (optionsObject.files == null && (text == null || text === ""))
+        return Promise.reject(new Error("Cannot send an empty message."));
+
+    if (filesData.hasFileTooLarge === true)
+        return Promise.reject(`File is too large for Discord.`);
+
+    return interaction.reply(optionsObject);
+};
+
+
 function _createMessageOptionsObject(textToSend, options)
 {
-    var optionsObject = {};
+    var optionsObject = { };
     var embed = _formatEmbed(options.embed);
     var wrapper = _formatWrapper(textToSend, options.prepend, options.append);
     var attachment = _formatAttachment(options.files);
+
+    if (/\S+/.test(textToSend) === true)
+        optionsObject.content = textToSend;
 
     if (embed != null)
         Object.assign(optionsObject, embed);

@@ -8,7 +8,8 @@ module.exports = CommandData;
 
 function CommandData(commandName)
 {
-    const _data = (slashCommandsData[commandName] != null) ? slashCommandsData[commandName] : commandsData[commandName];
+    const _data = commandsData[commandName];
+    Object.assign(_data, slashCommandsData[commandName]);
 
     try 
     {
@@ -30,6 +31,8 @@ function CommandData(commandName)
     const _isEnabled = _data.isEnabled;
     const _isDevOnly = _data.isDevOnly;
     const _gameTypesSupported = (_data.gameTypesSupported != null) ? _data.gameTypesSupported : [];
+    const _regexpRequiredToInvoke = new RegExp(_data.regexpRequiredToInvoke, "i");
+    const _slashRegexpRequiredToInvoke = new RegExp(`^${_data.name}$`, "i");
     const _channelRequiredToInvoke = _data.channelRequiredToInvoke;
     const _description = _data.description;
     const _argumentsRequiredInfo = [];
@@ -57,6 +60,8 @@ function CommandData(commandName)
     
     this.getSlashCommandData = () => (this.isDevOnly() === false) ? Object.assign({}, _data) : null;
     this.getName = () => _name;
+    this.getRegexpRequiredToInvoke = () => _regexpRequiredToInvoke;
+    this.getSlashRegexpRequiredToInvoke = () => _slashRegexpRequiredToInvoke;
     this.getArgumentsRequiredInfo = () => _argumentsRequiredInfo;
     this.getArrayOfArgumentRegexp = () => [..._argumentRegexpArray];
     this.getChannelRequiredToInvoke = () => _channelRequiredToInvoke;

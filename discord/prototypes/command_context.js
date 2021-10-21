@@ -108,6 +108,10 @@ function _extractCommandString(messageContent)
 {
     var messageWords = messageContent.split(/ +/);
     var command = messageWords.shift().toLowerCase();
+
+    if (command[0] === config.commandPrefix)
+        return command.slice(1);
+        
     return command;
 }
 

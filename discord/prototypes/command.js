@@ -25,6 +25,7 @@ function DiscordCommand(commandDataObject)
     this.getArgumentsRequiredInfo = (...args) => _data.getArgumentsRequiredInfo(...args);
     this.getArrayOfArgumentRegexp = (...args) => _data.getArrayOfArgumentRegexp(...args);
     this.getRegexpRequiredToInvoke = (...args) => _data.getRegexpRequiredToInvoke(...args);
+    this.getSlashRegexpRequiredToInvoke = (...args) => _data.getSlashRegexpRequiredToInvoke(...args);
     this.getChannelRequiredToInvoke = (...args) => _data.getChannelRequiredToInvoke(...args);
     this.areArgumentsRequired = () => _data.areArgumentsRequired();
     this.getSlashCommandData = () => _data.getSlashCommandData();
@@ -82,16 +83,14 @@ function DiscordCommand(commandDataObject)
 
     this.isInvoked = (commandContext) => 
     {
-        var commandString = commandContext.getCommandName();
-        var commandRegexpToInvoke = this.getRegexpRequiredToInvoke();
+        const commandString = commandContext.getCommandString();
+        const isSlashCommand = (commandContext.isCommandInteraction != null) ? commandContext.isCommandInteraction() : false;
+        const regexp = (isSlashCommand === true) ? this.getSlashRegexpRequiredToInvoke() : this.getRegexpRequiredToInvoke();
 
         if (_isCommandUsedInValidChannel(commandContext) === false)
             return false;
 
-        if (commandContext.isCommandInteraction != null)
-            return true;
-
-        return commandRegexpToInvoke.test(commandString);
+        return regexp.test(commandString);
     };
 
     this.invoke = (commandContext) =>
