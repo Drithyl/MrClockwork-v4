@@ -31,7 +31,7 @@ function CommandData(commandName)
     const _isEnabled = _data.isEnabled;
     const _isDevOnly = _data.isDevOnly;
     const _gameTypesSupported = (_data.gameTypesSupported != null) ? _data.gameTypesSupported : [];
-    const _regexpRequiredToInvoke = new RegExp(_data.regexpRequiredToInvoke, "i");
+    const _regexpRequiredToInvoke = new RegExp(`^${_data.regexpRequiredToInvoke}$`, "i");
     const _slashRegexpRequiredToInvoke = new RegExp(`^${_data.name}$`, "i");
     const _channelRequiredToInvoke = _data.channelRequiredToInvoke;
     const _description = _data.description;
