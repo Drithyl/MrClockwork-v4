@@ -30,15 +30,20 @@ function CommandInteractionWrapper(discordJsInteractionObject)
     _interactionWrapper.editReply = (newMessageString, options) => _discordJsInteractionObject.editReply(Object.assign({content: newMessageString}, options));
     _interactionWrapper.fetchReply = () => _discordJsInteractionObject.fetchReply();
     _interactionWrapper.followUp = (messageString) => _discordJsInteractionObject.followUp(Object.assign({content: messageString}, options));
-    //_interactionWrapper.reply = (messageString, options) => _discordJsInteractionObject.reply(Object.assign({content: messageString}, options));
-    _interactionWrapper.reply = (...args) => messenger.replyToInteraction(_discordJsInteractionObject, ...args);
-    _interactionWrapper.respondToSender = (text) => _interactionWrapper.reply(text, { ephemeral: true });
-    _interactionWrapper.respondToCommand = (...args) => _interactionWrapper.reply(...args);
+
+    // Core methods to reply to an interaction or send a message to its channel
+    _interactionWrapper.reply = (...args) => _discordJsInteractionObject.reply(...args);
+    _interactionWrapper.send = (...args) => _interactionWrapper.getDestinationChannel().send(...args);
+
+    // Wrapper methods to reply to an interaction, made to respect the interface created
+    // by this wrapper and the CommandContext wrapper, both of which commands and
+    // MessagePayload use interchangeably
+    _interactionWrapper.respondToCommand = (messagePayload) => messagePayload.send(_interactionWrapper);
+    _interactionWrapper.respondToSender = (messagePayload) => messagePayload.send(_interactionWrapper, { ephemeral: true });
 
     _interactionWrapper.isGameCommand = () => _gameTargetedByCommand != null;
     _interactionWrapper.getGameTargetedByCommand = () => _gameTargetedByCommand;
 
-    
     _interactionWrapper.isSenderTrusted = () =>
     {
         const guild = _interactionWrapper.getGuildWrapper();

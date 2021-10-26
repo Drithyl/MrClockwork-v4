@@ -64,8 +64,9 @@ function MessageWrapper(discordJsMessageObject)
     this.isDirectMessage = () => this.getDestinationChannelType() === "dm";
     this.startsWithCommandPrefix = () => _startsWithCommandPrefix(this.getMessageContent());
 
-    this.respond = (response, ...args) => messenger.send(this.getDestinationChannel(), response, ...args);
-    this.respondToSender = (response, ...args) => messenger.send(_discordJsMessageObject.author, response, ...args);
+    this.respond = (messagePayload) => messagePayload.send(this.getDestinationChannel());
+    //this.respond = (messagePayload) => this.getDestinationChannel().send({ content: "TEST!!", files: [ { name: "myfile.txt", attachment: Buffer.from("A file", "utf8") }] });
+    this.respondToSender = (messagePayload) => messagePayload.send(_discordJsMessageObject.author);
     this.pin = () => 
     {
         return _discordJsMessageObject.pin();

@@ -100,8 +100,8 @@ function CommandContext(messageWrapper)
     this.getGameTargetedByCommand = () => _gameTargetedByCommand;
     this.getDestinationChannel = () => _targetChannelObject;
 
-    this.respondToCommand = (...args) => _messageWrapper.respond(...args);
-    this.respondToSender = (...args) => _messageWrapper.respondToSender(...args);
+    this.respondToCommand = (messagePayload) => _messageWrapper.respond(messagePayload);
+    this.respondToSender = (messagePayload) => _messageWrapper.respondToSender(messagePayload);
 }
 
 function _extractCommandString(messageContent)
