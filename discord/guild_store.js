@@ -297,18 +297,18 @@ exports.undeployBotOnGuild = (guildId) =>
     return Promise.resolve();
 };
 
-exports.updateHelpChannels = (updatedHelpString, idOfGuildToUpdate = "") =>
+exports.updateHelpChannels = (payload, idOfGuildToUpdate = "") =>
 {
     var guildToUpdate = this.getGuildWrapperById(idOfGuildToUpdate);
 
     if (guildToUpdate != null)
-        return guildToUpdate.updateHelpChannel(updatedHelpString);
+        return guildToUpdate.updateHelpChannel(payload);
 
     return guildWrappers.forAllPromises((wrapper) =>
     {
         log.general(log.getNormalLevel(), `Updating guild ${wrapper.getName()}...`);
 
-        return wrapper.updateHelpChannel(updatedHelpString)
+        return wrapper.updateHelpChannel(payload)
         .then(() => log.general(log.getNormalLevel(), `${wrapper.getName()} help channel updated.`))
         .catch((err) => log.error(log.getLeanLevel(), `ERROR UPDATING ${guildWrapper.getName()} HELP CHANNEL`, err));
 

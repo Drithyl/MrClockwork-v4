@@ -1,6 +1,5 @@
 
 
-const messenger = require("../messenger.js");
 const config = require("../../config/config.json");
 const InteractionWrapper = require("./interaction_wrapper.js");
 const { SemanticError } = require("../../errors/custom_errors");

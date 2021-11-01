@@ -28,8 +28,8 @@ function _behaviour(commandContext)
     const logLevelArg = +commandArguments[0];
 
     if (assert.isInteger(logLevelArg) === false || logLevelArg < 0 || logLevelArg > 2)
-        return commandContext.respondToCommand(`Log level is an integer from 0 to 2`);
+        return commandContext.respondToCommand(new MessagePayload(`Log level is an integer from 0 to 2`));
 
     log.setLogLevel(logLevelArg);
-    return commandContext.respondToCommand(`Log level set to ${log.getLogLevel()}.`);
+    return commandContext.respondToCommand(new MessagePayload(`Log level set to ${log.getLogLevel()}.`));
 }

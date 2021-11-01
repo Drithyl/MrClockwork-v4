@@ -36,10 +36,10 @@ function _behaviour(commandContext)
     var nationObject;
 
     if (nameOfNationToBeUnclaimed == null)
-        return commandContext.respondToCommand(`You must specify a nation identifier to unclaim.`);
+        return commandContext.respondToCommand(new MessagePayload(`You must specify a nation identifier to unclaim.`));
 
     nationObject = dominions5NationStore.getNation(nameOfNationToBeUnclaimed);
 
     return gameObject.removeControlOfNation(nationObject.getFilename())
-    .then(() => commandContext.respondToCommand(`Pretender was unclaimed.`));
+    .then(() => commandContext.respondToCommand(new MessagePayload(`Pretender was unclaimed.`)));
 }

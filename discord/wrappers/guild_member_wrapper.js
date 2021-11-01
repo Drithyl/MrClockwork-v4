@@ -1,6 +1,5 @@
 
 const assert = require("../../asserter.js");
-const messenger = require("../messenger.js");
 
 module.exports = GuildMemberWrapper;
 
@@ -25,5 +24,5 @@ function GuildMemberWrapper(discordJsGuildMemberObject, guildWrapper)
     this.removeRole = (discordRoleObject) => _discordJsGuildMemberObject.roles.remove(discordRoleObject);
     this.getHighestDiscordRolePosition = () => _discordJsGuildMemberObject.highest.position;
 
-    this.sendMessage = (...args) => messenger.send(_discordJsGuildMemberObject, ...args);
+    this.sendMessage = (payload) => payload.send(_discordJsGuildMemberObject);
 }

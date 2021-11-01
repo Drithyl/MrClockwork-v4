@@ -2,6 +2,7 @@
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
+const MessagePayload = require("../prototypes/message_payload.js");
 
 const commandData = new CommandData("LAUNCH_GAME_PROCESS");
 
@@ -28,8 +29,8 @@ function _behaviour(commandContext)
 {
     const targetedGame = commandContext.getGameTargetedByCommand();
 
-    return commandContext.respondToCommand(`Launching process...`)
+    return commandContext.respondToCommand(new MessagePayload(`Launching process...`))
     .then(() => targetedGame.launch())
-    .then(() => commandContext.respondToCommand(`The process has been launched.`))
-    .catch((err) => commandContext.respondToCommand(`An error occurred:\n\n${err.message}`));
+    .then(() => commandContext.respondToCommand(new MessagePayload(`The process has been launched.`)))
+    .catch((err) => commandContext.respondToCommand(new MessagePayload(`An error occurred:\n\n${err.message}`)));
 }

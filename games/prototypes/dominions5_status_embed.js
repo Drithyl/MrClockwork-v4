@@ -1,7 +1,7 @@
 
 const asserter = require("../../asserter");
-const messenger = require("../../discord/messenger.js");
 const MessageWrapper = require("../../discord/wrappers/message_wrapper.js");
+const MessagePayload = require("../../discord/prototypes/message_payload.js");
 const MessageEmbedBuilder = require("../../discord/wrappers/message_embed_builder.js");
 const MessageEmbedWrapper = require("../../discord/wrappers/message_embed_wrapper.js");
 
@@ -20,6 +20,7 @@ Dominions5StatusEmbed.sendNew = (game) =>
     const gameName = game.getName();
     const channel = game.getChannel();
     const embedBuild = new MessageEmbedBuilder();
+    const payload = new MessagePayload(`${gameName}'s status:`);
 
     if (channel == null)
         throw new Error(`${gameName} has no channel; cannot send status embed.`);
@@ -32,7 +33,9 @@ Dominions5StatusEmbed.sendNew = (game) =>
     embedBuild.addField(TIMER_HEADER, "N/A", true);
     embedBuild.addField(UNDONE_TURNS_HEADER, "N/A");
 
-    return messenger.send(channel, `${gameName}'s status:`, { embed: embedBuild.toEmbedStruct(), pin: true })
+    payload.setEmbed(embedBuild);
+
+    return payload.send(channel, { pin: true })
     .then((messageWrapper) => 
     {
         const embedWrapper = messageWrapper.getEmbedWrapper(0);

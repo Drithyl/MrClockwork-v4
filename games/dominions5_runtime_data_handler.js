@@ -1,8 +1,8 @@
 
 const log = require("../logger.js");
 const assert = require("../asserter.js");
-const messenger = require("../discord/messenger.js");
 const gameStore = require("./ongoing_games_store.js");
+const MessagePayload = require("../discord/prototypes/message_payload.js");
 
 //Exact error: "Failed to create temp dir 'C:\Users\MistZ\AppData\Local\Temp/dom5_94132'"
 const failedToCreateTmpDirErrRegexp = new RegExp("Failed\\s*to\\s*\\create\\s*temp\\s*dir", "i");
@@ -331,7 +331,7 @@ function sendWarning(game, warning)
     if (channel != null)
     {
         log.general(log.getVerboseLevel(), `Sending error warning to ${game.getName()}'s channel`);
-        messenger.send(channel, warning)
+        return new MessagePayload(warning).send(channel)
         .catch((err) => log.error(log.getVerboseLevel(), `ERROR sending warning`, err));
     }
 

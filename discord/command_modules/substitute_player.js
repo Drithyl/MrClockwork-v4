@@ -36,15 +36,15 @@ function _behaviour(commandContext)
     var subPlayerWrapper;
 
     if (gameObject.getPlayerIdControllingNationInGame(nationFilename) == null)
-        return commandContext.respondToCommand(`Nation is not claimed.`);
+        return commandContext.respondToCommand(new MessagePayload(`Nation is not claimed.`));
 
     if (mentionedMembers.length <= 0)
-        return commandContext.respondToCommand(`You must mention the member who you wish to appoint as substitute.`);
+        return commandContext.respondToCommand(new MessagePayload(`You must mention the member who you wish to appoint as substitute.`));
 
     subPlayerWrapper = mentionedMembers[0];
 
     return gameObject.substitutePlayerControllingNation(subPlayerWrapper.getId(), nationFilename)
-    .then(() => commandContext.respondToCommand(`Player was replaced.`));
+    .then(() => commandContext.respondToCommand(new MessagePayload(`Player was replaced.`)));
 }
 
 function assertNationNameExists(commandContext)

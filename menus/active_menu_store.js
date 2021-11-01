@@ -5,6 +5,7 @@ const HelpMenu = require("./prototypes/help_menu.js");
 const HostGameMenu = require("./prototypes/host_game_menu.js");
 const ChangeSettingsMenu = require("./prototypes/change_settings_menu.js");
 const ChangePlayerPreferencesMenu = require("./prototypes/change_player_preferences_menu.js");
+const MessagePayload = require("../discord/prototypes/message_payload.js");
 
 
 const backRegexp = new RegExp(`^${config.commandPrefix}BACK`, "i");
@@ -71,7 +72,7 @@ module.exports.removeActiveInstance = function(memberId)
 module.exports.finish = function(userId)
 {
     log.general(log.getVerboseLevel(), `Finishing menu for user ${userId}...`);
-    return activeMenus[userId].instance.sendMessage(`You have closed this instance.`)
+    return activeMenus[userId].instance.sendMessage(new MessagePayload(`You have closed this instance.`))
     .then(() => Promise.resolve(deleteInstance(userId)));
 };
 

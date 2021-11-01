@@ -1,11 +1,12 @@
 
 const assert = require("../../asserter.js");
+const MessageEmbedBuilder = require("../wrappers/message_embed_builder.js");
 
 const MAX_MESSAGE_CHARACTERS = 2000;
 
 module.exports = MessagePayload;
 
-function MessagePayload(header, content = "", splitContent = false, splitWrapper = "")
+function MessagePayload(header, content = "", splitContent = true, splitWrapper = "")
 {
     assert.isStringOrThrow(header);
     assert.isStringOrThrow(content);
@@ -13,13 +14,14 @@ function MessagePayload(header, content = "", splitContent = false, splitWrapper
     const _header = header;
     const _content = content;
     const _payloadObject = {};
+    const _attachments = [];
     const _splitContent = splitContent;
     var _contentArray = [];
 
     // If the total length of the header and content is less than the max allowed,
     // then add them together to be sent in a single message
     if (_header.length + _content.length < MAX_MESSAGE_CHARACTERS)
-        _contentArray.push(header + content);
+        _contentArray.push(_header + _content);
 
     // If the length is more than allowed and split content is true,
     // we will split the content payload into several substrings
@@ -65,27 +67,36 @@ function MessagePayload(header, content = "", splitContent = false, splitWrapper
     // then turn the content into an attached text file instead
     else
     {
-        _payloadObject.content = _header;
-        _payloadObject.files = [{ name: "content.txt", attachment: Buffer.from(_content, "utf8") }];
+        _contentArray.push(_header);
+        _attachments.push({ name: "content.txt", attachment: Buffer.from(_content, "utf8") });
     }
 
 
-    this.setEmbed = (embedStruct) =>
+    this.setEmbed = (embed) =>
     {
-        if (embedStruct != null)
-            _payloadObject.embeds = [ embedStruct ];
+        if (assert.isInstanceOfPrototype(embedStruct, MessageEmbedBuilder) === true)
+            _payloadObject.embeds = [ embed.toEmbedStruct() ]
+
+        else if (embedStruct != null)
+            _payloadObject.embeds = [ embed ];
+
+        return this;
     };
 
     this.setAttachment = (filename, buffer) =>
     {
-        if (_payloadObject.files == null)
-            _payloadObject.files = [];
+        _attachments.push({ name: filename, attachment: buffer });
 
-        _payloadObject.files.push({ name: filename, attachment: buffer });
-
-        if (_areAttachmentsTooLarge(_payloadObject.files) === true)
+        if (_areAttachmentsTooLarge(_attachments) === true)
             throw new Error(`Cannot send attachments as they are above 8MB in size.`);
+
+        return this;
     };
+
+    this.setAttachments = (filenames, buffers) =>
+    {
+        filenames.forEach((filename, i) => this.setAttachment(filename, buffers[i]));
+    }
 
     this.send = async (target, options = {}) =>
     {
@@ -93,7 +104,7 @@ function MessagePayload(header, content = "", splitContent = false, splitWrapper
 
         _contentArray.forEach(async (contentChunk, i) =>
         {
-            var payload = (i === 0) ? Object.assign(_payloadObject, { content: _header + contentChunk }) : { content: contentChunk };
+            var payload = (i === 0) ? Object.assign(_payloadObject, { content: contentChunk }) : { content: contentChunk };
 
             if (options.ephemeral === true)
                 payload.ephemeral = true;
@@ -109,6 +120,11 @@ function MessagePayload(header, content = "", splitContent = false, splitWrapper
 
         if (options.pin === true && assert.isFunction(sentMessage.pin) === true)
             await sentMessage.pin();
+
+        if (_attachments.length <= 0)
+            return;
+
+        _attachments.forEach(async (attachment) => await target.send({files: [ attachment ]}));
     };
 
 }
@@ -116,11 +132,12 @@ function MessagePayload(header, content = "", splitContent = false, splitWrapper
 
 function _areAttachmentsTooLarge(files)
 {
-    totalSize = files.reduce((total, file) => 
+    for (var i = 0; i < files.length; i++)
     {
         const sizeInMB = file.attachment.length * 0.000001;
-        return total + sizeInMB;
-    }, 0);
-        
-    return totalSize > 8;
+        if (sizeInMB > 8)
+            return true;
+    }
+
+    return false;
 }

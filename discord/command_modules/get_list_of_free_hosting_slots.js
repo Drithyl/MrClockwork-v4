@@ -3,6 +3,7 @@ const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
 const hostServerStore = require("../../servers/host_server_store.js");
+const MessagePayload = require("../prototypes/message_payload.js");
 
 const commandData = new CommandData("GET_LIST_OF_FREE_HOSTING_SLOTS");
 
@@ -23,7 +24,7 @@ function _behaviour(commandContext)
     var stringListOfFreeSlots = hostServerStore.printListOfFreeSlots();
 
     if (hostServerStore.hasServersOnline() === false)
-        return commandContext.respondToCommand(`There are no servers online.`);
+        return commandContext.respondToCommand(new MessagePayload(`There are no servers online.`));
 
-    return commandContext.respondToCommand(introductionString + stringListOfFreeSlots.toBox(), { prepend: "```", append: "```" }); 
+    return commandContext.respondToCommand(new MessagePayload(introductionString, stringListOfFreeSlots.toBox())); 
 }

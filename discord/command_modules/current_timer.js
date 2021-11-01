@@ -3,6 +3,7 @@ const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const TimeLeft = require("../../games/prototypes/time_left.js");
 const commandPermissions = require("../command_permissions.js");
+const MessagePayload = require("../prototypes/message_payload.js");
 
 const commandData = new CommandData("CURRENT_TIMER");
 
@@ -34,7 +35,7 @@ function _behaviour(commandContext)
     const timeLeft = new TimeLeft(lastKnownMsLeft);
 
     if (lastKnownTurnNumber <= 0)
-        return commandContext.respondToCommand(`Game is being setup in lobby.`);
+        return commandContext.respondToCommand(new MessagePayload(`Game is being setup in lobby.`));
 
     if (commandArguments.length <= 0)
         return _sendCurrentTimer(commandContext, timeLeft);
@@ -44,7 +45,7 @@ function _behaviour(commandContext)
 
 function _sendCurrentTimer(commandContext, timeLeft)
 {
-    return commandContext.respondToCommand(`${timeLeft.printTimeLeft()} left till next turn.`);
+    return commandContext.respondToCommand(new MessagePayload(`${timeLeft.printTimeLeft()} left till next turn.`));
 }
 
 function _changeCurrentTimer(gameObject, commandContext, commandArguments, timeLeft)
@@ -59,9 +60,9 @@ function _changeCurrentTimer(gameObject, commandContext, commandArguments, timeL
     .then(() =>
     {
         if (timeToSet <= 0)
-            return commandContext.respondToCommand(`The timer has been paused. It may take a minute to update.`);
+            return commandContext.respondToCommand(new MessagePayload(`The timer has been paused. It may take a minute to update.`));
 
-        else return commandContext.respondToCommand(`The timer was changed. It may take a minute to update.`);
+        else return commandContext.respondToCommand(new MessagePayload(`The timer was changed. It may take a minute to update.`));
     });
 }
 

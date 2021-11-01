@@ -2,6 +2,7 @@
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
+const MessagePayload = require("../prototypes/message_payload.js");
 
 const commandData = new CommandData("GET_DOM5_SCORES");
 
@@ -30,5 +31,10 @@ function _behaviour(commandContext)
     var messageString = `Attached is the scores file for ${gameName}.`;
     
     return gameObject.emitPromiseWithGameDataToServer("GET_SCORE_DUMP")
-    .then((scoresFile) => commandContext.respondToCommand(messageString, scoresFile, `${gameName} Scores.txt`));
+    .then((scoresFile) => 
+    {
+        const payload = new MessagePayload(messageString);
+        payload.setAttachment(`${gameName} Scores.txt`, scoresFile);
+        return commandContext.respondToCommand(payload);
+    });
 }

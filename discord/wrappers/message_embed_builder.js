@@ -1,5 +1,4 @@
 
-const messenger = require("../messenger.js");
 const asserter = require("../../asserter.js");
 
 const MAX_EMBED_LENGTH = 6000;
@@ -221,6 +220,4 @@ function MessageEmbedBuilder()
     this.isFieldNameTooLong = (fieldNameLength) => fieldNameLength > MAX_FIELD_NAME_LENGTH;
     this.isFieldValueTooLong = (fieldValueLength) => fieldValueLength > MAX_FIELD_LENGTH;
     this.isDescriptionTooLong = (descriptionLength) => descriptionLength > MAX_DESCRIPTION_LENGTH;
-
-    this.sendTo = (receiver, message = "") => messenger.send(receiver, message, { embed: this.toEmbedStruct() });
 }

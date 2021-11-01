@@ -28,8 +28,8 @@ function _behaviour(commandContext)
     const guildMemberWrapper = commandContext.getSenderGuildMemberWrapper();
 
     if (gameRole == null)
-        return commandContext.respondToCommand(`This game's role does not exist; cannot assign it.`);
+        return commandContext.respondToCommand(new MessagePayload(`This game's role does not exist; cannot assign it.`));
 
     return guildMemberWrapper.addRole(gameRole)
-    .then(() => commandContext.respondToCommand(`The game's role has been assigned to you.`));
+    .then(() => commandContext.respondToCommand(new MessagePayload(`The game's role has been assigned to you.`)));
 }

@@ -27,5 +27,5 @@ function _behaviour(commandContext)
     const targetedGuild = commandContext.getGuildWrapper();
 
     return targetedGuild.undeployBot()
-    .then(() => commandContext.respondToCommand(`Cleaning of the bot roles and channels will be performed.`));
+    .then(() => commandContext.respondToCommand(new MessagePayload(`Cleaning of the bot roles and channels will be performed.`)));
 }

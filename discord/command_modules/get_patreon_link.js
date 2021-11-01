@@ -1,6 +1,7 @@
 
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
+const MessagePayload = require("../prototypes/message_payload.js");
 
 const commandData = new CommandData("GET_PATREON_LINK");
 
@@ -17,5 +18,5 @@ function GetPatreonLinkCommand()
 
 function _behaviour(commandContext)
 {
-    return commandContext.respondToCommand(`If you are considering contributing to the project, you can read more information and do so here: https://www.patreon.com/MrClockwork. Thank you!`);
+    return commandContext.respondToCommand(new MessagePayload(`If you are considering contributing to the project, you can read more information and do so here: https://www.patreon.com/MrClockwork. Thank you!`));
 }

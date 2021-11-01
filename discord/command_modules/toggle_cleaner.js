@@ -25,5 +25,5 @@ function ToggleCleanerCommand()
 function _behaviour(commandContext)
 {
     var result = cleaner.toggleIsCleaningEnabled();
-    return commandContext.respondToCommand(`\`isCleaningEnabled\` set to ${result}.`);
+    return commandContext.respondToCommand(new MessagePayload(`\`isCleaningEnabled\` set to ${result}.`));
 }

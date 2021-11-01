@@ -3,6 +3,7 @@ const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
 const pendingChannelStore = require("../pending_game_channel_store.js");
+const MessagePayload = require("../prototypes/message_payload.js");
 
 const commandData = new CommandData("DELETE_PENDING_CHANNEL");
 
@@ -34,5 +35,5 @@ function _behaviour(commandContext)
         .then(() => pendingChannelStore.removeGameChannelPendingHosting(channelId));
     }
 
-    else return commandContext.respondToCommand(`This is not a game channel.`);
+    else return commandContext.respondToCommand(new MessagePayload(`This is not a game channel.`));
 }

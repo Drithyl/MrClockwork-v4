@@ -1,6 +1,5 @@
 
 const log = require("../../logger.js");
-const messenger = require("../messenger.js");
 const guildStore = require("../guild_store.js");
 const guildDataStore = require("../guild_data_store.js");
 const GuildMemberWrapper = require("./guild_member_wrapper.js");
@@ -57,13 +56,13 @@ function GuildWrapper(discordJsGuildObject)
 
     this.clearData = (discordId) => guildDataStore.clearGuildData(this.getId(), discordId);
 
-    this.postNews = (newsString) => 
+    this.postNews = (payload) => 
     {
         const newsChannel = this.getNewsChannel();
-        return messenger.send(newsChannel, newsString);
+        return payload.send(newsChannel);
     };
 
-    this.updateHelpChannel = (updatedHelpString) =>
+    this.updateHelpChannel = (payload) =>
     {
         var helpChannel = this.getHelpChannel();
 
@@ -77,7 +76,7 @@ function GuildWrapper(discordJsGuildObject)
         .then(() => 
         {
             log.general(log.getVerboseLevel(), `${this.getName()}'s help channel cleared; sending new help string.`);
-            messenger.send(helpChannel, updatedHelpString, { prepend: "", append: "" });
+            payload.send(helpChannel);
         });
     };
 

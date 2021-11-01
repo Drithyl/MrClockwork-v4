@@ -2,6 +2,7 @@
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const ongoingGamesStore = require("../../games/ongoing_games_store.js");
+const MessagePayload = require("../prototypes/message_payload.js");
 
 const commandData = new CommandData("GET_LIST_OF_HOSTED_GAMES");
 
@@ -57,6 +58,6 @@ function _behaviour(commandContext)
     })
     .then(() =>
     {
-        return commandContext.respondToCommand(stringIntroduction + stringListOfGames.toBox());
+        return commandContext.respondToCommand(new MessagePayload(stringIntroduction, stringListOfGames.toBox()));
     });
 }

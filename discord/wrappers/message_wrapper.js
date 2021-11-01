@@ -5,7 +5,6 @@ const GuildMemberWrapper = require("./guild_member_wrapper.js");
 const MessageEmbedWrapper = require("./message_embed_wrapper.js");
 
 const { commandPrefix } = require("../../config/config.json");
-const messenger = require("../messenger.js");
 
 module.exports = MessageWrapper;
 

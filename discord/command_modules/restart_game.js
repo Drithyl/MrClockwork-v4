@@ -28,9 +28,9 @@ function _behaviour(commandContext)
 {
     const targetedGame = commandContext.getGameTargetedByCommand();
 
-    return commandContext.respondToCommand(`Restarting game...`)
+    return commandContext.respondToCommand(new MessagePayload(`Restarting game...`))
     .then(() => targetedGame.emitPromiseWithGameDataToServer("RESTART_GAME"))
     .then(() => targetedGame.removeNationClaims())
-    .then(() => commandContext.respondToCommand(`The game has been restarted. It may take a minute or two to update properly.`))
-    .catch((err) => commandContext.respondToCommand(`An error occurred:\n\n${err.message}`));
+    .then(() => commandContext.respondToCommand(new MessagePayload(`The game has been restarted. It may take a minute or two to update properly.`)))
+    .catch((err) => commandContext.respondToCommand(new MessagePayload(`An error occurred:\n\n${err.message}`)));
 }

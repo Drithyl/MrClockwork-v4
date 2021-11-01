@@ -4,6 +4,7 @@ const guildStore = require("../guild_store.js");
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
+const MessagePayload = require("../prototypes/message_payload.js");
 
 const commandData = new CommandData("POST_NEWS");
 
@@ -32,7 +33,7 @@ function _behaviour(commandContext)
     return guildStore.forAllGuilds((guildWrapper) => 
     {
         log.general(log.getNormalLevel(), `Cycling through guild ${guildWrapper.getName()} to post news`);
-        return guildWrapper.postNews(messageString)
-        .catch((err) => commandContext.respondToCommand(`Error occurred when posting to ${guildWrapper.getName()}:\n\n${err.message}`));
+        return guildWrapper.postNews(new MessagePayload(messageString))
+        .catch((err) => commandContext.respondToCommand(new MessagePayload(`Error occurred when posting to ${guildWrapper.getName()}:\n\n${err.message}`)));
     });
 }

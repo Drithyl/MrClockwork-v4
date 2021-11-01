@@ -31,9 +31,9 @@ function _behaviour(commandContext)
     const rollbackTurnNbr = status.getTurnNumber() - 1;
 
     if (assert.isInteger(rollbackTurnNbr) === false || rollbackTurnNbr <= 0)
-        return commandContext.respondToCommand(`Cannot rollback; turn number '${rollbackTurnNbr}' is incorrect.`);
+        return commandContext.respondToCommand(new MessagePayload(`Cannot rollback; turn number '${rollbackTurnNbr}' is incorrect.`));
 
     return targetedGame.emitPromiseWithGameDataToServer("ROLLBACK", { turnNbr: rollbackTurnNbr })
-    .then(() => commandContext.respondToCommand(`The turn has been rolled back. It may take a minute or two to update properly.`))
-    .catch((err) => commandContext.respondToCommand(`An error occurred:\n\n${err.message}`));
+    .then(() => commandContext.respondToCommand(new MessagePayload(`The turn has been rolled back. It may take a minute or two to update properly.`)))
+    .catch((err) => commandContext.respondToCommand(new MessagePayload(`An error occurred:\n\n${err.message}`)));
 }

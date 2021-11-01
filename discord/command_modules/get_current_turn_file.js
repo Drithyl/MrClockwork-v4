@@ -3,6 +3,7 @@ const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
 const playerFileStore = require("../../player_data/player_file_store.js");
+const MessagePayload = require("../prototypes/message_payload.js");
 
 const commandData = new CommandData("GET_CURRENT_TURN_FILE");
 
@@ -36,8 +37,9 @@ function _behaviour(commandContext)
     const playerFile = playerFileStore.getPlayerFile(playerId);
     const playerGameData = playerFile.getGameData(gameName);
     const controlledNations = playerGameData.getNationsControlledByPlayer();
+    const payload = new MessagePayload(messageString);
 
-    return commandContext.respondToCommand(`The turnfile will be sent to you by DM shortly.`)
+    return commandContext.respondToCommand(new MessagePayload(`The turnfile will be sent to you by DM shortly.`))
     .then(() =>
     {
         return controlledNations.forAllPromises((nation) =>
@@ -45,14 +47,8 @@ function _behaviour(commandContext)
             const nationFilename = nation.getFilename();
     
             return gameObject.emitPromiseWithGameDataToServer("GET_TURN_FILE", { nationFilename })
-            .then((turnFileBuffer) => 
-            {
-                return {
-                    attachment: turnFileBuffer, 
-                    name: `${nationFilename}_turn_${status.getTurnNumber()}.trn`
-                };
-            });
+            .then((turnFileBuffer) => payload.setAttachment(`${nationFilename}_turn_${status.getTurnNumber()}.trn`, turnFileBuffer));
         })
     })
-    .then((turnFileAttachments) => commandContext.respondToSender(messageString, { files: turnFileAttachments }));
+    .then(() => commandContext.respondToSender(payload));
 }

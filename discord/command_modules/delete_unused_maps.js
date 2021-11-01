@@ -5,6 +5,7 @@ const commandPermissions = require("../command_permissions.js");
 const { SemanticError } = require("../../errors/custom_errors.js");
 const hostServerStore = require("../../servers/host_server_store.js");
 const ongoingGamesStore = require("../../games/ongoing_games_store.js");
+const MessagePayload = require("../prototypes/message_payload.js");
 
 const commandData = new CommandData("DELETE_UNUSED_MAPS");
 
@@ -36,14 +37,14 @@ function _behaviour(commandContext)
         throw new SemanticError(`You must specify a server name from the ones available below:\n\n${hostServerStore.printListOfOnlineHostServers().toBox()}`);
 
     if (hostServerStore.hasHostServerByName(targetedServerName) === false)
-        return commandContext.respondToCommand(`Selected server does not exist.`);
+        return commandContext.respondToCommand(new MessagePayload(`Selected server does not exist.`));
 
 
     targetedServer = hostServerStore.getHostServerByName(targetedServerName);
 
 
     if (targetedServer.isOnline() === false)
-        return commandContext.respondToCommand(`Selected server is offline.`);
+        return commandContext.respondToCommand(new MessagePayload(`Selected server is offline.`));
 
 
     games.forEach((game) =>
@@ -59,7 +60,10 @@ function _behaviour(commandContext)
     .then((deletedMaps) => 
     {
         const deletedMapsStringList = deletedMaps.join("\n").toBox();
-        return commandContext.respondToCommand(`The following map files were deleted:`, { files: { filename: "deleted_maps.txt", attachment: Buffer.from(deletedMapsStringList, "utf8") }});
+        const payload = new MessagePayload(`The following map files were deleted:`);
+        payload.setAttachment("deleted_maps.txt", Buffer.from(deletedMapsStringList, "utf8"));
+        
+        return commandContext.respondToCommand(payload);
     })
-    .catch((err) => commandContext.respondToCommand(`Error occurred: ${err.message}\n\n${err.stack}`));
+    .catch((err) => commandContext.respondToCommand(new MessagePayload(`Error occurred: ${err.message}\n\n${err.stack}`)));
 }

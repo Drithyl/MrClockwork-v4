@@ -2,6 +2,7 @@
 const log = require("../../logger.js");
 const assert = require("../../asserter.js");
 const RangeError = require("../../errors/custom_errors.js").RangeError;
+const MessagePayload = require("../../discord/prototypes/message_payload.js");
 
 module.exports = MenuStructure;
 
@@ -32,14 +33,14 @@ function MenuStructure(guildMemberWrapper, contextData)
         .then(() =>
         {
             if (assert.isString(_introductionMessage) === true)
-                return _guildMemberWrapper.sendMessage(_introductionMessage);
+                return _guildMemberWrapper.sendMessage(new MessagePayload(_introductionMessage));
 
             else return Promise.resolve();
         })
         .then(() => this.goToScreenAtIndex(0));
     };
 
-    this.sendMessage = (message) => _guildMemberWrapper.sendMessage(message);
+    this.sendMessage = (payload) => _guildMemberWrapper.sendMessage(payload);
 
     this.sendCurrentScreenDisplay = () => _sendCurrentScreenDisplay();
 
@@ -71,12 +72,12 @@ function MenuStructure(guildMemberWrapper, contextData)
         .then((response) => 
         {
             if (assert.isString(response) === true && assert.isMoreThanNCharacters(0) === true)
-                _guildMemberWrapper.sendMessage(response);
+                _guildMemberWrapper.sendMessage(new MessagePayload(response));
 
             if (assert.isFunction(_onInputValidated) === true)
                 _onInputValidated(_currentScreenIndex);
         })
-        .catch((err) => _guildMemberWrapper.sendMessage(err.message));
+        .catch((err) => _guildMemberWrapper.sendMessage(new MessagePayload(err.message)));
     };
 
     this.goToNextScreen = () =>
@@ -123,7 +124,7 @@ function MenuStructure(guildMemberWrapper, contextData)
         var currentScreenObject = _getCurrentScreen();
         var currentScreenDisplayText = currentScreenObject.getDisplayText();
 
-        _guildMemberWrapper.sendMessage(currentScreenDisplayText);
+        _guildMemberWrapper.sendMessage(new MessagePayload(currentScreenDisplayText));
     }
 
     function _goBackToPreviousScreen()

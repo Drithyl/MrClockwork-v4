@@ -372,10 +372,10 @@
         "name": "host",
         "isEnabled": true,
         "gameTypesSupported": [],
-        "argumentsRequiredInfo": [],
+        "argumentsRequiredInfo": ["The name of the server to host the game on; use `!capacity` to see the available ones"],
         "optionalArguments": 0,
         "regexpRequiredToInvoke": "HOST$",
-        "argumentRegexpArray": [],
+        "argumentRegexpArray": ["\\w+"],
         "channelRequiredToInvoke": "guild",
         "helpText": "Starts the process to host a Dominions 5 game. You will be asked a series of settings by DM to configure it."
     },

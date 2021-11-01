@@ -31,8 +31,8 @@ function _behaviour(commandContext)
     .then((isBotNewEnforcer) =>
     {
         if (isBotNewEnforcer === true)
-            commandContext.respondToCommand(`The timer is now enforced by the bot. The in-game timer will no longer appear, but it can always be seen in the game's pinned status embed post.`);
+            commandContext.respondToCommand(new MessagePayload(`The timer is now enforced by the bot. The in-game timer will no longer appear, but it can always be seen in the game's pinned status embed post.`));
         
-        else commandContext.respondToCommand(`The timer is now enforced by the game. The in-game timer will appear. You should double-check that the current timer is adequate.`);
+        else commandContext.respondToCommand(new MessagePayload(`The timer is now enforced by the game. The in-game timer will appear. You should double-check that the current timer is adequate.`));
     });
 }

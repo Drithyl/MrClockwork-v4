@@ -2,6 +2,7 @@
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
+const MessagePayload = require("../prototypes/message_payload.js");
 
 const commandData = new CommandData("GET_GAME_INFO");
 
@@ -36,5 +37,5 @@ function _behaviour(commandContext)
 
     info += "\n" + settingsObject.getPublicSettingsStringList();
 
-    return commandContext.respondToSender(info.toBox());
+    return commandContext.respondToSender(new MessagePayload(info.toBox()));
 }

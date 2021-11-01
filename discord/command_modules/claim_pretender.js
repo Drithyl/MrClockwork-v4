@@ -1,6 +1,7 @@
 
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
+const MessagePayload = require("../prototypes/message_payload.js");
 const commandPermissions = require("../command_permissions.js");
 const dom5NationStore = require("../../games/dominions5_nation_store");
 const { SemanticError } = require("../../errors/custom_errors.js");
@@ -47,6 +48,6 @@ function _behaviour(commandContext)
 
         else return gameObject.claimNation(playerId, nationObject.getFilename());
     })
-    .then(() => commandContext.respondToCommand(`Pretender was claimed.`))
-    .catch((err) => commandContext.respondToCommand(`Error occurred when claiming pretender:\n\n${err.message}`));
+    .then(() => commandContext.respondToCommand(new MessagePayload(`Pretender was claimed.`)))
+    .catch((err) => commandContext.respondToCommand(new MessagePayload(`Error occurred when claiming pretender:\n\n${err.message}`)));
 }

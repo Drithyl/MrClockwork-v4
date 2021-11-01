@@ -3,6 +3,7 @@ const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const ongoingGamesStore = require("../../games/ongoing_games_store.js");
 const MessageEmbedBuilder = require("../wrappers/message_embed_builder.js");
+const MessagePayload = require("../prototypes/message_payload.js");
 
 const commandData = new CommandData("GET_GAMES_BY_LAST_HOSTED");
 
@@ -27,13 +28,14 @@ function _behaviour(commandContext)
     var sortedGuildGamesEmbeds;
 
     if (commandContext.wasSentByDm() === true)
-        return commandContext.respondToCommand(`${stringList}${_printAllSortedGames(sortedGames).toBox()}`, );
+        return commandContext.respondToCommand(new MessagePayload(stringList, _printAllSortedGames(sortedGames).toBox()));
         
     sortedGuildGamesEmbeds = _embedSortedGuildGames(sortedGames, guild);
     
     return sortedGuildGamesEmbeds.forEachPromise((embed, i, nextPromise) => 
     {
-        return embed.sendTo(channel, stringList)
+        const payload = new MessagePayload(stringList).setEmbed(embed);
+        return commandContext.respondToCommand(payload)
         .then(() => nextPromise());
     });
 }

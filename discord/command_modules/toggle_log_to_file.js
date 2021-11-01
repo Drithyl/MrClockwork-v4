@@ -24,5 +24,5 @@ function ToggleLogToFileCommand()
 function _behaviour(commandContext)
 {
     const result = log.toggleLogToFile();
-    return commandContext.respondToCommand(`\`Log to file\` set to ${result}.`);
+    return commandContext.respondToCommand(new MessagePayload(`\`Log to file\` set to ${result}.`));
 }

@@ -78,14 +78,14 @@ function Dominions5CurrentTimer()
         const lastKnownTimeLeft = new TimeLeft(_lastKnownMsLeftForNewTurn);
         const lastCheck = new TimeLeft(_lastCheckDateInMs);
 
-        return commandContext.respondToCommand(`It is turn ${_lastKnownTurnNumber}. There are ${lastKnownTimeLeft.printTimeLeft()} (last checked ${lastCheck.printTimeLeftShort()} ago).`);
+        return commandContext.respondToCommand(new MessagePayload(`It is turn ${_lastKnownTurnNumber}. There are ${lastKnownTimeLeft.printTimeLeft()} (last checked ${lastCheck.printTimeLeftShort()} ago).`));
     };
 
     this.printDefaultTimer = () =>
     {
         const defaultTimer = new TimeLeft(_timerSettingObject.getValue());
 
-        return commandContext.respondToCommand(`The default timer is ${defaultTimer.printTimeLeft}.`);
+        return commandContext.respondToCommand(new MessagePayload(`The default timer is ${defaultTimer.printTimeLeft}.`));
     };
 
     this.printTimeLeftShort = () =>

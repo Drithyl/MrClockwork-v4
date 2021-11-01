@@ -41,16 +41,16 @@ function _behaviour(commandContext)
 
 
     if (server == null)
-        return commandContext.respondToCommand(`You must specify as the 3rd argument a server name from the ones available below:\n\n${hostServerStore.printListOfOnlineHostServers().toBox()}`);
+        return commandContext.respondToCommand(new MessagePayload(`You must specify as the 3rd argument a server name from the ones available below:\n\n${hostServerStore.printListOfOnlineHostServers().toBox()}`));
 
 
-    return commandContext.respondToCommand(`Sending request to server...`)
+    return commandContext.respondToCommand(new MessagePayload(`Sending request to server...`))
     .then((statusMessage) => server.emitPromise("UPLOAD_FILE", { type: fileType, fileId: googleDriveId }))
     .then((responseData) => 
     {
         const formattedData = _formatResponseData(responseData);
 
-        return commandContext.respondToCommand(`Download complete! Details will be sent to your DMs.`)
+        return commandContext.respondToCommand(new MessagePayload(`Download complete! Details will be sent to your DMs.`))
         .then(() => commandContext.respondToSender(`Find the details of your upload attached below:`, { files: { filename: "uploaded_files.txt", attachment: Buffer.from(formattedData, "utf8") }}));
     });
 }

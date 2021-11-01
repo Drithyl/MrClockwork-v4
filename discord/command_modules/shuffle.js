@@ -28,7 +28,7 @@ function _behaviour(commandContext)
     var elementsToShuffle = args;
 
     if (args.length <= 0)
-        return commandContext.respondToCommand(`You must include a space-separated list of things to shuffle. These can be mentions to members in your game for a draft order.`);
+        return commandContext.respondToCommand(new MessagePayload(`You must include a space-separated list of things to shuffle. These can be mentions to members in your game for a draft order.`));
 
     if (mentionedMembers != null && mentionedMembers.length > 0)
         elementsToShuffle = mentionedMembers.map((memberWrapper) => memberWrapper.getNameInGuild());

@@ -3,6 +3,7 @@ const log = require("../../logger.js");
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
+const MessagePayload = require("../prototypes/message_payload.js");
 
 const commandData = new CommandData("DISPLAY_SUBMITTED_PRETENDERS");
 
@@ -38,9 +39,9 @@ function _behaviour(commandContext)
         });
 
         if (formattedListAsString === "")
-            return commandContext.respondToCommand(`There are no submitted pretenders.`);
+            return commandContext.respondToCommand(new MessagePayload(`There are no submitted pretenders.`));
 
-        return commandContext.respondToCommand(formattedListAsString.toBox());
+        return commandContext.respondToCommand(new MessagePayload(formattedListAsString.toBox()));
     });
 }
 

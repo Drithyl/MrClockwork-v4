@@ -312,7 +312,15 @@
         "name": "host",
         "isEnabled": true,
         "channelRequiredToInvoke": "guild",
-        "description": "Host a Dom5 game. You will be asked a series of settings by DM to configure it."
+        "description": "Host a Dom5 game. You will be asked a series of settings by DM to configure it.",
+        "options": [
+            {
+                "name": "server_name",
+                "type": "STRING",
+                "description": "Server on which to host game. Check with `/capacity`",
+                "required": true
+            }
+        ]
     },
 
     "HOST_DOM5_GAME_WEB":

@@ -2,6 +2,7 @@
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
+const MessagePayload = require("../prototypes/message_payload.js");
 
 const commandData = new CommandData("GET_LIST_OF_UNDONE_TURNS");
 
@@ -33,7 +34,7 @@ function _behaviour(commandContext)
     var listString = "";
 
     if (players == null)
-        return commandContext.respondToCommand(`List of undone turns is currently unavailable.`);
+        return commandContext.respondToCommand(new MessagePayload(`List of undone turns is currently unavailable.`));
 
 
     listString = players.reduce((playersInfo, playerData) => 
@@ -45,5 +46,5 @@ function _behaviour(commandContext)
     }, "\n");
 
     
-    return commandContext.respondToCommand(messageString + listString.toBox());
+    return commandContext.respondToCommand(new MessagePayload(messageString, listString.toBox()));
 }

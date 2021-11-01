@@ -29,7 +29,7 @@ function _behaviour(commandContext)
     var updatedHelpString = _createHelpString();
 
     return guildStore.updateHelpChannels(updatedHelpString, idOfGuildToUpdate)
-    .then(() => commandContext.respondToCommand(`Help channels have been updated.`));
+    .then(() => commandContext.respondToCommand(new MessagePayload(`Help channels have been updated.`)));
 }
 
 function _createHelpString()

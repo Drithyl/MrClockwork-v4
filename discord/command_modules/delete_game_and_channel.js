@@ -3,6 +3,7 @@ const log = require("../../logger.js");
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
+const MessagePayload = require("../prototypes/message_payload.js");
 
 const commandData = new CommandData("DELETE_GAME_AND_CHANNEL");
 
@@ -27,13 +28,13 @@ function _behaviour(commandContext)
 {
     const gameObject = commandContext.getGameTargetedByCommand();
 
-    return commandContext.respondToCommand(`Deleting game...`)
+    return commandContext.respondToCommand(new MessagePayload(`Deleting game...`))
     .then(() => gameObject.deleteGame())
     .then(() => gameObject.deleteRole())
     .then(() => gameObject.deleteChannel())
     .then(() => 
     {
         log.general(log.getLeanLevel(), `${gameObject.getName()} and its role and channel were deleted successfully.`);
-        return commandContext.respondToSender(`${gameObject.getName()} and its role and channel were deleted successfully.`);
+        return commandContext.respondToSender(new MessagePayload(`${gameObject.getName()} and its role and channel were deleted successfully.`));
     });
 }

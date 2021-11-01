@@ -28,5 +28,5 @@ function _behaviour(commandContext)
     const guildMemberWrapper = commandContext.getSenderGuildMemberWrapper();
 
     return guildMemberWrapper.removeRole(gameRole)
-    .then(() => commandContext.respondToCommand(`The game's role has been removed from you.`));
+    .then(() => commandContext.respondToCommand(new MessagePayload(`The game's role has been removed from you.`)));
 }

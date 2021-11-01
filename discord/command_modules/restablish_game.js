@@ -31,7 +31,7 @@ function _behaviour(commandContext)
     
 
     if (ongoingGamesStore.hasOngoingGameByName(nameOfGameToRepair) === false)
-        return commandContext.respondToCommand(`No game found with this name.`);
+        return commandContext.respondToCommand(new MessagePayload(`No game found with this name.`));
 
     gameObject = ongoingGamesStore.getOngoingGameByName(nameOfGameToRepair);
 
@@ -50,5 +50,5 @@ function _behaviour(commandContext)
 
         else return Promise.resolve()
     })
-    .then(() => commandContext.respondToCommand(`The game's channel and role have been restablished.`));
+    .then(() => commandContext.respondToCommand(new MessagePayload(`The game's channel and role have been restablished.`)));
 }

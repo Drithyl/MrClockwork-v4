@@ -2,6 +2,7 @@
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
+const MessagePayload = require("../prototypes/message_payload.js");
 const dom5NationsByEraNumber = require("../../json/dom5_nations.json");
 
 const commandData = new CommandData("GET_DOM5_NATIONS");
@@ -22,7 +23,7 @@ function _behaviour(commandContext)
     var introductionString = "Below is the list of nation numbers, names and filenames for your convenience:\n\n";
     var nationListString = formatNationListString();
 
-    return commandContext.respondToCommand(introductionString + nationListString.toBox(), { prepend: "```", append: "```" });
+    return commandContext.respondToCommand(new MessagePayload(introductionString, nationListString.toBox(), true, "```"));
 }
 
 function formatNationListString()

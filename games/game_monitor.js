@@ -3,6 +3,7 @@ const log = require("../logger.js");
 const ongoingGameStore = require("./ongoing_games_store.js");
 const botClientWrapper = require("../discord/wrappers/bot_client_wrapper.js");
 const { queryDominions5Game } = require("./prototypes/dominions5_status.js");
+const MessagePayload = require("../discord/prototypes/message_payload.js");
 
 const UPDATE_INTERVAL = 10000;
 
@@ -327,6 +328,7 @@ function _processNewTurnPreferences(game, turnNumber)
         filesRequestingBackups.forEach((file) =>
         {
             const controlledNations = file.getControlledNationsInGame(gameName).map((nationObject) => nationObject.getFilename());
+            const payload = new MessagePayload(`Find below your nation files for turn ${turnNumber}.`)
 
             botClientWrapper.fetchUser(file.getId())
             .then((userWrapper) =>
@@ -336,10 +338,10 @@ function _processNewTurnPreferences(game, turnNumber)
                 controlledNations.forEach((nationFilename) =>
                 {
                     if (nationTurnFiles[nationFilename] != null)
-                        files.push({ name: `${nationFilename}.trn`, attachment: nationTurnFiles[nationFilename] });
+                        payload.setAttachment(`${nationFilename}.trn`, nationTurnFiles[nationFilename]);
                 });
 
-                return userWrapper.sendMessage(`Find below your nation files for turn ${turnNumber}.`, { files });
+                return userWrapper.sendMessage(payload);
             })
             .catch((err) => log.error(log.getNormalLevel(), `ERROR SENDING NATION BACKUPS TO USER ${userWrapper.getUsername()} (${userWrapper.getId()})`, err));
         });
@@ -373,7 +375,7 @@ function _processNewHourPreferences(game, playerTurnData, hourMarkPassed)
                         .then((userWrapper) => 
                         {
                             _userWrapper = userWrapper;
-                            return _userWrapper.sendMessage(`There are less than ${hourMarkPassed} hours left for the next turn in ${gameName}.`);
+                            return _userWrapper.sendMessage(new MessagePayload(`There are less than ${hourMarkPassed} hours left for the next turn in ${gameName}.`));
                         })
                         .catch((err) => log.error(log.getNormalLevel(), `ERROR SENDING REMINDER TO USER ${_userWrapper.getUsername} (${_userWrapper.getId()})`, err));
     

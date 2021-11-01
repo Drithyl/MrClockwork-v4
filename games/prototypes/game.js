@@ -5,11 +5,11 @@ const log = require("../../logger.js");
 const assert = require("../../asserter.js");
 const config = require("../../config/config.json");
 const GameSettings = require("./game_settings.js");
-const messenger = require("../../discord/messenger.js");
 const guildStore = require("../../discord/guild_store.js");
 const ongoingGamesStore = require("../ongoing_games_store.js");
 const hostServerStore = require("../../servers/host_server_store.js");
 const SemanticError = require("../../errors/custom_errors.js").SemanticError;
+const MessagePayload = require("../../discord/prototypes/message_payload.js");
 
 module.exports = Game;
 
@@ -174,12 +174,12 @@ function Game()
         _settingsObject = settingsObject;
     };
 
-    this.sendMessageToChannel = (text) => messenger.send(_discordJsChannel, text);
-    this.sendGameAnnouncement = (text) => messenger.send(_discordJsChannel, `${_discordJsRole.toString()} ${text}`);
+    this.sendMessageToChannel = (text) => new MessagePayload(text).send(_discordJsChannel);
+    this.sendGameAnnouncement = (text) => new MessagePayload(text).send(_discordJsChannel, `${_discordJsRole.toString()} ${text}`);
     this.sendMessageToOrganizer = (text) => 
     {
         if (_organizerWrapper != null)
-            return _organizerWrapper.sendMessage(text);
+            return _organizerWrapper.sendMessage(new MessagePayload(text));
             
         else return Promise.resolve();
     };
@@ -188,11 +188,12 @@ function Game()
     {
         var settingsStringList = _settingsObject.getPublicSettingsStringList();
         var channel = this.getChannel();
+        const payload = new MessagePayload(settingsStringList.toBox());
 
         if (_discordJsChannel == null)
             return Promise.reject(new Error(`${this.getName()} does not have a channel assigned.`));
 
-        return messenger.send(channel, settingsStringList.toBox(), { pin: true });
+        return payload.send(channel, { pin: true });
     };
 
     this.addToStore = () => ongoingGamesStore.addOngoingGame(this);

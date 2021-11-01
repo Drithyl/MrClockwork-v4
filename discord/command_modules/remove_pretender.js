@@ -4,6 +4,7 @@ const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
 const dominions5NationStore = require("../../games/dominions5_nation_store.js");
 const { SemanticError } = require("../../errors/custom_errors.js");
+const MessagePayload = require("../prototypes/message_payload.js");
 
 const commandData = new CommandData("REMOVE_PRETENDER");
 
@@ -36,7 +37,7 @@ function _behaviour(commandContext)
 
     return gameObject.emitPromiseWithGameDataToServer("REMOVE_NATION", { nationFilename: nationFilename })
     .then(() => gameObject.removeControlOfNation(nationFilename))
-    .then(() => commandContext.respondToCommand(`Pretender was removed.`));
+    .then(() => commandContext.respondToCommand(new MessagePayload(`Pretender was removed.`)));
 }
 
 function assertNationNameExists(commandContext)
@@ -59,7 +60,7 @@ function assertMemberIsOwnerOfPretender(commandContext)
     var nationObject;
 
     if (nationName == null)
-        return commandContext.respondToCommand(`You must specify a nation identifier to unclaim.`);
+        return commandContext.respondToCommand(new MessagePayload(`You must specify a nation identifier to unclaim.`));
 
     nationObject = dominions5NationStore.getNation(nationName);
 

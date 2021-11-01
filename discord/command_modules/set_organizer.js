@@ -29,7 +29,7 @@ function _behaviour(commandContext)
     var newOrganizerWrapper;
 
     if (mentionedMembers.length <= 0)
-        return commandContext.respondToCommand(`You must mention the member who you wish to appoint as organizer.`);
+        return commandContext.respondToCommand(new MessagePayload(`You must mention the member who you wish to appoint as organizer.`));
 
     newOrganizerWrapper = mentionedMembers[0];
     gameObject.setOrganizer(newOrganizerWrapper);
@@ -38,6 +38,6 @@ function _behaviour(commandContext)
     .then(() => 
     {
         log.general(log.getLeanLevel(), `${gameObject.getName()}: new organizer ${newOrganizerWrapper.getUsername()} set.`);
-        commandContext.respondToCommand(`The new organizer is set.`);
+        commandContext.respondToCommand(new MessagePayload(`The new organizer is set.`));
     });
 }

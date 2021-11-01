@@ -2,6 +2,7 @@
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
+const MessagePayload = require("../prototypes/message_payload.js");
 
 const commandData = new CommandData("REPLACE_BOT_ROLE");
 
@@ -28,6 +29,6 @@ function _behaviour(commandContext)
     const idOfRoleToTakeItsPlace = commandArgumentsArray[1];
 
     return guildWrapper.replaceRoleWith(idOfRoleToBeReplaced, idOfRoleToTakeItsPlace)
-    .then(() => commandContext.respondToCommand(`The role has been replaced.`))
-    .catch((err) => commandContext.respondToCommand(`An error occurred:\n\n${err.message}`));
+    .then(() => commandContext.respondToCommand(new MessagePayload(`The role has been replaced.`)))
+    .catch((err) => commandContext.respondToCommand(new MessagePayload(`An error occurred:\n\n${err.message}`)));
 }

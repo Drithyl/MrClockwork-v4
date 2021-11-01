@@ -4,6 +4,7 @@ const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
 const pendingChannelStore = require("../pending_game_channel_store.js");
+const MessagePayload = require("../prototypes/message_payload.js");
 
 const commandData = new CommandData("CREATE_GAME_CHANNEL");
 
@@ -36,7 +37,7 @@ function _behaviour(commandContext)
         .then(() =>
         {
             log.general(log.getNormalLevel(), `The game channel ${channel.name} was created and added to the pending list.`);
-            return commandContext.respondToCommand(`The channel ${channel} was created.`);
+            return commandContext.respondToCommand(new MessagePayload(`The channel ${channel} was created.`));
         });
     });
 }

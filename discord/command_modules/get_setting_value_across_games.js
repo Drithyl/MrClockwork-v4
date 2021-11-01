@@ -4,6 +4,7 @@ const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
 const ongoingGamesStore = require("../../games/ongoing_games_store.js");
 const dom5SettingsData = require("../../json/dom5_settings.json");
+const MessagePayload = require("../prototypes/message_payload.js");
 
 const commandData = new CommandData("GET_SETTING_VALUE_ACROSS_GAMES");
 
@@ -32,19 +33,19 @@ function _behaviour(commandContext)
     const introductionString = `Below is the list of values for the setting ${settingKeyArgument}:\n\n`;
 
     if (dom5SettingsData[settingKeyArgument] == null)
-        return commandContext.respondToCommand(`Invalid setting key.`);
+        return commandContext.respondToCommand(new MessagePayload(`Invalid setting key.`));
 
-    orderedvalueNamePairs = getOrderedValueNamePairsArray(settingKeyArgument);
+    orderedvalueNamePairs = _getOrderedValueNamePairsArray(settingKeyArgument);
 
     orderedvalueNamePairs.forEach((valueNamePair) =>
     {
         listString += `${valueNamePair[0].toString().width(40)}     in ${valueNamePair[1]}\n`;
     });
 
-    return commandContext.respondToCommand(introductionString + listString.toBox());
+    return commandContext.respondToCommand(new MessagePayload(introductionString, listString.toBox()));
 }
 
-function getOrderedValueNamePairsArray(settingKey)
+function _getOrderedValueNamePairsArray(settingKey)
 {
     var array = [];
 
