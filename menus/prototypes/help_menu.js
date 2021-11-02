@@ -1,5 +1,6 @@
 
 const helpMenuEntries = require("../../json/help_menu_entries.json");
+const MessagePayload = require("../../discord/prototypes/message_payload.js");
 
 module.exports = HelpMenu;
 
@@ -10,7 +11,7 @@ function HelpMenu(userWrapper)
     
     this.startMenu = () =>
     {
-        return _userWrapper.sendMessage(_helpIntro)
+        return _userWrapper.sendMessage(new MessagePayload(_helpIntro))
         .then((messageWrapper) => 
         {
             return helpMenuEntries.forEachPromise((entry, i, nextPromise) =>
