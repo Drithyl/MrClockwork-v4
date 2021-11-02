@@ -99,8 +99,8 @@ module.exports.deleteDir = function(path)
 {
     if (fs.existsSync(path) === false)
 	{
-		log.error(log.getLeanLevel(), `deleteDir() ERROR: Dir does not exist`, path);
-		return Promise.reject(new Error(`Could not delete dir; path ${path} does not exist.`));
+		log.general(log.getLeanLevel(), `deleteDir(): Dir does not exist, no need to delete`, path);
+		return Promise.resolve();
 	}
 
 	log.general(log.getLeanLevel(), `Deleting dir at path ${path}...`);
