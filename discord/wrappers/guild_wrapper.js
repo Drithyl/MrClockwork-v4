@@ -153,7 +153,7 @@ function GuildWrapper(discordJsGuildObject)
         {
             type: "text", 
             permissionOverwrites, 
-            parent
+            parent: parent
         })
         .then((channel) =>
         {
@@ -162,7 +162,7 @@ function GuildWrapper(discordJsGuildObject)
         });
     };
 
-    this.createRole = (name, mentionable, permissions) =>
+    this.createRole = (name, mentionable, permissions = []) =>
     {
         log.general(log.getVerboseLevel(), `Creating role ${name}...`);
         return _discordJsGuildObject.roles.create({
