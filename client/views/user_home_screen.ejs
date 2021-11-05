@@ -7,7 +7,7 @@
           
           <div class="row">
             
-            <%- include('../partials/sidebar.ejs', {page: "dashboard"})-%>
+            <%- include('../partials/sidebar.ejs', {page: "dashboard", sessionId: (typeof sessionId === "string") ? sessionId : null })-%>
         
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
               
