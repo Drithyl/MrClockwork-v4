@@ -1,5 +1,5 @@
 <%- include('../partials/head.ejs')-%>
-<%- include('../partials/navbar.ejs')-%>
+<%- include('../partials/navbar.ejs', { sessionId: (typeof sessionId === "string") ? sessionId : null })-%>
 
   <body>
     
@@ -13,7 +13,7 @@
               
               <div class="align-items-left pt-3 pb-2 mb-3">
                 
-                <%- include('../partials/content/host_game_screen_content.html')-%>
+                <%- include('../partials/content/host_game_screen_content.html', { sessionId: (typeof sessionId === "string") ? sessionId : null })-%>
                 
               </div>
               
