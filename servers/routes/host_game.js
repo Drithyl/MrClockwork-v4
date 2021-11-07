@@ -25,7 +25,7 @@ exports.set = (expressApp) =>
         const session = webSessionsStore.getSessionFromUrlParams(req) ?? webSessionsStore.getSessionFromCookies(req);
 
         if (session == null)
-            return res.render("results_screen.ejs", { result: `Session does not exist.` });
+            return res.redirect("/authenticate");
 
         const userId = session.getUserId();
         const sessionId = session.getSessionId();
