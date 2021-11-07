@@ -1,5 +1,5 @@
 <%- include('../partials/head.ejs')-%>
-<%- include('../partials/navbar.ejs', { sessionId: (typeof sessionId === "string") ? sessionId : null })-%>
+<%- include('../partials/navbar.ejs', { sessionId: (typeof sessionData === "object" && typeof sessionData.sessionId === "string") ? sessionData.sessionId : null })-%>
 
   <body>
     
