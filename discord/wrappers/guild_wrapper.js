@@ -146,7 +146,7 @@ function GuildWrapper(discordJsGuildObject)
         return _discordJsGuildObject.channels.create(name, {type: "category", permissionOverwrites: permissions});
     };
 
-    this.createChannel = (name, permissionOverwrites, parent = null) => 
+    this.createChannel = (name, permissionOverwrites = [], parent = null) => 
     {
         log.general(log.getVerboseLevel(), `Creating channel ${name}...`);
         return _discordJsGuildObject.channels.create(name, 
@@ -177,8 +177,8 @@ function GuildWrapper(discordJsGuildObject)
         });
     };
 
-    this.createGameChannel = (name) => this.createChannel(name, null, this.getRecruitingCategory());
-    this.createGameRole = (name) => this.createRole(name, true, null);
+    this.createGameChannel = (name) => this.createChannel(name, [], this.getRecruitingCategory());
+    this.createGameRole = (name) => this.createRole(name, true);
 
     this.getRoleById = (roleId) => _discordJsGuildObject.roles.cache.get(roleId);
     this.getChannelById = (channelId) => _discordJsGuildObject.channels.cache.get(channelId);
