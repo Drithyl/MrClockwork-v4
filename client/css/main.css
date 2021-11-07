@@ -35,11 +35,19 @@
     .navBGDark {
         background: #3c4148;
     }
-    
+
     #sidebarMenu .nav-link{
         color: white;
     }
     
+    #sidebarMenu .nav-link:hover{
+         color: rgb(184, 0, 0);
+     }
+     
+     #sidebarMenu .active:hover {
+        color: white;
+     }
+     
     #sidebarMenu .active{
         background: #2c2f35;
         border-bottom: solid rgb(135, 0, 0) 2px;
@@ -186,6 +194,10 @@ a[role=option] .text{
 
 .check-mark{
    color: rgb(135, 0, 0);
+}
+
+.btn-dark:hover {
+   background-color: #2c2f35;
 }
 
 /**** COLOR SCHEME END ****/
