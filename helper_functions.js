@@ -207,9 +207,9 @@ function extendPrototypes()
     //this is just a short-hand way of doing that
     String.prototype.toBox = function()
     {
-        if (this !== "" && this != null && this.length && /\S+/.test(this))
+        if (this != null && this.length && /\S+/.test(this))
             return "```\n" + this + "```";
 
-        else return this;
+        else return "";
     };
 }
