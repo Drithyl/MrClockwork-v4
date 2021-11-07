@@ -25,7 +25,7 @@
             </a>
           </li>
           
-          <% if (typeof sessionData === "object" && typeof sessionData.sessionId === "string" && typeof sessionData.userId === "string") { %>
+          <% if (typeof sessionId === "string") { %>
 
             <li class="nav-item">
               <a class='<%=(typeof page === "string" && page === "host") ? "nav-link active" : "nav-link"%>'  href="/host_game">
