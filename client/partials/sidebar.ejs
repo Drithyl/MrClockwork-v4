@@ -1,7 +1,7 @@
 <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse navBGDark mt-2">
       
   <div class="position-sticky pt-3">
-    
+
     <ul class="nav flex-column">
 
         <li class="nav-item">
@@ -25,26 +25,30 @@
             </a>
           </li>
           
-          <li class="nav-item">
-            <a class='<%=(typeof page === "string" && page === "host") ? "nav-link active" : "nav-link"%>'  href="/host_game">
-              <i class="bi bi-hdd-network-fill"></i> 
-              Host Game
-            </a>
-          </li>
+          <% if (typeof sessionData === "object" && typeof sessionData.sessionId === "string" && typeof sessionData.userId === "string") { %>
+
+            <li class="nav-item">
+              <a class='<%=(typeof page === "string" && page === "host") ? "nav-link active" : "nav-link"%>'  href="/host_game">
+                <i class="bi bi-hdd-network-fill"></i> 
+                Host Game
+              </a>
+            </li>
+            
+            <li class="nav-item">
+              <a class='<%=(typeof page === "string" && page === "settings") ? "nav-link active" : "nav-link"%>'  href="/change_game_settings"">
+                <i class="bi bi-gear-fill"></i>
+                Change Settings
+              </a>
+            </li>
+            
+            <li class="nav-item">
+              <a class='<%=(typeof page === "string" && page === "preferences") ? "nav-link active" : "nav-link"%>'  href="/edit_preferences">
+                <i class="bi bi-sliders"></i>
+                Change Preferences
+              </a>
+            </li>
           
-          <li class="nav-item">
-            <a class='<%=(typeof page === "string" && page === "settings") ? "nav-link active" : "nav-link"%>'  href="/change_game_settings"">
-              <i class="bi bi-gear-fill"></i>
-              Change Settings
-            </a>
-          </li>
-          
-          <li class="nav-item">
-            <a class='<%=(typeof page === "string" && page === "preferences") ? "nav-link active" : "nav-link"%>'  href="/edit_preferences">
-              <i class="bi bi-sliders"></i>
-              Change Preferences
-            </a>
-          </li>
+          <% } %>
           
     </ul>
   
