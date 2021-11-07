@@ -60,7 +60,7 @@ function MessageWrapper(discordJsMessageObject)
 
     this.wasSentByBot = () => _discordJsMessageObject.content.bot;
     this.editMessageContent = (newContent) => _discordJsMessageObject.edit(newContent);
-    this.isDirectMessage = () => this.getDestinationChannelType() === "dm";
+    this.isDirectMessage = () => /^DM$/i.test(this.getDestinationChannelType());
     this.startsWithCommandPrefix = () => _startsWithCommandPrefix(this.getMessageContent());
 
     this.respond = (messagePayload) => messagePayload.send(this.getDestinationChannel());
