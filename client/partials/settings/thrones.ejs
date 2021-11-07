@@ -25,7 +25,7 @@
         </div>
 
         <div class="col-sm-3">
-            <label for="input_level_3_thrones" class="form-label">Level 2</label>
+            <label for="input_level_3_thrones" class="form-label">Level 3</label>
             <div class="w-auto">
                 <input class="form-control w-auto" type="number" id="input_level_3_thrones" name="level3Thrones" min="0" max="10" pattern="\d\d?"
                     <% if (typeof gameSettings === "object" && typeof gameSettings.thrones === "object" && Array.isArray(gameSettings.thrones) === true && typeof gameSettings.thrones[2] === "number") { %> value=<%=gameSettings.thrones[2] %> <% } else { %> value="1" <% } %>
