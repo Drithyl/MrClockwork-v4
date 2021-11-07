@@ -7,6 +7,7 @@ const userHomeScreenRoute = require("./routes/user_home_screen.js");
 const resultRoute = require("./routes/result.js");
 const guildsRoute = require("./routes/guilds.js");
 const loginRoute = require("./routes/login.js");
+const logoutRoute = require("./routes/logout.js");
 const mapsRoute = require("./routes/maps.js");
 const modsRoute = require("./routes/mods.js");
 const nationsRoute = require("./routes/nations.js");
@@ -38,6 +39,7 @@ exports.setRoutes = (expressApp) =>
     userHomeScreenRoute.set(expressApp);
     guildsRoute.set(expressApp);
     loginRoute.set(expressApp);
+    logoutRoute.set(expressApp);
     resultRoute.set(expressApp);
     mapsRoute.set(expressApp);
     modsRoute.set(expressApp);
