@@ -155,49 +155,49 @@ function assertGameTypeIsValid(gameType)
 function isArrayOrThrow(arr)
 {
   if (isArray(arr) === false)
-    throw new TypeError(`Expected Array, got: <${arr}>`);
+    throw new TypeError(`Expected Array, got: <${arr}> (${typeof arr})`);
 }
 
 function isObjectOrThrow(obj)
 {
   if (isObject(obj) === false)
-    throw new TypeError(`Expected Object, got: <${obj}>`);
+    throw new TypeError(`Expected Object, got: <${obj}> (${typeof obj})`);
 }
 
 function isStringOrThrow(str)
 {
   if (isString(str) === false)
-    throw new TypeError(`Expected String, got: <${str}>`);
+    throw new TypeError(`Expected String, got: <${str}> (${typeof str})`);
 }
 
 function isNumberOrThrow(nbr)
 {
   if (isNumber(nbr) === false)
-    throw new TypeError(`Expected Number, got: <${nbr}>`);
+    throw new TypeError(`Expected Number, got: <${nbr}> (${typeof nbr})`);
 }
 
 function isIntegerOrThrow(nbr)
 {
   if (isInteger(nbr) === false)
-    throw new TypeError(`Expected Integer, got: <${nbr}>`);
+    throw new TypeError(`Expected Integer, got: <${nbr}> (${typeof nbr})`);
 }
 
 function isBooleanOrThrow(bool)
 {
   if (isBoolean(bool) === false)
-    throw new TypeError(`Expected Boolean, got: <${bool}>`);
+    throw new TypeError(`Expected Boolean, got: <${bool}> (${typeof bool})`);
 }
 
 function isFunctionOrThrow(fn)
 {
   if (isFunction(fn) === false)
-    throw new TypeError(`Expected Function, got: <${fn}>`);
+    throw new TypeError(`Expected Function, got: <${fn}> (${typeof fn})`);
 }
 
 function isRegexpOrThrow(regexp)
 {
   if (isRegexp(regexp) === false)
-    throw new TypeError(`Expected RegExp, got: <${regexp}>`);
+    throw new TypeError(`Expected RegExp, got: <${regexp}> (${typeof regexp})`);
 }
 
 function isParsedByRegexpOrThrow(str, regexp)
