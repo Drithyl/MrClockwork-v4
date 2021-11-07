@@ -1,5 +1,3 @@
-
-
 $(document).ready(() =>
 {
     const sessionIdInput = $(`input[name="sessionId"]`);
