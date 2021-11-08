@@ -31,7 +31,7 @@ exports.set = (expressApp) =>
         server.emitPromise("GET_MOD_LIST")
         .then((mods) => 
         {
-            ejs.renderFile("./client/partials/settings/mod_list.ejs", { mods }, (err, compiledHthml) =>
+            ejs.renderFile("./client/partials/settings/mod_list_select_content.ejs", { mods }, (err, compiledHthml) =>
             {
                 if (err)
                     res.send(`Error when fetching mods: ${err.message}`);
@@ -52,7 +52,7 @@ exports.set = (expressApp) =>
         server.emitPromise("GET_MAP_LIST")
         .then((maps) => 
         {
-            ejs.renderFile("./client/partials/settings/map_list.ejs", { maps }, (err, compiledHthml) =>
+            ejs.renderFile("./client/partials/settings/map_list_select_content.ejs", { maps }, (err, compiledHthml) =>
             {
                 if (err)
                     res.send(`Error when fetching maps: ${err.message}`);
