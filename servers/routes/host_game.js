@@ -14,7 +14,7 @@ exports.set = (expressApp) =>
     //file looks up the styling and js files, and will not find them. Must then
     //sendFile() as a return to preserve the URL that contains these parameters,
     //since they will also be extracted in the client
-    expressApp.get("/host_game", (req, res) =>
+    expressApp.get("/host_game", async (req, res) =>
     {
         var availableServers;
         var guildsWhereUserIsMember;
@@ -30,7 +30,7 @@ exports.set = (expressApp) =>
         const userId = session.getUserId();
         const sessionId = session.getSessionId();
         availableServers = hostServerStore.getAvailableServersClientData();
-        guildsWhereUserIsMember = guildStore.getGuildsWhereUserIsMember(userId);
+        guildsWhereUserIsMember = await guildStore.getGuildsWhereUserIsMember(userId);
 
         guildsWhereUserIsMember.forEach((wrapper) =>
         {
@@ -41,13 +41,13 @@ exports.set = (expressApp) =>
         });
         
         /** redirect to host_game */
-        res.render("host_game_screen.ejs", Object.assign({
+        res.render("host_game_screen.ejs", {
             userId,
             sessionId,
             guilds: guildData, 
             servers: availableServers,
             nations: dom5Nations
-        }));
+        });
     });
 
     expressApp.post("/host_game", (req, res) =>
