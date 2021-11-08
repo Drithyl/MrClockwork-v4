@@ -56,7 +56,7 @@ exports.set = (expressApp) =>
             {
                 if (err)
                     res.send(`Error when fetching maps: ${err.message}`);
-    
+
                 res.send(compiledHthml);
             });
         });

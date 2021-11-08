@@ -1,0 +1,10 @@
+<!-- Must use typeof to check if variable exists at all, since it might be undefined -->
+<% if (typeof mods === "object" && Array.isArray(mods) === true) { %>
+    <% mods.forEach((modName) => {%>
+        <option value="<%=modName %>" 
+            <% if (typeof gameSettings === "object" && typeof gameSettings.mods === "object" && Array.isArray(gameSettings.mods) === true && gameSettings.mods.includes(modName) === true) { %> selected <% } %> 
+        ><%=modName %></option>
+    <% }); %>
+<% } else { %>
+    <p>No mods available</p>
+<% } %>

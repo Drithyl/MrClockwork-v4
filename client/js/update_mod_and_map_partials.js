@@ -14,8 +14,10 @@ function updateModAndMapPartials()
 
     else
     {
-        updatePartial(`/update_mod_partial/${serverName}`, "mods_div");
-        updatePartial(`/update_map_partial/${serverName}`, "maps_div");
+        //updatePartial(`/update_mod_partial/${serverName}`, "mods_div");
+        //updatePartial(`/update_map_partial/${serverName}`, "maps_div");
+        updatePartial(`/update_mod_partial/${serverName}`, "input_mod"); // update the contents of the select and not the entire div
+        updatePartial(`/update_map_partial/${serverName}`, "input_map");
     }
 }
 
@@ -24,10 +26,13 @@ function updatePartial(route, containerId)
     $.get(route, (htmlResponse) =>
     {
         console.log("Updated partial for " + containerId);
+
         $(`#${containerId}`).html(htmlResponse);
 
         //bootstrap-select multi selects need to call this selectpicker "refresh" method when options are programmatically added/removed
         //See: https://developer.snapappointments.com/bootstrap-select/methods/#selectpickerrefresh
+        
         $('.selectpicker').selectpicker('refresh');
+        
     });
 }
