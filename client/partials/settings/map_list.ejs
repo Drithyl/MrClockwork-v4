@@ -1,10 +1,11 @@
+
 <div id="maps_div" class="row mb-2">
     
     <legend class="col-form-label col-sm-3 pt-0">Maps</legend>
     
     <div class="col-sm-9">
         
-        <select id="input_map" name="map" class="form-control w-100 selectpicker" data-size="8" data-show-subtext="true" required>
+        <select id="input_map" name="map" class="form-control selectpicker w-100" data-size="8" data-show-subtext="true" required>
     
             <!-- Must use typeof to check if variable exists at all, since it might be undefined -->
             <% if (typeof maps === "object" && Array.isArray(maps) === true) { %>

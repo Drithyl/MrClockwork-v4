@@ -1,10 +1,11 @@
+
 <div id="mods_div" class="row mb-2">
 
     <legend class="col-form-label col-sm-3 pt-0">Mods</legend>
     
     <div class="col-sm-9">
         
-        <select id="input_mod" name="mods" class="form-control w-100 selectpicker" multiple>
+        <select id="input_mod" name="mods" class="form-control selectpicker w-100" data-width="100%" multiple>
     
             <!-- Must use typeof to check if variable exists at all, since it might be undefined -->
             <% if (typeof mods === "object" && Array.isArray(mods) === true) { %>
