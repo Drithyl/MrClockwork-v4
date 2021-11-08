@@ -36,15 +36,16 @@ module.exports.getGuildWrapperById = (guildId) =>
     return guildWrappers[guildId];
 };
 
-module.exports.getGuildsWhereUserIsMember = (userId) =>
+module.exports.getGuildsWhereUserIsMember = async (userId) =>
 {
     const guildsWhereUserIsMember = [];
 
     for (var id in guildWrappers)
     {
         const guild = guildWrappers[id];
+        const isMember = await guild.checkIfMember(userId);
 
-        if (guild.isMember(userId) === true)
+        if (isMember === true)
             guildsWhereUserIsMember.push(guild);
     }
 
