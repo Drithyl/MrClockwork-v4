@@ -36,8 +36,8 @@
                         </div>
                     </div>
 
-                    <%- include('../guild_list.ejs')-%>
-                    <%- include('../server_list.ejs')-%>
+                    <%- include('../guild_list.ejs', { guilds })-%>
+                    <%- include('../server_list.ejs', { servers })-%>
                     <%- include('../settings/era.ejs')-%>
                     <%- include('../settings/ai.ejs', { nations })-%>
                     <%- include('../settings/mod_list.ejs')-%>
