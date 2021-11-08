@@ -200,7 +200,7 @@ function GuildWrapper(discordJsGuildObject)
         .then((discordJsGuildMember) => new GuildMemberWrapper(discordJsGuildMember, this));
     };
 
-    this.isMember = (userId) => this.getDiscordJsGuildMemberById(userId) != null;
+    this.checkIfMember = async (userId) => await this.fetchDiscordJsGuildMemberById(userId) != null;
 
     this.doesBotHavePermission = (permissionFlag) =>
     {
