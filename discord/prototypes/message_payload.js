@@ -1,5 +1,6 @@
 
 const assert = require("../../asserter.js");
+const MessageWrapper = require("../wrappers/message_wrapper.js");
 const MessageEmbedBuilder = require("../wrappers/message_embed_builder.js");
 
 const MAX_MESSAGE_CHARACTERS = 2000;
@@ -74,7 +75,7 @@ function MessagePayload(header, content = "", splitContent = true, splitWrapper 
 
     this.setEmbed = (embed) =>
     {
-        if (assert.isInstanceOfPrototype(embedStruct, MessageEmbedBuilder) === true)
+        if (assert.isInstanceOfPrototype(embed, MessageEmbedBuilder) === true)
             _payloadObject.embeds = [ embed.toEmbedStruct() ]
 
         else if (embedStruct != null)
@@ -102,29 +103,46 @@ function MessagePayload(header, content = "", splitContent = true, splitWrapper 
     {
         var sentMessage;
 
-        _contentArray.forEach(async (contentChunk, i) =>
+        await _contentArray.forEachPromise(async (contentChunk, i, nextPromise) =>
         {
             var payload = (i === 0) ? Object.assign(_payloadObject, { content: contentChunk }) : { content: contentChunk };
 
             if (options.ephemeral === true)
                 payload.ephemeral = true;
 
+            // Only one single message can be senta as a reply to a command interaction;
+            // after that it will be resolved and further messages will have to be sent normally
             if (assert.isFunction(target.isCommandInteraction) === true && i === 0)
                 sentMessage = await target.reply(payload);
 
             else if (assert.isFunction(target.send) === true)
-                sentMessage =  await target.send(payload);
+            {
+                var resolvedMessage = await target.send(payload);
+
+                // If this is the first message sent, store it as our sent message to pin it
+                // later if needed; only the first message should be pinned
+                if (i === 0)
+                    sentMessage = resolvedMessage 
+            }
 
             else throw new Error(`Invalid target for message payload.`);
+
+            return nextPromise();
         });
 
         if (options.pin === true && assert.isFunction(sentMessage.pin) === true)
-            await sentMessage.pin();
+            sentMessage.pin();
 
         if (_attachments.length <= 0)
-            return;
+            return new MessageWrapper(sentMessage);
 
-        _attachments.forEach(async (attachment) => await target.send({files: [ attachment ]}));
+        await _attachments.forEachPromise(async (attachment, i, nextPromise) => 
+        {
+            await target.send({files: [ attachment ]});
+            return nextPromise();
+        });
+
+        return new MessageWrapper(sentMessage);
     };
 
 }
