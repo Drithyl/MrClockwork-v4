@@ -20,7 +20,7 @@ function Map(parentGameObject)
     
     this.setValue = (input) =>
     {
-        const validatedValue = _validateInputFormatOrThrow(input);
+        var validatedValue = _validateInputFormatOrThrow(input);
 
         return _parentGame.emitPromiseToServer("VERIFY_MAP", validatedValue)
         .then(() => 
