@@ -14,7 +14,7 @@ function MessageEmbedWrapper(discordJsEmbed, messageWrapper)
     this.getFields = () => _discordJsEmbed.fields;
     this.getLength = () => _discordJsEmbed.length;
 
-    this.addField = (fieldName, fieldValue, inline = false) => _discordJsEmbed.addField(fieldName, fieldValue, inline);
+    this.addField = (fieldName, fieldValue, inline = false) => _discordJsEmbed.addField(fieldName, fieldValue.toString(), inline);
 
     this.removeFields = (index, numberOfFieldsToRemove = 1) =>
     {
@@ -41,7 +41,7 @@ function MessageEmbedWrapper(discordJsEmbed, messageWrapper)
     {
         //Add new field at the end instead if the given index is beyond the stored fields
         if (_discordJsEmbed.fields.length < index)
-            this.addField(fieldName, fieldValue, inline);
+            this.addField(fieldName.toString(), fieldValue.toString(), inline);
 
         else 
         {
