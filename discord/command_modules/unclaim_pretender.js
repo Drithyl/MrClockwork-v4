@@ -2,6 +2,7 @@
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
+const MessagePayload = require("../prototypes/message_payload.js");
 const dominions5NationStore = require("../../games/dominions5_nation_store.js");
 
 const commandData = new CommandData("UNCLAIM_PRETENDER");

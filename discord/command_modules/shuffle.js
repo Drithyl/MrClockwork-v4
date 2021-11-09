@@ -2,6 +2,7 @@
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
+const MessagePayload = require("../prototypes/message_payload.js");
 
 const commandData = new CommandData("SHUFFLE");
 
@@ -34,7 +35,7 @@ function _behaviour(commandContext)
         elementsToShuffle = mentionedMembers.map((memberWrapper) => memberWrapper.getNameInGuild());
 
     elementsToShuffle = _shuffle(elementsToShuffle);
-    return commandContext.respondToCommand(_list(elementsToShuffle).toBox(), { prepend: "```", append: "```" });
+    return commandContext.respondToCommand(new MessagePayload(_list(elementsToShuffle).toBox(), "", true, "```"));
 }
 
 

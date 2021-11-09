@@ -3,6 +3,7 @@ const asserter = require("../../asserter.js");
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
+const MessagePayload = require("../prototypes/message_payload.js");
 const hostServerStore = require("../../servers/host_server_store.js");
 
 const commandData = new CommandData("UPLOAD_FILE_TO_SERVER");
@@ -34,10 +35,10 @@ function _behaviour(commandContext)
     const server = hostServerStore.getHostServerByName(nameOfServer);
 
     if (fileType == null)
-        return commandContext.respondToCommand("You must specify a file type, `map` or `mod`, as the first argument.");
+        return commandContext.respondToCommand(new MessagePayload("You must specify a file type, `map` or `mod`, as the first argument."));
 
     if (googleDriveId == null)
-        return commandContext.respondToCommand("You must provide a shareable google drive link as the 2nd argument.");
+        return commandContext.respondToCommand(new MessagePayload("You must provide a shareable google drive link as the 2nd argument."));
 
 
     if (server == null)
@@ -49,9 +50,11 @@ function _behaviour(commandContext)
     .then((responseData) => 
     {
         const formattedData = _formatResponseData(responseData);
+        const payload = new MessagePayload(`Find the details of your upload attached below:`);
+        payload.setAttachment("uploaded_files.txt", Buffer.from(formattedData, "utf8"));
 
         return commandContext.respondToCommand(new MessagePayload(`Download complete! Details will be sent to your DMs.`))
-        .then(() => commandContext.respondToSender(`Find the details of your upload attached below:`, { files: { filename: "uploaded_files.txt", attachment: Buffer.from(formattedData, "utf8") }}));
+        .then(() => commandContext.respondToSender(payload));
     });
 }
 
