@@ -35,7 +35,7 @@ function Dominions5Game()
         {
             return nationArray.forAllPromises((nation) =>
             {
-                const pretenderOwnerId = _gameObject.getPlayerIdControllingNationInGame(nation.nationFilename);
+                const pretenderOwnerId = _gameObject.getPlayerIdControllingNationInGame(nation.filename);
 
                 if (pretenderOwnerId == null)
                     return;
@@ -80,8 +80,12 @@ function Dominions5Game()
     _gameObject.claimNation = (playerId, nationFilename) => 
     {
         if (_playerFiles[playerId] == null)
+        {
+            log.general(log.getLeanLevel(), `Player ${playerId} is new to the game; adding to list.`);
             _playerFiles[playerId] = playerFileStore.getPlayerFile(playerId);
+        }
 
+        log.general(log.getLeanLevel(), `Player ${playerId} is claiming nation ${nationFilename}...`);
         return _playerFiles[playerId].addControlledNationInGame(nationFilename, _gameObject.getName());
     };
 
