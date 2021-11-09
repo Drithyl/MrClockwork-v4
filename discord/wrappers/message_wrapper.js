@@ -1,6 +1,7 @@
 
-const UserWrapper = require("./user_wrapper");
+const assert = require("../../asserter.js");
 const guildStore = require("../guild_store.js");
+const UserWrapper = require("./user_wrapper.js");
 const GuildMemberWrapper = require("./guild_member_wrapper.js");
 const MessageEmbedWrapper = require("./message_embed_wrapper.js");
 
@@ -71,8 +72,16 @@ function MessageWrapper(discordJsMessageObject)
         return _discordJsMessageObject.pin();
     };
 
-    this.edit = (newText, editedEmbed) => _discordJsMessageObject.edit(newText, editedEmbed);
     this.react = (emojiResolvable) => _discordJsMessageObject.react(emojiResolvable);
+    this.edit = (newText, editedEmbed) => 
+    {
+        const options = { embeds: [ editedEmbed ]};
+
+        if (assert.isString(newText) === true)
+            options.content = newText;
+
+        return _discordJsMessageObject.edit(options);
+    };
 }
 
 MessageWrapper.fetchFromChannel = (channel, messageId) =>
