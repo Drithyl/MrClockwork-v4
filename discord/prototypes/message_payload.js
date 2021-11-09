@@ -112,8 +112,9 @@ function MessagePayload(header, content = "", splitContent = true, splitWrapper 
 
             // Only one single message can be senta as a reply to a command interaction;
             // after that it will be resolved and further messages will have to be sent normally
+            // fetchReply option is needed to receive the bot's sent message as a return value
             if (assert.isFunction(target.isCommandInteraction) === true && i === 0)
-                sentMessage = await target.reply(payload);
+                sentMessage = await target.reply(Object.assign(payload, { fetchReply: true }));
 
             else if (assert.isFunction(target.send) === true)
             {
@@ -122,7 +123,7 @@ function MessagePayload(header, content = "", splitContent = true, splitWrapper 
                 // If this is the first message sent, store it as our sent message to pin it
                 // later if needed; only the first message should be pinned
                 if (i === 0)
-                    sentMessage = resolvedMessage 
+                    sentMessage = resolvedMessage;
             }
 
             else throw new Error(`Invalid target for message payload.`);
@@ -130,11 +131,9 @@ function MessagePayload(header, content = "", splitContent = true, splitWrapper 
             return nextPromise();
         });
 
-        if (options.pin === true && assert.isFunction(sentMessage.pin) === true)
+        if (sentMessage != null && options.pin === true && assert.isFunction(sentMessage.pin) === true)
             sentMessage.pin();
 
-        if (_attachments.length <= 0)
-            return new MessageWrapper(sentMessage);
 
         await _attachments.forEachPromise(async (attachment, i, nextPromise) => 
         {
