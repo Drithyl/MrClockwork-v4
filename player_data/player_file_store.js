@@ -58,6 +58,7 @@ exports.addPlayerFile = (playerId) =>
 {
     asserter.isValidDiscordIdOrThrow(playerId);
     _playerFileStore[playerId] = new PlayerFile(playerId);
+    log.general(log.getLeanLevel(), `Player file ${playerId} added to store.`);
 };
 
 exports.savePlayerFile = (playerId) =>
@@ -171,6 +172,7 @@ exports.removePlayerReminderAtHourMarkGlobal = (hourMark, playerId) =>
 
 function _getPlayerFile(playerId)
 {
+    log.general(log.getVerboseLevel(), `Getting player file for ${playerId}...`);
     _createEmptyPlayerFileIfNoneExists(playerId);
     return _playerFileStore[playerId];
 }
@@ -178,7 +180,10 @@ function _getPlayerFile(playerId)
 function _createEmptyPlayerFileIfNoneExists(playerId)
 {
     if (exports.hasPlayerFile(playerId) === false)
+    {
+        log.general(log.getVerboseLevel(), `Player file does not exist; creating new one...`);
         exports.addPlayerFile(playerId);
+    }
 }
 
 function _getGlobalPreferences(playerId)
