@@ -61,10 +61,6 @@
     
                 <%- include('../game_table.ejs', { games: (sessionData != null) ? sessionData.organizedGames : null })-%>
     
-                <!--
-                <%- include('../game_cards.ejs', { games: (sessionData != null) ? sessionData.organizedGames : null })-%>
-                -->
-    
             </div>
         </div>
     
@@ -77,10 +73,7 @@
             <div class="card-body d-flex flex-row align-items-center justify-content-center">
     
                 <%- include('../game_table.ejs', { games: (sessionData != null) ? sessionData.playedGames : null })-%>
-    
-                <!--
-                <%- include('../game_cards.ejs', { games: (sessionData != null) ? sessionData.playedGames : null })-%>
-                -->
+                
             </div>
         </div>
     
