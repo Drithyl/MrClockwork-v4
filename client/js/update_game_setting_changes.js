@@ -7,7 +7,6 @@ var lastSelectedGameName;
  */
 $("#game_select").on("changed.bs.select", function(e, clickedIndex, isSelected, oldValue)
 {
-    console.log("TRIGGERED");
     const gameName = $(this).find("option").eq(clickedIndex).val();
 
     $(`#${lastSelectedGameName}_container`).hide();
