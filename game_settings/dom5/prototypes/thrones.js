@@ -6,9 +6,10 @@ const key = "thrones";
 
 module.exports = Thrones;
 
-function Thrones()
+function Thrones(parentGameObject)
 {
     var _value;
+    const _parentGame = parentGameObject;
 
     this.getValue = () => _value;
     this.getReadableValue = () =>
@@ -18,7 +19,10 @@ function Thrones()
     
     this.setValue = (input) =>
     {
-        const validatedValue = _validateInputFormatOrThrow(input);
+        const settingsObject = _parentGame.getSettingsObject();
+        const apSetting = settingsObject.getAscensionPointsSetting();
+        const apValue = apSetting.getValue();
+        const validatedValue = _validateInputFormatOrThrow(input, apValue);
 
         _value = validatedValue;
     };
@@ -44,7 +48,7 @@ function Thrones()
         return [`--thrones`, ...value];
     };
 
-    function _validateInputFormatOrThrow(input)
+    function _validateInputFormatOrThrow(input, apValue)
     {
         var thrones = [];
 
@@ -55,6 +59,21 @@ function Thrones()
         {
             thrones.push(+throneLevel.replace(/\D*/g, ""));
         });
+
+        if (thrones[0] < 0 || thrones[0] > 20)
+            throw new SemanticError(`Level 1 thrones must be between 0 and 20`);
+
+        if (thrones[1] < 0 || thrones[1] > 15)
+            throw new SemanticError(`Level 2 thrones must be between 0 and 15`);
+
+        if (thrones[2] < 0 || thrones[2] > 10)
+            throw new SemanticError(`Level 3 thrones must be between 0 and 10`);
+
+        if (thrones[0] + thrones[1] + thrones[2] <= 0)
+            throw new SemanticError(`At least one throne is required`);
+
+        if (thrones[0] + (thrones[1] * 2) + (thrones[2] * 3) < apValue)
+            throw new SemanticError(`Sum of the throne points must be at least as high as the ascension points required`);
 
         return thrones;
     }

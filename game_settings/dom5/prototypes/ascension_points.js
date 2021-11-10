@@ -40,7 +40,12 @@ function AscensionPoints()
         if (AscensionPoints.prototype.isExpectedFormat(input) === false)
             throw new SemanticError(`Invalid value format for ascension points.`);
 
-        return +input.replace(/\D*/, "");
+        const points = +input.replace(/\D*/, "");
+
+        if (points <= 0 || points > 80)
+            throw new SemanticError(`Ascension Points required must be between 1 and 80`);
+
+        return points;
     }
 }
 
