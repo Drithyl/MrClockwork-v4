@@ -79,7 +79,7 @@ exports.set = (expressApp) =>
             return res.render("results_screen.ejs", { result: "Session does not exist." });
         }
 
-        game = gameStore.getOngoingGameByName(values.gameName);
+        game = gameStore.getOngoingGameByName(values.name);
 
         _formatPostValues(values);
 
