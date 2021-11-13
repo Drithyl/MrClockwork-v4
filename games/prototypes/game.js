@@ -186,9 +186,10 @@ function Game()
 
     this.pinSettingsToChannel = () =>
     {
+        var addressString = `IP: ${this.getIp()}:${this.getPort()}\n`;
         var settingsStringList = _settingsObject.getPublicSettingsStringList();
         var channel = this.getChannel();
-        const payload = new MessagePayload(settingsStringList.toBox());
+        const payload = new MessagePayload((addressString + settingsStringList).toBox());
 
         if (_discordJsChannel == null)
             return Promise.reject(new Error(`${this.getName()} does not have a channel assigned.`));
