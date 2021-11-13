@@ -71,7 +71,7 @@ exports.set = (expressApp) =>
         _createGame(userId, values)
         .then((game) => 
         {
-            session.storeSessionData("Game has been hosted! Find the corresponding channel in the selected Discord guild.");
+            session.storeSessionData(`Game has been hosted at IP ${game.getIp()}:${game.getPort()}! Find the corresponding channel in the selected Discord guild.`);
             session.redirectTo("result", res);
             return game.launch();
         })
