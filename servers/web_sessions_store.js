@@ -15,8 +15,6 @@ module.exports.createSession = (userId) =>
 
 module.exports.getSession = (sessionId) =>
 {
-    console.log(`Searching existing sessions with ${sessionId}`);
-    console.log(_sessions);
     return _sessions[sessionId];
 };
 
