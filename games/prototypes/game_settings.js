@@ -18,6 +18,9 @@ function GameSettings(parentGame)
         });
     };
 
+    this.getPublicSettings = () => _settingObjectsArray.filter((setting) => setting.isPublic());
+    this.getChangeableSettings = () => _settingObjectsArray.filter((setting) => setting.canBeChanged());
+
     this.forEachSetting = (fnToCallOnSettings) =>
     {
         _settingObjectsArray.forEach((settingObject) => fnToCallOnSettings(settingObject, settingObject.getKey()));
