@@ -9,9 +9,7 @@ $("#game_select").on("changed.bs.select", function(e, clickedIndex, isSelected, 
 {
     const gameName = $(this).find("option").eq(clickedIndex).val();
 
-    $(`#${lastSelectedGameName}_container`).hide();
+    $(`div[name=game_container]`).hide();
     $(`#${gameName}_container`).show();
 
-    console.log(`Switching to ${gameName} from ${lastSelectedGameName}`);
-    lastSelectedGameName = gameName;
 });
