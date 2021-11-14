@@ -6,7 +6,7 @@
         
         <!-- Must use typeof to check if variable exists at all, since it might be undefined -->
         <% if (typeof organizedGames === "object" && Array.isArray(organizedGames) === false && Object.keys(organizedGames).length > 0) { %>
-            <select id="game_select" name="name" class="form-control selectpicker">
+            <select id="game_select" class="form-control selectpicker">
         
                 <% for (var gameName in organizedGames) {%>
         
