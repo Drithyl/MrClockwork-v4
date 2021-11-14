@@ -66,6 +66,8 @@ exports.set = (expressApp) =>
     expressApp.post("/change_game_settings", (req, res) =>
     {
         var game;
+        var settingsObject;
+        var changeableSettingsArray;
         const values = req.body;
 
         // Fetch session from either the URL params or the cookies, wherever we can find the sessionId
@@ -80,10 +82,21 @@ exports.set = (expressApp) =>
         }
 
         game = gameStore.getOngoingGameByName(values.name);
+        settingsObject = game.getSettingsObject();
+        changeableSettingsArray = settingsObject.getChangeableSettings();
 
         _formatPostValues(values);
 
-        return game.loadSettingsFromInput(values)
+        return changeableSettingsArray.forAllPromises((setting) =>
+        {
+            var key = setting.getKey();
+            var loadedValue = values[key];
+
+            if (loadedValue == undefined)
+                return log.error(log.getLeanLevel(), `Change settings: Expected value for setting ${key} is undefined.`);
+
+            return setting.setValue(loadedValue);
+        })
         .then(() =>
         {
             session.storeSessionData("Settings were changed.");
