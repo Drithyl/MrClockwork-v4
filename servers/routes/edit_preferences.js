@@ -1,5 +1,6 @@
 
 const log = require("../../logger.js");
+const assert = require("../../asserter.js");
 const webSessionsStore = require("../web_sessions_store.js");
 const playerFileStore = require("../../player_data/player_file_store.js");
 const DominionsPreferences = require("../../player_data/prototypes/dominions_preferences.js");
@@ -67,17 +68,10 @@ exports.set = (expressApp) =>
         }
 
         const userId = session.getUserId();
+        const formattedValues = _formatData(values);
         playerFile = playerFileStore.getPlayerFile(userId);
-
-
-        for (var gameName in values)
-        {
-            const preferencesData = Object.assign({ playerId: userId }, values[gameName]);
-            const gamePreferences = DominionsPreferences.loadFromJSON(preferencesData);
-
-            playerFile.setGamePreferences(gameName, gamePreferences);
-        }
-
+        
+        _setPreferences(formattedValues, playerFile);
         log.general(log.getNormalLevel(), `Saving new preferences for ${userId}...`);
 
         playerFile.save()
@@ -95,3 +89,56 @@ exports.set = (expressApp) =>
         });
     });
 };
+
+
+
+/** Turns a serialized data array into JSON. Required because the values of preferences
+ *  need to be nested inside objects for each different game, thus why the form names have
+ *  a "." separating the game's name and the actual preference key
+ */
+ function _formatData(data)
+ {
+    const formattedData = {};
+
+    for (var key in data)
+    {
+        var value = data[key];
+
+        if (assert.isNumber(+value) === true)
+            value = +value;
+
+        else if (/^on$/i.test(value) === true)
+            value = true;
+
+        else if (assert.isArray(value) === true)
+            value = value.map((reminderValue) => +reminderValue);
+
+        if (/\./i.test(key) === true)
+        {
+            const gameName = key.split(".")[0];
+            const valueKey = key.split(".")[1];
+
+            if (formattedData[gameName] == null)
+                formattedData[gameName] = {};
+
+            formattedData[gameName][valueKey] = value;
+        }
+    }
+
+    log.general(log.getNormalLevel(), `edit_preferences formatted POST values`, formattedData);
+ 
+    return formattedData;
+ }
+
+ function _setPreferences(preferencesByGame, playerFile)
+ {
+    const playerId = playerFile.getId();
+    
+    for (var gameName in preferencesByGame)
+    {
+        const preferencesData = Object.assign({ playerId }, preferencesByGame[gameName]);
+        const preferencesObject = DominionsPreferences.loadFromJSON(preferencesData);
+        playerFile.setGamePreferences(gameName, preferencesObject);
+        log.general(log.getNormalLevel(), `Preferences for game ${gameName} set`);
+    }
+ }
