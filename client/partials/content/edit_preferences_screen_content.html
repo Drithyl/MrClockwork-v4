@@ -8,7 +8,7 @@
     
         <div class="card-body">
         
-            <form id="preferences_form">
+            <form id="preferences_form" action="/host_game" method="POST">
         
                 <input type="hidden" name="sessionId" value="<%=(typeof sessionId === "string") ? sessionId : "none"%>"/>
                 <script src="../../js/load_session_id.js"></script>
