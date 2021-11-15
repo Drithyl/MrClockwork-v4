@@ -8,7 +8,7 @@ exports.startDiscordIntegration = () =>
 {
     return botClientWrapper.loginToDiscord()
     .then((discordJsGuildMap) => guildStore.populateStore(discordJsGuildMap))
-    /*.then(() => commandStore.deployCommandIntegration())*/
+    .then(() => commandStore.deployCommandIntegration())
     .then(() =>
     {
         discordEvents.startListening();
