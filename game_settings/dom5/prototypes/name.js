@@ -7,7 +7,13 @@ const _blacklistedPatterns = [
     /^global$/i,
     /^newlords$/i,
     /^debug$/i,
-    /^grep$/i
+    /^grep$/i,
+    /^rawsound$/i,
+    /^doc$/i,
+    /^key$/i,
+    /^maps$/i,
+    /^mods$/i,
+    /^log$/i,
 ];
 
 const key = "name";
