@@ -85,7 +85,7 @@ exports.addGuildBecameAvailableHandler = (handler) =>
 
 exports.fetchUser = (userId) => 
 {
-    return _discordJsBotClient.users.fetch(userId)
+    return _discordJsBotClient.users.fetch(userId, { cache: true })
     .then((userObject) => new UserWrapper(userObject))
     .catch((err) => Promise.reject(err));
 };
