@@ -303,16 +303,16 @@ function _processNewTurnPreferences(game, turnNumber)
     const gameName = game.getName();
     const filesRequestingBackups = [];
 
-    game.forEachPlayerFile((file) =>
+    game.forEachPlayerFile((playerFile) =>
     {
-        const preferences = file.getEffectiveGamePreferences(gameName);
+        const preferences = playerFile.getEffectiveGamePreferences(gameName);
         
         if (preferences.isReceivingBackups() === true)
         {
-            const controlledNations = file.getControlledNationsInGame(gameName).map((nationObject) => nationObject.getFilename());
+            const controlledNations = playerFile.getControlledNationsInGame(gameName).map((nationObject) => nationObject.getFilename());
 
             nationFilesToFetch.push( ...controlledNations );
-            filesRequestingBackups.push(file);
+            filesRequestingBackups.push(playerFile);
         }
     });
 
@@ -320,20 +320,22 @@ function _processNewTurnPreferences(game, turnNumber)
         return;
 
     game.emitPromiseWithGameDataToServer("GET_TURN_FILES", { nationNames: nationFilesToFetch })
-    .then((files) =>
+    .then((turnFiles) =>
     {
-        const scoresFile = files.scores;
-        const nationTurnFiles = files.turnFiles;
+        const scoresFile = turnFiles.scores;
+        const nationTurnFiles = turnFiles.turnFiles;
 
-        filesRequestingBackups.forEach((file) =>
+        filesRequestingBackups.forEach((playerFile) =>
         {
-            const controlledNations = file.getControlledNationsInGame(gameName).map((nationObject) => nationObject.getFilename());
+            const preferences = playerFile.getEffectiveGamePreferences(gameName);
+            const controlledNations = playerFile.getControlledNationsInGame(gameName).map((nationObject) => nationObject.getFilename());
             const payload = new MessagePayload(`Find below your nation files for turn ${turnNumber}.`)
 
-            botClientWrapper.fetchUser(file.getId())
+            botClientWrapper.fetchUser(playerFile.getId())
             .then((userWrapper) =>
             {
-                const files = [{ name: "scores.html", attachment: scoresFile }];
+                if (preferences.isReceivingScores() === true)
+                    payload.setAttachment(`scores.html`, scoresFile);
 
                 controlledNations.forEach((nationFilename) =>
                 {
@@ -343,7 +345,7 @@ function _processNewTurnPreferences(game, turnNumber)
 
                 return userWrapper.sendMessage(payload);
             })
-            .catch((err) => log.error(log.getNormalLevel(), `ERROR SENDING NATION BACKUPS TO USER ${userWrapper.getUsername()} (${userWrapper.getId()})`, err));
+            .catch((err) => log.error(log.getNormalLevel(), `ERROR SENDING NATION BACKUPS TO PLAYER ${playerFile.getId()}`, err));
         });
     })
     .catch((err) => log.error(log.getNormalLevel(), `ERROR FETCHING NATION BACKUP FILES`, err));
