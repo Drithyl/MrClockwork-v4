@@ -151,7 +151,7 @@ function _areAttachmentsTooLarge(files)
 {
     for (var i = 0; i < files.length; i++)
     {
-        const sizeInMB = file.attachment.length * 0.000001;
+        const sizeInMB = files[i].attachment.length * 0.000001;
         if (sizeInMB > 8)
             return true;
     }
