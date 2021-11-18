@@ -210,13 +210,7 @@ function Dominions5Game()
         .then((status) => Promise.resolve(status.isOngoing()));
     };
 
-    _gameObject.getLastKnownStatus = () => 
-    {
-        const timerSetting = _gameObject.getSettingsObject().getTimerSetting();
-        const timePerTurnObject = timerSetting.getValue();
-
-        return _status;
-    };
+    _gameObject.getLastKnownStatus = () => _status;
 
     _gameObject.update = (updatedStatus) => 
     {
