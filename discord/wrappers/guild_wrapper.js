@@ -252,11 +252,19 @@ function GuildWrapper(discordJsGuildObject)
             
             // Fetch all messages before last in channel
             return channel.messages.fetch({ before: lastMessage.id });
-        })
+        },
+        // If last message id exists but gives an error when fetching, it's because
+        // the message was deleted, but the id is still cached
+        (err) => Promise.resolve())
         .then((messages) =>
         {
-            const messageArray = [...messages.values()];
-            messageArray.push(_lastMessage);
+            var messageArray = [];
+
+            if (_lastMessage != null)
+                messageArray.push(_lastMessage);
+
+            if (messages != null)
+                messageArray.push(...messages.values());
             
             log.general(log.getVerboseLevel(), `Fetched previous messages; total fetched: ${messageArray.length}`);
 
