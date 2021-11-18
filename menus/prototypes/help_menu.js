@@ -30,7 +30,7 @@ function HelpMenu(userWrapper)
         var reactedEntry = helpMenuEntries.find((entry) => entry.EMOJI == emoji.name);
 
         if (typeof reactedEntry === "object")
-            return reactedMessageWrapper.respond(`*\n*\n*\n**__${reactedEntry.ENTRY}__**\n\n${reactedEntry.INFO}`);
+            return reactedMessageWrapper.respond(new MessagePayload(`*\n*\n*\n**__${reactedEntry.ENTRY}__**\n\n${reactedEntry.INFO}`));
     };
 
     this.handleInput = () =>
