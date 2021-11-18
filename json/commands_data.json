@@ -277,7 +277,7 @@
 
     "GET_GAMES_BY_LAST_HOSTED":
     {
-        "name": "getgamesbylasthosted",
+        "name": "lasthosted",
         "isEnabled": true,
         "gameTypesSupported": [],
         "argumentsRequiredInfo": [],

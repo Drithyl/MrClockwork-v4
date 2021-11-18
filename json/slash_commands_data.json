@@ -244,7 +244,7 @@
 
     "GET_GAMES_BY_LAST_HOSTED":
     {
-        "name": "getgamesbylasthosted",
+        "name": "lasthosted",
         "isEnabled": true,
         "channelRequiredToInvoke": "any",
         "description": "Prints a list of hosted games in this guild, or all games if sent by DM, sorted by last turn date."
