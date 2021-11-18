@@ -80,6 +80,11 @@ function extendPrototypes()
         });
     };
 
+    Array.prototype.last = function()
+    {
+        return this[this.length - 1];
+    };
+
     Object.defineProperty(Object.prototype, "forEachItem",
     {
         value: function(asyncFn)
