@@ -29,14 +29,21 @@ function MessagePayload(header, content = "", splitContent = true, splitWrapper 
     else if (_splitContent === true)
     {
         // Split by newlines first so we don't cut off sentences in the middle
-        const lines = content.split(/\n/g);
+        const lines = _content.split(/\n/g);
 
-        // Account for the header (will be added to the first content string) length and the wrap characters' length
-        const maxCombinedLength = MAX_MESSAGE_CHARACTERS - _header.length - (splitWrapper.length*2);
+        // Account for the wrap characters' length
+        const maxCombinedLength = MAX_MESSAGE_CHARACTERS - (splitWrapper.length*2);
+
+        // Add the header to the start of our lines, splitting it as well
+        // if it turns out to be larger than the max characters by itself
+        if (_header.length >= maxCombinedLength)
+            lines.unshift(..._header.split(/\n/g));
+
+        else lines.unshift(_header);
 
         // If the content is one single big line of over the allowed length, 
         // then split it by chunks of at most the allowed length
-        if (lines.length === 1)
+        if (/\S+/i.test(_content) === true && lines.length === 1)
             _contentArray = lines[0].match(new RegExp(`[\\s\\S]{1,${maxCombinedLength}}`, "g"));
 
         // Otherwise, recompile all the lines into several submessages of at most the allowed length each
