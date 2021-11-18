@@ -11,7 +11,8 @@ const myIntents = new Intents().add(
     "GUILDS",
     "GUILD_MEMBERS",
     "GUILD_MESSAGES",
-    "DIRECT_MESSAGES"
+    "DIRECT_MESSAGES",
+    "DIRECT_MESSAGE_REACTIONS"
 );
 
 const _discordJsBotClient = new Client({
