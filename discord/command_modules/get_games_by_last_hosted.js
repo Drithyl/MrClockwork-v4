@@ -21,7 +21,6 @@ function GetGamesByLastHostedCommand()
 function _behaviour(commandContext)
 {
     const guild = commandContext.getGuildWrapper();
-    const channel = commandContext.getDestinationChannel();
     const sortedGames = _getGamesSortedByLastHosted();
     const stringList = "Find the list of turns ordered by time hosted below:\n\n";
 
@@ -46,8 +45,8 @@ function _getGamesSortedByLastHosted()
 
     arrayOfOngoingGames.sort((a, b) => 
     {
-        const lastHostedA = a.getLastKnownStatus().getLastTurnTimeStamp();
-        const lastHostedB = b.getLastKnownStatus().getLastTurnTimeStamp();
+        const lastHostedA = a.getLastKnownStatus().getLastTurnTimestamp();
+        const lastHostedB = b.getLastKnownStatus().getLastTurnTimestamp();
 
         return a.getName() - b.getName() && lastHostedB - lastHostedA;
     });
@@ -62,65 +61,6 @@ function _printAllSortedGames(sortedGamesArray)
     return listStr;
 }
 
-function _embedSortedGuildGames(sortedGamesArray, guild)
-{
-    const embedObjects = [buildEmbed()];
-    var currentEmbedIndex = 0;
-    var currentLastHostedDate = "";
-
-    for (var i = 0; i < sortedGamesArray.length; i++)
-    {
-        const game = sortedGamesArray[i];
-
-
-        if (game.getGuildId() !== guild.getId())
-            continue;
-
-
-        const embed = embedObjects[currentEmbedIndex];
-
-        const ip = `${game.getIp()}:${game.getPort()}`;
-        const channel = game.getChannel();
-        const server = game.getServer();
-        const serverName = server.getName();
-
-        const lastKnownStatus = game.getLastKnownStatus();
-        const lastHostedDate = new Date(lastKnownStatus.getLastTurnTimeStamp()).toDateString();
-
-        var fieldValue = `\n${channel}\`${serverName} ${ip}`;
-
-
-        if (lastKnownData.lastKnownTurnNumber <= 0)
-            fieldValue += " (not started)`";
-
-        else fieldValue += "`"; //close code tag
-
-
-        //if a new field cannot fit because the embed hit the limit, create a new embed
-        if (embed.canFitField(currentLastHostedDate, fieldValue) === false)
-        {
-            embedObjects.push(buildEmbed());
-            currentEmbedIndex++;
-            embed = embedObjects[currentEmbedIndex];
-        }
-
-
-        //if the turn date is the same and the field value still has space,
-        //merge it within the same field
-        if (currentLastHostedDate === lastHostedDate && embed.canAddToLastFieldValue(fieldValue) === true)
-            embed.addToLastFieldValue(fieldValue);
-
-        //otherwise create a new field entirely
-        else
-        {
-            currentLastHostedDate = lastHostedDate;
-            embed.addField(currentLastHostedDate, fieldValue);
-        }
-    }
-
-    return embedObjects;
-}
-
 function _formatLastHostedString(game)
 {
     const gameName = game.getName();
@@ -130,12 +70,45 @@ function _formatLastHostedString(game)
     const guildName = guild.getName();
 
     const lastKnownStatus = game.getLastKnownStatus();
-    const lastTurnTimestampDate = new Date(lastKnownStatus.getLastTurnTimeStamp()).toDateString();
+    const lastTurnTimestampDate = new Date(lastKnownStatus.getLastTurnTimestamp()).toDateString();
 
     const server = game.getServer();
     const serverName = server.getName();
 
     return `${gameName.width(32)} ${guildName.width(20)} ${serverName.width(10)} ${ip.width(23)} ${lastTurnTimestampDate}\n`;
+}
+
+function _embedSortedGuildGames(sortedGamesArray, guild)
+{
+    var lastAddedDate = "";
+    const embedObjects = [buildEmbed()];
+    const sortedGuildGames = sortedGamesArray.filter((game) => game.getGuildId() === guild.getId());
+
+    sortedGuildGames.sort((a, b) => 
+    {
+        const aStarted = a.getLastKnownStatus().isInLobby();
+        const bStarted = b.getLastKnownStatus().isInLobby();
+
+        // Return 0 if both have same value; 1 if a is true, and -1 otherwise
+        // to sort by false values first and true values after
+        return (aStarted === bStarted)? 0 : aStarted? 1 : -1;
+    });
+
+    sortedGuildGames.forEach((game) =>
+    {
+        const entry = _getGameEntry(game);
+        const lastKnownStatus = game.getLastKnownStatus();
+        const lastHostedTimestamp = lastKnownStatus.getLastTurnTimestamp();
+        const lastHostedDate = (lastHostedTimestamp != null) ? new Date(lastHostedTimestamp).toDateString() : "Not Started";
+
+        //if a new field cannot fit because the embed hit the limit, create a new embed
+        if (embedObjects.last().canFitField(lastAddedDate, entry) === false)
+            embedObjects.push(buildEmbed());
+
+        lastAddedDate = _addToEmbed(entry, embedObjects.last(), lastHostedDate, lastAddedDate);
+    });
+    
+    return embedObjects;
 }
 
 function buildEmbed()
@@ -145,4 +118,40 @@ function buildEmbed()
     .setColor("0099FF");
 
   return embed;
+}
+
+function _addToEmbed(entry, embed, lastHostedDate, lastDateAdded)
+{
+    //if the turn date is the same and the field value still has space,
+    //merge it within the same field
+    if (lastDateAdded === lastHostedDate && embed.canAddToLastFieldValue(entry) === true)
+    {
+        embed.addToLastFieldValue(entry);
+        return lastDateAdded;
+    }
+
+    //otherwise create a new field entirely
+    else
+    {
+        embed.addField(lastHostedDate, entry);
+        return lastHostedDate;
+    }
+}
+
+function _getGameEntry(game)
+{
+    const ip = `${game.getIp()}:${game.getPort()}`;
+    const channel = game.getChannel();
+    const server = game.getServer();
+    const serverName = server.getName();
+    const lastKnownStatus = game.getLastKnownStatus();
+
+    var fieldValue = `\n${channel}\`${serverName} ${ip}`;
+
+    if (lastKnownStatus.isInLobby() === true)
+        fieldValue += " (not started)`";
+
+    else fieldValue += "`"; //close code tag
+
+    return fieldValue;
 }
