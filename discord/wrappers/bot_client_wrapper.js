@@ -16,7 +16,7 @@ const myIntents = new Intents().add(
 
 const _discordJsBotClient = new Client({
     intents: myIntents,
-    // Needs to be enabled for the bot to receive DMs;
+    // Needs to be enabled for the bot to receive DMs, or reactions by DMs;
     // https://discordjs.guide/additional-info/changes-in-v13.html#dm-channels
     partials: [ "MESSAGE", "CHANNEL", "REACTION" ]
 });
