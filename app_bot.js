@@ -40,7 +40,7 @@ function _initializeComponents()
     log = require("./logger.js");
     cleaner = require("./cleaner.js");
     discord = require("./discord/discord.js");
-    patcher = require("./patcher.js");
+    patcher = require("./patcher/patcher.js");
     expressServer = require("./servers/express_server.js");
     gamesStore = require("./games/ongoing_games_store.js");
     timeEventsEmitter = require("./time_events_emitter.js");
