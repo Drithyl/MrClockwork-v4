@@ -13,12 +13,14 @@ function GuildWrapper(discordJsGuildObject)
     this.getId = () => _discordJsGuildObject.id;
     this.getName = () => _discordJsGuildObject.name;
     this.getOwnerId = () => _discordJsGuildObject.ownerId;
-    this.getOwner = () => this.getGuildMemberWrapperById(this.getOwnerId());
     this.getMemberCount = () => _discordJsGuildObject.memberCount;
-
     this.getDiscordJsBotMemberInGuild = () => _discordJsGuildObject.me;
     this.isAvailable = () => _discordJsGuildObject.available;
-
+    this.fetchOwner = async () => 
+    {
+        const discordJsOwnerObject = await _discordJsGuildObject.fetchOwner();
+        return new GuildMemberWrapper(discordJsOwnerObject, this);
+    };
 
     this.getNewsChannel = () => _discordJsGuildObject.channels.cache.get(guildDataStore.getNewsChannelId(this.getId()));
     this.getHelpChannel = () => _discordJsGuildObject.channels.cache.get(guildDataStore.getHelpChannelId(this.getId()));
