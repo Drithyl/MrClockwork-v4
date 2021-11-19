@@ -7,7 +7,7 @@
         
         <select id="input_map" name="map" class="form-control selectpicker w-100" data-size="8" data-show-subtext="true" required>
     
-            <%- include('../settings/map_list_select_content.ejs', { maps })-%>
+            <%- include('../settings/map_list_select_content.ejs', { maps: (typeof maps === "object")? maps : null })-%>
     
         </select>
     

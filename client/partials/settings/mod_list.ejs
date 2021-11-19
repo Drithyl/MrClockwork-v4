@@ -7,7 +7,7 @@
         
         <select id="input_mod" name="mods" class="form-control selectpicker w-100" data-width="100%" multiple>
             
-            <%- include('../settings/mod_list_select_content.ejs', { mods })-%>
+            <%- include('../settings/mod_list_select_content.ejs', { mods: (typeof mods === "object")? mods : null })-%>
     
         </select>
 
