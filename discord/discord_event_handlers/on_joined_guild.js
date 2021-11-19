@@ -1,7 +1,9 @@
 
 const log = require("../../logger.js");
 const guildStore = require("../guild_store.js");
-const v3GuildDataImporter = require("../v3_guild_data_importer.js");
+const config = require("../../config/config.json");
+const guildPatcher = require("../../patcher/guild_patcher.js");
+const MessagePayload = require("../prototypes/message_payload.js");
 const botClientWrapper = require("../wrappers/bot_client_wrapper.js");
 
 
@@ -16,7 +18,10 @@ function _onJoinedGuild(discordJsGuild)
     const guildWrapper = guildStore.addGuild(discordJsGuild);
 
     // Try to import guild data from the v3 bot
-    v3GuildDataImporter.importV3GuildData(guildWrapper.getId());
+    guildPatcher();
 
-    //TODO: message guild owner about the deploy command
+    guildWrapper.fetchOwner()
+    .then((ownerWrapper) => ownerWrapper.sendMessage(new MessagePayload(
+        `Thank you for using this bot. To get started, you must ensure I have permissions to manage channels and roles, and then use the command \`${config.prefix}deploy\` in any of the guild's channels which the bot can see. It will create a few necessary roles and categories.`
+    )));
 }
