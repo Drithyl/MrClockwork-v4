@@ -62,11 +62,11 @@ function _initializeComponents()
     .then(() =>
     {
         log.general(log.getLeanLevel(), "Finished populating server store.");
-        return Promise.resolve(patcher.patchV3Games());
+        return Promise.resolve(patcher.runPatchers());
     })
     .then(() =>
     {
-        log.general(log.getLeanLevel(), "Finished patching v3 games.");
+        log.general(log.getLeanLevel(), "Finished patching data.");
         return Promise.resolve(gamesStore.loadAll());
     })
     .then(() => 
