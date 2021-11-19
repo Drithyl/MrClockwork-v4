@@ -2,7 +2,7 @@
 const gamePatcher = require("./game_patcher.js");
 const guildPatcher = require("./guild_patcher.js");
 
-exports.module.runPatchers = () =>
+module.exports.runPatchers = async () =>
 {
     try
     {
