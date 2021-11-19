@@ -268,24 +268,12 @@ function Game()
         return guild.fetchGuildMemberWrapperById(jsonData.organizerId)
         .catch((err) =>
         {
-            if (assert.isObject(guild.getOwner()) === true)
-            {
-                log.general(log.getLeanLevel(), `${jsonData.name}'s organizer cannot be found; setting guild owner as organizer.`);
-                return Promise.resolve(guild.getOwner());
-            }
-
-            else return Promise.reject(err);
+            log.general(log.getLeanLevel(), `${this.getName()}: organizer ${jsonData.organizerId} could not be fetched; setting guild owner instead.`);
+            return guild.fetchOwner();
         })
         .then((organizerWrapper) =>
         {
-            if (assert.isObject(organizerWrapper) === true)
-                this.setOrganizer(organizerWrapper);
-
-            else
-            {
-                log.general(log.getLeanLevel(), `${this.getName()}: organizer ${jsonData.organizerId} could not be fetched; setting guild owner ${guild.getOwner().getUsername()} instead.`);
-                this.setOrganizer(guild.getOwner());
-            }
+            this.setOrganizer(organizerWrapper);
 
             if (assert.isString(jsonData.channelId) === true)
                 this.setChannel(guild.getChannelById(jsonData.channelId));
