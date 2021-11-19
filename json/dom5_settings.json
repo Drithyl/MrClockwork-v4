@@ -134,7 +134,7 @@
         "name": "Mapfile",
         "defaultInput": "peliwyr",
         "description": "The filename of the map to use.",
-        "expectedInputFormatRegexp": "^\\w+(\\.map)?$",
+        "expectedInputFormatRegexp": "^(\\w| )+(\\.map)?$",
         "canBeChanged": true,
         "isPublic": true
     },
