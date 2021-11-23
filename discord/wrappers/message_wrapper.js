@@ -35,7 +35,7 @@ function MessageWrapper(discordJsMessageObject)
             guildMemberWrappers.push(guildMemberWrapper);
         });
 
-        return guildMemberWrappers;
+        return Promise.resolve(guildMemberWrappers);
     };
 
     this.getEmbedWrapper = (index = 0) => 
@@ -65,7 +65,6 @@ function MessageWrapper(discordJsMessageObject)
     this.startsWithCommandPrefix = () => _startsWithCommandPrefix(this.getMessageContent());
 
     this.respond = (messagePayload) => messagePayload.send(this.getDestinationChannel());
-    //this.respond = (messagePayload) => this.getDestinationChannel().send({ content: "TEST!!", files: [ { name: "myfile.txt", attachment: Buffer.from("A file", "utf8") }] });
     this.respondToSender = (messagePayload) => messagePayload.send(_discordJsMessageObject.author);
     this.pin = () => 
     {
