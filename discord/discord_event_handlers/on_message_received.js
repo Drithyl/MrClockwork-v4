@@ -70,6 +70,6 @@ function _handleCommandError(messageWrapper, err)
     else
     {
         log.error(log.getLeanLevel(), `ERROR HANDLING COMMAND`, err);
-        return messageWrapper.respond(new MessagePayload(`Error occurred: ${err.message}`));
+        return messageWrapper.respond(new MessagePayload(`Message Error occurred: ${err.message}`));
     }
 }
