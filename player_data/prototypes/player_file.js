@@ -58,13 +58,13 @@ function PlayerFile(playerId)
     this.removeGamePreferences = (gameName) => delete _preferencesByGameName[gameName];
 
 
-    this.getControlledNationsInGame = (gameName) =>
+    this.getControlledNationFilenamesInGame = (gameName) =>
     {
         if (this.hasGameData(gameName) === false)
             return [];
 
         const gameData = this.getGameData(gameName);
-        return gameData.getNationsControlledByPlayer();
+        return gameData.getNationFilenamesControlledByPlayer();
     };
 
     this.isControllingNationInGame = (nationFilename, gameName) =>
@@ -97,7 +97,7 @@ function PlayerFile(playerId)
         const gameData = this.getGameData(gameName);
         gameData.removeControlOfNation(nationFilename);
 
-        if (gameData.getNationsControlledByPlayer().length <= 0)
+        if (gameData.getNationFilenamesControlledByPlayer().length <= 0)
             this.removeGameData(gameName);
         
         return this.save();

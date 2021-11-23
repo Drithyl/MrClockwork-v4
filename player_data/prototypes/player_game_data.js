@@ -1,6 +1,5 @@
 
 const assert = require("../../asserter.js");
-const { SemanticError } = require("../../errors/custom_errors");
 const dom5NationStore = require("../../games/dominions5_nation_store.js");
 
 module.exports = PlayerGameData;
@@ -19,11 +18,10 @@ function PlayerGameData(playerId, gameName)
 
     this.addControlledNation = (nationFilename) =>
     {
-        if (dom5NationStore.isValidNationIdentifier(nationFilename) === false)
-            throw new SemanticError(`Invalid nation identifier: ${nationFilename}.`);
+        assert.isStringOrThrow(nationFilename);
 
         if (this.isControllingNation(nationFilename) === false)
-            _controlledNations.push(dom5NationStore.getNation(nationFilename));
+            _controlledNations.push(nationFilename);
     };
 
     this.removeControlOfNation = (nationFilename) =>
@@ -31,7 +29,7 @@ function PlayerGameData(playerId, gameName)
         const filenameWithoutExtension = dom5NationStore.trimFilenameExtension(nationFilename);
         
         for (var i = _controlledNations.length - 1; i >= 0; i--)
-            if (_controlledNations[i].getFilename() == filenameWithoutExtension)
+            if (_controlledNations[i] == filenameWithoutExtension)
                 _controlledNations.splice(i, 1);
     };
 
@@ -44,10 +42,10 @@ function PlayerGameData(playerId, gameName)
     this.isControllingNation = (nationFilename) => 
     {
         const filenameWithoutExtension = dom5NationStore.trimFilenameExtension(nationFilename);
-        return _controlledNations.find((nation) => nation.getFilename() === filenameWithoutExtension) != null;
+        return _controlledNations.find((nation) => nation === filenameWithoutExtension) != null;
     };
 
-    this.getNationsControlledByPlayer = () => 
+    this.getNationFilenamesControlledByPlayer = () => 
     {
         return [..._controlledNations];
     };
@@ -56,7 +54,7 @@ function PlayerGameData(playerId, gameName)
     {
         const nationFilenames = [];
 
-        _controlledNations.forEach((nation) => nationFilenames.push(nation.getFilename()));
+        _controlledNations.forEach((nation) => nationFilenames.push(nation));
 
         return {
             playerId: _playerId,
