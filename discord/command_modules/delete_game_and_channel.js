@@ -35,6 +35,6 @@ function _behaviour(commandContext)
     .then(() => 
     {
         log.general(log.getLeanLevel(), `${gameObject.getName()} and its role and channel were deleted successfully.`);
-        return commandContext.respondToSender(new MessagePayload(`${gameObject.getName()} and its role and channel were deleted successfully.`));
+        return commandContext.respondByDm(new MessagePayload(`${gameObject.getName()} and its role and channel were deleted successfully.`));
     });
 }

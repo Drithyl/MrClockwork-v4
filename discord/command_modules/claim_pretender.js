@@ -3,7 +3,6 @@ const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const MessagePayload = require("../prototypes/message_payload.js");
 const commandPermissions = require("../command_permissions.js");
-const dom5NationStore = require("../../games/dominions5_nation_store");
 const { SemanticError } = require("../../errors/custom_errors.js");
 
 const commandData = new CommandData("CLAIM_PRETENDER");
@@ -28,26 +27,17 @@ function ClaimPretenderCommand()
 function _behaviour(commandContext)
 {
     const gameObject = commandContext.getGameTargetedByCommand();
-    const gameSettings = gameObject.getSettingsObject();
-    const eraSetting = gameSettings.getEraSetting();
-
     const playerId = commandContext.getCommandSenderId();
     const commandArguments = commandContext.getCommandArgumentsArray();
-    const nameOfNationToBeClaimed = commandArguments[0];
-    const nationObject = dom5NationStore.getNationInEra(nameOfNationToBeClaimed, eraSetting.getValue());
+    const nationNumberSent = commandArguments[0];
 
-    //TODO: check nation name/filename here, with the dom5 nation JSON data?
-    if (nationObject == null)
-        throw new SemanticError(`Invalid nation identifier provided.`);
-
-    return gameObject.checkIfNationIsSubmitted(nationObject.getFilename())
-    .then((isSubmitted) =>
+    return gameObject.fetchSubmittedNationFilename(nationNumberSent)
+    .then((nationFilename) =>
     {
-        if (isSubmitted === false)
-            return Promise.reject(new Error(`Nation is not submitted.`));
+        if (nationFilename == null)
+            return Promise.reject(new SemanticError(`Invalid nation selected. Number does not match any submitted nation.`));
 
-        else return gameObject.claimNation(playerId, nationObject.getFilename());
+        else return gameObject.claimNation(playerId, nationFilename);
     })
-    .then(() => commandContext.respondToCommand(new MessagePayload(`Pretender was claimed.`)))
-    .catch((err) => commandContext.respondToCommand(new MessagePayload(`Error occurred when claiming pretender:\n\n${err.message}`)));
+    .then(() => commandContext.respondToCommand(new MessagePayload(`Pretender was claimed.`)));
 }

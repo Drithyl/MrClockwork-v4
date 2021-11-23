@@ -2,7 +2,6 @@
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
-const dominions5NationStore = require("../../games/dominions5_nation_store.js");
 const { SemanticError } = require("../../errors/custom_errors.js");
 const MessagePayload = require("../prototypes/message_payload.js");
 
@@ -20,9 +19,7 @@ function RemovePretenderCommand()
         commandPermissions.assertMemberIsTrusted,
         commandPermissions.assertCommandIsUsedInGameChannel,
         commandPermissions.assertGameIsOnline,
-        commandPermissions.assertGameHasNotStarted,
-        assertNationNameExists,
-        assertMemberIsOwnerOfPretender
+        commandPermissions.assertGameHasNotStarted
     );
 
     return removePretenderCommand;
@@ -30,48 +27,35 @@ function RemovePretenderCommand()
 
 function _behaviour(commandContext)
 {
+    var _nationFilename;
     const gameObject = commandContext.getGameTargetedByCommand();
-    const nameOfNationToBeRemoved = extractNationNameArgument(commandContext);
-    const nationObject = dominions5NationStore.getNation(nameOfNationToBeRemoved);
-    const nationFilename = nationObject.getFilename();
+    const playerGuildMemberWrapper = commandContext.getSenderGuildMemberWrapper();
+    const numberOfNationToBeRemoved = _extractNationNumberArgument(commandContext);
 
-    return gameObject.emitPromiseWithGameDataToServer("REMOVE_NATION", { nationFilename: nationFilename })
-    .then(() => gameObject.removeControlOfNation(nationFilename))
+    if (numberOfNationToBeRemoved == null)
+        return commandContext.respondToCommand(new MessagePayload(`You must specify a nation identifier to unclaim.`));
+
+    return gameObject.fetchSubmittedNationFilename(numberOfNationToBeRemoved)
+    .then((nationFilename) =>
+    {
+        if (nationFilename == null)
+            return Promise.reject(new SemanticError(`Invalid nation selected. Number does not match any submitted nation.`));
+
+        if (gameObject.isPlayerControllingNation(playerGuildMemberWrapper.getId(), nationFilename) === false &&
+            commandContext.isSenderGameOrganizer() === false)
+            return Promise.reject(new Error(`Only the game organizer or the owner of this nation can do this.`));
+
+        _nationFilename = nationFilename;
+        return gameObject.emitPromiseWithGameDataToServer("REMOVE_NATION", { nationFilename })  
+    })
+    .then(() => gameObject.removeControlOfNation(_nationFilename))
     .then(() => commandContext.respondToCommand(new MessagePayload(`Pretender was removed.`)));
 }
 
-function assertNationNameExists(commandContext)
-{
-    const nationName = extractNationNameArgument(commandContext);
-    const gameObject = commandContext.getGameTargetedByCommand();
-    const gameSettings = gameObject.getSettingsObject();
-    const eraSetting = gameSettings.getEraSetting();
-    const eraValue = eraSetting.getValue();
-
-    if (dominions5NationStore.isValidNationIdentifierInEra(nationName, eraValue) === false)
-        throw new SemanticError(`Invalid nation selected. Name does not match any nation in this era.`);
-}
-
-function assertMemberIsOwnerOfPretender(commandContext)
-{
-    const nationName = extractNationNameArgument(commandContext);
-    const gameObject = commandContext.getGameTargetedByCommand();
-    const playerGuildMemberWrapper = commandContext.getSenderGuildMemberWrapper();
-    var nationObject;
-
-    if (nationName == null)
-        return commandContext.respondToCommand(new MessagePayload(`You must specify a nation identifier to unclaim.`));
-
-    nationObject = dominions5NationStore.getNation(nationName);
-
-    if (gameObject.isPlayerControllingNation(playerGuildMemberWrapper.getId(), nationObject.getFilename()) === false)
-        throw new Error(`You are not the owner of this nation.`);
-}
-
-function extractNationNameArgument(commandContext)
+function _extractNationNumberArgument(commandContext)
 {
     const commandArguments = commandContext.getCommandArgumentsArray();
-    const nameOfNationToBeRemoved = commandArguments[0];
+    const nationNbrSent = commandArguments[0];
 
-    return nameOfNationToBeRemoved;
+    return nationNbrSent;
 }

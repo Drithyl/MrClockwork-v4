@@ -64,6 +64,5 @@ function _behaviour(commandContext)
         payload.setAttachment("deleted_mods.txt", Buffer.from(deletedModsStringList, "utf8"));
 
         return commandContext.respondToCommand(payload);
-    })
-    .catch((err) => commandContext.respondToCommand(new MessagePayload(`Error occurred: ${err.message}\n\n${err.stack}`)));
+    });
 }
