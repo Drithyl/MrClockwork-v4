@@ -4,6 +4,7 @@ const config = require("../../config/config.json");
 const InteractionWrapper = require("./interaction_wrapper.js");
 const { SemanticError } = require("../../errors/custom_errors");
 const ongoingGamesStore = require("../../games/ongoing_games_store.js");
+const UserWrapper = require("./user_wrapper");
 
 
 module.exports = CommandInteractionWrapper;
@@ -17,28 +18,44 @@ function CommandInteractionWrapper(discordJsInteractionObject)
     _interactionWrapper.getCommand = () => _discordJsInteractionObject.command;
     _interactionWrapper.getCommandId = () => _discordJsInteractionObject.commandId;
     _interactionWrapper.getCommandString = () => _discordJsInteractionObject.commandName;
-    _interactionWrapper.getOptions = () => _discordJsInteractionObject.options.data;
+    _interactionWrapper.getOptions = () => _discordJsInteractionObject.options;
+    _interactionWrapper.getOptionsArray = () => _discordJsInteractionObject.options.data;
     _interactionWrapper.isCommandInteraction = () => true;
 
     _interactionWrapper.isDeferred = () => _discordJsInteractionObject.deferred;
     _interactionWrapper.isEphemeral = () => _discordJsInteractionObject.ephemeral;
     _interactionWrapper.wasRepliedTo = () => _discordJsInteractionObject.replied;
 
-    _interactionWrapper.defer = (isEphemeral = false) => _discordJsInteractionObject.defer({ ephemeral: isEphemeral });
+    _interactionWrapper.deferReply = (isEphemeral = false) => _discordJsInteractionObject.deferReply({ ephemeral: isEphemeral, fetchReply: true });
     _interactionWrapper.deleteReply = () => _discordJsInteractionObject.deleteReply();
     _interactionWrapper.editReply = (newMessageString, options) => _discordJsInteractionObject.editReply(Object.assign({content: newMessageString}, options));
     _interactionWrapper.fetchReply = () => _discordJsInteractionObject.fetchReply();
     _interactionWrapper.followUp = (messageString) => _discordJsInteractionObject.followUp(Object.assign({content: messageString}, options));
 
     // Core methods to reply to an interaction or send a message to its channel
-    _interactionWrapper.reply = (...args) => _discordJsInteractionObject.reply(...args);
+    _interactionWrapper.reply = (...args) => 
+    {
+        if (_discordJsInteractionObject.replied === true || _discordJsInteractionObject.deferred === true)
+            return _discordJsInteractionObject.followUp(...args);
+
+        else return _discordJsInteractionObject.reply(...args);
+    };
+
     _interactionWrapper.send = (...args) => _interactionWrapper.getDestinationChannel().send(...args);
 
     // Wrapper methods to reply to an interaction, made to respect the interface created
     // by this wrapper and the CommandContext wrapper, both of which commands and
     // MessagePayload use interchangeably
-    _interactionWrapper.respondToCommand = (messagePayload) => messagePayload.send(_interactionWrapper);
-    _interactionWrapper.respondToSender = (messagePayload) => messagePayload.send(_interactionWrapper, { ephemeral: true });
+    _interactionWrapper.respondToCommand = (messagePayload) => 
+    {
+        return messagePayload.send(_interactionWrapper);
+    };
+
+    _interactionWrapper.respondToSender = (messagePayload) => 
+    {
+        return messagePayload.send(_interactionWrapper, { ephemeral: true });
+    };
+    _interactionWrapper.respondByDm = (messagePayload) => _interactionWrapper.getSenderUserWrapper().sendMessage(messagePayload);
 
     _interactionWrapper.isGameCommand = () => _gameTargetedByCommand != null;
     _interactionWrapper.getGameTargetedByCommand = () => _gameTargetedByCommand;
@@ -101,26 +118,35 @@ function CommandInteractionWrapper(discordJsInteractionObject)
 
     _interactionWrapper.getCommandArgumentsArray = () => 
     {
-        const options = _interactionWrapper.getOptions();
+        const options = _interactionWrapper.getOptionsArray();
         const argsArray = [];
         options.forEach((option) => argsArray.push(option.value));
         return argsArray;
     };
 
-    _interactionWrapper.getMentionedMembers = (optionName) => 
+    _interactionWrapper.getMentionedMembers = async () => 
     {
-        const mentionedMember = _interactionWrapper.getOptions.getUser(optionName);
+        const guildMemberWrappers = [];
+        const guild = _interactionWrapper.getGuildWrapper();
 
-        if (mentionedMember == null)
-            return [];
+        await _interactionWrapper.getOptionsArray().forEachPromise(async (option, i, nextPromise) =>
+        {
+            if (option.type !== "USER")
+                return nextPromise();
 
-        else return [ mentionedMember ];
+            const userWrapper = new UserWrapper(option.user);
+            const memberWrapper = await guild.fetchGuildMemberWrapperById(userWrapper.getId());
+            guildMemberWrappers.push(memberWrapper);
+            return nextPromise();
+        });
+
+        return guildMemberWrappers;
     };
 
     _interactionWrapper.getMessageContent = () => 
     {
         const name = _interactionWrapper.getCommandString();
-        const options = _interactionWrapper.getOptions();
+        const options = _interactionWrapper.getOptionsArray();
         var content = name + " ";
 
         options.forEach((option) => content += " " + option.value.toString());
