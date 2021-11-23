@@ -29,6 +29,7 @@
     {"number": 30, "name": "Berytos", "fullName": "Berytos, The Phoenix Empire", "filename": "early_berytos"},
     {"number": 31, "name": "Xibalba", "fullName": "Xibalba, Vigil of the Sun", "filename": "early_xibalba"},
     {"number": 32, "name": "Mekone", "fullName": "Mekone, Brazen Giants", "filename": "early_mekone"},
+    {"number": 33, "name": "Ubar", "fullName": "Ubar, Kingdom of the Unseen", "filename": "early_ubar"},
     {"number": 36, "name": "Atlantis", "fullName": "Atlantis, Emergence of the Deep Ones", "filename": "early_atlantis"},
     {"number": 37, "name": "R'lyeh", "fullName": "R'lyeh, Time of Aboleths", "filename": "early_rlyeh"},
     {"number": 38, "name": "Pelagia", "fullName": "Pelagia, Pearl Kings", "filename": "early_pelagia"},
