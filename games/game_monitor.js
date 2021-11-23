@@ -309,7 +309,7 @@ function _processNewTurnPreferences(game, turnNumber)
         
         if (preferences.isReceivingBackups() === true)
         {
-            const controlledNations = playerFile.getControlledNationsInGame(gameName).map((nationObject) => nationObject.getFilename());
+            const controlledNations = playerFile.getControlledNationFilenamesInGame(gameName);
 
             nationFilesToFetch.push( ...controlledNations );
             filesRequestingBackups.push(playerFile);
@@ -328,7 +328,7 @@ function _processNewTurnPreferences(game, turnNumber)
         filesRequestingBackups.forEach((playerFile) =>
         {
             const preferences = playerFile.getEffectiveGamePreferences(gameName);
-            const controlledNations = playerFile.getControlledNationsInGame(gameName).map((nationObject) => nationObject.getFilename());
+            const controlledNations = playerFile.getControlledNationFilenamesInGame(gameName);
             const payload = new MessagePayload(`Find below your nation files for turn ${turnNumber}.`)
 
             botClientWrapper.fetchUser(playerFile.getId())
@@ -358,7 +358,7 @@ function _processNewHourPreferences(game, playerTurnData, hourMarkPassed)
     game.forEachPlayerFile((file) =>
     {
         const preferences = file.getEffectiveGamePreferences(gameName);
-        const controlledNationsByFullName = file.getControlledNationsInGame(gameName).map((nationObject) => nationObject.getFullName());
+        const controlledNationsByFullName = file.getControlledNationFilenamesInGame(gameName);
         
         if (preferences.hasReminderAtHourMark(hourMarkPassed) === true)
         {
