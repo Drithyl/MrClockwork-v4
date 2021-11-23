@@ -120,8 +120,15 @@ function MessagePayload(header, content = "", splitContent = true, splitWrapper 
             // Only one single message can be senta as a reply to a command interaction;
             // after that it will be resolved and further messages will have to be sent normally
             // fetchReply option is needed to receive the bot's sent message as a return value
-            if (assert.isFunction(target.isCommandInteraction) === true && i === 0)
-                sentMessage = await target.reply(Object.assign(payload, { fetchReply: true }));
+            if (assert.isFunction(target.isCommandInteraction) === true)
+            {
+                var resolvedMessage = await target.reply(Object.assign(payload, { fetchReply: true }));
+
+                // If this is the first message sent, store it as our sent message to pin it
+                // later if needed; only the first message should be pinned
+                if (i === 0)
+                    sentMessage = resolvedMessage;
+            }
 
             else if (assert.isFunction(target.send) === true)
             {
