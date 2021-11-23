@@ -18,8 +18,12 @@ function _onCommandInteractionReceived(discordJsInteraction)
     
     try
     {
-        commandStore.invokeCommandInteraction(commandInteractionWrapper)
-        .catch((err) => _handleCommandInteractionError(commandInteractionWrapper, err));
+        commandInteractionWrapper.deferReply()
+        .then(() => commandStore.invokeCommandInteraction(commandInteractionWrapper))
+        .catch((err) => 
+        {
+            _handleCommandInteractionError(commandInteractionWrapper, err)
+        });
     }
 
     catch(err)
@@ -45,6 +49,6 @@ function _handleCommandInteractionError(commandInteractionWrapper, err)
     else
     {
         log.error(log.getLeanLevel(), `ERROR HANDLING COMMAND`, err);
-        return commandInteractionWrapper.respondToSender(new MessagePayload(`Error occurred: ${err.message}`));
+        return commandInteractionWrapper.respondToSender(new MessagePayload(`Interaction Error occurred: ${err.message}\n\n${err.stack}`));
     }
 }
