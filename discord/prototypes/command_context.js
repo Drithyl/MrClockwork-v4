@@ -102,6 +102,7 @@ function CommandContext(messageWrapper)
 
     this.respondToCommand = (messagePayload) => _messageWrapper.respond(messagePayload);
     this.respondToSender = (messagePayload) => _messageWrapper.respondToSender(messagePayload);
+    this.respondByDm = (messagePayload) => _messageWrapper.respondToSender(messagePayload);
 }
 
 function _extractCommandString(messageContent)
