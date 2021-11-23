@@ -47,10 +47,31 @@ function Dominions5Game()
         });
     };
 
-    _gameObject.checkIfNationIsSubmitted = (nationFilename) =>
+    _gameObject.fetchSubmittedNationFilename = (nationIdentifier) =>
     {
         return _gameObject.fetchSubmittedNations()
-        .then((list) => Promise.resolve(list.find((nation) => nationFilename === nation.filename) != null));
+        .then((nationArray) =>
+        {
+            const foundNation = nationArray.find((nation) => 
+            {
+                if (nationIdentifier === nation.filename)
+                    return true;
+                
+                else if (+nationIdentifier === +nation.nationNbr)
+                    return true;
+            });
+
+            if (foundNation == null)
+                return null;
+
+            else return foundNation.filename;
+        });
+    };
+
+    _gameObject.checkIfNationIsSubmitted = (nationIdentifier) =>
+    {
+        return _gameObject.fetchSubmittedNationFilename(nationIdentifier)
+        .then((filename) => Promise.resolve(filename != null));
     };
 
     _gameObject.forEachPlayerFile = (fnToCall) => _playerFiles.forEachItem((file, id) => fnToCall(file, id));
@@ -94,8 +115,9 @@ function Dominions5Game()
         const playerId = _gameObject.getPlayerIdControllingNationInGame(nationFilename);
         const playerFile = _playerFiles[playerId];
 
+        // No player controls the nation, no need to do anything
         if (playerFile == null)
-            return Promise.reject(new Error(`Cannot remove control of nation, player file does not exist.`));
+            return Promise.resolve();
 
         return playerFile.removeControlOfNationInGame(nationFilename, _gameObject.getName())
         .then(() =>
