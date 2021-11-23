@@ -34,7 +34,7 @@ function _behaviour(commandContext)
     .then((scoresFile) => 
     {
         const payload = new MessagePayload(messageString);
-        payload.setAttachment(`${gameName} Scores.txt`, scoresFile);
+        payload.setAttachment(`${gameName} Scores.html`, scoresFile);
         return commandContext.respondToCommand(payload);
     });
 }
