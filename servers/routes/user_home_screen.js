@@ -22,7 +22,6 @@ exports.set = (expressApp) =>
         sessionId = session.getSessionId();
         playedGames = _getPlayedGamesData(userId);
         organizedGames = _getOrganizedGamesData(userId);
-        console.log(organizedGames);
         
         session.storeSessionData({
             sessionId, 
