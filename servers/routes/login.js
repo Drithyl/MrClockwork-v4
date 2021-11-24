@@ -10,7 +10,8 @@ exports.set = (expressApp) =>
 {
     expressApp.get("/authenticate", (req, res) =>
     {
-        res.redirect(config.oAuth2Url);
+        var oAuth2Url = `https://discord.com/api/oauth2/authorize?client_id=${config.discordClientId}&redirect_uri=${config.discordRedirectUri}&response_type=code&scope=identify&prompt=none`
+        res.redirect(oAuth2Url);
     });
 
 

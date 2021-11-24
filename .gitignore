@@ -2,6 +2,7 @@
 *.bat
 *.txt
 *.out
+*.zip
 
 # Sensitive config data
 config/config.json
