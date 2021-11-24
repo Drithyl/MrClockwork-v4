@@ -65,7 +65,7 @@ const connectionsMessageRegexp = new RegExp("Connections\\s*\\d+", "i");
 
 // Exact message: "(Arc) (Ul) (Mav) (Sa) (Mac) (Ct) (Pa) (Ag) (Fom) Va+ Rus? *La-", depending on each nation name, normally preceded by the message above; also
 // happens every second after game start, as a way to keep the status
-const nationsTurnStatusMessageRegExp = new RegExp("^(\\(?\\*?\\w+(\\)|\\?|\\-|\\+|\\s*)\\s*)+$", "i");
+const nationsTurnStatusMessageRegExp = new RegExp("^(\\(?\\*?(\\w+|\\?)(\\)|\\?|\\-|\\+)?\\s*)+$", "i");
 
 const generatingNextTurnMessageRegExp = new RegExp("Generating next turn", "i");
 
