@@ -27,6 +27,7 @@ function SetOrganizerCommand()
 function _behaviour(commandContext)
 {
     const gameObject = commandContext.getGameTargetedByCommand();
+    var newOrganizerWrapper;
 
     return commandContext.getMentionedMembers()
     .then((members) =>
@@ -34,7 +35,8 @@ function _behaviour(commandContext)
         if (members.length <= 0)
             return Promise.reject(new SemanticError(`You must mention the member who you wish to appoint as organizer.`));
 
-        gameObject.setOrganizer(members[0]);
+        newOrganizerWrapper = members[0];
+        gameObject.setOrganizer(newOrganizerWrapper);
         return gameObject.save();
     })
     .then(() => 
