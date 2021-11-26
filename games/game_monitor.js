@@ -72,7 +72,7 @@ function _updateDom5Games()
         currentQueries++;
         log.general(log.getVerboseLevel(), `Total queries running now: ${currentQueries}`);
 
-        return _updateCycle(gameToUpdate)
+        _updateCycle(gameToUpdate)
         .then(() => 
         {
             _reduceQueries();
