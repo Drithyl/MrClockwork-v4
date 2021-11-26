@@ -41,7 +41,7 @@ function _behaviour(commandContext)
         if (formattedListAsString === "")
             return commandContext.respondToCommand(new MessagePayload(`There are no submitted pretenders.`));
 
-        return commandContext.respondToCommand(new MessagePayload(formattedListAsString.toBox()));
+        return commandContext.respondToCommand(new MessagePayload(formattedListAsString.toBox(), "", true, "```"));
     });
 }
 
