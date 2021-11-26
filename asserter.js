@@ -137,7 +137,7 @@ function isValidPath(path)
 
 function isValidDiscordId(id)
 {
-	return isString(id) === true && /^\d{18}$/.test(id) === true;
+	return isString(id) === true && /^\d+$/.test(id) === true;
 }
 
 function assertGameTypeIsValid(gameType)
