@@ -12,7 +12,7 @@ module.exports.runPatchers = async () =>
 
     catch(err)
     {
-        throw new Error(`PATCHING ERROR: ${err.message}`);
+        throw new Error(`PATCHING ERROR: ${err.message}\n\n${err.stack}`);
     }
 };
 
