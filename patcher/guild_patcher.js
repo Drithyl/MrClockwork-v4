@@ -38,6 +38,8 @@ function _addGuildData(v3GuildData)
 {
     const guildId = v3GuildData.id;
     const patchedData = { guildId };
+    const thisGuildDirPath = path.resolve(GUILD_DATA_DIR, guildId);
+    const thisGuildDataPath = path.resolve(GUILD_DATA_DIR, guildId, `data.json`);
     log.general(log.getLeanLevel(), `Attempting to import v3 guild data for guild ${guildId}...`);
 
     if (assert.isValidDiscordId(v3GuildData.newsChannelID) === true)
@@ -86,7 +88,14 @@ function _addGuildData(v3GuildData)
         }
     }
 
-    fs.mkdirSync(path.resolve(GUILD_DATA_DIR, guildId));
-    fs.writeFileSync(path.resolve(GUILD_DATA_DIR, guildId, `data.json`), JSON.stringify(patchedData));
-    log.general(log.getLeanLevel(), `Saved patched data`, patchedData);
+    if (fs.existsSync(thisGuildDirPath) === false)
+        fs.mkdirSync(thisGuildDirPath);
+
+    if (fs.existsSync(thisGuildDataPath) === false)
+    {
+        fs.writeFileSync(thisGuildDataPath, JSON.stringify(patchedData));
+        log.general(log.getLeanLevel(), `Saved patched data`, patchedData);
+    }
+
+    else log.general(log.getLeanLevel(), `Guild patched data file already exists; skipping`);
 }
