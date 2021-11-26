@@ -38,6 +38,7 @@ module.exports = () =>
 
 function _addGuildData(v3GuildData)
 {
+    const guildId = v3GuildData.id;
     log.general(log.getLeanLevel(), `Attempting to import v3 guild data for guild ${guildId}...`);
 
     if (assert.isValidDiscordId(v3GuildData.newsChannelID) === true)
