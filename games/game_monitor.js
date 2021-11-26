@@ -5,46 +5,100 @@ const botClientWrapper = require("../discord/wrappers/bot_client_wrapper.js");
 const { queryDominions5Game } = require("./prototypes/dominions5_status.js");
 const MessagePayload = require("../discord/prototypes/message_payload.js");
 
+const MAX_SIMULTANEOUS_QUERIES = 20;
 const UPDATE_INTERVAL = 10000;
+const monitoredGames = [];
+var currentPendingGameIndex = 0;
+var currentQueries = 0;
 
-var monitoredGames = {};
 
+// Start the interval to launch as many queries as the MAX_SIMULTANEOUS_QUERIES,
+// or the amount of monitoredGames, whichever is smaller
+_queueGameUpdates();
+
+
+// Add a game to be monitored and updated
 exports.monitorDom5Game = (game) =>
 {
-    monitoredGames[game.getName()] = true;
+    if (monitoredGames.find((g) => g.getName() === game.getName()) != null)
+        return log.general(log.getLeanLevel(), `${game.getName()} is already being monitored.`);
+        
+    monitoredGames.push(game);
     log.general(log.getNormalLevel(), `${game.getName()} will be monitored for updates.`);
-    _updateDom5Game(game);
 };
 
+// Remove a game from the monitoring list
 exports.stopMonitoringDom5Game = (game) =>
 {
-    delete monitoredGames[game.getName()];
-    log.general(log.getLeanLevel(), `${game.getName()} will no longer be monitored for updates.`);
+    for (var i = 0; i < monitoredGames.length; i++)
+    {
+        if (monitoredGames[i].getName() === game.getName())
+        {
+            monitoredGames.splice(i, 1);
+            return log.general(log.getLeanLevel(), `${game.getName()} will no longer be monitored for updates.`);
+        }
+    }
+    
+    log.general(log.getLeanLevel(), `${game.getName()} is not in the list of monitored games; no need to remove.`);
 };
 
-function _updateDom5Game(game)
+// Start the timeout for a new round of game updates
+function _queueGameUpdates()
 {
-    const gameName = game.getName();
+    setTimeout(_updateDom5Games, UPDATE_INTERVAL);
+}
 
-    setTimeout(() => 
+// Launch as many queries as the space allows, between the currentQueries and the
+// max allowed, as well as number of games. Each time, increment the currentPendingGameIndex
+// so the next loop starts a different game. Once a query finishes, reduce the number
+// of running queries for the next interval. 
+function _updateDom5Games()
+{
+    while(currentQueries < MAX_SIMULTANEOUS_QUERIES && currentQueries < monitoredGames.length)
     {
-        if (ongoingGameStore.hasOngoingGameByName(gameName) === false)
-            delete monitoredGames[gameName];
+        var gameToUpdate = monitoredGames[currentPendingGameIndex];
+        _cyclePendingGameIndex();
 
-        if (monitoredGames[gameName] == null)
-            return;
-        
-        return _updateCycle(game)
-        .then(() => _updateDom5Game(game))
+        if (gameToUpdate == null)
+            continue;
+
+        if (ongoingGameStore.hasOngoingGameByName(gameToUpdate.getName()) === false)
+        {
+            log.general(log.getLeanLevel(), `${gameToUpdate.getName()} not found on store; removing from list.`);
+            exports.stopMonitoringDom5Game(gameToUpdate);
+            continue;
+        }    
+     
+        currentQueries++;
+
+        return _updateCycle(gameToUpdate)
+        .then(() => 
+        {
+            _reduceQueries();
+            log.general(log.getLeanLevel(), `Query finished, reducing current queries.`);
+            _queueGameUpdates();
+        })
         .catch((err) => 
         {
             log.error(log.getNormalLevel(), `ERROR UPDATING DOM5 GAME ${gameName}`, err);
-            
-            if (monitoredGames[gameName] != null)
-                _updateDom5Game(game);
+            _reduceQueries();
+            _queueGameUpdates();
         });
+    }
+}
 
-    }, UPDATE_INTERVAL);
+function _cyclePendingGameIndex()
+{
+    currentPendingGameIndex++;
+    if (currentPendingGameIndex >= monitoredGames.length)
+        currentPendingGameIndex = 0;
+}
+
+function _reduceQueries()
+{
+    currentQueries--;
+    if (currentQueries < 0)
+        currentQueries = 0;
 }
 
 function _updateCycle(game)
