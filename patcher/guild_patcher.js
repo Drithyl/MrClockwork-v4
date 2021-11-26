@@ -85,6 +85,6 @@ function _addGuildData(v3GuildData)
     }
 
     fs.mkdirSync(path.resolve(GUILD_DATA_DIR, guildId));
-    fs.writeFileSync(path.resolve(GUILD_DATA_DIR, guildId, `${guildId}.json`), JSON.stringify(patchedData));
+    fs.writeFileSync(path.resolve(GUILD_DATA_DIR, guildId, `data.json`), JSON.stringify(patchedData));
     log.general(log.getLeanLevel(), `Saved patched data`, patchedData);
 }

@@ -51,6 +51,11 @@ function _initializeComponents()
     process.on("error", (err) => log.error(log.getLeanLevel(), `PROCESS ERROR`, err));
     process.on("unhandledRejection", err => log.error(log.getLeanLevel(), `UNHANDLED REJECTION ERROR`, err));
     process.on("uncaughtException", err => log.error(log.getLeanLevel(), `UNCAUGHT EXCEPTION ERROR`, err));
+    process.exit = (code) => 
+    {
+        console.log(`Process exited with code ${code}`);
+        console.log(new Error().stack);
+    };
 
     //Begin initialization
     Promise.resolve(patcher.runPatchers())

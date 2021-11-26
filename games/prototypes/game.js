@@ -253,6 +253,8 @@ function Game()
         assert.isStringOrThrow(jsonData.serverId);
         assert.isStringOrThrow(jsonData.guildId);
 
+        log.general(log.getLeanLevel(), `${jsonData.name} loading...`);
+
         var guild = guildStore.getGuildWrapperById(jsonData.guildId);
         var server = hostServerStore.getHostServerById(jsonData.serverId);
 
