@@ -31,17 +31,21 @@ module.exports = async () =>
     {
         var jsonData;
         var patchedJson;
+
+        log.general(log.getLeanLevel(), `Checking possible game file to patch at ${dataPath}...`);
         const stat = await fsp.stat(dataPath);
 
         if (stat.isDirectory() === true || path.extname(dataPath) !== ".json")
             return nextPromise();
 
+        
+        log.general(log.getLeanLevel(), `Game data found, reading json...`);
         jsonData = require(dataPath);
 
         if (jsonData.version === "4" || jsonData.needsPatching === true)
             return nextPromise();
 
-        log.general(log.getLeanLevel(), `Found v3 game ${jsonData.name}; patching it to v4...`);
+        log.general(log.getLeanLevel(), `Read v3 game data: ${jsonData.name}; patching it to v4...`);
         
         try
         {
