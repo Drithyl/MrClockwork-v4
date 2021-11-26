@@ -17,7 +17,7 @@ const V3_GUILD_DATA_FILEPATH = path.resolve(config.dataPath, "v3_guild_data.json
  */
 
 
-module.exports = async () =>
+module.exports = () =>
 {
     if (fs.existsSync( V3_GUILD_DATA_FILEPATH ) === false)
         return log.general(log.getLeanLevel(), `No v3 guild data to patch found; skipping`);
