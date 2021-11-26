@@ -48,7 +48,12 @@ function _initializeComponents()
     playerFileStore = require("./player_data/player_file_store.js");
 
     //Begin initialization
-    discord.startDiscordIntegration()
+    Promise.resolve(patcher.runPatchers())
+    .then(() =>
+    {
+        log.general(log.getLeanLevel(), "Finished patching data.");
+        return discord.startDiscordIntegration();
+    })
     .then(() =>
     {
         log.general(log.getLeanLevel(), "Finished Discord integration.");
@@ -62,11 +67,6 @@ function _initializeComponents()
     .then(() =>
     {
         log.general(log.getLeanLevel(), "Finished populating server store.");
-        return Promise.resolve(patcher.runPatchers());
-    })
-    .then(() =>
-    {
-        log.general(log.getLeanLevel(), "Finished patching data.");
         return Promise.resolve(gamesStore.loadAll());
     })
     .then(() => 

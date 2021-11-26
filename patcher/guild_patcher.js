@@ -4,9 +4,9 @@ const path = require("path");
 const log = require("../logger.js");
 const assert = require("../asserter.js");
 const config = require("../config/config.json");
-const guildDataStore = require("../discord/guild_data_store.js");
 
 const V3_GUILD_DATA_FILEPATH = path.resolve(config.dataPath, "v3_guild_data.json");
+const GUILD_DATA_DIR = path.resolve(config.dataPath, config.guildDataFolder);
 
 /**
  * This module will import the v3_guild_data.json file from the data folder whenever
@@ -27,11 +27,7 @@ module.exports = () =>
     v3GuildData.forEachItem((data, id) =>
     {
         log.general(log.getLeanLevel(), `V3 guild data found for guild with id ${id}`);
-        
-        if (guildDataStore.hasGuildData(id) === false)
-            log.general(log.getLeanLevel(), `Guild with id ${id} is not found in the guild data store; skipping`);
-
-        else _addGuildData(data);
+        _addGuildData(data);
     });
 };
 
@@ -39,51 +35,56 @@ module.exports = () =>
 function _addGuildData(v3GuildData)
 {
     const guildId = v3GuildData.id;
+    const patchedData = { guildId };
     log.general(log.getLeanLevel(), `Attempting to import v3 guild data for guild ${guildId}...`);
 
     if (assert.isValidDiscordId(v3GuildData.newsChannelID) === true)
     {
-        guildDataStore.setNewsChannelId(guildId, v3GuildData.newsChannelID);
+        patchedData.newsChannelId = v3GuildData.newsChannelID;
         log.general(log.getLeanLevel(), `Imported news channel.`);
     }
 
     if (assert.isValidDiscordId(v3GuildData.helpChannelID) === true)
     {
-        guildDataStore.setHelpChannelId(guildId, v3GuildData.helpChannelID);
+        patchedData.helpChannelId = v3GuildData.helpChannelID;
         log.general(log.getLeanLevel(), `Imported help channel.`);
     }
 
     if (assert.isValidDiscordId(v3GuildData.gameCategoryID) === true)
     {
-        guildDataStore.setGameCategoryId(guildId, v3GuildData.gameCategoryID);
+        patchedData.gameCategoryId = v3GuildData.gameCategoryID;
         log.general(log.getLeanLevel(), `Imported game category.`);
     }
 
     if (assert.isValidDiscordId(v3GuildData.blitzCategoryID) === true)
     {
-        guildDataStore.setBlitzCategoryId(guildId, v3GuildData.blitzCategoryID);
+        patchedData.blitzCategoryId = v3GuildData.blitzCategoryID;
         log.general(log.getLeanLevel(), `Imported blitz category.`);
     }
 
         
-    if (v3GuildData.roles == null)
-        return;
-
-    if (assert.isValidDiscordId(v3GuildData.roles.blitzerID) === true)
+    if (v3GuildData.roles != null)
     {
-        guildDataStore.setBlitzerRoleId(guildId, v3GuildData.roles.blitzerID);
-        log.general(log.getLeanLevel(), `Imported blitzer role.`);
+        if (assert.isValidDiscordId(v3GuildData.roles.blitzerID) === true)
+        {
+            patchedData.blitzerRoleId = v3GuildData.roles.blitzerID;
+            log.general(log.getLeanLevel(), `Imported blitzer role.`);
+        }
+    
+        if (assert.isValidDiscordId(v3GuildData.roles.gameMasterID) === true)
+        {
+            patchedData.gameMasterRoleId = v3GuildData.roles.gameMasterID;
+            log.general(log.getLeanLevel(), `Imported game master role.`);
+        }
+    
+        if (assert.isValidDiscordId(v3GuildData.roles.trustedID) === true)
+        {
+            patchedData.trustedRoleId = v3GuildData.roles.trustedID;
+            log.general(log.getLeanLevel(), `Imported trusted role.`);
+        }
     }
 
-    if (assert.isValidDiscordId(v3GuildData.roles.gameMasterID) === true)
-    {
-        guildDataStore.setGameMasterRoleId(guildId, v3GuildData.roles.gameMasterID);
-        log.general(log.getLeanLevel(), `Imported game master role.`);
-    }
-
-    if (assert.isValidDiscordId(v3GuildData.roles.trustedID) === true)
-    {
-        guildDataStore.setTrustedRoleId(guildId, v3GuildData.roles.trustedID);
-        log.general(log.getLeanLevel(), `Imported trusted role.`);
-    }
+    fs.mkdirSync(path.resolve(GUILD_DATA_DIR, guildId));
+    fs.writeFileSync(path.resolve(GUILD_DATA_DIR, guildId, `${guildId}.json`), JSON.stringify(patchedData));
+    log.general(log.getLeanLevel(), `Saved patched data`, patchedData);
 }
