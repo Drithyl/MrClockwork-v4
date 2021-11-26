@@ -24,14 +24,14 @@ module.exports = () =>
 
     const v3GuildData = require(V3_GUILD_DATA_FILEPATH);
 
-    v3GuildData.forEachItem((v3GuildData, id) =>
+    v3GuildData.forEachItem((data, id) =>
     {
         log.general(log.getLeanLevel(), `V3 guild data found for guild with id ${id}`);
         
         if (guildDataStore.hasGuildData(id) === false)
             log.general(log.getLeanLevel(), `Guild with id ${id} is not found in the guild data store; skipping`);
 
-        else _addGuildData(v3GuildData);
+        else _addGuildData(data);
     });
 };
 
