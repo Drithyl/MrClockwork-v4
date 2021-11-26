@@ -51,6 +51,6 @@ function getListOfMapsOnServerAndSend(serverObject, commandContext)
             return commandContext.respondToCommand("No maps are available on this server.");
 
         list.forEach((map) => stringList += `${(map.name).width(48)} (${map.land.toString().width(4)} land, ${map.sea.toString().width(3)} sea).\n`);
-        return commandContext.respondToCommand(new MessagePayload(introductionString, stringList.toBox()));
+        return commandContext.respondToCommand(new MessagePayload(introductionString, stringList.toBox(), true, "```"));
     });
 }

@@ -58,6 +58,6 @@ function _behaviour(commandContext)
     })
     .then(() =>
     {
-        return commandContext.respondToCommand(new MessagePayload(stringIntroduction, stringListOfGames.toBox()));
+        return commandContext.respondToCommand(new MessagePayload(stringIntroduction, stringListOfGames.toBox(), true, "```"));
     });
 }

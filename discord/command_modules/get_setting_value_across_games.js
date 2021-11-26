@@ -42,7 +42,7 @@ function _behaviour(commandContext)
         listString += `${valueNamePair[0].toString().width(40)}     in ${valueNamePair[1]}\n`;
     });
 
-    return commandContext.respondToCommand(new MessagePayload(introductionString, listString.toBox()));
+    return commandContext.respondToCommand(new MessagePayload(introductionString, listString, true, "```"));
 }
 
 function _getOrderedValueNamePairsArray(settingKey)

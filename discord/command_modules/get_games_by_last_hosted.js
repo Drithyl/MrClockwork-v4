@@ -27,7 +27,7 @@ function _behaviour(commandContext)
     var sortedGuildGamesEmbeds;
 
     if (commandContext.wasSentByDm() === true)
-        return commandContext.respondToCommand(new MessagePayload(stringList, _printAllSortedGames(sortedGames).toBox()));
+        return commandContext.respondToCommand(new MessagePayload(stringList, _printAllSortedGames(sortedGames).toBox(), true, "```"));
         
     sortedGuildGamesEmbeds = _embedSortedGuildGames(sortedGames, guild);
     

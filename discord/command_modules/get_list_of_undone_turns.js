@@ -46,5 +46,5 @@ function _behaviour(commandContext)
     }, "\n");
 
     
-    return commandContext.respondToCommand(new MessagePayload(messageString, listString.toBox()));
+    return commandContext.respondToCommand(new MessagePayload(messageString, listString.toBox(), true, "```"));
 }
