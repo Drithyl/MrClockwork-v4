@@ -29,6 +29,8 @@ module.exports = () =>
         log.general(log.getLeanLevel(), `V3 guild data found for guild with id ${id}`);
         _addGuildData(data);
     });
+
+    fs.unlinkSync(V3_GUILD_DATA_FILEPATH);
 };
 
 
