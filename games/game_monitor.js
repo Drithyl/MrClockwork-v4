@@ -45,7 +45,7 @@ exports.stopMonitoringDom5Game = (game) =>
 // Start the timeout for a new round of game updates
 function _queueGameUpdates()
 {
-    setTimeout(_updateDom5Games, UPDATE_INTERVAL);
+    setInterval(_updateDom5Games, UPDATE_INTERVAL);
 }
 
 // Launch as many queries as the space allows, between the currentQueries and the
@@ -70,19 +70,18 @@ function _updateDom5Games()
         }    
      
         currentQueries++;
+        log.general(log.getVerboseLevel(), `Total queries running now: ${currentQueries}`);
 
         return _updateCycle(gameToUpdate)
         .then(() => 
         {
             _reduceQueries();
-            log.general(log.getLeanLevel(), `Query finished, reducing current queries.`);
-            _queueGameUpdates();
+            log.general(log.getVerboseLevel(), `Query finished, reducing current queries.`);
         })
         .catch((err) => 
         {
-            log.error(log.getNormalLevel(), `ERROR UPDATING DOM5 GAME ${gameName}`, err);
             _reduceQueries();
-            _queueGameUpdates();
+            log.error(log.getNormalLevel(), `ERROR UPDATING DOM5 GAME ${gameName}`, err);
         });
     }
 }
