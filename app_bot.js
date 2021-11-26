@@ -47,6 +47,11 @@ function _initializeComponents()
     hostServerStore = require("./servers/host_server_store.js");
     playerFileStore = require("./player_data/player_file_store.js");
 
+    //Catch process exceptions and log them here
+    process.on("error", (err) => log.error(log.getLeanLevel(), `PROCESS ERROR`, err));
+    process.on("unhandledRejection", err => log.error(log.getLeanLevel(), `UNHANDLED REJECTION ERROR`, err));
+    process.on("uncaughtException", err => log.error(log.getLeanLevel(), `UNCAUGHT EXCEPTION ERROR`, err));
+
     //Begin initialization
     Promise.resolve(patcher.runPatchers())
     .then(() =>
@@ -89,8 +94,3 @@ function _initializeComponents()
     });
 }
 
-
-//Catch process exceptions and log them here
-process.on("error", (err) => log.error(log.getLeanLevel(), `PROCESS ERROR`, err));
-process.on("unhandledRejection", err => log.error(log.getLeanLevel(), `UNHANDLED REJECTION ERROR`, err));
-process.on("uncaughtException", err => log.error(log.getLeanLevel(), `UNCAUGHT EXCEPTION ERROR`, err));
