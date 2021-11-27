@@ -272,7 +272,7 @@ function Game()
 
         try
         {
-            log.general(log.getLeanLevel(), `${jsonData.name}: fetching organizer...`);
+            log.general(log.getLeanLevel(), `${jsonData.name}: fetching organizer ${jsonData.organizerId}...`);
             const organizerWrapper = await guild.fetchGuildMemberWrapperById(jsonData.organizerId);
             log.general(log.getLeanLevel(), `${jsonData.name}: setting organizer...`);
             this.setOrganizer(organizerWrapper);

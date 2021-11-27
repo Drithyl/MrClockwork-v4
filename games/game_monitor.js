@@ -15,7 +15,7 @@ var currentQueries = 0;
 
 // Start the interval to launch as many queries as the MAX_SIMULTANEOUS_QUERIES,
 // or the amount of monitoredGames, whichever is smaller
-_queueGameUpdates();
+exports.startGameUpdateCycles = () => _queueGameUpdates();
 
 
 // Add a game to be monitored and updated

@@ -202,7 +202,8 @@ function GuildWrapper(discordJsGuildObject)
     this.fetchGuildMemberWrapperById = (memberId) => 
     {
         return this.fetchDiscordJsGuildMemberById(memberId)
-        .then((discordJsGuildMember) => new GuildMemberWrapper(discordJsGuildMember, this));
+        .then((discordJsGuildMember) => new GuildMemberWrapper(discordJsGuildMember, this))
+        .catch((err) => Promise.reject(err));
     };
 
     this.checkIfMember = async (userId) => 

@@ -17,14 +17,30 @@ exports.loadAll = function()
     var pathToGameDataDir = `${config.dataPath}/${config.gameDataFolder}`;
     var gameDirNames = rw.getDirSubfolderNamesSync(pathToGameDataDir);
     
-    return gameDirNames.forAllPromises((gameDirName) =>
+    return gameDirNames.forEachPromise((gameDirName, i, nextPromise) =>
     {
         var gameJSONDataPath = `${pathToGameDataDir}/${gameDirName}/data.json`;
-        log.general(log.getLeanLevel(), `Loading ${gameDirName}...`);
+        log.general(log.getLeanLevel(), `Loading ${gameDirName} (${i}/${gameDirNames.length})...`);
         
         return gameFactory.loadGame(gameJSONDataPath)
-        .then((loadedGame) => exports.addOngoingGame(loadedGame))
-        .catch((err) => log.error(log.getLeanLevel(), `Error loading game`, err));
+        .then((loadedGame) => 
+        {
+            log.general(log.getLeanLevel(), `${gameDirName} loaded, adding to store (${i}/${gameDirNames.length})...`);
+            exports.addOngoingGame(loadedGame);
+            return nextPromise();
+        })
+        .catch((err) => 
+        {
+            log.error(log.getLeanLevel(), `Error loading game (${i}/${gameDirNames.length})`, err)
+            return nextPromise();
+        });
+    })
+    .then(() => 
+    {
+        log.general(log.getLeanLevel(), `All games loaded, starting monitoring...`);
+        gameMonitor.startGameUpdateCycles();
+        log.general(log.getLeanLevel(), `Monitoring started!`);
+        return Promise.resolve();
     });
 };
 
