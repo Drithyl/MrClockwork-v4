@@ -20,6 +20,7 @@ exports.loadAll = function()
     return gameDirNames.forAllPromises((gameDirName) =>
     {
         var gameJSONDataPath = `${pathToGameDataDir}/${gameDirName}/data.json`;
+        log.general(log.getLeanLevel(), `Loading ${gameDirName}...`);
         
         return gameFactory.loadGame(gameJSONDataPath)
         .then((loadedGame) => exports.addOngoingGame(loadedGame))
@@ -83,7 +84,6 @@ exports.deleteGame = function(gameName)
     {
         if (game == null)
         {
-            console.log(_ongoingGamesByName);
             log.general(log.getLeanLevel(), `Game ${gameName} to delete is already null on the store`);
             return Promise.resolve();
         }
@@ -169,14 +169,12 @@ exports.filterGames = function(fnToApply)
 exports.getGamesWhereUserIsPlayer = function(userId)
 {
     const games = exports.filterGames((game) => game.memberIsPlayer(userId) === true);
-    console.log(`User ${userId} has pretenders claimed in following games:\n\n${games.reduce((list, game) => list += `${game.getName()}\n`, "")}`);
     return games;
 }
 
 exports.getGamesWhereUserIsOrganizer = function(userId)
 {
     const games = exports.filterGames((game) => game.getOrganizerId() === userId);
-    console.log(`User ${userId} is organizer in following games:\n\n${games.reduce((list, game) => list += `${game.getName()}\n`, "")}`);
     return games;
 }
 
