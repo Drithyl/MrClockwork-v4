@@ -81,7 +81,7 @@ function _initializeComponents()
     })
     .then(() => 
     {
-        log.general(log.getLeanLevel(), "Games loaded.");
+        log.general(log.getLeanLevel(), "Finished initialization of games.");
 
         if (expressServer.isHttpsAvailable() === true)
             expressServer.startListeningSsl(config.hostServerSslConnectionPort);
