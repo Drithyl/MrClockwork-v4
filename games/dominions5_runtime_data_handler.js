@@ -114,7 +114,7 @@ function handleData(game, message)
     
     // Ignore all these messages, they don't need special handling
     if (isIgnorableMessage(message) === true)
-        return log.general(log.getVerboseLevel(), `Ignoring ${gameName} message ${message}`);
+        return;
 
 
     if (failedToCreateTmpDirErrRegexp.test(message) === true)

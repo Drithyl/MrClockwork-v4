@@ -1,5 +1,6 @@
 
 const log = require("../logger.js");
+const assert = require("../asserter.js");
 const ongoingGameStore = require("./ongoing_games_store.js");
 const botClientWrapper = require("../discord/wrappers/bot_client_wrapper.js");
 const { queryDominions5Game } = require("./prototypes/dominions5_status.js");
@@ -67,7 +68,11 @@ function _updateDom5Games()
             log.general(log.getLeanLevel(), `${gameToUpdate.getName()} not found on store; removing from list.`);
             exports.stopMonitoringDom5Game(gameToUpdate);
             continue;
-        }    
+        }
+
+        // Queries with offline servers are pointless
+        if (gameToUpdate.isServerOnline() === false)
+            continue;
      
         currentQueries++;
         log.general(log.getVerboseLevel(), `Total queries running now: ${currentQueries}`);
@@ -118,9 +123,9 @@ function _updateCycle(game)
         if (game.isEnforcingTimer() === false)
             return Promise.resolve(updatedStatus);
 
-        if (lastKnownStatus.getMsLeft() == null && lastKnownStatus.isOngoing() === true)
+        if (assert.isInteger(lastKnownStatus.getMsLeft()) === false)
         {
-            log.general(log.getLeanLevel(), `${game.getName()} is ongoing but msLeft is null, setting to default.`);
+            log.general(log.getLeanLevel(), `${game.getName()}'s msLeft is null or incorrect; setting to default.`);
             lastKnownStatus.setMsToDefaultTimer(game);
             log.general(log.getLeanLevel(), `${game.getName()} set to ${lastKnownStatus.getMsLeft()}ms.`);
         }
