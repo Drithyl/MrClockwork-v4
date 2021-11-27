@@ -244,8 +244,10 @@ function Game()
         });
     };
 
-    this.loadJSONDataSuper = (jsonData) =>
+    this.loadJSONDataSuper = async (jsonData) =>
     {
+        log.general(log.getLeanLevel(), `${jsonData.name}: asserting basic properties...`);
+
         assert.isObjectOrThrow(jsonData);
         assert.isObjectOrThrow(jsonData.settings);
         assert.isStringOrThrow(jsonData.name);
@@ -253,41 +255,68 @@ function Game()
         assert.isStringOrThrow(jsonData.serverId);
         assert.isStringOrThrow(jsonData.guildId);
 
-        log.general(log.getLeanLevel(), `${jsonData.name} loading...`);
+        log.general(log.getLeanLevel(), `${jsonData.name}: getting guild and server...`);
 
         var guild = guildStore.getGuildWrapperById(jsonData.guildId);
         var server = hostServerStore.getHostServerById(jsonData.serverId);
 
         if (guild == null)
-            return Promise.reject(new Error(`Guild with id ${jsonData.guildId} cannot be found; skipping game ${jsonData.name}`));
+            throw new Error(`Guild with id ${jsonData.guildId} cannot be found; skipping game ${jsonData.name}`);
 
+        log.general(log.getLeanLevel(), `${jsonData.name}: setting basic properties...`);
 
         this.setGuild(guild);
         this.setServer(server);
         this.setName(jsonData.name);
         this.setPort(jsonData.port);
 
-        return guild.fetchGuildMemberWrapperById(jsonData.organizerId)
-        .catch((err) =>
+        try
+        {
+            log.general(log.getLeanLevel(), `${jsonData.name}: fetching organizer...`);
+            const organizerWrapper = await guild.fetchGuildMemberWrapperById(jsonData.organizerId);
+            log.general(log.getLeanLevel(), `${jsonData.name}: setting organizer...`);
+            this.setOrganizer(organizerWrapper);
+        }
+
+        catch(err)
         {
             log.general(log.getLeanLevel(), `${this.getName()}: organizer ${jsonData.organizerId} could not be fetched; setting guild owner instead.`);
-            return guild.fetchOwner();
-        })
-        .then((organizerWrapper) =>
-        {
+            const organizerWrapper = await guild.fetchOwner();
+            log.general(log.getLeanLevel(), `${jsonData.name}: setting owner as organizer...`);
             this.setOrganizer(organizerWrapper);
+        }
 
+        try
+        {
             if (assert.isString(jsonData.channelId) === true)
-                this.setChannel(guild.getChannelById(jsonData.channelId));
+            {
+                const channel = await guild.fetchChannelById(jsonData.channelId);
+                this.setChannel(channel);
+            }
+        }
 
+        catch(err)
+        {
+            log.general(log.getLeanLevel(), `${jsonData.name}: no channel found`);
+        }
+
+        try
+        {
             if (assert.isString(jsonData.roleId) === true)
-                this.setRole(guild.getRoleById(jsonData.roleId));
+            {
+                const role = await guild.fetchRoleById(jsonData.roleId);
+                this.setRole(role);
+            }
+        }
 
+        catch(err)
+        {
+            log.general(log.getLeanLevel(), `${jsonData.name}: no role found`);
+        }
 
-            _settingsObject.loadJSONData(jsonData.settings, jsonData.needsPatching);
-
-            return this;
-        });
+        _settingsObject.loadJSONData(jsonData.settings, jsonData.needsPatching);
+        log.general(log.getLeanLevel(), `${jsonData.name}: finished loadJSONDataSuper()`);
+        return this;
     };
 
     this.toJSONSuper = () =>
