@@ -58,7 +58,7 @@ Dominions5StatusEmbed.loadExisting = (channel, messageId) =>
 
 function Dominions5StatusEmbed(embedWrapper)
 {
-    if (asserter.isInstanceOfPrototypeOrThrow(embedWrapper, MessageEmbedWrapper));
+    asserter.isInstanceOfPrototypeOrThrow(embedWrapper, MessageEmbedWrapper);
 
     const _embed = embedWrapper;
 
