@@ -85,7 +85,7 @@ function MessageWrapper(discordJsMessageObject)
 
 MessageWrapper.fetchFromChannel = (channel, messageId) =>
 {
-    return channel.messages.fetch(messageId)
+    return channel.messages.fetch(messageId, { cache: true })
     .then((discordJsMessage) => Promise.resolve(new MessageWrapper(discordJsMessage)))
     .catch((err) => new Error(`Error fetching message ${messageId} from channel ${channel.name}: ${err.message}`));
 };
