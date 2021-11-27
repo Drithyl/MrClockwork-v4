@@ -113,6 +113,16 @@ function Dominions5Status()
         if (assert.isInteger(msLeft) === true)
             _msLeft = msLeft;
     };
+    
+    this.setMsToDefaultTimer = (game) =>
+    {
+        const timerSetting = game.getSettingsObject().getTimerSetting();
+        const timePerTurnObject = timerSetting.getValue();
+        const msPerTurn = timePerTurnObject.getMsLeft();
+
+        if (assert.isInteger(msPerTurn) === true)
+            _msLeft = msPerTurn;
+    };
 
     this.getPlayers = () => (assert.isArray(_players)) ? [..._players] : null;
     this.setPlayers = (players) =>
