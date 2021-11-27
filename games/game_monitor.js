@@ -1,5 +1,6 @@
 
 const log = require("../logger.js");
+const assert = require("../asserter.js");
 const ongoingGameStore = require("./ongoing_games_store.js");
 const botClientWrapper = require("../discord/wrappers/bot_client_wrapper.js");
 const { queryDominions5Game } = require("./prototypes/dominions5_status.js");
@@ -122,9 +123,9 @@ function _updateCycle(game)
         if (game.isEnforcingTimer() === false)
             return Promise.resolve(updatedStatus);
 
-        if (lastKnownStatus.getMsLeft() == null && lastKnownStatus.isOngoing() === true)
+        if (assert.isInteger(lastKnownStatus.getMsLeft()) === false)
         {
-            log.general(log.getLeanLevel(), `${game.getName()} is ongoing but msLeft is null, setting to default.`);
+            log.general(log.getLeanLevel(), `${game.getName()}'s msLeft is null or incorrect; setting to default.`);
             lastKnownStatus.setMsToDefaultTimer(game);
             log.general(log.getLeanLevel(), `${game.getName()} set to ${lastKnownStatus.getMsLeft()}ms.`);
         }
