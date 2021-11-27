@@ -87,7 +87,7 @@ MessageWrapper.fetchFromChannel = (channel, messageId) =>
 {
     return channel.messages.fetch(messageId, { cache: true })
     .then((discordJsMessage) => Promise.resolve(new MessageWrapper(discordJsMessage)))
-    .catch((err) =>Promise.reject(new Error(`Error fetching message ${messageId} from channel ${channel.name}: ${err.message}`)));
+    .catch((err) => Promise.reject(new Error(`Error fetching message ${messageId} from channel ${channel.name}: ${err.message}`)));
 };
 
 function _startsWithCommandPrefix(messageContent)
