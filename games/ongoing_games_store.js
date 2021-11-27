@@ -20,6 +20,7 @@ exports.loadAll = function()
     return gameDirNames.forAllPromises((gameDirName) =>
     {
         var gameJSONDataPath = `${pathToGameDataDir}/${gameDirName}/data.json`;
+        log.general(log.getLeanLevel(), `Loading ${gameDirName}...`);
         
         return gameFactory.loadGame(gameJSONDataPath)
         .then((loadedGame) => exports.addOngoingGame(loadedGame))

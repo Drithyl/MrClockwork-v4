@@ -13,12 +13,15 @@ exports.loadGame = (pathToJSONDataFile) =>
     .then((jsonStringData) => 
     {
         parsedData = JSON.parse(jsonStringData);
+        log.general(log.getLeanLevel(), `Parsed JSON data`, parsedData);
 
         if (guildStore.hasGuildWrapper(parsedData.guildId) === false)
             return Promise.reject(new Error(`Bot is not deployed on ${parsedData.name}'s guild; skipping loading.`));
 
 
+        log.general(log.getLeanLevel(), `${parsedData.name}: Creating game object...`);
         loadedGame = new Dominions5Game();
+        log.general(log.getLeanLevel(), `${parsedData.name}: Loading JSON data...`);
         return loadedGame.loadJSONData(parsedData);
     })
     .then(() =>

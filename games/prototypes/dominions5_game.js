@@ -297,41 +297,53 @@ function Dominions5Game()
         return _gameObject.emitPromiseToServer(message, dataPackage);
     };
 
-    _gameObject.loadJSONData = (jsonData) =>
+    _gameObject.loadJSONData = async (jsonData) =>
     {
-        return _gameObject.loadJSONDataSuper(jsonData)
-        .then(() =>
+        await _gameObject.loadJSONDataSuper(jsonData);
+
+
+        log.general(log.getLeanLevel(), `${jsonData.name}: loading game status...`);
+
+        if (asserter.isObject(jsonData.status) === true)
+            _status.fromJSON(jsonData.status);
+
+        if (asserter.isBoolean(jsonData.isEnforcingTimer) === true)
+            _isEnforcingTimer = jsonData.isEnforcingTimer;
+
+        if (asserter.isBoolean(jsonData.isCurrentTurnRollback) === true)
+            _isCurrentTurnRollback = jsonData.isCurrentTurnRollback;
+
+
+        if (Array.isArray(jsonData.playerData) === true)
         {
-            if (asserter.isObject(jsonData.status) === true)
-                _status.fromJSON(jsonData.status);
-
-            if (asserter.isBoolean(jsonData.isEnforcingTimer) === true)
-                _isEnforcingTimer = jsonData.isEnforcingTimer;
-
-            if (asserter.isBoolean(jsonData.isCurrentTurnRollback) === true)
-                _isCurrentTurnRollback = jsonData.isCurrentTurnRollback;
-
-            if (Array.isArray(jsonData.playerData) === true)
+            log.general(log.getLeanLevel(), `${jsonData.name}: loading player data...`);
+            jsonData.playerData.forEach((playerId) =>
             {
-                jsonData.playerData.forEach((playerId) =>
-                {
-                    _playerFiles[playerId] = playerFileStore.getPlayerFile(playerId);
-                });
-            }
+                log.general(log.getLeanLevel(), `${jsonData.name}: getting player data of ${playerId}...`);
+                _playerFiles[playerId] = playerFileStore.getPlayerFile(playerId);
+                log.general(log.getLeanLevel(), `${jsonData.name}: ${playerId} player data loaded`);
+            });
+            log.general(log.getLeanLevel(), `${jsonData.name}: finished loading player data`);
+        }
 
+        try
+        {
             if (jsonData.statusEmbedId != null && _gameObject.getChannel() != null)
             {
-                Dominions5StatusEmbed.loadExisting(_gameObject.getChannel(), jsonData.statusEmbedId)
-                .then((statusEmbed) => 
-                {
-                    _statusEmbed = statusEmbed;
-                    return Promise.resolve();
-                })
-                .catch((err) => log.error(log.getLeanLevel(), `ERROR LOADING ${_gameObject.getName()}'S EMBED`, err));
+                log.general(log.getLeanLevel(), `${jsonData.name}: loading existing status embed...`);
+                _statusEmbed = await Dominions5StatusEmbed.loadExisting(_gameObject.getChannel(), jsonData.statusEmbedId);
+                log.general(log.getLeanLevel(), `${jsonData.name}: loaded existing message wrapper`);
             }
+        }
 
-            return Promise.resolve(_gameObject);
-        });
+        catch(err)
+        {
+            log.error(log.getLeanLevel(), `ERROR LOADING ${_gameObject.getName()}'S EMBED`, err)
+        }
+
+        log.general(log.getLeanLevel(), `${jsonData.name}: finished loading all JSON data`);
+
+        return _gameObject;
     };
 
     _gameObject.toJSON = () =>
