@@ -5,7 +5,7 @@ const botClientWrapper = require("../discord/wrappers/bot_client_wrapper.js");
 const { queryDominions5Game } = require("./prototypes/dominions5_status.js");
 const MessagePayload = require("../discord/prototypes/message_payload.js");
 
-const MAX_SIMULTANEOUS_QUERIES = 20;
+const MAX_SIMULTANEOUS_QUERIES = 10;
 const UPDATE_INTERVAL = 10000;
 const monitoredGames = [];
 var currentPendingGameIndex = 0;
@@ -115,9 +115,15 @@ function _updateCycle(game)
     return queryDominions5Game(game)
     .then((updatedStatus) =>
     {
-        //log.general(log.getVerboseLevel(), `${game.getName()}\tquery results received.`);
         if (game.isEnforcingTimer() === false)
             return Promise.resolve(updatedStatus);
+
+        if (lastKnownStatus.getMsLeft() == null && lastKnownStatus.isOngoing() === true)
+        {
+            log.general(log.getLeanLevel(), `${game.getName()} is ongoing but msLeft is null, setting to default.`);
+            lastKnownStatus.setMsToDefaultTimer(game);
+            log.general(log.getLeanLevel(), `${game.getName()} set to ${lastKnownStatus.getMsLeft()}ms.`);
+        }
 
         updatedStatus.copyTimerValues(lastKnownStatus);
 
@@ -268,12 +274,9 @@ function _enforceTimer(game, updateData)
 {
     if (updateData.isNewTurn === true || updateData.wasTurnRollbacked === true || updateData.didGameStart === true)
     {
-        const timerSetting = game.getSettingsObject().getTimerSetting();
-        const timePerTurnObject = timerSetting.getValue();
-        const msPerTurn = timePerTurnObject.getMsLeft();
-        
-        log.general(log.getNormalLevel(), `Setting ${game.getName()}'s timer back to default: ${msPerTurn}ms`);
-        updateData.setMsLeft(msPerTurn);
+        log.general(log.getNormalLevel(), `Setting ${game.getName()}'s timer back to default.`);
+        updateData.setMsToDefaultTimer(game);
+        log.general(log.getNormalLevel(), `${game.getName()} set to ${updateData.getMsLeft()}ms.`);
     }
 
     else if (updateData.getMsLeft() <= 0 && updateData.isPaused() === false)

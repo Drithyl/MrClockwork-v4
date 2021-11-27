@@ -93,7 +93,7 @@ function _addGuildData(v3GuildData)
 
     if (fs.existsSync(thisGuildDataPath) === false)
     {
-        fs.writeFileSync(thisGuildDataPath, JSON.stringify(patchedData));
+        fs.writeFileSync(thisGuildDataPath, JSON.stringify(patchedData, null, 2));
         log.general(log.getLeanLevel(), `Saved patched data`, patchedData);
     }
 
