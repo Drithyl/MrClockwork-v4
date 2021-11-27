@@ -67,7 +67,11 @@ function _updateDom5Games()
             log.general(log.getLeanLevel(), `${gameToUpdate.getName()} not found on store; removing from list.`);
             exports.stopMonitoringDom5Game(gameToUpdate);
             continue;
-        }    
+        }
+
+        // Queries with offline servers are pointless
+        if (gameToUpdate.isServerOnline() === false)
+            continue;
      
         currentQueries++;
         log.general(log.getVerboseLevel(), `Total queries running now: ${currentQueries}`);
