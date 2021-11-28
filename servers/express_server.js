@@ -112,10 +112,10 @@ function _requestServerData(socketWrapper)
         
         hostServer.setOnline(socketWrapper, requestedData.capacity);
         
-        hostServer.onDisconnect(() =>
+        hostServer.onDisconnect((reason) =>
         {
             hostServer.setOffline();
-            log.general(log.getLeanLevel(), `Server ${hostServer.getName()} disconnected.`);
+            log.general(log.getLeanLevel(), `Server ${hostServer.getName()} disconnected (reason: ${reason})`);
         });
         
         log.general(log.getNormalLevel(), "Sending game data...");
