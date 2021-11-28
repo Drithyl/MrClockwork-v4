@@ -27,6 +27,7 @@ function _onMessageReceived(discordJsMessage)
         {
             try
             {
+                log.command(log.getNormalLevel(), context);
                 commandStore.invokeCommand(context)
                 .catch((err) => _handleCommandError(messageWrapper, err));
             }
@@ -57,14 +58,14 @@ function _handleCommandError(messageWrapper, err)
 {
     if (assert.isSemanticError(err) === true)
     {
-        log.general(log.getNormalLevel(), `Invalid command format by user`, err);
+        log.general(log.getNormalLevel(), err.message);
         return messageWrapper.respond(new MessagePayload(`Invalid command format: ${err.message}`));
     }
 
     if (assert.isPermissionsError(err) === true)
     {
-        log.general(log.getNormalLevel(), `Invalid command permissions on user`, err);
-        return messageWrapper.respond(new MessagePayload(`Invalid permissions: ${err.message}`));
+        log.general(log.getNormalLevel(), err.message);
+        return messageWrapper.respond(new MessagePayload(err.message));
     }
 
     else

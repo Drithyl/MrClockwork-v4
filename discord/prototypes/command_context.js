@@ -96,7 +96,6 @@ function CommandContext(messageWrapper)
     this.getCommandSenderId = () => _messageWrapper.getSenderId();
     this.getCommandSenderUsername = () => _messageWrapper.getSenderUsername();
     this.getSenderUserWrapper = () => _messageWrapper.getSenderUserWrapper();
-    this.getSenderGuildMemberWrapper = () => _messageWrapper.getSenderGuildMemberWrapper();
     this.getGameTargetedByCommand = () => _gameTargetedByCommand;
     this.getDestinationChannel = () => _targetChannelObject;
 

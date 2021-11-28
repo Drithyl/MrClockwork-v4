@@ -50,6 +50,28 @@ module.exports.general = (logLevel, header, ...data) =>
     return _writeToFileAndLog(GENERAL_LOG_PATH, header, ...data);
 };
 
+module.exports.command = (logLevel, commandContext) =>
+{
+    if (logLevel > currentLogLevel)
+        return;
+
+    const username = commandContext.getCommandSenderUsername();
+    const command = commandContext.getCommandString();
+    const channel = commandContext.getDestinationChannel();
+    const args = commandContext.getCommandArgumentsArray();
+    const guild = (commandContext.wasSentByDm() === false) ? commandContext.getGuildWrapper() : null;
+    var logStr = `${username} invoked <${command}> `;
+
+    if (guild != null)
+        logStr += `in channel ${channel.name} from guild "${guild.getName()}"`;
+
+    else logStr += `by DM`;
+
+    logStr += ` with args [${args.join(", ")}]`;
+
+    return _writeToFileAndLog(GENERAL_LOG_PATH, logStr);
+};
+
 module.exports.error = (logLevel, header, ...data) =>
 {
     if (logLevel > currentLogLevel)

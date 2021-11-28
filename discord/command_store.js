@@ -28,10 +28,7 @@ exports.isCommandInvoked = (commandContext) =>
         var command = commandStore[i];
 
         if (command.isInvoked(commandContext) === true)
-        {
-            log.general(log.getNormalLevel(), `Command ${command.getName()} was invoked!`);
             return true;
-        }
     }
 
     log.general(log.getNormalLevel(), "No command was found that matched the requirements");
