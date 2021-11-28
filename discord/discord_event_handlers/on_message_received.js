@@ -27,6 +27,7 @@ function _onMessageReceived(discordJsMessage)
         {
             try
             {
+                log.command(log.getNormalLevel(), context);
                 commandStore.invokeCommand(context)
                 .catch((err) => _handleCommandError(messageWrapper, err));
             }

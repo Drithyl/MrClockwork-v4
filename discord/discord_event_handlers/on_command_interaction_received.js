@@ -15,6 +15,7 @@ exports.startListening = () =>
 function _onCommandInteractionReceived(discordJsInteraction)
 {
     var commandInteractionWrapper = new CommandInteractionWrapper(discordJsInteraction);
+    log.command(log.getNormalLevel(), commandInteractionWrapper);
     
     try
     {
