@@ -37,14 +37,14 @@ function _handleCommandInteractionError(commandInteractionWrapper, err)
 {
     if (assert.isSemanticError(err) === true)
     {
-        log.general(log.getNormalLevel(), `Invalid command format by user`, err);
+        log.general(log.getNormalLevel(), err.message);
         return commandInteractionWrapper.respondToSender(new MessagePayload(`Invalid command format: ${err.message}`));
     }
 
     if (assert.isPermissionsError(err) === true)
     {
-        log.general(log.getNormalLevel(), `Invalid command permissions on user`, err);
-        return commandInteractionWrapper.respondToSender(new MessagePayload(`Invalid permissions: ${err.message}`));
+        log.general(log.getNormalLevel(), err.message);
+        return commandInteractionWrapper.respondToSender(new MessagePayload(err.message));
     }
 
     else
