@@ -3,6 +3,7 @@
 *.txt
 *.out
 *.zip
+*.env
 
 # Sensitive config data
 config/config.json
