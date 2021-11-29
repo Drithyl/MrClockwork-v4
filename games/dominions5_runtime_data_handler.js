@@ -28,6 +28,9 @@ const mapImgNotFoundErrRegexp = new RegExp("can\\'t\\s*open\\s*.+.(tga)|(.rgb)|(
 //Exact error: "Can't find mod: WH_6_25.dm"
 const modNotFoundRegexp = new RegExp("can\\'t\\s*find\\s*mod", "i");
 
+//Exact error: "sound: sample '/home/steam/.dominions5/mods/./Dimensional FractureV3.0/tendrils/sounds/will_slosh1.wav' not found"
+const soundNotFoundRegexp = new RegExp("sound\\:.+not found", "i");
+
 //Exact error: "bc: king has throne in capital (p43 c385 h160 vp2) [new game created]"
 const throneInCapitalErrRegexp = new RegExp("king\\s*has\\s*throne\\s*in\\s*capital", "i");
 
@@ -141,6 +144,9 @@ function handleData(game, message)
     else if (modNotFoundRegexp.test(message) === true)
         handleModNotFound(game, message);
 
+    else if (soundNotFoundRegexp.test(message) === true)
+        handleSoundNotFound(game, message);
+
     else if (throneInCapitalErrRegexp.test(message) === true)
         handleThroneInCapital(game, message);
 
@@ -248,6 +254,14 @@ function handleModNotFound(game, message)
 
     //this error string is pretty explicit and informative so send it as is
     sendWarning(game, message);
+}
+
+function handleSoundNotFound(game, message)
+{
+    log.general(log.getVerboseLevel(), `Handling soundNotFound error ${message}`);
+
+    //this error string is pretty explicit and informative so send it as is
+    debounce(game, message);
 }
 
 function handleThroneInCapital(game, message)
