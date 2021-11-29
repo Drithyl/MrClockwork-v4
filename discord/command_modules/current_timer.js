@@ -4,6 +4,7 @@ const CommandData = require("../prototypes/command_data.js");
 const TimeLeft = require("../../games/prototypes/time_left.js");
 const commandPermissions = require("../command_permissions.js");
 const MessagePayload = require("../prototypes/message_payload.js");
+const { PermissionsError } = require("../../errors/custom_errors.js");
 
 const commandData = new CommandData("CURRENT_TIMER");
 
@@ -16,7 +17,6 @@ function CurrentTimerCommand()
     currentTimerCommand.addBehaviour(_behaviour);
 
     currentTimerCommand.addRequirements(
-        commandPermissions.assertMemberIsTrusted,
         commandPermissions.assertGameIsOnline,
         commandPermissions.assertGameHasStarted,
         commandPermissions.assertCommandIsUsedInGameChannel
@@ -53,8 +53,8 @@ function _changeCurrentTimer(gameObject, commandContext, commandArguments, timeL
     const timerChangeArg = commandArguments[0];
     const timeToSet = _extractTimeToSet(timerChangeArg, timeLeft);
 
-    if (gameObject.isEnforcingTimer() === true && timeToSet > 0)
-        gameObject.getLastKnownStatus().setMsLeft(timeToSet);
+    if (commandContext.doesSenderHaveOrganizerPermissions() === false)
+        return Promise.reject(new PermissionsError(`You must be the game organizer to change the timer.`));
 
     return gameObject.changeTimer(timeToSet)
     .then(() =>
