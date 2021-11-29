@@ -113,19 +113,32 @@ function _assertGameIsNotBlitz(commandContext)
 
 function _assertMemberIsTrusted(commandContext)
 {
-    if (commandContext.isSenderTrusted() === false &&
-        commandContext.isSenderGameMaster() === false &&
-        commandContext.isSenderGuildOwner() === false &&
-        commandContext.isSenderDev() === false)
-        throw new PermissionsError(`You must be a trusted member before you can use this command.`);
+    if (commandContext.isSenderDev() === true)
+        return Promise.resolve();
+
+    return commandContext.checkSenderIsTrusted()
+    .then((isTrusted) =>
+    {
+        if (isTrusted === true)
+            return Promise.resolve();
+
+        else return Promise.reject(new SemanticError(`You must be a trusted member before you can use this command.`));
+    });
 }
 
 function _assertMemberIsGameMaster(commandContext)
 {
-    if (commandContext.isSenderGameMaster() === false &&
-        commandContext.isSenderGuildOwner() === false &&
-        commandContext.isSenderDev() === false)
-        throw new PermissionsError(`You must be a Game Master to use this command.`);
+    if (commandContext.isSenderDev() === true)
+        return Promise.resolve();
+
+    return commandContext.checkSenderIsGameMasterOrHigher()
+    .then((isGmOrHigher) =>
+    {
+        if (isGmOrHigher === true)
+            return Promise.resolve();
+
+        else return Promise.reject(new SemanticError(`You must be a Game Master or higher to use this command.`));
+    });
 }
 
 function _assertMemberIsGuildOwner(commandContext)
@@ -136,10 +149,17 @@ function _assertMemberIsGuildOwner(commandContext)
 
 function _assertMemberIsOrganizer(commandContext)
 {
-    if (commandContext.isSenderGameOrganizer() === false &&
-        commandContext.isSenderGameMaster() === false &&
-        commandContext.isSenderGuildOwner() === false)
-        throw new PermissionsError(`You must be the organizer of this game.`);
+    if (commandContext.isSenderGameOrganizer() === true)
+        return Promise.resolve();
+
+    return commandContext.checkSenderIsGameMasterOrHigher()
+    .then((isGmOrHigher) =>
+    {
+        if (isGmOrHigher === true)
+            return Promise.resolve();
+
+        else return Promise.reject(new SemanticError(`You must be the organizer of this game.`));
+    });
 }
 
 function _assertMemberIsPlayer(commandContext)
