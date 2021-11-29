@@ -60,15 +60,15 @@ function CommandInteractionWrapper(discordJsInteractionObject)
     _interactionWrapper.isGameCommand = () => _gameTargetedByCommand != null;
     _interactionWrapper.getGameTargetedByCommand = () => _gameTargetedByCommand;
 
-    _interactionWrapper.isSenderTrusted = () =>
+    _interactionWrapper.checkSenderIsTrusted = () =>
     {
         const guild = _interactionWrapper.getGuildWrapper();
         const member = _interactionWrapper.getSenderGuildMemberWrapper();
 
         if (guild == null && member == null)
-            throw new SemanticError(`This command cannot be used by DM.`);
+            return Promise.reject(new SemanticError(`This command cannot be used by DM.`));
 
-        return guild.memberHasTrustedRole(member);
+        return guild.checkMemberHasTrustedRoleOrHigher(member);
     };
 
     _interactionWrapper.doesSenderHaveOrganizerPermissions = () =>
@@ -97,6 +97,17 @@ function CommandInteractionWrapper(discordJsInteractionObject)
             throw new SemanticError(`This command cannot be used by DM.`);
 
         return guild.memberHasGameMasterRole(member);
+    };
+
+    _interactionWrapper.checkSenderIsGameMasterOrHigher = () =>
+    {
+        const guild = _interactionWrapper.getGuildWrapper();
+        const member = _interactionWrapper.getSenderGuildMemberWrapper();
+
+        if (guild == null && member == null)
+            return Promise.reject(new SemanticError(`This command cannot be used by DM.`));
+
+        return guild.checkMemberHasGameMasterRoleOrHigher(member);
     };
 
     _interactionWrapper.isSenderGuildOwner = () =>

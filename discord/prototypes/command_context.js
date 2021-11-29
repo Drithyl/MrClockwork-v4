@@ -30,15 +30,15 @@ function CommandContext(messageWrapper)
     this.getGuildWrapper = () => _messageWrapper.getDestinationGuildWrapper();
     this.getSenderGuildMemberWrapper = () => _messageWrapper.getSenderGuildMemberWrapper();
 
-    this.isSenderTrusted = () =>
+    this.checkSenderIsTrusted = () =>
     {
         const guild = this.getGuildWrapper();
         const member = this.getSenderGuildMemberWrapper();
 
         if (guild == null && member == null)
-            throw new SemanticError(`This command cannot be used by DM.`);
+            return Promise.reject(new SemanticError(`This command cannot be used by DM.`));
 
-        return guild.memberHasTrustedRole(member);
+        return guild.checkMemberHasTrustedRoleOrHigher(member);
     };
 
     this.doesSenderHaveOrganizerPermissions = () =>
@@ -67,6 +67,17 @@ function CommandContext(messageWrapper)
             throw new SemanticError(`This command cannot be used by DM.`);
 
         return guild.memberHasGameMasterRole(member);
+    };
+
+    this.checkSenderIsGameMasterOrHigher = () =>
+    {
+        const guild = this.getGuildWrapper();
+        const member = this.getSenderGuildMemberWrapper();
+
+        if (guild == null && member == null)
+            return Promise.reject(new SemanticError(`This command cannot be used by DM.`));
+
+        return guild.checkMemberHasGameMasterRoleOrHigher(member);
     };
 
     this.isSenderGuildOwner = () =>
