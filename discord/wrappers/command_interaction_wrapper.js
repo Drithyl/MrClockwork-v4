@@ -71,6 +71,23 @@ function CommandInteractionWrapper(discordJsInteractionObject)
         return guild.memberHasTrustedRole(member);
     };
 
+    _interactionWrapper.doesSenderHaveOrganizerPermissions = () =>
+    {
+        const guild = _interactionWrapper.getGuildWrapper();
+        const member = _interactionWrapper.getSenderGuildMemberWrapper();
+
+        if (guild == null && member == null)
+            throw new SemanticError(`This command cannot be used by DM.`);
+
+        if (_interactionWrapper.isSenderGameOrganizer() === true ||
+            _interactionWrapper.isSenderGameMaster() === true ||
+            _interactionWrapper.isSenderGuildOwner() === true ||
+            _interactionWrapper.isSenderDev() === true)
+            return true;
+
+        else return false;
+    };
+
     _interactionWrapper.isSenderGameMaster = () =>
     {
         const guild = _interactionWrapper.getGuildWrapper();

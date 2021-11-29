@@ -41,6 +41,23 @@ function CommandContext(messageWrapper)
         return guild.memberHasTrustedRole(member);
     };
 
+    this.doesSenderHaveOrganizerPermissions = () =>
+    {
+        const guild = this.getGuildWrapper();
+        const member = this.getSenderGuildMemberWrapper();
+
+        if (guild == null && member == null)
+            throw new SemanticError(`This command cannot be used by DM.`);
+
+        if (this.isSenderGameOrganizer() === true ||
+            this.isSenderGameMaster() === true ||
+            this.isSenderGuildOwner() === true ||
+            this.isSenderDev() === true)
+            return true;
+
+        else return false;
+    };
+
     this.isSenderGameMaster = () =>
     {
         const guild = this.getGuildWrapper();
