@@ -174,8 +174,29 @@ function Game()
         _settingsObject = settingsObject;
     };
 
-    this.sendMessageToChannel = (text) => new MessagePayload(text).send(_discordJsChannel);
-    this.sendGameAnnouncement = (text) => new MessagePayload(`${_discordJsRole.toString()} ${text}`).send(_discordJsChannel);
+    this.sendMessageToChannel = (text) =>
+    {
+        const channel = this.getChannel();
+
+        if (channel != null)
+            return new MessagePayload(text).send(channel);
+
+        else return this.sendMessageToOrganizer(`No game channel was found to send the annoucement below. You can use commands to create a new one for the game:\n\n${text}`);
+    };
+
+    this.sendGameAnnouncement = (text) => 
+    {
+        const channel = this.getChannel();
+        const role = this.getRole();
+        const roleStr = (role != null) ? role.toString() : "`[No game role found to mention]`";
+
+        if (channel != null)
+            return new MessagePayload(roleStr + text).send(channel);
+
+        else return this.sendMessageToOrganizer(`No game channel was found to send the annoucement below. You can use commands to create a new one for the game:\n\n${text}`);
+    };
+
+
     this.sendMessageToOrganizer = (text) => 
     {
         if (_organizerWrapper != null)
