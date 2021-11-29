@@ -60,7 +60,18 @@ function CommandInteractionWrapper(discordJsInteractionObject)
     _interactionWrapper.isGameCommand = () => _gameTargetedByCommand != null;
     _interactionWrapper.getGameTargetedByCommand = () => _gameTargetedByCommand;
 
-    _interactionWrapper.isSenderTrusted = () =>
+    _interactionWrapper.checkSenderIsTrusted = () =>
+    {
+        const guild = _interactionWrapper.getGuildWrapper();
+        const member = _interactionWrapper.getSenderGuildMemberWrapper();
+
+        if (guild == null && member == null)
+            return Promise.reject(new SemanticError(`This command cannot be used by DM.`));
+
+        return guild.checkMemberHasTrustedRoleOrHigher(member);
+    };
+
+    _interactionWrapper.doesSenderHaveOrganizerPermissions = () =>
     {
         const guild = _interactionWrapper.getGuildWrapper();
         const member = _interactionWrapper.getSenderGuildMemberWrapper();
@@ -68,7 +79,13 @@ function CommandInteractionWrapper(discordJsInteractionObject)
         if (guild == null && member == null)
             throw new SemanticError(`This command cannot be used by DM.`);
 
-        return guild.memberHasTrustedRole(member);
+        if (_interactionWrapper.isSenderGameOrganizer() === true ||
+            _interactionWrapper.isSenderGameMaster() === true ||
+            _interactionWrapper.isSenderGuildOwner() === true ||
+            _interactionWrapper.isSenderDev() === true)
+            return true;
+
+        else return false;
     };
 
     _interactionWrapper.isSenderGameMaster = () =>
@@ -80,6 +97,17 @@ function CommandInteractionWrapper(discordJsInteractionObject)
             throw new SemanticError(`This command cannot be used by DM.`);
 
         return guild.memberHasGameMasterRole(member);
+    };
+
+    _interactionWrapper.checkSenderIsGameMasterOrHigher = () =>
+    {
+        const guild = _interactionWrapper.getGuildWrapper();
+        const member = _interactionWrapper.getSenderGuildMemberWrapper();
+
+        if (guild == null && member == null)
+            return Promise.reject(new SemanticError(`This command cannot be used by DM.`));
+
+        return guild.checkMemberHasGameMasterRoleOrHigher(member);
     };
 
     _interactionWrapper.isSenderGuildOwner = () =>

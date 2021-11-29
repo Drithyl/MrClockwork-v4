@@ -16,7 +16,6 @@ function RemovePretenderCommand()
     removePretenderCommand.addBehaviour(_behaviour);
 
     removePretenderCommand.addRequirements(
-        commandPermissions.assertMemberIsTrusted,
         commandPermissions.assertCommandIsUsedInGameChannel,
         commandPermissions.assertGameIsOnline,
         commandPermissions.assertGameHasNotStarted

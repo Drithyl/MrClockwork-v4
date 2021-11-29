@@ -15,7 +15,6 @@ function UnsubscribeFromGameCommand()
     unsubscribeFromGameCommand.addBehaviour(_behaviour);
 
     unsubscribeFromGameCommand.addRequirements(
-        commandPermissions.assertMemberIsTrusted,
         commandPermissions.assertCommandIsUsedInGameChannel
     );
 

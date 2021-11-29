@@ -15,7 +15,6 @@ function GetListOfUndoneTurnsCommand()
     getListOfUndoneTurnsCommand.addBehaviour(_behaviour);
 
     getListOfUndoneTurnsCommand.addRequirements(
-        commandPermissions.assertMemberIsTrusted,
         commandPermissions.assertCommandIsUsedInGameChannel,
         commandPermissions.assertServerIsOnline,
         commandPermissions.assertGameHasStarted
@@ -27,24 +26,31 @@ function GetListOfUndoneTurnsCommand()
 function _behaviour(commandContext)
 {
     const gameObject = commandContext.getGameTargetedByCommand();
-    const status = gameObject.getLastKnownStatus();
-    const players = status.getPlayers();
 
     var messageString = `Below is the list of undone turns:\n\n`;
     var listString = "";
 
-    if (players == null)
-        return commandContext.respondToCommand(new MessagePayload(`List of undone turns is currently unavailable.`));
-
-
-    listString = players.reduce((playersInfo, playerData) => 
+    // Need to check statusdump instead of the latest tcpquery of the
+    // Dominions5Status object, because currently tcpqueries show the
+    // full name of the vanilla nations, even if the nation was used as
+    // a base for a modded nation that has a different name. Statusdump
+    // does not have this problem.
+    return gameObject.fetchStatusDump()
+    .then((dump) =>
     {
-        if (playerData.isTurnDone === false)
-            return playersInfo + `${playerData.name}\n`;
+        const nationStatusArray = dump.nationStatusArray;
 
-        else return playersInfo;
-    }, "\n");
+        if (nationStatusArray == null || nationStatusArray.length <= 0)
+            return commandContext.respondToCommand(new MessagePayload(`List of undone turns is currently unavailable.`));
 
+        listString = nationStatusArray.reduce((finalStr, nationData) => 
+        {
+            if (nationData.isTurnFinished === false)
+                return finalStr + `${nationData.fullName}\n`;
     
-    return commandContext.respondToCommand(new MessagePayload(messageString, listString.toBox(), true, "```"));
+            else return finalStr;
+        }, "\n");
+    
+        return commandContext.respondToCommand(new MessagePayload(messageString, listString.toBox(), true, "```"));
+    });
 }

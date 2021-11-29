@@ -34,11 +34,40 @@ function GuildWrapper(discordJsGuildObject)
     this.getTrustedRole = () => _discordJsGuildObject.roles.cache.get(guildDataStore.getTrustedRoleId(this.getId()));
     this.getBlitzerRole = () => _discordJsGuildObject.roles.cache.get(guildDataStore.getBlitzerRoleId(this.getId()));
 
+    this.fetchGameMasterRole = () => _discordJsGuildObject.roles.fetch(guildDataStore.getGameMasterRoleId(this.getId()));
+    this.fetchTrustedRole = () => _discordJsGuildObject.roles.fetch(guildDataStore.getTrustedRoleId(this.getId()));
+    this.fetchBlitzerRole = () => _discordJsGuildObject.roles.fetch(guildDataStore.getBlitzerRoleId(this.getId()));
+
 
     this.memberIsOwner = (memberId) => memberId === _discordJsGuildObject.ownerId;
     this.memberHasTrustedRole = (guildMemberWrapper) => guildMemberWrapper.hasRole(guildDataStore.getTrustedRoleId(this.getId())) === true;
     this.memberHasBlitzerRole = (guildMemberWrapper) => guildMemberWrapper.hasRole(guildDataStore.getBlitzerRoleId(this.getId())) === true;
     this.memberHasGameMasterRole = (guildMemberWrapper) => guildMemberWrapper.hasRole(guildDataStore.getGameMasterRoleId(this.getId())) === true;
+    this.checkMemberHasTrustedRoleOrHigher = async (guildMemberWrapper) =>
+    {
+        if (this.memberIsOwner() === true)
+            return true;
+
+        const trustedRole = await this.fetchTrustedRole();
+
+        if (trustedRole == null)
+            throw new Error(`Guild has no trusted role!`);
+
+        return _memberHasRoleOrHigher(guildMemberWrapper, trustedRole);
+    };
+    
+    this.checkMemberHasGameMasterRoleOrHigher = async (guildMemberWrapper) =>
+    {
+        if (this.memberIsOwner() === true)
+            return true;
+            
+        const gameMasterRole = await this.fetchGameMasterRole();
+
+        if (gameMasterRole == null)
+            throw new Error(`Guild has no Game Master role!`);
+
+        return _memberHasRoleOrHigher(guildMemberWrapper, gameMasterRole);
+    };
   
     this.createCommand = (data) => _discordJsGuildObject.commands.create(data);
     this.setCommands = (bulkData) => _discordJsGuildObject.commands.set(bulkData);
@@ -233,6 +262,13 @@ function GuildWrapper(discordJsGuildObject)
         
         return guildDataStore.replaceRoleWithNew(this.getId(), idOfRoleToBeReplaced, idOfRoleToTakeItsPlace);
     };
+
+
+    function _memberHasRoleOrHigher(guildMemberWrapper, role)
+    {
+        const highestPosition = guildMemberWrapper.getHighestDiscordRolePosition();
+        return highestPosition >= role.position;
+    }
 
 
     /** The channel.bulkDelete method does not work since it cannot delete messages

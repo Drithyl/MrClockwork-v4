@@ -15,10 +15,6 @@ function RollDiceCommand()
 
     rollDiceCommand.addBehaviour(_behaviour);
 
-    rollDiceCommand.addRequirements(
-        commandPermissions.assertMemberIsTrusted
-    );
-
     return rollDiceCommand;
 }
 

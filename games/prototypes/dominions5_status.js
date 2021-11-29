@@ -4,7 +4,7 @@ const assert = require("../../asserter.js");
 const config = require("../../config/config.json");
 const SpawnedProcess = require("../../spawned_process.js");
 
-
+const PROCESS_TIMEOUT_MS = 60000;
 const IN_LOBBY = "Game is being setup";
 const STARTED = "Game is active";
 const SERVER_OFFLINE = "Host server offline";
@@ -30,7 +30,19 @@ function queryGame(gameObject)
 
     return new Promise((resolve, reject) =>
     {
-        _process.onError((error) => reject(error));
+        var wasSettled = false;
+
+        // Introduce a timeout mechanism in case the process hangs for too long
+        setTimeout(() =>
+        {
+            if (wasSettled === true)
+                return;
+
+            _process.kill();
+            reject(new Error(`Process timed out`));
+            wasSettled = true;
+
+        }, PROCESS_TIMEOUT_MS);
 
         _process.readWholeStdoutData()
         .then((tcpQueryResponse) => 
@@ -41,6 +53,31 @@ function queryGame(gameObject)
                 statusObject.setStatus(SERVER_OFFLINE);
 
             resolve(statusObject);
+            wasSettled = true;
+        });
+
+        _process.onError((error) => 
+        {
+            reject(error);
+            wasSettled = true;
+        });
+
+        _process.onExited((code, signal) => 
+        {
+            if (wasSettled === false)
+            {
+                reject(new Error(`Process exited without generating stdout data. Code: ${code}, Signal: ${signal}`));
+                wasSettled = true;
+            }
+        });
+
+        _process.onTerminated((code, signal) => 
+        {
+            if (wasSettled === false)
+            {
+                reject(new Error(`Process was terminated without generating stdout data. Code: ${code}, Signal: ${signal}`));
+                wasSettled = true;
+            }
         });
     });
 }

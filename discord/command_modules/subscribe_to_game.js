@@ -15,7 +15,6 @@ function SubscribeToGameCommand()
     subscribeToGameCommand.addBehaviour(_behaviour);
 
     subscribeToGameCommand.addRequirements(
-        commandPermissions.assertMemberIsTrusted,
         commandPermissions.assertCommandIsUsedInGameChannel
     );
 
