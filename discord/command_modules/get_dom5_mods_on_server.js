@@ -26,7 +26,7 @@ function _behaviour(commandContext)
     var targetedServerObject;
 
     if (targetedServerName == null)
-        throw new SemanticError(`You must specify a server name from the ones available below:`, hostServerStore.printListOfOnlineHostServers().toBox());
+        throw new SemanticError(`You must specify a server name from the ones available below:\n${hostServerStore.printListOfOnlineHostServers().toBox()}`);
 
     if (hostServerStore.hasHostServerByName(targetedServerName) === false)
         return commandContext.respondToCommand(new MessagePayload(`Selected server is does not exist.`));
