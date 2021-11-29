@@ -4,7 +4,7 @@ const assert = require("../../asserter.js");
 const config = require("../../config/config.json");
 const SpawnedProcess = require("../../spawned_process.js");
 
-
+const PROCESS_TIMEOUT_MS = 60000;
 const IN_LOBBY = "Game is being setup";
 const STARTED = "Game is active";
 const SERVER_OFFLINE = "Host server offline";
@@ -42,7 +42,7 @@ function queryGame(gameObject)
             reject(new Error(`Process timed out`));
             wasSettled = true;
 
-        }, 35000);
+        }, PROCESS_TIMEOUT_MS);
 
         _process.readWholeStdoutData()
         .then((tcpQueryResponse) => 
