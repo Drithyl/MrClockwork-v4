@@ -15,7 +15,6 @@ function GetListOfUndoneTurnsCommand()
     getListOfUndoneTurnsCommand.addBehaviour(_behaviour);
 
     getListOfUndoneTurnsCommand.addRequirements(
-        commandPermissions.assertMemberIsTrusted,
         commandPermissions.assertCommandIsUsedInGameChannel,
         commandPermissions.assertServerIsOnline,
         commandPermissions.assertGameHasStarted

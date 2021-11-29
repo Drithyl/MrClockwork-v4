@@ -16,7 +16,6 @@ function UnclaimPretenderCommand()
     unclaimPretenderCommand.addBehaviour(_behaviour);
 
     unclaimPretenderCommand.addRequirements(
-        commandPermissions.assertMemberIsTrusted,
         commandPermissions.assertCommandIsUsedInGameChannel,
         commandPermissions.assertGameIsOnline
     );
