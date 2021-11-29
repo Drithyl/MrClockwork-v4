@@ -102,7 +102,7 @@ exports.printListOfFreeSlots = () =>
         if (hostServerObject.isOnline() === false)
             continue;
 
-        stringList += `${hostServerObject.getName()}: ${hostServerObject.getAvailableSlots()}`;
+        stringList += `${hostServerObject.getName()}: ${hostServerObject.getAvailableSlots()}\n`;
     }
 
     return stringList;
