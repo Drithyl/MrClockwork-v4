@@ -51,7 +51,6 @@ function HostServer(id)
 
     this.setOffline = () =>
     {
-        _socketWrapper = null;
         _capacity = null;
         _isOnline = false;
     };
