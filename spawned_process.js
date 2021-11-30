@@ -17,7 +17,7 @@ function SpawnedProcess(exePath, args)
     _process.stderr.setEncoding("utf8");
     _process.stdout.setEncoding("utf8");
 
-    this.kill = (signalCode = "SIGINT") => _process.kill(_process.pid, signalCode);
+    this.kill = (signalCode = "SIGINT") => _process.kill(signalCode);
 
     this.onError = (doThis) => _process.on("error", doThis);
     
