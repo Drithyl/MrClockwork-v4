@@ -46,6 +46,8 @@
   "bot": "123456789876566666",
   "msToDeleteUnstartedBlitzes": 3600000,
   "turnCheckInterval": 30000,
+  "queryProcessTimeout": 120000,
+  "maxParallelQueries": 10,
 
   "dom5GameTypeName": "dom5",
 
