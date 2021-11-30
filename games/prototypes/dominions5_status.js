@@ -39,7 +39,7 @@ function queryGame(gameObject)
                 return;
 
             _process.kill();
-            reject(new Error(`Process timed out`));
+            reject(new Error(`${gameObject.getName()}'s query process timed out`));
             wasSettled = true;
 
         }, PROCESS_TIMEOUT_MS);
