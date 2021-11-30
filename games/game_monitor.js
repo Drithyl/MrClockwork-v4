@@ -1,12 +1,13 @@
 
 const log = require("../logger.js");
 const assert = require("../asserter.js");
+const config = require("../config/config.json");
 const ongoingGameStore = require("./ongoing_games_store.js");
 const botClientWrapper = require("../discord/wrappers/bot_client_wrapper.js");
 const { queryDominions5Game } = require("./prototypes/dominions5_status.js");
 const MessagePayload = require("../discord/prototypes/message_payload.js");
 
-const MAX_SIMULTANEOUS_QUERIES = 10;
+const MAX_SIMULTANEOUS_QUERIES = config.maxParallelQueries;
 const UPDATE_INTERVAL = 10000;
 const monitoredGames = [];
 var currentPendingGameIndex = 0;

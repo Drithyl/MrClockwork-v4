@@ -4,7 +4,7 @@ const assert = require("../../asserter.js");
 const config = require("../../config/config.json");
 const SpawnedProcess = require("../../spawned_process.js");
 
-const PROCESS_TIMEOUT_MS = 60000;
+const PROCESS_TIMEOUT_MS = config.queryProcessTimeout;
 const IN_LOBBY = "Game is being setup";
 const STARTED = "Game is active";
 const SERVER_OFFLINE = "Host server offline";
