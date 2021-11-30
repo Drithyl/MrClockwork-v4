@@ -8,6 +8,7 @@ const { queryDominions5Game } = require("./prototypes/dominions5_status.js");
 const MessagePayload = require("../discord/prototypes/message_payload.js");
 
 const MAX_SIMULTANEOUS_QUERIES = config.maxParallelQueries;
+const QUERY_LAUNCH_DELAY = config.queryLaunchDelay;
 const UPDATE_INTERVAL = 10000;
 const monitoredGames = [];
 var currentPendingGameIndex = 0;
@@ -79,17 +80,21 @@ function _updateDom5Games()
         currentQueries++;
         log.general(log.getVerboseLevel(), `Total queries running now: ${currentQueries}`);
 
-        _updateCycle(gameToUpdate)
-        .then(() => 
+        setTimeout(() =>
         {
-            _reduceQueries();
-            log.general(log.getVerboseLevel(), `Query finished, reducing current queries.`);
-        })
-        .catch((err) => 
-        {
-            _reduceQueries();
-            log.error(log.getNormalLevel(), `ERROR UPDATING DOM5 GAME ${gameToUpdate.getName()}`, err);
-        });
+            _updateCycle(gameToUpdate)
+            .then(() => 
+            {
+                _reduceQueries();
+                log.general(log.getVerboseLevel(), `Query finished, reducing current queries.`);
+            })
+            .catch((err) => 
+            {
+                _reduceQueries();
+                log.error(log.getNormalLevel(), `ERROR UPDATING DOM5 GAME ${gameToUpdate.getName()}`, err);
+            });
+            
+        }, QUERY_LAUNCH_DELAY * currentQueries)
     }
 }
 
