@@ -57,7 +57,8 @@ function _updateDom5Games()
 {
     while(currentQueries < MAX_SIMULTANEOUS_QUERIES && currentQueries < monitoredGames.length)
     {
-        var gameToUpdate = monitoredGames[currentPendingGameIndex];
+        const gameToUpdate = monitoredGames[currentPendingGameIndex];
+
         _cyclePendingGameIndex();
 
         if (gameToUpdate == null)
@@ -86,7 +87,7 @@ function _updateDom5Games()
         .catch((err) => 
         {
             _reduceQueries();
-            log.error(log.getNormalLevel(), `ERROR UPDATING DOM5 GAME ${gameName}`, err);
+            log.error(log.getNormalLevel(), `ERROR UPDATING DOM5 GAME ${gameToUpdate.getName()}`, err);
         });
     }
 }
