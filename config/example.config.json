@@ -47,6 +47,7 @@
   "msToDeleteUnstartedBlitzes": 3600000,
   "turnCheckInterval": 30000,
   "queryProcessTimeout": 120000,
+  "queryLaunchDelay": 3000,
   "maxParallelQueries": 10,
 
   "dom5GameTypeName": "dom5",
