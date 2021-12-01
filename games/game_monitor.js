@@ -194,8 +194,8 @@ function _getGameEvents(updatedStatus, lastKnownStatus)
         didGameStart:           updatedStatus.isOngoing() === true && lastKnownStatus.isInLobby() === true,
         didGameRestart:         updatedStatus.isInLobby() === true && lastKnownStatus.isOngoing() === true,
         didHourPass:            updatedStatus.getMsLeft() != null && lastKnownHourMark !== currentHourMark,
-        isLastHourBeforeTurn:   lastKnownHourMark !== currentHourMark && currentHourMark === 0,
-        isNewTurn:              currentTurnNumber > lastKnownTurnNumber,
+        isLastHourBeforeTurn:   updatedStatus.isOngoing() === true && lastKnownHourMark !== currentHourMark && currentHourMark === 0,
+        isNewTurn:              currentTurnNumber > 0 && currentTurnNumber > lastKnownTurnNumber,
         wasTurnRollbacked:      currentTurnNumber > 0 && currentTurnNumber < lastKnownTurnNumber,
         lastTurnTimestamp
     };
@@ -278,7 +278,7 @@ function _enforceTimer(game, updateData)
         log.general(log.getNormalLevel(), `${game.getName()} set to ${updateData.getMsLeft()}ms.`);
     }
 
-    else if (updateData.getMsLeft() <= 0 && updateData.isPaused() === false)
+    else if (updateData.getTurnNumber() > 0 && updateData.getMsLeft() <= 0 && updateData.isPaused() === false)
     {
         _handleAllTurnsDone(game, updateData);
     }
