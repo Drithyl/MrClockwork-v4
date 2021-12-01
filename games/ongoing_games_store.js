@@ -20,12 +20,12 @@ exports.loadAll = function()
     return gameDirNames.forEachPromise((gameDirName, i, nextPromise) =>
     {
         var gameJSONDataPath = `${pathToGameDataDir}/${gameDirName}/data.json`;
-        log.general(log.getLeanLevel(), `Loading ${gameDirName} (${i}/${gameDirNames.length})...`);
+        log.general(log.getLeanLevel(), `Loading ${gameDirName} (${i+1}/${gameDirNames.length})...`);
         
         return gameFactory.loadGame(gameJSONDataPath)
         .then((loadedGame) => 
         {
-            log.general(log.getLeanLevel(), `${gameDirName} loaded, adding to store (${i}/${gameDirNames.length})...`);
+            log.general(log.getLeanLevel(), `${gameDirName} loaded, adding to store (${i+1}/${gameDirNames.length})...`);
             exports.addOngoingGame(loadedGame);
             return nextPromise();
         })

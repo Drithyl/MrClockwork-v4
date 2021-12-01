@@ -149,6 +149,9 @@ function Game()
     
     this.isOnlineCheck = () => 
     {
+        if (this.isServerOnline() === false)
+            return Promise.resolve(false);
+
         return this.emitPromiseToServer("ONLINE_CHECK", this.getPort());
     };
 
@@ -181,7 +184,7 @@ function Game()
         if (channel != null)
             return new MessagePayload(text).send(channel);
 
-        else return this.sendMessageToOrganizer(`No game channel was found to send the annoucement below. You can use commands to create a new one for the game:\n\n${text}`);
+        else return this.sendMessageToOrganizer(`No channel for game ${this.getName()} was found to send the annoucement below. You can use commands to create a new one for the game:\n\n${text}`);
     };
 
     this.sendGameAnnouncement = (text) => 
@@ -193,7 +196,7 @@ function Game()
         if (channel != null)
             return new MessagePayload(roleStr + text).send(channel);
 
-        else return this.sendMessageToOrganizer(`No game channel was found to send the annoucement below. You can use commands to create a new one for the game:\n\n${text}`);
+        else return this.sendMessageToOrganizer(`No channel for game ${this.getName()} was found to send the annoucement below. You can use commands to create a new one for the game:\n\n${text}`);
     };
 
 
