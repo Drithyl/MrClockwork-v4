@@ -35,11 +35,9 @@ function _behaviour(commandContext)
     // full name of the vanilla nations, even if the nation was used as
     // a base for a modded nation that has a different name. Statusdump
     // does not have this problem.
-    return gameObject.fetchStatusDump()
-    .then((dump) =>
+    return gameObject.emitPromiseWithGameDataToServer("GET_UNDONE_TURNS")
+    .then((nationStatusArray) =>
     {
-        const nationStatusArray = dump.nationStatusArray;
-
         if (nationStatusArray == null || nationStatusArray.length <= 0)
             return commandContext.respondToCommand(new MessagePayload(`List of undone turns is currently unavailable.`));
 

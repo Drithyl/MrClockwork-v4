@@ -10,11 +10,46 @@ const STARTED = "Game is active";
 const SERVER_OFFLINE = "Host server offline";
 const GAME_OFFLINE = "Game offline";
 
-module.exports.queryDominions5Game = queryGame;
+module.exports.fetchDom5Status = fetchGameStatus;
+module.exports.queryDom5Status = queryGame;
 module.exports.Dominions5Status = Dominions5Status;
 
-function queryGame(gameObject)
+async function fetchGameStatus(gameObject)
 {
+    const isOnline = await gameObject.isOnlineCheck();
+    const statusWrapper = new Dominions5Status();
+
+    statusWrapper.setName(gameObject.getName());
+
+    if (gameObject.isServerOnline() === false)
+    {
+        statusWrapper.setStatus(SERVER_OFFLINE);
+        return statusWrapper;
+    }
+
+    else if (isOnline === false)
+    {
+        statusWrapper.setStatus(GAME_OFFLINE);
+        return statusWrapper;
+    }
+
+    const statusdumpWrapper = await gameObject.fetchStatusDump();
+    statusWrapper.setTurnNumber(statusdumpWrapper.turnNbr);
+    statusWrapper.setPlayers(statusdumpWrapper.nationStatusArray);
+
+    if (statusdumpWrapper.hasStarted === false)
+        statusWrapper.setStatus(IN_LOBBY);
+
+    else if (statusdumpWrapper.hasStarted === true)
+        statusWrapper.setStatus(STARTED);
+
+    return statusWrapper;
+}
+
+async function queryGame(gameObject)
+{
+    const isOnline = await gameObject.isOnlineCheck();
+    const statusObject = new Dominions5Status();
     const ip = gameObject.getIp();
     const port = gameObject.getPort();
     const cmdFlags = [
@@ -25,6 +60,20 @@ function queryGame(gameObject)
         "--ipadr", ip,
         "--port", port
     ];
+
+    statusObject.setName(gameObject.getName());
+
+    if (gameObject.isServerOnline() === false)
+    {
+        statusObject.setStatus(SERVER_OFFLINE);
+        return statusObject;
+    }
+
+    else if (isOnline === false)
+    {
+        statusObject.setStatus(GAME_OFFLINE);
+        return statusObject;
+    }
 
     const _process = new SpawnedProcess(config.pathToDom5Exe, cmdFlags);
 
@@ -47,11 +96,7 @@ function queryGame(gameObject)
         _process.readWholeStdoutData()
         .then((tcpQueryResponse) => 
         {
-            const statusObject = _parseTcpQuery(tcpQueryResponse);
-
-            if (gameObject.isServerOnline() === false)
-                statusObject.setStatus(SERVER_OFFLINE);
-
+            _parseTcpQuery(tcpQueryResponse, statusObject);
             resolve(statusObject);
             wasSettled = true;
         });
@@ -82,11 +127,10 @@ function queryGame(gameObject)
     });
 }
 
-function _parseTcpQuery(tcpQueryResponse)
+function _parseTcpQuery(tcpQueryResponse, statusObject)
 {
     assert.isStringOrThrow(tcpQueryResponse);
 
-    const statusObject = new Dominions5Status();
     const name = _parseGameName(tcpQueryResponse);
     const status = _parseStatus(tcpQueryResponse);
     const isPaused = _parseIsPaused(tcpQueryResponse);
@@ -107,7 +151,7 @@ function _parseTcpQuery(tcpQueryResponse)
 function Dominions5Status()
 {
     var _name = "";
-    var _status = "";
+    var _status = "Unknown";
     var _isPaused = false;
     var _turnNumber;
     var _msLeft;
@@ -173,7 +217,7 @@ function Dominions5Status()
         if (assert.isArray(_players) === false || _players.length <= 0)
             return false;
 
-        return _players.find((player) => player.isTurnDone === false && player.isAi === false) == null;
+        return _players.find((player) => player.isTurnFinished === false && player.isAi === false) == null;
     };
 
     this.getLastTurnTimestamp = () => _lastTurnTimestamp; 
@@ -193,8 +237,7 @@ function Dominions5Status()
 
     this.isInLobby = () => _status === IN_LOBBY;
     this.isOngoing = () => _status === STARTED;
-
-    this.isOnline = () => this.isInLobby() || this.isOngoing();
+    this.isOnline = () => _status !== GAME_OFFLINE;
     this.isServerOnline = () => _status !== SERVER_OFFLINE;
 
 
@@ -282,7 +325,7 @@ function _parseGameName(tcpQueryResponse)
 function _parseStatus(tcpQueryResponse)
 {
     let statusLine = tcpQueryResponse.match(/Status:.+/i);
-    let status = (statusLine != null) ? statusLine[0].replace(/Status:\s+/i, "").trim() : "Could not find status";
+    let status = (statusLine != null) ? statusLine[0].replace(/Status:\s+/i, "").trim() : "Unknown";
 
     if (tcpQueryResponse.includes("Connection failed") === true)
         return "Game offline";
@@ -322,16 +365,16 @@ function _parsePlayers(tcpQueryResponse)
         {
             const name = playerString.replace(/^(.+)\s\(.+$/ig, "$1");
             const turnStatus = playerString.replace(/^.+\s\((.+)\)$/ig, "$1");
-            var isTurnDone = false;
+            var isTurnFinished = false;
             var isAi = false;
 
             if (turnStatus === "played")
-                isTurnDone = true;
+                isTurnFinished = true;
                 
             if (turnStatus === "AI controlled")
                 isAi = true;
 
-            return { name, isTurnDone, isAi };
+            return { name, isTurnFinished, isAi };
         });
     }
 

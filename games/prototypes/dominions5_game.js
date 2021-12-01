@@ -228,7 +228,7 @@ function Dominions5Game()
 
     _gameObject.checkIfGameStarted = () => 
     {
-        return dominions5Status.queryDominions5Game(_gameObject)
+        return dominions5Status.queryDom5Status(_gameObject)
         .then((status) => Promise.resolve(status.isOngoing()));
     };
 
