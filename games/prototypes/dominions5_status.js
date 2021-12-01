@@ -278,9 +278,10 @@ function Dominions5Status()
         return clonedStatus;
     };
 
-    this.advanceTimer = () =>
+    this.advanceTimer = (maxMs) =>
     {
-        const elapsedMs = Date.now() - _lastUpdateTimestamp;
+        const delta = Date.now() - _lastUpdateTimestamp;
+        const elapsedMs = Math.min(maxMs, delta);
 
         if (assert.isInteger(_msLeft) === true && assert.isInteger(elapsedMs) === true)
             this.setMsLeft(Math.max(_msLeft - elapsedMs, 0));
