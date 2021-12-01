@@ -32,7 +32,7 @@ function TimeLeft(ms)
   this.getSecondsLeft = () => _seconds;
   this.getMsLeft = () => _ms;
 
-  this.printTimeLeft = () =>
+  this.printTimeLeft = (ignoreSeconds = true) =>
   {
     let str = "";
     let days = this.getDaysLeft();
@@ -49,7 +49,7 @@ function TimeLeft(ms)
     if (minutes > 0)
       str += minutes + " minute(s), ";
 
-    if (seconds > 0)
+    if (seconds > 0 && ignoreSeconds === false)
       str += seconds + " second(s) ";
 
     if (/, $/i.test(str) === true)
