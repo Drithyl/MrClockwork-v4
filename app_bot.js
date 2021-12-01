@@ -11,7 +11,6 @@ var discord;
 var patcher;
 var expressServer;
 var gamesStore;
-var timeEventsEmitter;
 var hostServerStore;
 var playerFileStore;
 
@@ -43,7 +42,6 @@ function _initializeComponents()
     patcher = require("./patcher/patcher.js");
     expressServer = require("./servers/express_server.js");
     gamesStore = require("./games/ongoing_games_store.js");
-    timeEventsEmitter = require("./time_events_emitter.js");
     hostServerStore = require("./servers/host_server_store.js");
     playerFileStore = require("./player_data/player_file_store.js");
 
@@ -90,7 +88,6 @@ function _initializeComponents()
         cleaner.startCleaningInterval();
         return Promise.resolve();
     })
-    .then(() => timeEventsEmitter.startCounting())
     .then(() => log.general(log.getLeanLevel(), "Initialized successfully."))
     .catch((err) => 
     {

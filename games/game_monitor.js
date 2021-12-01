@@ -4,12 +4,12 @@ const assert = require("../asserter.js");
 const config = require("../config/config.json");
 const ongoingGameStore = require("./ongoing_games_store.js");
 const botClientWrapper = require("../discord/wrappers/bot_client_wrapper.js");
-const { queryDominions5Game } = require("./prototypes/dominions5_status.js");
+const dom5Status = require("./prototypes/dominions5_status.js");
 const MessagePayload = require("../discord/prototypes/message_payload.js");
 
 const MAX_SIMULTANEOUS_QUERIES = config.maxParallelQueries;
 const QUERY_LAUNCH_DELAY = config.queryLaunchDelay;
-const UPDATE_INTERVAL = 10000;
+const UPDATE_INTERVAL = config.gameUpdateInterval;
 const monitoredGames = [];
 var currentPendingGameIndex = 0;
 var currentQueries = 0;
@@ -55,47 +55,48 @@ function _queueGameUpdates()
 // max allowed, as well as number of games. Each time, increment the currentPendingGameIndex
 // so the next loop starts a different game. Once a query finishes, reduce the number
 // of running queries for the next interval. 
-function _updateDom5Games()
+async function _updateDom5Games()
 {
-    while(currentQueries < MAX_SIMULTANEOUS_QUERIES && currentQueries < monitoredGames.length)
+    if (currentQueries >= MAX_SIMULTANEOUS_QUERIES || currentQueries >= monitoredGames.length)
+        return;
+
+    const game = monitoredGames[currentPendingGameIndex];
+    _cyclePendingGameIndex();
+
+    if (game == null)
+        return _updateDom5Games();
+
+    if (ongoingGameStore.hasOngoingGameByName(game.getName()) === false)
     {
-        const gameToUpdate = monitoredGames[currentPendingGameIndex];
-
-        _cyclePendingGameIndex();
-
-        if (gameToUpdate == null)
-            continue;
-
-        if (ongoingGameStore.hasOngoingGameByName(gameToUpdate.getName()) === false)
-        {
-            log.general(log.getLeanLevel(), `${gameToUpdate.getName()} not found on store; removing from list.`);
-            exports.stopMonitoringDom5Game(gameToUpdate);
-            continue;
-        }
-
-        // Queries with offline servers are pointless
-        if (gameToUpdate.isServerOnline() === false)
-            continue;
-     
-        currentQueries++;
-        log.general(log.getVerboseLevel(), `Total queries running now: ${currentQueries}`);
-
-        setTimeout(() =>
-        {
-            _updateCycle(gameToUpdate)
-            .then(() => 
-            {
-                _reduceQueries();
-                log.general(log.getVerboseLevel(), `Query finished, reducing current queries.`);
-            })
-            .catch((err) => 
-            {
-                _reduceQueries();
-                log.error(log.getNormalLevel(), `ERROR UPDATING DOM5 GAME ${gameToUpdate.getName()}`, err);
-            });
-            
-        }, QUERY_LAUNCH_DELAY * currentQueries)
+        log.general(log.getLeanLevel(), `${game.getName()} not found on store; removing from list.`);
+        exports.stopMonitoringDom5Game(game);
+        return _updateDom5Games();
     }
+
+    // Queries with offline servers are pointless
+    if (game.isServerOnline() === false)
+        return _updateDom5Games();
+    
+    currentQueries++;
+    log.general(log.getVerboseLevel(), `Total queries running now: ${currentQueries}`);
+
+    setTimeout(() =>
+    {
+        _updateCycle(game)
+        .then(() => 
+        {
+            _reduceQueries();
+            log.general(log.getVerboseLevel(), `Query finished, reducing current queries.`);
+        })
+        .catch((err) => 
+        {
+            _reduceQueries();
+            log.error(log.getNormalLevel(), `ERROR UPDATING DOM5 GAME ${game.getName()}`, err);
+        });
+
+    }, QUERY_LAUNCH_DELAY * currentQueries)
+
+    return _updateDom5Games();
 }
 
 function _cyclePendingGameIndex()
@@ -124,7 +125,7 @@ function _updateCycle(game)
         return Promise.resolve();
     }
 
-    return queryDominions5Game(game)
+    return dom5Status.fetchDom5Status(game)
     .then((updatedStatus) =>
     {
         if (game.isEnforcingTimer() === false)
@@ -151,20 +152,6 @@ function _updateCycle(game)
 
         log.general(log.getVerboseLevel(), `${game.getName()}\tupdating embed.`);
         game.updateStatusEmbed(updateData);
-
-
-        if (updatedStatus.isServerOnline() === false)
-        {
-            log.general(log.getVerboseLevel(), `${game.getName()}\tserver offline; cannot update.`);
-            return Promise.resolve();
-        }
-
-        else if (updatedStatus.isOnline() === false)
-        {    
-            log.general(log.getVerboseLevel(), `${game.getName()}\t offline; cannot update.`);
-            return Promise.resolve();
-        }
-
 
         log.general(log.getVerboseLevel(), 
         `${game.getName()}\treceived updated data`,
@@ -209,7 +196,7 @@ function _getGameEvents(updatedStatus, lastKnownStatus)
         didHourPass:            updatedStatus.getMsLeft() != null && lastKnownHourMark !== currentHourMark,
         isLastHourBeforeTurn:   lastKnownHourMark !== currentHourMark && currentHourMark === 0,
         isNewTurn:              currentTurnNumber > lastKnownTurnNumber,
-        wasTurnRollbacked:      currentTurnNumber < lastKnownTurnNumber,
+        wasTurnRollbacked:      currentTurnNumber > 0 && currentTurnNumber < lastKnownTurnNumber,
         lastTurnTimestamp
     };
 
@@ -437,7 +424,7 @@ function _processNewHourPreferences(game, playerTurnData, hourMarkPassed)
 
                 if (nationTurnData != null)
                 {
-                    if (nationTurnData.isTurnDone === false || (nationTurnData.isTurnDone === true && preferences.isReceivingRemindersWhenTurnIsDone() === true))
+                    if (nationTurnData.isTurnFinished === false || (nationTurnData.isTurnFinished === true && preferences.isReceivingRemindersWhenTurnIsDone() === true))
                     {
                         var _userWrapper;
 
@@ -486,6 +473,9 @@ function _checkIfAllTurnsAreDone(game)
     return game.emitPromiseWithGameDataToServer("GET_UNDONE_TURNS")
     .then((undoneTurns) =>
     {
+        if (assert.isArray(undoneTurns) === false)
+            return Promise.reject(new Error("No nation turn data available"));
+
         if (undoneTurns.length <= 0)
             return Promise.resolve(true);
 
