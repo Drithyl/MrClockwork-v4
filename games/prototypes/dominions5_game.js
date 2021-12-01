@@ -1,7 +1,7 @@
 
 const Game = require("./game.js");
 const log = require("../../logger.js");
-const asserter = require("../../asserter.js");
+const assert = require("../../asserter.js");
 const config = require("../../config/config.json");
 const dominions5Status = require("./dominions5_status.js");
 const ongoingGameStore = require("../ongoing_games_store.js");
@@ -33,6 +33,9 @@ function Dominions5Game()
         return _gameObject.emitPromiseWithGameDataToServer("GET_SUBMITTED_PRETENDERS")
         .then((nationArray) =>
         {
+            if (assert.isArray(nationArray) === false)
+                return Promise.reject(new Error(`List of pretenders is unavailable; try again later.`));
+
             return nationArray.forAllPromises((nation) =>
             {
                 const pretenderOwnerId = _gameObject.getPlayerIdControllingNationInGame(nation.filename);
@@ -236,19 +239,19 @@ function Dominions5Game()
 
     _gameObject.update = (updatedStatus) => 
     {
-        if (asserter.isInteger(updatedStatus.getMsLeft()) === true)
+        if (assert.isInteger(updatedStatus.getMsLeft()) === true)
             _status.setMsLeft(updatedStatus.getMsLeft());
 
-        if (asserter.isInteger(updatedStatus.getLastTurnTimestamp()) === true)
+        if (assert.isInteger(updatedStatus.getLastTurnTimestamp()) === true)
             _status.setLastTurnTimestamp(updatedStatus.getLastTurnTimestamp());
 
-        if (asserter.isInteger(updatedStatus.getTurnNumber()) === true)
+        if (assert.isInteger(updatedStatus.getTurnNumber()) === true)
             _status.setTurnNumber(updatedStatus.getTurnNumber());
 
-        if (asserter.isString(updatedStatus.getStatus()) === true)
+        if (assert.isString(updatedStatus.getStatus()) === true)
             _status.setStatus(updatedStatus.getStatus());
 
-        if (asserter.isArray(updatedStatus.getPlayers()) === true)
+        if (assert.isArray(updatedStatus.getPlayers()) === true)
             _status.setPlayers(updatedStatus.getPlayers());
 
         if (updatedStatus.isNewTurn === true)
@@ -304,13 +307,13 @@ function Dominions5Game()
 
         log.general(log.getLeanLevel(), `${jsonData.name}: loading game status...`);
 
-        if (asserter.isObject(jsonData.status) === true)
+        if (assert.isObject(jsonData.status) === true)
             _status.fromJSON(jsonData.status);
 
-        if (asserter.isBoolean(jsonData.isEnforcingTimer) === true)
+        if (assert.isBoolean(jsonData.isEnforcingTimer) === true)
             _isEnforcingTimer = jsonData.isEnforcingTimer;
 
-        if (asserter.isBoolean(jsonData.isCurrentTurnRollback) === true)
+        if (assert.isBoolean(jsonData.isCurrentTurnRollback) === true)
             _isCurrentTurnRollback = jsonData.isCurrentTurnRollback;
 
 
