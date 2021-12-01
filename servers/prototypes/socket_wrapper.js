@@ -37,7 +37,10 @@ function SocketWrapper(socketIoObject)
             setTimeout(function handleTimeout()
             {
                 if (receivedResponse === false)
-                    reject(new TimeoutError(`Request ${trigger} received no response from socket. Data sent was:\n\n${rw.JSONStringify(data)}`));
+                {
+                    log.general(log.getVerboseLevel(), `Request ${trigger} timed out without a response from server. Data sent was:\n\n${rw.JSONStringify(data)}`);
+                    reject(new TimeoutError(`Request ${trigger} timed out without a response from server.`));
+                }
 
             }, 60000);
         });
