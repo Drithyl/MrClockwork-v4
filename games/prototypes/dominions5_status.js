@@ -188,7 +188,10 @@ function Dominions5Status()
     this.incrementTurn = () => _turnNumber++;
     this.setTurnNumber = (turnNumber) =>
     {
-        if (assert.isInteger(turnNumber) === true && turnNumber >= -1)
+        if (assert.isInteger(turnNumber) === false)
+            return;
+            
+        if (turnNumber === -1 || turnNumber >= 1)
             _turnNumber = turnNumber;
     };
 
