@@ -34,6 +34,10 @@ async function fetchGameStatus(gameObject)
     }
 
     const statusdumpWrapper = await gameObject.fetchStatusDump();
+
+    if (statusdumpWrapper == null)
+        return statusWrapper;
+
     statusWrapper.setTurnNumber(statusdumpWrapper.turnNbr);
     statusWrapper.setPlayers(statusdumpWrapper.nationStatusArray);
 
