@@ -71,28 +71,20 @@ function _assertGameHasStarted(commandContext)
 {
     const game = commandContext.getGameTargetedByCommand();
 
-    return game.checkIfGameStarted()
-    .then((hasGameStarted) =>
-    {
-        if (hasGameStarted === false)
-            return Promise.reject(new SemanticError(`This game has not started yet.`));
+    if (game.hasGameStarted() === false)
+        return Promise.reject(new SemanticError(`This game has not started yet.`));
 
-        else return Promise.resolve();
-    });
+    else return Promise.resolve();
 }
 
 function _assertGameHasNotStarted(commandContext)
 {
     const game = commandContext.getGameTargetedByCommand();
 
-    return game.checkIfGameStarted()
-    .then((hasGameStarted) =>
-    {
-        if (hasGameStarted === true)
-            return Promise.reject(new SemanticError(`This game has already started.`));
+    if (game.hasGameStarted() === true)
+        return Promise.reject(new SemanticError(`This game has already started.`));
 
-        else return Promise.resolve();
-    });
+    else return Promise.resolve();
 }
 
 function _assertGameIsBlitz(commandContext)

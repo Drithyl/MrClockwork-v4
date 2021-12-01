@@ -23,7 +23,6 @@ exports.set = (expressApp) =>
 
         return ongoingGames.forAllPromises(async (game) =>
         {
-            var hasGameStarted;
             var hostServer;
             var gameSettings;
             var maps;
@@ -34,9 +33,7 @@ exports.set = (expressApp) =>
             if (hostServer.isOnline() === false)
                 return;
 
-            hasGameStarted = await game.checkIfGameStarted();
-
-            if (hasGameStarted === true)
+            if (game.hasGameStarted() === true)
                 return;
 
             gameSettings = game.getSettingsObject();
