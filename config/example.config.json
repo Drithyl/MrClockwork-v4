@@ -49,7 +49,6 @@
   "queryProcessTimeout": 120000,
   "queryLaunchDelay": 3000,
   "gameUpdateInterval": 30000,
-  "maxParallelQueries": 10,
   "loggingInterval": 60000,
 
   "dom5GameTypeName": "dom5",
