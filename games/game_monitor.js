@@ -141,7 +141,7 @@ function _updateCycle(game)
         updatedStatus.copyTimerValues(lastKnownStatus);
 
         if (updatedStatus.isPaused() === false)
-            updatedStatus.moveTimerBy(UPDATE_INTERVAL);
+            updatedStatus.advanceTimer();
 
         return Promise.resolve(updatedStatus);
     })
