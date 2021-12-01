@@ -229,10 +229,12 @@ function Dominions5Game()
 
     _gameObject.fetchStatusDump = () => _gameObject.emitPromiseWithGameDataToServer("GET_STATUS_DUMP");
 
-    _gameObject.checkIfGameStarted = () => 
+    _gameObject.hasGameStarted = () => 
     {
-        return dominions5Status.queryDom5Status(_gameObject)
-        .then((status) => Promise.resolve(status.isOngoing()));
+        if (_status == null)
+            throw new Error("Last known status is not available.");
+
+        return _status.isOngoing();
     };
 
     _gameObject.getLastKnownStatus = () => _status;
