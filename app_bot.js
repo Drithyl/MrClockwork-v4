@@ -51,8 +51,9 @@ function _initializeComponents()
     process.on("uncaughtException", err => log.error(log.getLeanLevel(), `UNCAUGHT EXCEPTION ERROR`, err));
     process.exit = (code) => 
     {
-        console.log(`Process exited with code ${code}`);
-        console.log(new Error().stack);
+        log.general(log.getLeanLevel(), `Process exited with code ${code}`, new Error().stack);
+        return log.dumpToFile()
+        .then(() => process.exit(code));
     };
 
     //Begin initialization
