@@ -14,10 +14,6 @@ function ShuffleCommand()
 
     shuffleCommand.addBehaviour(_behaviour);
 
-    shuffleCommand.addRequirements(
-        commandPermissions.assertMemberIsTrusted
-    );
-
     return shuffleCommand;
 }
 
