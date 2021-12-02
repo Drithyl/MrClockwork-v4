@@ -49,12 +49,19 @@ function _initializeComponents()
     process.on("error", (err) => log.error(log.getLeanLevel(), `PROCESS ERROR`, err));
     process.on("unhandledRejection", err => log.error(log.getLeanLevel(), `UNHANDLED REJECTION ERROR`, err));
     process.on("uncaughtException", err => log.error(log.getLeanLevel(), `UNCAUGHT EXCEPTION ERROR`, err));
-    process.exit = (code) => 
+
+    // Gracefully shut down if the process is terminated with Ctrl+C or other forceful means
+    process.on("SIGINT", () =>
     {
-        log.general(log.getLeanLevel(), `Process exited with code ${code}`, new Error().stack);
+        log.general(log.getLeanLevel(), `Gracefully shutting down...`);
+        
         return log.dumpToFile()
-        .then(() => process.exit(code));
-    };
+        .then(() => 
+        {
+            // Graceful shutdown
+            process.exit("SIGINT");
+        });
+    });
 
     //Begin initialization
     Promise.resolve(patcher.runPatchers())
