@@ -17,8 +17,7 @@ function DisplaySubmittedPretendersCommand()
 
     displaySubmittedPretendersCommand.addRequirements(
         commandPermissions.assertCommandIsUsedInGameChannel,
-        commandPermissions.assertServerIsOnline,
-        commandPermissions.assertMemberIsTrusted
+        commandPermissions.assertServerIsOnline
     );
 
     return displaySubmittedPretendersCommand;
