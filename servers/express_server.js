@@ -33,6 +33,11 @@ exports.startListening = (port) =>
         const wrapper = new SocketWrapper(socket);
         _requestServerData(wrapper);
     });
+
+    _ioObject.engine.on("connection_error", (err) => 
+    {
+        log.general(log.getLeanLevel(), `Connection error occurred`, err);
+    });
 };
 
 exports.isHttpsAvailable = () =>
