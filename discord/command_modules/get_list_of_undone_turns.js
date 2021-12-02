@@ -41,14 +41,23 @@ function _behaviour(commandContext)
         if (nationStatusArray == null || nationStatusArray.length <= 0)
             return commandContext.respondToCommand(new MessagePayload(`List of undone turns is currently unavailable.`));
 
-        listString = nationStatusArray.reduce((finalStr, nationData) => 
+        const unfinished = nationStatusArray.filter((nationData) => nationData.isTurnUnfinished);
+        const unchecked = nationStatusArray.filter((nationData) => nationData.wasTurnChecked === false);
+
+        if (unfinished.length > 0)
         {
-            if (nationData.isTurnFinished === false)
-                return finalStr + `${nationData.fullName}\n`;
+            listString = "**Unfinished:**\n\n```";
+            listString += unfinished.reduce((finalStr, nationData) => finalStr + `${nationData.fullName}\n`, "\n");
+            listString += "```\n";
+        }
+
+        if (unchecked.length > 0)
+        {
+            listString += "**Unchecked:**\n\n```";
+            listString += unchecked.reduce((finalStr, nationData) => finalStr + `${nationData.fullName}\n`, "\n");
+            listString += "```\n";
+        }
     
-            else return finalStr;
-        }, "\n");
-    
-        return commandContext.respondToCommand(new MessagePayload(messageString, listString.toBox(), true, "```"));
+        return commandContext.respondToCommand(new MessagePayload(messageString, listString, true, "```"));
     });
 }

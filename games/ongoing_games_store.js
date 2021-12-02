@@ -14,8 +14,9 @@ const _ongoingGamesByName = {};
 
 exports.loadAll = function()
 {
-    var pathToGameDataDir = `${config.dataPath}/${config.gameDataFolder}`;
-    var gameDirNames = rw.getDirSubfolderNamesSync(pathToGameDataDir);
+    const pathToGameDataDir = `${config.dataPath}/${config.gameDataFolder}`;
+    const gameDirNames = rw.getDirSubfolderNamesSync(pathToGameDataDir);
+    const initializedGames = [];
     
     return gameDirNames.forEachPromise((gameDirName, i, nextPromise) =>
     {
@@ -26,7 +27,8 @@ exports.loadAll = function()
         .then((loadedGame) => 
         {
             log.general(log.getLeanLevel(), `${gameDirName} loaded, adding to store (${i+1}/${gameDirNames.length})...`);
-            exports.addOngoingGame(loadedGame);
+            _ongoingGamesByName[loadedGame.getName()] = loadedGame;
+            initializedGames.push(loadedGame);
             return nextPromise();
         })
         .catch((err) => 
@@ -38,7 +40,7 @@ exports.loadAll = function()
     .then(() => 
     {
         log.general(log.getLeanLevel(), `All games loaded, starting monitoring...`);
-        gameMonitor.startGameUpdateCycles();
+        gameMonitor.monitorDom5Games(initializedGames);
         log.general(log.getLeanLevel(), `Monitoring started!`);
         return Promise.resolve();
     });

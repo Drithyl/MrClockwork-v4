@@ -7,110 +7,58 @@ const botClientWrapper = require("../discord/wrappers/bot_client_wrapper.js");
 const dom5Status = require("./prototypes/dominions5_status.js");
 const MessagePayload = require("../discord/prototypes/message_payload.js");
 
-const MAX_SIMULTANEOUS_QUERIES = config.maxParallelQueries;
-const QUERY_LAUNCH_DELAY = config.queryLaunchDelay;
 const UPDATE_INTERVAL = config.gameUpdateInterval;
-const monitoredGames = [];
-var currentPendingGameIndex = 0;
-var currentQueries = 0;
+const monitoredGames = {};
 
-
-// Start the interval to launch as many queries as the MAX_SIMULTANEOUS_QUERIES,
-// or the amount of monitoredGames, whichever is smaller
-exports.startGameUpdateCycles = () => _queueGameUpdates();
-
+// Add several to be monitored and updated
+exports.monitorDom5Games = (games) => games.forEach((game) => exports.monitorDom5Game(game));
 
 // Add a game to be monitored and updated
 exports.monitorDom5Game = (game) =>
 {
-    if (monitoredGames.find((g) => g.getName() === game.getName()) != null)
+    if (monitoredGames[game.getName()] === true)
         return log.general(log.getLeanLevel(), `${game.getName()} is already being monitored.`);
         
-    monitoredGames.push(game);
+    monitoredGames[game.getName()] = true;
     log.general(log.getNormalLevel(), `${game.getName()} will be monitored for updates.`);
+    _updateGame(game);
 };
 
 // Remove a game from the monitoring list
 exports.stopMonitoringDom5Game = (game) =>
 {
-    for (var i = 0; i < monitoredGames.length; i++)
-    {
-        if (monitoredGames[i].getName() === game.getName())
-        {
-            monitoredGames.splice(i, 1);
-            return log.general(log.getLeanLevel(), `${game.getName()} will no longer be monitored for updates.`);
-        }
-    }
-    
-    log.general(log.getLeanLevel(), `${game.getName()} is not in the list of monitored games; no need to remove.`);
+    delete monitoredGames[game.getName()];
+    return log.general(log.getLeanLevel(), `${game.getName()} will no longer be monitored for updates.`);
 };
 
-// Start the timeout for a new round of game updates
-function _queueGameUpdates()
+function _updateGame(game)
 {
-    setInterval(_updateDom5Games, UPDATE_INTERVAL);
-}
+    if (monitoredGames[game.getName()] == null)
+        return log.general(log.getLeanLevel(), `${game.getName()} no longer on monitored list; update cycle stopped.`);;
 
-// Launch as many queries as the space allows, between the currentQueries and the
-// max allowed, as well as number of games. Each time, increment the currentPendingGameIndex
-// so the next loop starts a different game. Once a query finishes, reduce the number
-// of running queries for the next interval. 
-async function _updateDom5Games()
-{
-    if (currentQueries >= MAX_SIMULTANEOUS_QUERIES || currentQueries >= monitoredGames.length)
-        return;
-
-    const game = monitoredGames[currentPendingGameIndex];
-    _cyclePendingGameIndex();
-
-    if (game == null)
-        return _updateDom5Games();
-
+    // If game is no longer on store or monitored, stop monitoring it
     if (ongoingGameStore.hasOngoingGameByName(game.getName()) === false)
     {
         log.general(log.getLeanLevel(), `${game.getName()} not found on store; removing from list.`);
         exports.stopMonitoringDom5Game(game);
-        return _updateDom5Games();
+        return;
     }
 
     // Queries with offline servers are pointless
     if (game.isServerOnline() === false)
-        return _updateDom5Games();
-    
-    currentQueries++;
-    log.general(log.getVerboseLevel(), `Total queries running now: ${currentQueries}`);
-
-    setTimeout(() =>
     {
-        _updateCycle(game)
-        .then(() => 
-        {
-            _reduceQueries();
-            log.general(log.getVerboseLevel(), `Query finished, reducing current queries.`);
-        })
-        .catch((err) => 
-        {
-            _reduceQueries();
-            log.error(log.getNormalLevel(), `ERROR UPDATING DOM5 GAME ${game.getName()}`, err);
-        });
+        log.general(log.getVerboseLevel(), `${game.getName()}'s server is offline; skipping update cycle.`);
+        return setTimeout(() => _updateGame(game), UPDATE_INTERVAL);
+    }
 
-    }, QUERY_LAUNCH_DELAY * currentQueries)
-
-    return _updateDom5Games();
-}
-
-function _cyclePendingGameIndex()
-{
-    currentPendingGameIndex++;
-    if (currentPendingGameIndex >= monitoredGames.length)
-        currentPendingGameIndex = 0;
-}
-
-function _reduceQueries()
-{
-    currentQueries--;
-    if (currentQueries < 0)
-        currentQueries = 0;
+    // Update the game, then call the update function again after a timeout
+    _updateCycle(game)
+    .then(() => setTimeout(() => _updateGame(game), UPDATE_INTERVAL))
+    .catch((err) => 
+    {
+        log.error(log.getNormalLevel(), `ERROR UPDATING DOM5 GAME ${game.getName()}`, err);
+        setTimeout(() => _updateGame(game), UPDATE_INTERVAL);
+    });
 }
 
 function _updateCycle(game)
