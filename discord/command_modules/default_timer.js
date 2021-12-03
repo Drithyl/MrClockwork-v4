@@ -16,7 +16,6 @@ function DefaultTimerCommand()
     defaultTimerCommand.addBehaviour(_behaviour);
 
     defaultTimerCommand.addRequirements(
-        commandPermissions.assertMemberIsTrusted,
         commandPermissions.assertCommandIsUsedInGameChannel
     );
 
@@ -49,6 +48,9 @@ function _changeDefaultTimer(gameObject, commandContext, commandArguments)
     const timerChangeArg = commandArguments[0];
     const timeToSet = _extractTimeToSet(timerChangeArg, gameObject.getMsLeftPerTurn());
     const lastKnownTurnNumber = gameObject.getLastKnownStatus().getTurnNumber();
+
+    if (commandContext.doesSenderHaveOrganizerPermissions() === false)
+        return Promise.reject(new PermissionsError(`You must be the game organizer to change the timer.`));
 
     if (lastKnownTurnNumber <= 0)
         return commandContext.respondToCommand(new MessagePayload(`Game is being setup in lobby.`));

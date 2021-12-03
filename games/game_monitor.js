@@ -63,6 +63,7 @@ function _updateGame(game)
 
 function _updateCycle(game)
 {
+    // Get our game's last recorded status
     const lastKnownStatus = game.getLastKnownStatus();
 
     log.general(log.getVerboseLevel(), `${game.getName()}\tupdating...`);
@@ -73,12 +74,17 @@ function _updateCycle(game)
         return Promise.resolve();
     }
 
+    // Fetch the most recent status of the game
     return dom5Status.fetchDom5Status(game)
     .then((updatedStatus) =>
     {
+        // If the bot is not enforcing the timer, then Dominions updates its own
+        // timer without us having to manually do it, so skip this step
         if (game.isEnforcingTimer() === false)
             return Promise.resolve(updatedStatus);
 
+        // If bot is enforcing timer, but there are no last known ms, set them to 
+        // the full timer. This happens when patching games from v3 to v4, for example
         if (assert.isInteger(lastKnownStatus.getMsLeft()) === false)
         {
             log.general(log.getLeanLevel(), `${game.getName()}'s msLeft is null or incorrect; setting to default.`);
@@ -86,8 +92,11 @@ function _updateCycle(game)
             log.general(log.getLeanLevel(), `${game.getName()} set to ${lastKnownStatus.getMsLeft()}ms.`);
         }
 
+        // Set our new status to the last known bot enforced timer, to be on the same page
         updatedStatus.copyTimerValues(lastKnownStatus);
 
+        // Advance the timer if it's not paused. This still needs to be updated with the
+        // game status itself; it's only a simulation until the game.update() line gets called
         if (updatedStatus.isPaused() === false)
             updatedStatus.advanceTimer(UPDATE_INTERVAL);
 
@@ -95,9 +104,13 @@ function _updateCycle(game)
     })
     .then((updatedStatus) =>
     {
+        // Calculate all game events that happened in this update
         const gameEvents = _getGameEvents(updatedStatus, lastKnownStatus);
+
+        // Attach the new game events to our status object, to enhance it for ease of checking
         const updateData = Object.assign(updatedStatus, gameEvents);
 
+        // Update the status embed with the new data (in case game went offline, for example)
         log.general(log.getVerboseLevel(), `${game.getName()}\tupdating embed.`);
         game.updateStatusEmbed(updateData);
 
@@ -112,8 +125,10 @@ function _updateCycle(game)
         \tlastKnownTurnNumber:\t${lastKnownStatus.getTurnNumber()}
         \tlastKnown isPaused:\t${lastKnownStatus.isPaused()}`);
 
-
+        // Act on the calculated game events (i.e. roll a new turn, send a new turn announcement...)
         _handleGameEvents(game, updateData);
+
+        // Update our game's data
         game.update(updateData);
         return Promise.resolve();
     })
@@ -135,6 +150,8 @@ function _getGameEvents(updatedStatus, lastKnownStatus)
 
     const events = {
 
+        // Data that has the same timestamp than the previous data is not considered "new", as statusdump didn't update
+        isNewData:              updatedStatus.getLastUpdateTimestamp() > lastKnownStatus.getLastUpdateTimestamp(),
         didServerGoOffline:     updatedStatus.isServerOnline() === false && lastKnownStatus.isServerOnline() === true,
         didGameGoOffline:       updatedStatus.isOnline() === false && lastKnownStatus.isOnline() === true,
         isServerBackOnline:     updatedStatus.isServerOnline() === true && lastKnownStatus.isServerOnline() === false,
@@ -143,11 +160,14 @@ function _getGameEvents(updatedStatus, lastKnownStatus)
         didGameRestart:         updatedStatus.isInLobby() === true && lastKnownStatus.isOngoing() === true,
         didHourPass:            updatedStatus.getMsLeft() != null && lastKnownHourMark !== currentHourMark,
         isLastHourBeforeTurn:   updatedStatus.isOngoing() === true && lastKnownHourMark !== currentHourMark && currentHourMark === 0,
-        isNewTurn:              currentTurnNumber > 0 && currentTurnNumber > lastKnownTurnNumber,
-        wasTurnRollbacked:      currentTurnNumber > 0 && currentTurnNumber < lastKnownTurnNumber,
+        isNewTurn:              assert.isInteger(currentTurnNumber) === true && assert.isInteger(lastKnownTurnNumber) === true &&
+                                currentTurnNumber > 0 && currentTurnNumber > lastKnownTurnNumber,
+        wasTurnRollbacked:      assert.isInteger(currentTurnNumber) === true && assert.isInteger(lastKnownTurnNumber) === true &&
+                                currentTurnNumber > 0 && currentTurnNumber < lastKnownTurnNumber,
         lastTurnTimestamp
     };
 
+    // If it is a new turn, update the timestamp of the last turn
     if (events.isNewTurn === true)
         updatedStatus.setLastTurnTimestamp(Date.now());
 
@@ -157,6 +177,8 @@ function _getGameEvents(updatedStatus, lastKnownStatus)
 
 function _handleGameEvents(game, updateData)
 {
+    // If our bot is enforcing the timer, then we check here if any turns need to
+    // be forced to roll, or if we need to set the timer to the new turn's timer
     if (game.isEnforcingTimer() === true)
         _enforceTimer(game, updateData);
 
@@ -189,21 +211,28 @@ function _handleGameEvents(game, updateData)
     // statusdump will give false positives, since all nations show up with controller 0
     else if (game.isCurrentTurnRollback() === false && updateData.isOngoing() === true)
     {
-        // This check will emit an event to the slave server to verify the statusdump
-        // Reason being that tcpquery data does not show dead nations and considers them
-        // undone turns; so they will block new turns. Statusdump shows this info as -1 controller
-        log.general(log.getVerboseLevel(), `${game.getName()}\tChecking with slave if all turns are done...`);
-        return _checkIfAllTurnsAreDone(game)
-        .then((areAllTurnsDone) =>
+        // If the data is not more up to date than the last one, we shouldn't check for new
+        // turns. This is to protect this update cycle going faster than the game's
+        // statusdump updates, and several turns rolling in a row, as the bot sees turns still
+        // finished in the statusdump while it hasn't yet updated since the turn rolled
+        if (updateData.isNewData === true)
         {
-            if (areAllTurnsDone === true)
+            // This check will emit an event to the slave server to verify the statusdump
+            // Reason being that tcpquery data does not show dead nations and considers them
+            // undone turns; so they will block new turns. Statusdump shows this info as -1 controller
+            log.general(log.getVerboseLevel(), `${game.getName()}\tChecking with slave if all turns are done...`);
+            return _checkIfAllTurnsAreDone(game)
+            .then((areAllTurnsDone) =>
             {
-                log.general(log.getNormalLevel(), `${game.getName()}\tAll turns done`);
-                _handleAllTurnsDone(game, updateData);
-            }
+                if (areAllTurnsDone === true && updateData.isTurnProcessing() === false)
+                {
+                    log.general(log.getNormalLevel(), `${game.getName()}\tAll turns done`);
+                    _handleAllTurnsDone(game, updateData);
+                }
 
-            else log.general(log.getVerboseLevel(), `${game.getName()}\tSome turns are undone`);
-        });
+                else log.general(log.getVerboseLevel(), `${game.getName()}\tSome turns are undone`);
+            });
+        }
     }
 
     if (updateData.didHourPass === true)
@@ -226,7 +255,7 @@ function _enforceTimer(game, updateData)
         log.general(log.getNormalLevel(), `${game.getName()} set to ${updateData.getMsLeft()}ms.`);
     }
 
-    else if (updateData.getTurnNumber() > 0 && updateData.getMsLeft() <= 0 && updateData.isPaused() === false)
+    else if (updateData.getTurnNumber() > 0 && updateData.getMsLeft() <= 0 && updateData.isPaused() === false && updateData.isTurnProcessing() === false)
     {
         _handleAllTurnsDone(game, updateData);
     }
@@ -264,6 +293,7 @@ function _handleNewTurn(game, updateData)
 {
     log.general(log.getNormalLevel(), `${game.getName()}\tnew turn.`);
 
+    updateData.setIsTurnProcessing(false);
     game.sendGameAnnouncement(`Turn ${updateData.getTurnNumber()} has arrived.`);
     _processNewTurnPreferences(game, updateData.getTurnNumber());
     _processStales(game, updateData);
@@ -277,6 +307,7 @@ function _handleTurnRollback(game, updateData)
 
 function _handleAllTurnsDone(game, updateData)
 {
+    updateData.setIsTurnProcessing(true);
     log.general(log.getNormalLevel(), `${game.getName()}\t Forcing turn to roll...`);
     game.forceHost();
 }

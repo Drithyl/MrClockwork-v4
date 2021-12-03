@@ -15,8 +15,7 @@ function GetGameInfoCommand()
     getGameInfoCommand.addBehaviour(_behaviour);
 
     getGameInfoCommand.addRequirements(
-        commandPermissions.assertCommandIsUsedInGameChannel,
-        commandPermissions.assertMemberIsTrusted
+        commandPermissions.assertCommandIsUsedInGameChannel
     );
 
     return getGameInfoCommand;
