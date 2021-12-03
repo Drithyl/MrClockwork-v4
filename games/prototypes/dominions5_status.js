@@ -17,37 +17,38 @@ module.exports.Dominions5Status = Dominions5Status;
 async function fetchGameStatus(gameObject)
 {
     const isOnline = await gameObject.isOnlineCheck();
-    const statusWrapper = new Dominions5Status();
+    const dom5Status = new Dominions5Status();
 
-    statusWrapper.setName(gameObject.getName());
+    dom5Status.setName(gameObject.getName());
 
     if (gameObject.isServerOnline() === false)
     {
-        statusWrapper.setStatus(SERVER_OFFLINE);
-        return statusWrapper;
+        dom5Status.setStatus(SERVER_OFFLINE);
+        return dom5Status;
     }
 
     else if (isOnline === false)
     {
-        statusWrapper.setStatus(GAME_OFFLINE);
-        return statusWrapper;
+        dom5Status.setStatus(GAME_OFFLINE);
+        return dom5Status;
     }
 
     const statusdumpWrapper = await gameObject.fetchStatusDump();
 
     if (statusdumpWrapper == null)
-        return statusWrapper;
+        return dom5Status;
 
-    statusWrapper.setTurnNumber(statusdumpWrapper.turnNbr);
-    statusWrapper.setPlayers(statusdumpWrapper.nationStatusArray);
+    dom5Status.setLastUpdateTimestamp(statusdumpWrapper.lastUpdateTimestamp);
+    dom5Status.setTurnNumber(statusdumpWrapper.turnNbr);
+    dom5Status.setPlayers(statusdumpWrapper.nationStatusArray);
 
     if (statusdumpWrapper.hasStarted === false)
-        statusWrapper.setStatus(IN_LOBBY);
+        dom5Status.setStatus(IN_LOBBY);
 
     else if (statusdumpWrapper.hasStarted === true)
-        statusWrapper.setStatus(STARTED);
+        dom5Status.setStatus(STARTED);
 
-    return statusWrapper;
+    return dom5Status;
 }
 
 async function queryGame(gameObject)
@@ -161,7 +162,8 @@ function Dominions5Status()
     var _msLeft;
     var _players;
     var _lastTurnTimestamp;
-    var _lastUpdateTimestamp = Date.now();
+    var _isTurnProcessing = false;
+    var _lastUpdateTimestamp;
 
     this.getName = () => _name;
     this.setName = (name) =>
@@ -182,6 +184,13 @@ function Dominions5Status()
     {
         if (assert.isBoolean(isPaused) === true)
             _isPaused = isPaused;
+    };
+
+    this.isTurnProcessing = () => _isTurnProcessing;
+    this.setIsTurnProcessing = (isTurnProcessing) =>
+    {
+        if (assert.isBoolean(isTurnProcessing) === true)
+            _isTurnProcessing = isTurnProcessing;
     };
 
     this.getTurnNumber = () => _turnNumber;
@@ -262,7 +271,7 @@ function Dominions5Status()
 
         this.setIsPaused(statusObject.isPaused());
         this.setMsLeft(statusObject.getMsLeft());
-        this.setLastUpdateTimestamp(statusObject.getLastUpdateTimestamp());
+        this.setIsTurnProcessing(statusObject.isTurnProcessing());
     };
 
     this.clone = () =>

@@ -247,6 +247,9 @@ function Dominions5Game()
         if (assert.isInteger(updatedStatus.getLastTurnTimestamp()) === true)
             _status.setLastTurnTimestamp(updatedStatus.getLastTurnTimestamp());
 
+        if (assert.isInteger(updatedStatus.getLastUpdateTimestamp()) === true)
+            _status.setLastUpdateTimestamp(updatedStatus.getLastUpdateTimestamp());
+
         if (assert.isInteger(updatedStatus.getTurnNumber()) === true)
             _status.setTurnNumber(updatedStatus.getTurnNumber());
 
@@ -267,8 +270,6 @@ function Dominions5Game()
             _isCurrentTurnRollback = true;
             log.general(log.getNormalLevel(), `${_gameObject.getName()}\t_isCurrentRollback set to ${_isCurrentTurnRollback}`);
         }
-
-        _status.setLastUpdateTimestamp(Date.now());
 
         return _status;
     };
