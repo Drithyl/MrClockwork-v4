@@ -20,6 +20,7 @@ function Dominions5Game()
     var _statusEmbed;
     var _isEnforcingTimer = true;
     var _isCurrentTurnRollback = false;
+    var _isTurnProcessing = false;
 
     _gameObject.setSettingsObject(new Dominions5Settings(_gameObject));
 
@@ -207,9 +208,14 @@ function Dominions5Game()
         });
     };
 
-    _gameObject.forceHost = () => _gameObject.emitPromiseWithGameDataToServer("FORCE_HOST");
+    _gameObject.forceHost = () => 
+    {
+        _isTurnProcessing = true;
+        return _gameObject.emitPromiseWithGameDataToServer("FORCE_HOST");
+    };
 
     _gameObject.isCurrentTurnRollback = () => _isCurrentTurnRollback;
+    _gameObject.isTurnProcessing = () => _isTurnProcessing;
     _gameObject.isEnforcingTimer = () => _isEnforcingTimer;
     _gameObject.switchTimerEnforcer = () => 
     {
@@ -262,6 +268,7 @@ function Dominions5Game()
         if (updatedStatus.isNewTurn === true)
         {
             _isCurrentTurnRollback = false;
+            _isTurnProcessing = false;
             log.general(log.getNormalLevel(), `${_gameObject.getName()}\t_isCurrentRollback set to ${_isCurrentTurnRollback}`);
         }
 

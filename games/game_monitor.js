@@ -224,7 +224,7 @@ function _handleGameEvents(game, updateData)
             return _checkIfAllTurnsAreDone(game)
             .then((areAllTurnsDone) =>
             {
-                if (areAllTurnsDone === true && updateData.isTurnProcessing() === false)
+                if (areAllTurnsDone === true && game.isTurnProcessing() === false)
                 {
                     log.general(log.getNormalLevel(), `${game.getName()}\tAll turns done`);
                     _handleAllTurnsDone(game, updateData);
@@ -255,7 +255,7 @@ function _enforceTimer(game, updateData)
         log.general(log.getNormalLevel(), `${game.getName()} set to ${updateData.getMsLeft()}ms.`);
     }
 
-    else if (updateData.getTurnNumber() > 0 && updateData.getMsLeft() <= 0 && updateData.isPaused() === false && updateData.isTurnProcessing() === false)
+    else if (updateData.getTurnNumber() > 0 && updateData.getMsLeft() <= 0 && updateData.isPaused() === false && game.isTurnProcessing() === false)
     {
         _handleAllTurnsDone(game, updateData);
     }
@@ -307,7 +307,6 @@ function _handleTurnRollback(game, updateData)
 
 function _handleAllTurnsDone(game, updateData)
 {
-    updateData.setIsTurnProcessing(true);
     log.general(log.getNormalLevel(), `${game.getName()}\t Forcing turn to roll...`);
     game.forceHost();
 }
