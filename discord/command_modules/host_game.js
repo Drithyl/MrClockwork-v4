@@ -4,6 +4,7 @@ const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
 const gameFactory = require("../../games/game_factory.js");
+const MessagePayload = require("../prototypes/message_payload.js");
 
 const activeMenuStore = require("../../menus/active_menu_store.js");
 const hostServerStore = require("../../servers/host_server_store.js");
