@@ -45,8 +45,14 @@ function Dominions5Game()
                     return;
 
                 return guildWrapper.fetchGuildMemberWrapperById(pretenderOwnerId)
-                .then((pretenderOwnerMember) => nation.owner = pretenderOwnerMember);
-            })
+                .then((pretenderOwnerMember) => nation.owner = pretenderOwnerMember)
+                .catch((err) => 
+                {
+                    nation.owner = "Unknown member";
+                    return Promise.resolve();
+                });
+                
+            }, false)
             .then(() => Promise.resolve(nationArray));
         });
     };
