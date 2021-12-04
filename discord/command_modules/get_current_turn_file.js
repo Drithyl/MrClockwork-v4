@@ -36,16 +36,14 @@ function _behaviour(commandContext)
     const playerId = commandContext.getCommandSenderId();
     const playerFile = playerFileStore.getPlayerFile(playerId);
     const playerGameData = playerFile.getGameData(gameName);
-    const controlledNations = playerGameData.getNationsControlledByPlayer();
+    const controlledNationFilenames = playerGameData.getNationFilenamesControlledByPlayer();
     const payload = new MessagePayload(messageString);
 
     return commandContext.respondToCommand(new MessagePayload(`The turnfile will be sent to you by DM shortly.`))
     .then(() =>
     {
-        return controlledNations.forAllPromises((nation) =>
+        return controlledNationFilenames.forAllPromises((nationFilename) =>
         {
-            const nationFilename = nation.getFilename();
-    
             return gameObject.emitPromiseWithGameDataToServer("GET_TURN_FILE", { nationFilename })
             .then((turnFileBuffer) => payload.setAttachment(`${nationFilename}_turn_${status.getTurnNumber()}.trn`, turnFileBuffer));
         })
