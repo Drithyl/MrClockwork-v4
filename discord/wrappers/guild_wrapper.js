@@ -18,7 +18,7 @@ function GuildWrapper(discordJsGuildObject)
     this.isAvailable = () => _discordJsGuildObject.available;
     this.fetchOwner = async () => 
     {
-        const discordJsOwnerObject = await _discordJsGuildObject.fetchOwner();
+        const discordJsOwnerObject = await _discordJsGuildObject.fetchOwner({ cache: true });
         return new GuildMemberWrapper(discordJsOwnerObject, this);
     };
 
@@ -34,9 +34,9 @@ function GuildWrapper(discordJsGuildObject)
     this.getTrustedRole = () => _discordJsGuildObject.roles.cache.get(guildDataStore.getTrustedRoleId(this.getId()));
     this.getBlitzerRole = () => _discordJsGuildObject.roles.cache.get(guildDataStore.getBlitzerRoleId(this.getId()));
 
-    this.fetchGameMasterRole = () => _discordJsGuildObject.roles.fetch(guildDataStore.getGameMasterRoleId(this.getId()));
-    this.fetchTrustedRole = () => _discordJsGuildObject.roles.fetch(guildDataStore.getTrustedRoleId(this.getId()));
-    this.fetchBlitzerRole = () => _discordJsGuildObject.roles.fetch(guildDataStore.getBlitzerRoleId(this.getId()));
+    this.fetchGameMasterRole = () => _discordJsGuildObject.roles.fetch(guildDataStore.getGameMasterRoleId(this.getId()), { cache: true });
+    this.fetchTrustedRole = () => _discordJsGuildObject.roles.fetch(guildDataStore.getTrustedRoleId(this.getId()), { cache: true });
+    this.fetchBlitzerRole = () => _discordJsGuildObject.roles.fetch(guildDataStore.getBlitzerRoleId(this.getId()), { cache: true });
 
 
     this.memberIsOwner = (memberId) => memberId === _discordJsGuildObject.ownerId;
@@ -221,7 +221,7 @@ function GuildWrapper(discordJsGuildObject)
     this.getChannelByName = (channelName) => _discordJsGuildObject.channels.cache.find("name", channelName);
 
     this.getDiscordJsGuildMemberById = (memberId) => _discordJsGuildObject.members.cache.get(memberId);
-    this.fetchDiscordJsGuildMemberById = (memberId) => _discordJsGuildObject.members.fetch(memberId);
+    this.fetchDiscordJsGuildMemberById = (memberId) => _discordJsGuildObject.members.fetch(memberId, { cache: true });
     this.getGuildMemberWrapperById = (memberId) => 
     {
         var discordJsGuildMember = this.getDiscordJsGuildMemberById(memberId);
