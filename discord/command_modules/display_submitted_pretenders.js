@@ -50,11 +50,11 @@ function _formatSubmittedPretenderLine(submittedPretender)
     const fullNationName = submittedPretender.fullName;
     const pretenderOwnerMember = submittedPretender.owner;
 
+    if (assert.isString(pretenderOwnerMember) === true)
+        return `${fullNationName.width(40)} ${pretenderOwnerMember}\n`;
+
     if (pretenderOwnerMember != null)
         return `${fullNationName.width(40)} ${pretenderOwnerMember.getUsername()}\n`;
-
-    else if (assert.isString(pretenderOwnerMember) === true)
-        return `${fullNationName.width(40)} ${pretenderOwnerMember}\n`;
 
     else return `${fullNationName}\n`;
 }
