@@ -34,6 +34,9 @@ exports.set = (expressApp) =>
         {
             const userId = userInfo.id;
 
+            if (userInfo.code === 0)
+                return res.render("results_screen.ejs", { result: `There are too many requests right now. Please try again later.` });
+
             if (userId == null)
                 return log.general(log.getVerboseLevel(), "Invalid login attempt, ignoring.");
 
