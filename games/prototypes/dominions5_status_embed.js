@@ -110,7 +110,7 @@ function Dominions5StatusEmbed(embedWrapper)
                 {
                     const playerStr = updateData.getPlayers().reduce((playersInfo, playerData) => 
                     {
-                        if (playerData.isTurnFinished === false)
+                        if (playerData.isTurnFinished === false && playerData.isHuman === true)
                             return playersInfo + `${playerData.fullName}\n`;
 
                         else return playersInfo;
