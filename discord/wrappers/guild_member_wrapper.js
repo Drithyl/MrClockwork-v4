@@ -22,7 +22,7 @@ function GuildMemberWrapper(discordJsGuildMemberObject, guildWrapper)
     this.hasRole = (discordRoleId) => _discordJsGuildMemberObject.roles.cache.get(discordRoleId) != null;
     this.addRole = (discordRoleObject) => _discordJsGuildMemberObject.roles.add(discordRoleObject);
     this.removeRole = (discordRoleObject) => _discordJsGuildMemberObject.roles.remove(discordRoleObject);
-    this.fetchRole = (discordRoleId) => _discordJsGuildMemberObject.roles.fetch(discordRoleId);
+    this.fetchRole = (discordRoleId) => _discordJsGuildMemberObject.roles.fetch(discordRoleId, { cache: true });
     this.getHighestDiscordRolePosition = () => discordJsGuildMemberObject.roles.highest.position;
     this.sendMessage = (payload) => payload.send(_discordJsGuildMemberObject);
 }

@@ -10,6 +10,11 @@ exports.set = (expressApp) =>
 {
     expressApp.get("/authenticate", (req, res) =>
     {
+        const session = webSessionsStore.getSessionFromUrlParams(req) ?? webSessionsStore.getSessionFromCookies(req);
+
+        if (session != null)
+            return session.redirectTo("user_home_screen", res);
+
         var oAuth2Url = `https://discord.com/api/oauth2/authorize?client_id=${config.discordClientId}&redirect_uri=${config.discordRedirectUri}&response_type=code&scope=identify&prompt=none`
         res.redirect(oAuth2Url);
     });
@@ -18,8 +23,11 @@ exports.set = (expressApp) =>
     expressApp.get("/login", (req, res) =>
     {
         const urlObject = new url.URL("http://www." + req.hostname + req.originalUrl);
-
+        const session = webSessionsStore.getSessionFromUrlParams(req) ?? webSessionsStore.getSessionFromCookies(req);
         log.general(log.getVerboseLevel(), `Login request received with urlObject: ${urlObject.searchParams.get("code")}`);
+
+        if (session != null)
+            return session.redirectTo("user_home_screen", res);
 
         oauth2.authenticate(urlObject)
         .then((userInfo) => 
