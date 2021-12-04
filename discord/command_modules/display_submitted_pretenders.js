@@ -1,5 +1,6 @@
 
 const log = require("../../logger.js");
+const assert = require("../../asserter.js");
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
@@ -50,10 +51,10 @@ function _formatSubmittedPretenderLine(submittedPretender)
     const pretenderOwnerMember = submittedPretender.owner;
 
     if (pretenderOwnerMember != null)
-    {
-        log.general(log.getVerboseLevel(), `Owner for ${fullNationName}: ${pretenderOwnerMember.getId()}`);
         return `${fullNationName.width(40)} ${pretenderOwnerMember.getUsername()}\n`;
-    }
+
+    else if (assert.isString(pretenderOwnerMember) === true)
+        return `${fullNationName.width(40)} ${pretenderOwnerMember}\n`;
 
     else return `${fullNationName}\n`;
 }
