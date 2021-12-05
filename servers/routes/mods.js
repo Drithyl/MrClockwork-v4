@@ -13,6 +13,11 @@ exports.set = (expressApp) =>
             res.send(["Selected server is offline"]);
 
         server.emitPromise("GET_MOD_LIST")
-        .then((list) => res.send(list));
+        .then((list) => res.send(list))
+        .catch((err) => 
+        {
+            res.send([]);
+            log.error(log.getNormalLevel(), `Could not fetch mods from ${serverName}: ${err.message}`);
+        });
     });
 };

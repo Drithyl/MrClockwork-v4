@@ -12,6 +12,11 @@ exports.set = (expressApp) =>
             res.send(["Selected server is offline"]);
 
         server.emitPromise("GET_MAP_LIST")
-        .then((list) => res.send(list));
+        .then((list) => res.send(list))
+        .catch((err) => 
+        {
+            res.send([]);
+            log.error(log.getNormalLevel(), `Could not fetch maps from ${serverName}: ${err.message}`);
+        });
     });
 };
