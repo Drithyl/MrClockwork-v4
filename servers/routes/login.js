@@ -34,8 +34,8 @@ exports.set = (expressApp) =>
         {
             const userId = userInfo.id;
 
-            if (userInfo.code === 0)
-                return res.render("results_screen.ejs", { result: `There are too many requests right now. Please try again later.` });
+            if (userInfo.error != null || userInfo.code != null)
+                return _handleLoginError(userInfo, res);
 
             if (userId == null)
                 return log.general(log.getVerboseLevel(), "Invalid login attempt, ignoring.");
@@ -50,3 +50,23 @@ exports.set = (expressApp) =>
         .catch((err) => res.render("results_screen.ejs", { result: `Error occurred: ${err.message}` }));
     });
 };
+
+function _handleLoginError(info, res)
+{
+    if (/You are being blocked from accessing our API temporarily/i.test(info.message) === true)
+        return res.render("results_screen.ejs", { result: `There are too many requests right now. Please try again later.` });
+        
+    if (/401: Unauthorized/i.test(info.message) === true)
+        return res.render("results_screen.ejs", { result: `Incorrect login or password provided.` });
+        
+    if (/invalid_request/i.test(info.error) === true)
+        return res.render("results_screen.ejs", { result: `Invalid code in request.` });
+
+    if (info.message != null)
+        return res.render("results_screen.ejs", { result: info.message });
+
+    if (info.error != null)
+        return res.render("results_screen.ejs", { result: `Error occurred: ${info.error}.` });
+
+    else return res.render("results_screen.ejs", { result: `Unknown Error occurred.` });
+}
