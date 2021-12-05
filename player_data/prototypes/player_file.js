@@ -39,7 +39,22 @@ function PlayerFile(playerId)
 
     this.hasGamePreferences = (gameName) => _preferencesByGameName[gameName] != null;
     this.getGamePreferences = (gameName) => _preferencesByGameName[gameName];
-    this.getAllGamePreferences = () => _preferencesByGameName;
+    this.getAllGamePreferences = () => 
+    {
+        // Fill up empty game preferences in games where the player controls nations
+        for (var gameName in _gameDataByGameName)
+        {
+            if (this.hasGamePreferences(gameName) === false)
+            {
+                if (this.getControlledNationFilenamesInGame(gameName).length > 0)
+                {
+                    this.setGamePreferences(gameName, new DominionsPreferences(_playerId));
+                }
+            }
+        }
+
+        return _preferencesByGameName;
+    }
 
     this.getEffectiveGamePreferences = (gameName) => 
     {
