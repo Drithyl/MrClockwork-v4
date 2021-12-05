@@ -5,6 +5,7 @@ const config = require("../config/config.json");
 const ongoingGameStore = require("./ongoing_games_store.js");
 const botClientWrapper = require("../discord/wrappers/bot_client_wrapper.js");
 const dom5Status = require("./prototypes/dominions5_status.js");
+const dom5SettingFlags = require("../json/dominions5_setting_flags.json");
 const MessagePayload = require("../discord/prototypes/message_payload.js");
 
 const UPDATE_INTERVAL = config.gameUpdateInterval;
@@ -334,6 +335,9 @@ function _processNewTurnPreferences(game, turnNumber)
 {
     const nationFilesToFetch = [];
     const gameName = game.getName();
+    const settings = game.getSettingsObject();
+    const scoregraphs = settings.getScoregraphsSetting();
+    const scoregraphsValue = scoregraphs.getValue();
     const filesRequestingBackups = [];
 
     game.forEachPlayerFile((playerFile) =>
@@ -367,7 +371,7 @@ function _processNewTurnPreferences(game, turnNumber)
             botClientWrapper.fetchUser(playerFile.getId())
             .then((userWrapper) =>
             {
-                if (preferences.isReceivingScores() === true)
+                if (preferences.isReceivingScores() === true && +scoregraphsValue === +dom5SettingFlags.VISIBLE_SCOREGRAPHS)
                     payload.setAttachment(`scores.html`, scoresFile);
 
                 controlledNations.forEach((nationFilename) =>

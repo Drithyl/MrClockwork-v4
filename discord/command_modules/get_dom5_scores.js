@@ -3,6 +3,7 @@ const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
 const MessagePayload = require("../prototypes/message_payload.js");
+const dom5SettingFlags = require("../../json/dominions5_setting_flags.json");
 
 const commandData = new CommandData("GET_DOM5_SCORES");
 
@@ -26,9 +27,15 @@ function GetDom5ScoresCommand()
 
 function _behaviour(commandContext)
 {
-    var gameObject = commandContext.getGameTargetedByCommand();
-    var gameName = gameObject.getName();
-    var messageString = `Attached is the scores file for ${gameName}.`;
+    const gameObject = commandContext.getGameTargetedByCommand();
+    const settings = gameObject.getSettingsObject();
+    const scoregraphs = settings.getScoregraphsSetting();
+    const scoregraphsValue = scoregraphs.getValue();
+    const gameName = gameObject.getName();
+    const messageString = `Attached is the scores file for ${gameName}.`;
+
+    if (+scoregraphsValue !== +dom5SettingFlags.VISIBLE_SCOREGRAPHS)
+        return commandContext.respondToCommand(new MessagePayload(`You can only receive the scores file when the scoregraphs setting for this game is on.`));
     
     return gameObject.emitPromiseWithGameDataToServer("GET_SCORE_DUMP")
     .then((scoresFile) => 
