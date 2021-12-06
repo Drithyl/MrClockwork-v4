@@ -112,7 +112,7 @@
         "argumentsRequiredInfo": ["A game's name"],
         "optionalArguments": 0,
         "regexpRequiredToInvoke": "DELETE$",
-        "argumentRegexpArray": ["^[A-Z_]{3,32}$"],
+        "argumentRegexpArray": ["^[A-Z_0-9]{3,32}$"],
         "channelRequiredToInvoke": "dm",
         "helpText": "Permanently deletes the game and its channel and role."
     },
