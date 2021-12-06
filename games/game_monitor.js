@@ -28,8 +28,13 @@ exports.monitorDom5Game = (game) =>
 // Remove a game from the monitoring list
 exports.stopMonitoringDom5Game = (game) =>
 {
-    delete monitoredGames[game.getName()];
-    return log.general(log.getLeanLevel(), `${game.getName()} will no longer be monitored for updates.`);
+    if (game != null)
+    {
+        delete monitoredGames[game.getName()];
+        return log.general(log.getLeanLevel(), `${game.getName()} will no longer be monitored for updates.`);
+    }
+
+    return log.general(log.getLeanLevel(), `Game is null; no need to remove from monitored list.`);
 };
 
 function _updateGame(game)
