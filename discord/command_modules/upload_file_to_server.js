@@ -77,7 +77,8 @@ function _extractGoogleDriveFileId(id)
 function _formatResponseData(responseData)
 {
     var formattedStr = "";
-    const { writtenEntries, skippedEntries } = responseData;
+    const writtenEntries = responseData.writtenEntries;
+    const skippedEntries = responseData.skippedEntries;
 
     if (asserter.isArray(writtenEntries) === false || asserter.isArray(skippedEntries) === false)
         return "No download details available, but the operation was either successful or skipped files that already existed.";
