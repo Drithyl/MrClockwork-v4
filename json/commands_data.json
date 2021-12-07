@@ -77,6 +77,20 @@
         "helpText": "Creates a game channel so you can first discuss things with other players before actually hosting a game. You must specify the name of the channel as the first argument of the command."
     },
 
+    "DEBUG_GAME":
+    {
+        "name": "debug",
+        "isEnabled": true,
+        "isDevOnly": true,
+        "gameTypesSupported": ["dom5"],
+        "argumentsRequiredInfo": ["A game's name"],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "DEBUG$",
+        "argumentRegexpArray": ["^[A-Z_0-9]{3,32}$"],
+        "channelRequiredToInvoke": "dm",
+        "helpText": "Show current game's state"
+    },
+
     "DELETE_GAME":
     {
         "name": "deletegamenotchannel",
