@@ -22,12 +22,13 @@ function DebugGameCommand()
     return debugGameCommand;
 }
 
-function _behaviour(commandContext)
+async function _behaviour(commandContext)
 {
     const commandArgumentsArray = commandContext.getCommandArgumentsArray();
     const nameOfGameToRepair = commandArgumentsArray[0];
     const payload = new MessagePayload("Below is the game's state:");
     var game;
+    var nations;
     var debugInfo;
     
 
@@ -35,6 +36,8 @@ function _behaviour(commandContext)
         return commandContext.respondToCommand(new MessagePayload(`No game found with this name.`));
 
     game = ongoingGamesStore.getOngoingGameByName(nameOfGameToRepair);
+    nations = await game.fetchSubmittedNations();
+
     debugInfo = {
         guild: `${game.getGuild()?.getName()} (${game.getGuildId()})`,
         organizer: `${game.getOrganizer()?.getNameInGuild()} (${game.getOrganizerId()})`,
@@ -42,13 +45,17 @@ function _behaviour(commandContext)
         role: `${game.getRole()?.name} (${game.getRoleId()})`,
         server: game.getServer()?.getName(),
         address: `${game.getIp()}:${game.getPort()}`,
+        statusEmbed: game.getStatusEmbedId(),
         isServerOnline: game.isServerOnline(),
         isEnforcingTimer: game.isEnforcingTimer(),
         isCurrentTurnRollback: game.isCurrentTurnRollback(),
         isTurnProcessing: game.isTurnProcessing(),
         status: game.getLastKnownStatus(),
-        settings: game.getSettingsObject()
-    }
+        settings: game.getSettingsObject(),
+        nations
+    };
+
+
 
     payload.setAttachment("state.json", Buffer.from(JSON.stringify(debugInfo, null, 2)));
 

@@ -24,6 +24,7 @@ function Dominions5Game()
 
     _gameObject.setSettingsObject(new Dominions5Settings(_gameObject));
 
+    _gameObject.getStatusEmbedId = () => (_statusEmbed != null) ? _statusEmbed.getMessageId() : null;
     _gameObject.getGameType = () => config.dom5GameTypeName;
     _gameObject.getDataPackage = () => _createGameDataPackage();
 
