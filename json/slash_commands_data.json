@@ -95,6 +95,23 @@
         "description": "Permanently deletes the game hosted in this channel, as well as the channel itself."
     },
 
+    "DEBUG_GAME":
+    {
+        "name": "debug",
+        "isEnabled": true,
+        "isDevOnly": true,
+        "channelRequiredToInvoke": "dm",
+        "description": "[Dev-only] Show current game's state.",
+        "options": [
+            {
+                "name": "game_name",
+                "type": "STRING",
+                "description": "A game's name",
+                "required": true
+            }
+        ]
+    },
+
     "DELETE_GAME_BY_DM":
     {
         "name": "deletegamebydm",
