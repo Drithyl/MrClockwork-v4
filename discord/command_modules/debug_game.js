@@ -29,6 +29,7 @@ async function _behaviour(commandContext)
     const payload = new MessagePayload("Below is the game's state:");
     var game;
     var nations;
+    var areAllTurnsDone;
     var debugInfo;
     
 
@@ -37,6 +38,7 @@ async function _behaviour(commandContext)
 
     game = ongoingGamesStore.getOngoingGameByName(nameOfGameToRepair);
     nations = await game.fetchSubmittedNations();
+    areAllTurnsDone = nations.find((nation) => nation.wasTurnChecked === false) == null;
 
     debugInfo = {
         guild: `${game.getGuild()?.getName()} (${game.getGuildId()})`,
@@ -50,6 +52,7 @@ async function _behaviour(commandContext)
         isEnforcingTimer: game.isEnforcingTimer(),
         isCurrentTurnRollback: game.isCurrentTurnRollback(),
         isTurnProcessing: game.isTurnProcessing(),
+        areAllTurnsDone, 
         status: game.getLastKnownStatus(),
         settings: game.getSettingsObject(),
         nations
