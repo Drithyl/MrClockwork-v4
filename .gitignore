@@ -17,3 +17,5 @@ data/
 package-lock.json
 client/css/.DS_Store
 client/js/.DS_Store
+.config.codekit3
+build/client/css/main-min.css
