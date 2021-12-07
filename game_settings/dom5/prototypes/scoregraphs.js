@@ -51,7 +51,7 @@ function Scoregraphs()
         if (value == dom5SettingFlags.NO_SCOREGRAPHS)
             return ["--nonationinfo"];
     
-        else if (vale == dom5SettingFlags.VISIBLE_SCOREGRAPHS)
+        else if (value == dom5SettingFlags.VISIBLE_SCOREGRAPHS)
             return [`--scoregraphs`];
 
         else return [];
