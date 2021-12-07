@@ -47,8 +47,14 @@ function Scoregraphs()
     this.translateValueToCmdFlag = () =>
     {
         var value = this.getValue();
+
+        if (value == dom5SettingFlags.NO_SCOREGRAPHS)
+            return ["--nonationinfo"];
     
-        return [`--scoregraphs`, value];
+        else if (vale == dom5SettingFlags.VISIBLE_SCOREGRAPHS)
+            return [`--scoregraphs`];
+
+        else return [];
     };
 
     function _validateInputFormatOrThrow(input)
