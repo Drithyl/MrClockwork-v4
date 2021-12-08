@@ -333,12 +333,12 @@ function Dominions5Game()
             .catch((err) => log.error(log.getVerboseLevel(), `ERROR SENDING ${_gameObject.getName()}'S EMBED`, err));
     };
 
-    _gameObject.emitPromiseWithGameDataToServer = (message, additionalDataObjectToSend) =>
+    _gameObject.emitPromiseWithGameDataToServer = (message, additionalDataObjectToSend, timeout) =>
     {
         const dataPackage = _createGameDataPackage();
         Object.assign(dataPackage, additionalDataObjectToSend);
 
-        return _gameObject.emitPromiseToServer(message, dataPackage);
+        return _gameObject.emitPromiseToServer(message, dataPackage, timeout);
     };
 
     _gameObject.loadJSONData = async (jsonData) =>
