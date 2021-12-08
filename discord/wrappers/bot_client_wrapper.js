@@ -4,6 +4,7 @@ const log = require("../../logger.js");
 const guildStore = require("../guild_store.js");
 const UserWrapper = require("./user_wrapper.js");
 const config = require("../../config/config.json");
+const GuildMemberWrapper = require("./guild_member_wrapper.js");
 
 // As of DiscordJS v13, these intents are **required**; read more here:
 // https://discordjs.guide/popular-topics/intents.html#enabling-intents
@@ -43,6 +44,15 @@ exports.addOnBotLeftGuildHandler = (handler) => _discordJsBotClient.on("guildDel
 
 exports.addOnGuildUnavailableHandler = (handler) => _discordJsBotClient.on("guildUnavailable", (discordJsGuild) => handler(discordJsGuild));
 exports.addOnGuildDeletedHandler = (handler) => _discordJsBotClient.on("guildBecameUnavailable", (discordJsGuild) => handler(discordJsGuild));
+exports.addOnGuildMemberJoinedHandler = (handler) => _discordJsBotClient.on("guildMemberAdd", (discordJsGuildMember) => handler(new GuildMemberWrapper(discordJsGuildMember, guildStore.getGuildWrapperById(discordJsGuildMember.guild.id))));
+exports.addOnGuildMemberRemovedHandler = (handler) => _discordJsBotClient.on("guildMemberRemove", (discordJsGuildMember) => handler(new GuildMemberWrapper(discordJsGuildMember, guildStore.getGuildWrapperById(discordJsGuildMember.guild.id))));
+exports.addOnGuildMemberUpdatedHandler = (handler) => _discordJsBotClient.on("guildMemberUpdate", (oldDiscordJsGuildMember, newDiscordJsGuildMember) => 
+{
+    handler(
+        new GuildMemberWrapper(oldDiscordJsGuildMember, guildStore.getGuildWrapperById(oldDiscordJsGuildMember.guild.id)),
+        new GuildMemberWrapper(newDiscordJsGuildMember, guildStore.getGuildWrapperById(newDiscordJsGuildMember.guild.id))
+    );
+});
 
 exports.addOnChannelDeletedHandler = (handler) => _discordJsBotClient.on("channelDelete", (discordJsChannel) => handler(discordJsChannel));
 exports.addOnRoleDeletedHandler = (handler) => _discordJsBotClient.on("roleDelete", (discordJsChannel) => handler(discordJsChannel));

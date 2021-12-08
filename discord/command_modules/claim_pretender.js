@@ -26,7 +26,7 @@ function ClaimPretenderCommand()
 function _behaviour(commandContext)
 {
     const gameObject = commandContext.getGameTargetedByCommand();
-    const playerId = commandContext.getCommandSenderId();
+    const memberWrapper = commandContext.getSenderGuildMemberWrapper();
     const commandArguments = commandContext.getCommandArgumentsArray();
     const nationNumberSent = commandArguments[0];
 
@@ -36,7 +36,7 @@ function _behaviour(commandContext)
         if (nationFilename == null)
             return Promise.reject(new SemanticError(`Invalid nation selected. Number does not match any submitted nation.`));
 
-        else return gameObject.claimNation(playerId, nationFilename);
+        else return gameObject.claimNation(memberWrapper, nationFilename);
     })
     .then(() => commandContext.respondToCommand(new MessagePayload(`Pretender was claimed.`)));
 }
