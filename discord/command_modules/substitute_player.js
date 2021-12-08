@@ -45,7 +45,7 @@ function _behaviour(commandContext)
         if (nationFilename == null)
             return Promise.reject(new SemanticError(`Invalid nation selected. Number does not match any submitted nation.`));
     
-        return gameObject.substitutePlayerControllingNation(subPlayerWrapper.getId(), nationFilename)
+        return gameObject.substitutePlayerControllingNation(subPlayerWrapper, nationFilename)
         .then(() => commandContext.respondToCommand(new MessagePayload(`Player was replaced.`)));
     });
 }
