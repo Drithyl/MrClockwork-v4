@@ -149,10 +149,9 @@ function Dominions5Game()
     _gameObject.removeControlOfNation = (nationFilename) => 
     {
         const playerId = _gameObject.getPlayerIdControllingNationInGame(nationFilename);
-        const playerFile = _playerData[playerId].file;
 
         // No player controls the nation, no need to do anything
-        if (playerFile == null)
+        if (_playerData[playerId] == null)
             return Promise.resolve();
 
         return playerFile.removeControlOfNationInGame(nationFilename, _gameObject.getName())
