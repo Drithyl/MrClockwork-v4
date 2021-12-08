@@ -438,6 +438,9 @@ function _processStales(game, updateData)
     game.emitPromiseWithGameDataToServer("GET_STALES")
     .then((staleData) =>
     {
+        if (staleData.wentAi.length <= 0 && staleData.stales.length <= 0)
+            return Promise.resolve();
+
         if (staleData.wentAi.length > 0)
             staleMessage += `Nations that **went AI**:\n\n${staleData.wentAi.join("\n").toBox()}\n\n`;
         
