@@ -25,6 +25,7 @@ function UploadFileToServerCommand()
 
 function _behaviour(commandContext)
 {
+    const uploadTimeoutMs = 600000;
     const commandArgumentsArray = commandContext.getCommandArgumentsArray();
     const fileType = commandArgumentsArray[0];
 
@@ -46,7 +47,7 @@ function _behaviour(commandContext)
 
 
     return commandContext.respondToCommand(new MessagePayload(`Sending request to server...`))
-    .then((statusMessage) => server.emitPromise("UPLOAD_FILE", { type: fileType, fileId: googleDriveId }))
+    .then((statusMessage) => server.emitPromise("UPLOAD_FILE", { type: fileType, fileId: googleDriveId }, uploadTimeoutMs))
     .then((responseData) => 
     {
         const formattedData = _formatResponseData(responseData);
