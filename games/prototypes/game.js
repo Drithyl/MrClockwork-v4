@@ -194,7 +194,7 @@ function Game()
         const roleStr = (role != null) ? role.toString() : "`[No game role found to mention]`";
 
         if (channel != null)
-            return new MessagePayload(roleStr + text).send(channel);
+            return new MessagePayload(`${roleStr} ${text}`).send(channel);
 
         else return this.sendMessageToOrganizer(`No channel for game ${this.getName()} was found to send the annoucement below. You can use commands to create a new one for the game:\n\n${text}`);
     };
