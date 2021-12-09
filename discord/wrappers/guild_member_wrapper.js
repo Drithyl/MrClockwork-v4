@@ -17,7 +17,7 @@ function GuildMemberWrapper(discordJsGuildMemberObject, guildWrapper)
     this.getUsername = () => discordJsGuildMemberObject.user.username;
     this.getNickname = () => discordJsGuildMemberObject.nickname;
     this.getNameInGuild = () => (this.getNickname() != null) ? this.getNickname() : this.getUsername();
-    this.getGuildId = () => _guildWrapper.getGuildId();
+    this.getGuildId = () => _guildWrapper.getId();
 
     this.hasRole = (discordRoleId) => _discordJsGuildMemberObject.roles.cache.get(discordRoleId) != null;
     this.addRole = (discordRoleObject) => _discordJsGuildMemberObject.roles.add(discordRoleObject);

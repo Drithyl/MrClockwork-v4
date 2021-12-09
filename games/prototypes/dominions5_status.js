@@ -17,7 +17,7 @@ module.exports.Dominions5Status = Dominions5Status;
 async function fetchGameStatus(gameObject)
 {
     const isOnline = await gameObject.isOnlineCheck();
-    const dom5Status = new Dominions5Status();
+    const dom5Status = new Dominions5Status(gameObject);
 
     dom5Status.setName(gameObject.getName());
 
@@ -54,7 +54,7 @@ async function fetchGameStatus(gameObject)
 async function queryGame(gameObject)
 {
     const isOnline = await gameObject.isOnlineCheck();
-    const statusObject = new Dominions5Status();
+    const statusObject = new Dominions5Status(gameObject);
     const ip = gameObject.getIp();
     const port = gameObject.getPort();
     const cmdFlags = [
@@ -153,8 +153,10 @@ function _parseTcpQuery(tcpQueryResponse, statusObject)
     return statusObject;
 }
 
-function Dominions5Status()
+function Dominions5Status(gameObject)
 {
+    const _game = gameObject;
+
     var _name = "";
     var _status = "Unknown";
     var _isPaused = false;
@@ -234,6 +236,45 @@ function Dominions5Status()
             return false;
 
         return _players.find((player) => player.isTurnFinished === false && player.isAi === false) == null;
+    };
+
+    // Turns which have never been opened by their player
+    this.getUncheckedTurns = () =>
+    {
+        if (assert.isArray(_players) === false)
+            return null;
+
+        const uncheckedNations = _players.filter((nationData) => {
+            return nationData.isAi === false && nationData.wasTurnChecked === false
+        });
+
+        return uncheckedNations.map((nation) => nation.fullName);
+    };
+
+    // Turns which have not been marked as unfinished (done, but not finished)
+    this.getUnfinishedTurns = () =>
+    {
+        if (assert.isArray(_players) === false)
+            return null;
+
+        const unfinishedNations = _players.filter((nationData) => {
+            return nationData.isAi === false && nationData.isTurnUnfinished === true && nationData.isTurnFinished === false
+        });
+
+        return unfinishedNations.map((nation) => nation.fullName);
+    };
+
+    // Turns which have not been marked as finished (can be unchecked or unfinished)
+    this.getUndoneTurns = () =>
+    {
+        if (assert.isArray(_players) === false)
+            return null;
+
+        const undoneNations = _players.filter((nationData) => {
+            return nationData.isAi === false &&  nationData.isTurnFinished === false
+        });
+
+        return undoneNations.map((nation) => nation.fullName);
     };
 
     this.getLastTurnTimestamp = () => _lastTurnTimestamp; 
