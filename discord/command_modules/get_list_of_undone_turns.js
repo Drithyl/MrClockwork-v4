@@ -26,38 +26,35 @@ function GetListOfUndoneTurnsCommand()
 function _behaviour(commandContext)
 {
     const gameObject = commandContext.getGameTargetedByCommand();
-
+    const status = gameObject.getLastKnownStatus();
     var messageString = `Below is the list of undone turns:\n\n`;
     var listString = "";
+    var unfinishedTurns;
+    var uncheckedTurns;
 
-    // Need to check statusdump instead of the latest tcpquery of the
-    // Dominions5Status object, because currently tcpqueries show the
-    // full name of the vanilla nations, even if the nation was used as
-    // a base for a modded nation that has a different name. Statusdump
-    // does not have this problem.
-    return gameObject.emitPromiseWithGameDataToServer("GET_UNDONE_TURNS")
-    .then((nationStatusArray) =>
+    if (status == null)
+        return commandContext.respondToCommand(new MessagePayload(`Game status is currently unavailable`));
+
+    unfinishedTurns = status.getUnfinishedTurns();
+    uncheckedTurns = status.getUncheckedTurns();
+
+    if (uncheckedTurns == null || unfinishedTurns == null)
+        return commandContext.respondToCommand(new MessagePayload(`Undone turn data is currently unavailable`));
+
+
+    if (unfinishedTurns.length > 0)
     {
-        if (nationStatusArray == null || nationStatusArray.length <= 0)
-            return commandContext.respondToCommand(new MessagePayload(`List of undone turns is currently unavailable.`));
+        listString = "**Unfinished:**\n\n```";
+        listString += unfinishedTurns.reduce((finalStr, nationName) => finalStr + `${nationName}\n`, "\n");
+        listString += "```\n";
+    }
 
-        const unfinished = nationStatusArray.filter((nationData) => nationData.isTurnUnfinished);
-        const unchecked = nationStatusArray.filter((nationData) => nationData.wasTurnChecked === false);
+    if (uncheckedTurns.length > 0)
+    {
+        listString += "**Unchecked:**\n\n```";
+        listString += uncheckedTurns.reduce((finalStr, nationName) => finalStr + `${nationName}\n`, "\n");
+        listString += "```\n";
+    }
 
-        if (unfinished.length > 0)
-        {
-            listString = "**Unfinished:**\n\n```";
-            listString += unfinished.reduce((finalStr, nationData) => finalStr + `${nationData.fullName}\n`, "\n");
-            listString += "```\n";
-        }
-
-        if (unchecked.length > 0)
-        {
-            listString += "**Unchecked:**\n\n```";
-            listString += unchecked.reduce((finalStr, nationData) => finalStr + `${nationData.fullName}\n`, "\n");
-            listString += "```\n";
-        }
-    
-        return commandContext.respondToCommand(new MessagePayload(messageString, listString, true, "```"));
-    });
+    return commandContext.respondToCommand(new MessagePayload(messageString, listString, true, "```"));
 }
