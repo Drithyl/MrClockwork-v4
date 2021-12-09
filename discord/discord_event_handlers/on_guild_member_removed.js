@@ -10,7 +10,8 @@ exports.startListening = () =>
     botClientWrapper.addOnGuildMemberRemovedHandler((guildMemberWrapper) =>
     {
         log.general(log.getLeanLevel(), `GuildMember ${guildMemberWrapper.getNameInGuild()} left ${guildMemberWrapper.getGuildWrapper()?.getName()}; updating game data...`);
-        const gamesToUpdate = gameStore.getGamesWhereUserIsPlayer(guildMemberWrapper.getId());
+        const playerGames = gameStore.getGamesWhereUserIsPlayer(guildMemberWrapper.getId());
+        const gamesToUpdate = playerGames.filter((game) => game.getGuildId() === guildMemberWrapper.getGuildId());
         gamesToUpdate.forEach((game) => game.updatePlayerLeftGuild(guildMemberWrapper.getId()));
         log.general(log.getLeanLevel(), `Player game data updated`);
     });

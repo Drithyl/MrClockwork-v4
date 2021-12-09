@@ -10,7 +10,8 @@ exports.startListening = () =>
     botClientWrapper.addOnGuildMemberJoinedHandler((guildMemberWrapper) =>
     {
         log.general(log.getLeanLevel(), `GuildMember ${guildMemberWrapper.getNameInGuild()} joined ${guildMemberWrapper.getGuildWrapper()?.getName()}; updating game data...`);
-        const gamesToUpdate = gameStore.getGamesWhereUserIsPlayer(guildMemberWrapper.getId());
+        const playerGames = gameStore.getGamesWhereUserIsPlayer(guildMemberWrapper.getId());
+        const gamesToUpdate = playerGames.filter((game) => game.getGuildId() === guildMemberWrapper.getGuildId());
         gamesToUpdate.forEach((game) => game.updatePlayerUsername(guildMemberWrapper.getId(), guildMemberWrapper.getNameInGuild()));
         log.general(log.getLeanLevel(), `Player game data updated`);
     });
