@@ -133,7 +133,7 @@
     {
         "name": "Mapfile",
         "defaultInput": "peliwyr",
-        "description": "The filename of the map to use.",
+        "description": "The filename of the map to use. You can type `!dom5maps [server name] to see what maps are available on the given server.`",
         "expectedInputFormatRegexp": "^(\\w| )+(\\.map)?$",
         "canBeChanged": true,
         "isPublic": true
@@ -153,7 +153,7 @@
     {
         "name": "Mods",
         "defaultInput": "DomEnhanced1_67.dm, WH_6_24.dm",
-        "description": "Type `none` for no mods, or copy and paste (letter-case counts) one or more mod filenames, separated by commas (,).",
+        "description": "Type `none` for no mods, or copy and paste (letter-case counts) one or more mod filenames, separated by commas (,). You can type `!dom5mods [server name] to see what mods are available on the given server.",
         "expectedInputFormatRegexp": "^(none)|((\\w+(.dm)?)(,\\s*\\w+(.dm)?)*)$",
         "canBeChanged": true,
         "isPublic": true
