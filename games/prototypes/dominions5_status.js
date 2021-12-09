@@ -245,7 +245,7 @@ function Dominions5Status(gameObject)
             return null;
 
         const uncheckedNations = _players.filter((nationData) => {
-            return nationData.isAi === false && nationData.wasTurnChecked === false
+            return nationData.isHuman === true && nationData.wasTurnChecked === false
         });
 
         return uncheckedNations.map((nation) => nation.fullName);
@@ -258,7 +258,7 @@ function Dominions5Status(gameObject)
             return null;
 
         const unfinishedNations = _players.filter((nationData) => {
-            return nationData.isAi === false && nationData.isTurnUnfinished === true && nationData.isTurnFinished === false
+            return nationData.isHuman === true && nationData.isTurnUnfinished === true && nationData.isTurnFinished === false
         });
 
         return unfinishedNations.map((nation) => nation.fullName);
@@ -271,7 +271,7 @@ function Dominions5Status(gameObject)
             return null;
 
         const undoneNations = _players.filter((nationData) => {
-            return nationData.isAi === false &&  nationData.isTurnFinished === false
+            return nationData.isHuman === true &&  nationData.isTurnFinished === false
         });
 
         return undoneNations.map((nation) => nation.fullName);
