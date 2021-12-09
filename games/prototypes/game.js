@@ -163,7 +163,7 @@ function Game()
         else return _hostServer.isOnline();
     };
 
-    this.emitPromiseToServer = (message, dataPackage) => _hostServer.emitPromise(message, dataPackage);
+    this.emitPromiseToServer = (...args) => _hostServer.emitPromise(...args);
     this.listenToServer = (trigger, handler) => _hostServer.listenTo(trigger, handler);
 
     this.getDiscordGuildWrapper = () => _guildWrapper;

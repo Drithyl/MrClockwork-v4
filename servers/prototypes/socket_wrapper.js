@@ -1,5 +1,6 @@
 
 const log = require("../../logger.js");
+const assert = require("../../asserter.js");
 const rw = require("../../reader_writer.js");
 const handleDom5Data = require("../../games/dominions5_runtime_data_handler.js");
 const { TimeoutError, SocketResponseError } = require("../../errors/custom_errors");
@@ -18,7 +19,7 @@ function SocketWrapper(socketIoObject)
 
     this.emit = (trigger, data) => _socketIoObject.emit(trigger, data);
 
-    this.emitPromise = (trigger, data) =>
+    this.emitPromise = (trigger, data, timeout = 60000) =>
     {
         return new Promise((resolve, reject) =>
         {
@@ -34,15 +35,18 @@ function SocketWrapper(socketIoObject)
                 else return resolve(returnData);
             });
 
-            setTimeout(function handleTimeout()
+            if (assert.isInteger(timeout) === true && timeout > 0)
             {
-                if (receivedResponse === false)
+                setTimeout(function handleTimeout()
                 {
-                    log.general(log.getVerboseLevel(), `Request ${trigger} timed out without a response from server. Data sent was:\n\n${rw.JSONStringify(data)}`);
-                    reject(new TimeoutError(`Request ${trigger} timed out without a response from server.`));
-                }
-
-            }, 60000);
+                    if (receivedResponse === false)
+                    {
+                        log.general(log.getVerboseLevel(), `Request ${trigger} timed out without a response from server. Data sent was:\n\n${rw.JSONStringify(data)}`);
+                        reject(new TimeoutError(`Request ${trigger} timed out without a response from server.`));
+                    }
+    
+                }, timeout);
+            }
         });
     };
 

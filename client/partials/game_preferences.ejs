@@ -6,7 +6,7 @@
     <% if (typeof gamePreferences === "object" && Array.isArray(gamePreferences) === true && gamePreferences.length > 0) { %>
         <% gamePreferences.forEach((preferences, i) => {%>
             
-            <div id="<%=preferences.name%>_container" class=" col-sm-9" style="display:none;">
+            <div id="<%=preferences.name%>_container" class="col-sm-9" style="display:none;">
      
                 <div class="form-check">
                     <input type="checkbox" class="form-check-input" id="<%=preferences.name%>_scores_checkbox" name="<%=preferences.name%>.receiveScores" <% if (preferences.receiveScores) { %> checked <% } %>>
@@ -19,22 +19,27 @@
                 </div>
             
                 <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="<%=preferences.name%>_reminder_when_turn_done_checkbox" name="<%=preferences.name%>.receiveReminderWhenTurnIsDone" <% if (preferences.receiveReminderWhenTurnIsDone) { %> checked <% } %>>
+                    <input type="checkbox" class="form-check-input clockworkCheck" id="<%=preferences.name%>_reminder_when_turn_done_checkbox" name="<%=preferences.name%>.receiveReminderWhenTurnIsDone" <% if (preferences.receiveReminderWhenTurnIsDone) { %> checked <% } %>>
                     <label class="form-check-label" for="<%=preferences.name%>_reminder_when_turn_done_checkbox">Receive timer reminders even when the turn is marked as finished?</label>
                 </div>
-            
-                <select id="<%=preferences.name%>_input_reminders" name="<%=preferences.name%>.reminders" class="form-control selectpicker mt-4" multiple>
-            
-                    <% for (var i = 2; i < 25; i++) {%>
-                        <% if (preferences.reminders.includes(i) === true) { %>
-                            <option name="<%=preferences.name%>.reminders" value="<%=i%>" selected><%=i%></option>
-                        <% } else { %>
-                            <option name="<%=preferences.name%>.reminders" value="<%=i%>"><%=i%></option>
+                
+                <div>
+                    
+                    <legend class="col-form-label mt-2">Send reminder when how many hours are left?</legend>
+                    <select id="<%=preferences.name%>_input_reminders" name="<%=preferences.name%>.reminders" class="form-control selectpicker clockworkSelectPicker mt-1" multiple <% if (!preferences.receiveReminderWhenTurnIsDone) { %> disabled <% } %>>
+                
+                        <% for (var i = 2; i < 25; i++) {%>
+                            <% if (preferences.reminders.includes(i) === true) { %>
+                                <option name="<%=preferences.name%>.reminders" value="<%=i%>" selected><%=i%> hours</option>
+                            <% } else { %>
+                                <option name="<%=preferences.name%>.reminders" value="<%=i%>"><%=i%> hours</option>
+                            <% } %>
                         <% } %>
-                    <% } %>
-            
-                </select>
-    
+                
+                    </select>
+                
+                </div>
+                
             </div>
     
         <% }); %>
@@ -42,3 +47,16 @@
     <% } %>
 
 </div>
+
+<script>
+
+    $(document).on('click', '.clockworkCheck', function() {
+        
+        // enable or disable the selectPicker based on the state of the checkbox
+        $(".clockworkSelectPicker").prop('disabled', !this.checked);
+        $('.clockworkSelectPicker').selectpicker('refresh'); // selectPicker docs suggest this as the best way to update the stae of the selectpicker
+        
+    });
+    
+    
+</script>

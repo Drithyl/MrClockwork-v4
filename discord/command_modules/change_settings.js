@@ -4,6 +4,7 @@ const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
 
 const activeMenuStore = require("../../menus/active_menu_store.js");
+const MessagePayload = require("../prototypes/message_payload.js");
 
 const commandData = new CommandData("CHANGE_SETTINGS");
 
@@ -28,5 +29,6 @@ function ChangeSettingsCommand()
 
 function _behaviour(commandContext)
 {
-    return activeMenuStore.startChangeSettingsMenu(commandContext);
+    return commandContext.respondToCommand(new MessagePayload(`A DM was sent to you to change your settings.`))
+    .then(() => activeMenuStore.startChangeSettingsMenu(commandContext));
 }

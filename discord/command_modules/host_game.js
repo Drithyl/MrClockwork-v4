@@ -55,7 +55,8 @@ function _behaviour(commandContext)
             return activeMenuStore.startHostGameMenu(newGameObject, true);
         }
         
-        else return activeMenuStore.startHostGameMenu(newGameObject);
+        return commandContext.respondToCommand(new MessagePayload(`A DM was sent to you to host the game.`))
+        .then(() => activeMenuStore.startHostGameMenu(newGameObject));
     });
 }
 

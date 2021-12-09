@@ -225,11 +225,14 @@ function Dominions5Game()
         {
             timerSetting.fromJSON(defaultMs);
 
-            if (currentMs <= 0)
-                return Promise.resolve(_status.setIsPaused(true));
+            if (currentMs > 0)
+            {
+                _status.setIsPaused(false);
+                _status.setMsLeft(currentMs);
+            }
 
-            _status.setIsPaused(false);
-            _status.setMsLeft(currentMs);
+            else _status.setIsPaused(true);
+
             return Promise.resolve();
         }
 
@@ -333,12 +336,12 @@ function Dominions5Game()
             .catch((err) => log.error(log.getVerboseLevel(), `ERROR SENDING ${_gameObject.getName()}'S EMBED`, err));
     };
 
-    _gameObject.emitPromiseWithGameDataToServer = (message, additionalDataObjectToSend) =>
+    _gameObject.emitPromiseWithGameDataToServer = (message, additionalDataObjectToSend, timeout) =>
     {
         const dataPackage = _createGameDataPackage();
         Object.assign(dataPackage, additionalDataObjectToSend);
 
-        return _gameObject.emitPromiseToServer(message, dataPackage);
+        return _gameObject.emitPromiseToServer(message, dataPackage, timeout);
     };
 
     _gameObject.loadJSONData = async (jsonData) =>

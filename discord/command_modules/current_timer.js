@@ -38,13 +38,16 @@ function _behaviour(commandContext)
         return commandContext.respondToCommand(new MessagePayload(`Game is being setup in lobby.`));
 
     if (commandArguments.length <= 0)
-        return _sendCurrentTimer(commandContext, timeLeft);
+        return _sendCurrentTimer(commandContext, timeLeft, lastKnownStatus);
     
     return _changeCurrentTimer(gameObject, commandContext, commandArguments, timeLeft);
 }
 
-function _sendCurrentTimer(commandContext, timeLeft)
+function _sendCurrentTimer(commandContext, timeLeft, status)
 {
+    if (status.isPaused() === true)
+        return commandContext.respondToCommand(new MessagePayload(`The timer is paused.`));
+
     return commandContext.respondToCommand(new MessagePayload(`${timeLeft.printTimeLeft()} left till next turn.`));
 }
 
