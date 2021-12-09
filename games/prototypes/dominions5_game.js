@@ -225,11 +225,14 @@ function Dominions5Game()
         {
             timerSetting.fromJSON(defaultMs);
 
-            if (currentMs <= 0)
-                return Promise.resolve(_status.setIsPaused(true));
+            if (currentMs > 0)
+            {
+                _status.setIsPaused(false);
+                _status.setMsLeft(currentMs);
+            }
 
-            _status.setIsPaused(false);
-            _status.setMsLeft(currentMs);
+            else _status.setIsPaused(true);
+
             return Promise.resolve();
         }
 
