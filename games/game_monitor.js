@@ -205,7 +205,7 @@ function _handleGameEvents(game, updateData)
         return _handleGameRestarted(game);
 
     else if (updateData.isLastHourBeforeTurn === true)
-        return _handleLastHourBeforeTurn(game);
+        return _handleLastHourBeforeTurn(game, updateData);
 
     else if (updateData.isNewTurn === true)
         return _handleNewTurn(game, updateData);
@@ -289,10 +289,17 @@ function _handleGameRestarted(game)
     game.sendGameAnnouncement(`The game has restarted; please submit your pretenders!`);
 }
 
-function _handleLastHourBeforeTurn(game)
+async function _handleLastHourBeforeTurn(game, updateData)
 {
+    const uncheckedTurns = updateData.getUncheckedTurns();
+    const announcementStr = `There is less than an hour remaining for the new turn.`;
+
     log.general(log.getNormalLevel(), `${game.getName()}\t~1h left for new turn.`);
-    game.sendGameAnnouncement(`There is less than an hour remaining for the new turn.`);
+
+    if (uncheckedTurns.length <= 0)
+        return game.sendGameAnnouncement(announcementStr);
+
+    game.sendGameAnnouncement(announcementStr + ` The following turns have not been checked at all by their players yet:\n\n${uncheckedTurns.join("\n").toBox()}`);
 }
 
 function _handleNewTurn(game, updateData)
