@@ -183,12 +183,15 @@ function GuildWrapper(discordJsGuildObject)
         return _discordJsGuildObject.channels.create(name, 
         {
             type: "text", 
-            permissionOverwrites, 
-            parent: parent
+            permissionOverwrites
         })
         .then((channel) =>
         {
             log.general(log.getVerboseLevel(), `Channel created`);
+            
+            if (parent != null)
+                return channel.setParent(parent);
+                
             return Promise.resolve(channel);
         });
     };
