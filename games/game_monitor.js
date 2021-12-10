@@ -61,7 +61,7 @@ function _updateDom5Games()
     // will be very affected by the game's status embed editing. This route falls under global
     // rate limits, which should be of 50 requests per second. More information below:
     // https://discord.com/developers/docs/topics/rate-limits
-    while(currentUpdates < MAX_PARALLEL_UPDATES && currentUpdates < monitoredGames.length && )
+    while(currentUpdates < MAX_PARALLEL_UPDATES && currentUpdates < monitoredGames.length)
     {
         const gameToUpdate = monitoredGames[currentPendingGameIndex];
 
