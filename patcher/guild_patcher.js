@@ -54,6 +54,12 @@ function _addGuildData(v3GuildData)
         log.general(log.getLeanLevel(), `Imported help channel.`);
     }
 
+    if (assert.isValidDiscordId(v3GuildData.recruitingCategoryID) === true)
+    {
+        patchedData.recruitingCategoryId = v3GuildData.recruitingCategoryID;
+        log.general(log.getLeanLevel(), `Imported game recruiting category.`);
+    }
+
     if (assert.isValidDiscordId(v3GuildData.gameCategoryID) === true)
     {
         patchedData.gameCategoryId = v3GuildData.gameCategoryID;
