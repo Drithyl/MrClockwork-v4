@@ -3,6 +3,7 @@ const Game = require("./game.js");
 const log = require("../../logger.js");
 const assert = require("../../asserter.js");
 const config = require("../../config/config.json");
+const guildStore = require("../../discord/guild_store.js");
 const dominions5Status = require("./dominions5_status.js");
 const ongoingGameStore = require("../ongoing_games_store.js");
 const Dominions5Settings = require("./dominions5_settings.js");
@@ -268,6 +269,21 @@ function Dominions5Game()
     _gameObject.kill = () => _gameObject.emitPromiseWithGameDataToServer("KILL_GAME");
 
     _gameObject.fetchStatusDump = () => _gameObject.emitPromiseWithGameDataToServer("GET_STATUS_DUMP");
+
+    _gameObject.start = () =>
+    {
+        const channel = _gameObject.getChannel();
+        const guildId = _gameObject.getGuildId();
+
+        return _gameObject.emitPromiseWithGameDataToServer("START_GAME")
+        .then(() =>
+        {
+            if (channel == null)
+                return Promise.resolve();
+
+            return channel.setParent(guildStore.getGameCategoryId(guildId));
+        });
+    };
 
     _gameObject.hasGameStarted = () => 
     {

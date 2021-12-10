@@ -76,7 +76,7 @@ function Game()
 
     this.createNewChannel = () =>
     {
-        return _guildWrapper.createGameChannel(`${this.getName()}`, [
+        return _guildWrapper.createChannel(`${this.getName()}`, [
             { 
                 id: this.getOrganizerId(), 
                 allow: [ "MANAGE_MESSAGES" ]
@@ -89,7 +89,7 @@ function Game()
             
             this.setChannel(channel);
 
-            if (status.isOngoing() === true)
+            if (status != null && status.isOngoing() === true)
             {
                 log.general(log.getVerboseLevel(), `Game is ongoing; moving to started category ${guildStore.getGameCategoryId(guildId)}`);
                 return channel.setParent(guildStore.getGameCategoryId(guildId));

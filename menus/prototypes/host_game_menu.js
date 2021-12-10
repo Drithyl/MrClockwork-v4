@@ -23,9 +23,9 @@ function HostMenu(gameObject, useDefaults = false)
     _menuStructure.addBehaviourOnFinishedMenu(() => 
     {
         activeMenuStore.removeActiveInstance(_guildMemberWrapper.getId());
-        return Promise.resolve(gamesStore.addOngoingGame(gameObject))
-        .then(() => gameObject.createNewChannel())
+        return gameObject.createNewChannel()
         .then(() => gameObject.createNewRole())
+        .then(() => gamesStore.addOngoingGame(gameObject))
         .then(() => gameObject.pinSettingsToChannel())
         .then(() => gameObject.save())
         .then(() => log.general(log.getNormalLevel(), `Game ${gameObject.getName()} was created successfully.`))
