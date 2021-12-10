@@ -1,25 +1,24 @@
-<header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow clockworkNav">
-
+<header class="navbar navbar-dark navbar-expand-lg sticky-top bg-dark flex-md-nowrap p-0 shadow clockworkNav align-content-end">
+  
+  <div class="container-fluid">
+  
     <figure class="figure col-md-3 col-lg-2 me-0 px-3 pl-3">
       <a href="/"><img src="img/hound_sml_shadow.png" class="d-inline-block img-fluid w-25 pt-1" alt="Mr. Clockwork logo. Hex! Hex!"></a>
     </figure>
 
-  <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+    <div class="navbar-nav" id="mainNavbarLinks">
   
-  <div class="w-100"></div>
+      <a class='px-3 <%=(typeof page === "string" && page === "home") ? "nav-link active" : "nav-link"%>' href="/">Home</a>
+      <a class='px-3 <%=(typeof page === "string" && page === "bot_commands") ? "nav-link active" : "nav-link"%>' href="/bot_commands">Bot Commands</a>
+      <a class='px-3 <%=(typeof page === "string" && page === "about") ? "nav-link active" : "nav-link"%>' href="/about">About</a>
+      <a class='px-3 <%=(typeof page === "string" && page === "donate") ? "nav-link active" : "nav-link"%>' href="/donate">Donate</a>
 
-  <div class="navbar-nav">
-    
-    <% if (typeof sessionId === "string") { %>
+      <% if (typeof sessionId === "string") { %>
+        <a class="nav-link  px-3" href="/logout">Sign out</a>
+      <% } %>
 
-      <div class="nav-item text-nowrap">
-        <a class="nav-link px-3" href="/logout">Sign out</a>
-      </div>
-
-    <% } %>
+    </div>
 
   </div>
-  
+
 </header>
