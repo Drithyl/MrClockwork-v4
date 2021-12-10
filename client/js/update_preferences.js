@@ -15,12 +15,6 @@ $("#input_game").on("changed.bs.select", function(e, clickedIndex, isSelected, o
     console.log(`Switching to ${gameName} from ${lastSelectedGameName}`);
     lastSelectedGameName = gameName;
 
-    // set the state of the selectpicker based on the status of the newly revealed 
-    // 'receive timer events' checkbox
-    let currentEventCheckbox = $(`#${gameName}_reminder_when_turn_done_checkbox`);
-    $(".clockworkSelectPicker").prop('disabled', !currentEventCheckbox.prop('checked'));
-    $('.clockworkSelectPicker').selectpicker('refresh');
- 
 });
 
 /** Catches the submit event and turns the form data into JSON */

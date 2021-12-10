@@ -1,5 +1,6 @@
 
 const log = require("../logger.js");
+const onRateLimit = require("./discord_event_handlers/on_rate_limit.js");
 const onJoinedGuild = require("./discord_event_handlers/on_joined_guild.js");
 const onLeftGuild = require("./discord_event_handlers/on_left_guild.js");
 const onGuildMemberJoined = require("./discord_event_handlers/on_guild_member_joined.js");
@@ -14,6 +15,7 @@ const onRoleDeleted = require("./discord_event_handlers/on_role_deleted.js");
 exports.startListening = () =>
 {
     log.general(log.getNormalLevel(), "Adding discord event handlers...");
+    onRateLimit.startListening();
     onJoinedGuild.startListening();
     onLeftGuild.startListening();
     onGuildMemberJoined.startListening();

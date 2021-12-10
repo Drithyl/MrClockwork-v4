@@ -40,6 +40,8 @@ exports.loginToDiscord = () =>
 //wrappers for discord events caught by the bot client in the DiscordJs library
 exports.addOnLoggedInHandler = (handler) => _discordJsBotClient.on("ready", () => handler());
 
+exports.addOnRateLimitHandler = (handler) => _discordJsBotClient.on("rateLimit", (rateLimitData) => handler(rateLimitData));
+
 exports.addOnBotLeftGuildHandler = (handler) => _discordJsBotClient.on("guildDelete", (discordJsGuild) => handler(discordJsGuild));
 
 exports.addOnGuildUnavailableHandler = (handler) => _discordJsBotClient.on("guildUnavailable", (discordJsGuild) => handler(discordJsGuild));
