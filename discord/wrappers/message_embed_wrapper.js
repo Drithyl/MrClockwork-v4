@@ -30,6 +30,11 @@ function MessageEmbedWrapper(discordJsEmbed, messageWrapper)
         if (_discordJsEmbed.fields.length < index)
             return;
 
+        if (_discordJsEmbed.fields[index].name === fieldName.toString() &&
+            _discordJsEmbed.fields[index].value === fieldValue.toString() &&
+            _discordJsEmbed.fields[index].inline === inline)
+            return;
+
         _discordJsEmbed.spliceFields(index, 1, {
             name: fieldName.toString(),
             value: fieldValue.toString(),
@@ -43,14 +48,7 @@ function MessageEmbedWrapper(discordJsEmbed, messageWrapper)
         if (_discordJsEmbed.fields.length < index)
             this.addField(fieldName.toString(), fieldValue.toString(), inline);
 
-        else 
-        {
-            _discordJsEmbed.spliceFields(index, 1, {
-                name: fieldName.toString(),
-                value: fieldValue.toString(),
-                inline
-            });
-        }
+        else return this.editField(index, fieldName, fieldValue, inline);
     };
 
     this.update = () => _messageWrapper.edit(null, _discordJsEmbed);
