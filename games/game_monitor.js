@@ -9,62 +9,102 @@ const dom5SettingFlags = require("../json/dominions5_setting_flags.json");
 const MessagePayload = require("../discord/prototypes/message_payload.js");
 
 const UPDATE_INTERVAL = config.gameUpdateInterval;
-const monitoredGames = {};
+const MAX_PARALLEL_UPDATES = config.gameUpdateInterval;
+const monitoredGames = [];
+var currentPendingGameIndex = 0;
+var currentUpdates = 0;
 
-// Add several to be monitored and updated
-exports.monitorDom5Games = (games) => games.forEach((game) => exports.monitorDom5Game(game));
+// Start the interval to launch as many queries as the MAX_PARALLEL_UPDATES,
+// or the amount of monitoredGames, whichever is smaller
+exports.startGameUpdates = () => setInterval(_updateDom5Games, UPDATE_INTERVAL);
+
 
 // Add a game to be monitored and updated
 exports.monitorDom5Game = (game) =>
 {
-    if (monitoredGames[game.getName()] === true)
+    if (monitoredGames.find((g) => g.getName() === game.getName()) != null)
         return log.general(log.getLeanLevel(), `${game.getName()} is already being monitored.`);
         
-    monitoredGames[game.getName()] = true;
+    monitoredGames.push(game);
     log.general(log.getNormalLevel(), `${game.getName()} will be monitored for updates.`);
-    _updateGame(game);
 };
 
 // Remove a game from the monitoring list
 exports.stopMonitoringDom5Game = (game) =>
 {
-    if (game != null)
+    for (var i = 0; i < monitoredGames.length; i++)
     {
-        delete monitoredGames[game.getName()];
-        return log.general(log.getLeanLevel(), `${game.getName()} will no longer be monitored for updates.`);
+        if (monitoredGames[i].getName() === game.getName())
+        {
+            monitoredGames.splice(i, 1);
+            return log.general(log.getLeanLevel(), `${game.getName()} will no longer be monitored for updates.`);
+        }
     }
-
-    return log.general(log.getLeanLevel(), `Game is null; no need to remove from monitored list.`);
+    
+    log.general(log.getLeanLevel(), `${game.getName()} is not in the list of monitored games; no need to remove.`);
 };
 
-function _updateGame(game)
+
+// Launch as many queries as the space allows, between the currentUpdates and the
+// max allowed, as well as number of games. Each time, increment the currentPendingGameIndex
+// so the next loop starts a different game. Once a query finishes, reduce the number
+// of running queries for the next interval. 
+function _updateDom5Games()
 {
-    if (monitoredGames[game.getName()] == null)
-        return log.general(log.getLeanLevel(), `${game.getName()} no longer on monitored list; update cycle stopped.`);;
-
-    // If game is no longer on store or monitored, stop monitoring it
-    if (ongoingGameStore.hasOngoingGameByName(game.getName()) === false)
+    // Queued up updates guarantee that every game update will always be
+    // spaced out by at least a certain time. This is relevant because Discord rate limits
+    // will be very affected by the game's status embed editing. This route falls under global
+    // rate limits, which should be of 50 requests per second. More information below:
+    // https://discord.com/developers/docs/topics/rate-limits
+    while(currentUpdates < MAX_PARALLEL_UPDATES && currentUpdates < monitoredGames.length)
     {
-        log.general(log.getLeanLevel(), `${game.getName()} not found on store; removing from list.`);
-        exports.stopMonitoringDom5Game(game);
-        return;
+        const gameToUpdate = monitoredGames[currentPendingGameIndex];
+
+        _cyclePendingGameIndex();
+
+        if (gameToUpdate == null)
+            continue;
+
+        if (ongoingGameStore.hasOngoingGameByName(gameToUpdate.getName()) === false)
+        {
+            log.general(log.getLeanLevel(), `${gameToUpdate.getName()} not found on store; removing from list.`);
+            exports.stopMonitoringDom5Game(gameToUpdate);
+            continue;
+        }
+
+        // Queries with offline servers are pointless
+        if (gameToUpdate.isServerOnline() === false)
+            continue;
+     
+        currentUpdates++;
+        log.general(log.getVerboseLevel(), `Total game updates running now: ${currentUpdates}`);
+
+        _updateCycle(gameToUpdate)
+        .then(() => 
+        {
+            _reduceCurrentUpdates();
+            log.general(log.getVerboseLevel(), `Game update finished, reducing current queries.`);
+        })
+        .catch((err) => 
+        {
+            _reduceCurrentUpdates();
+            log.error(log.getNormalLevel(), `ERROR UPDATING DOM5 GAME ${gameToUpdate.getName()}`, err);
+        });
     }
+}
 
-    // Queries with offline servers are pointless
-    if (game.isServerOnline() === false)
-    {
-        log.general(log.getVerboseLevel(), `${game.getName()}'s server is offline; skipping update cycle.`);
-        return setTimeout(() => _updateGame(game), UPDATE_INTERVAL);
-    }
+function _cyclePendingGameIndex()
+{
+    currentPendingGameIndex++;
+    if (currentPendingGameIndex >= monitoredGames.length)
+        currentPendingGameIndex = 0;
+}
 
-    // Update the game, then call the update function again after a timeout
-    _updateCycle(game)
-    .then(() => setTimeout(() => _updateGame(game), UPDATE_INTERVAL))
-    .catch((err) => 
-    {
-        log.error(log.getNormalLevel(), `ERROR UPDATING DOM5 GAME ${game.getName()}`, err);
-        setTimeout(() => _updateGame(game), UPDATE_INTERVAL);
-    });
+function _reduceCurrentUpdates()
+{
+    currentUpdates--;
+    if (currentUpdates < 0)
+        currentUpdates = 0;
 }
 
 function _updateCycle(game)
