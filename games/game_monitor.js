@@ -3,6 +3,7 @@ const log = require("../logger.js");
 const assert = require("../asserter.js");
 const config = require("../config/config.json");
 const ongoingGameStore = require("./ongoing_games_store.js");
+const serverStore = require("../servers/host_server_store.js");
 const botClientWrapper = require("../discord/wrappers/bot_client_wrapper.js");
 const dom5Status = require("./prototypes/dominions5_status.js");
 const dom5SettingFlags = require("../json/dominions5_setting_flags.json");
@@ -51,12 +52,16 @@ exports.stopMonitoringDom5Game = (game) =>
 // of running queries for the next interval. 
 function _updateDom5Games()
 {
+    // Don't do anything if all servers are down, or else we'll have an infinite loop below
+    if (serverStore.getOnlineServers().length <= 0)
+        return;
+
     // Queued up updates guarantee that every game update will always be
     // spaced out by at least a certain time. This is relevant because Discord rate limits
     // will be very affected by the game's status embed editing. This route falls under global
     // rate limits, which should be of 50 requests per second. More information below:
     // https://discord.com/developers/docs/topics/rate-limits
-    while(currentUpdates < MAX_PARALLEL_UPDATES && currentUpdates < monitoredGames.length)
+    while(currentUpdates < MAX_PARALLEL_UPDATES && currentUpdates < monitoredGames.length && )
     {
         const gameToUpdate = monitoredGames[currentPendingGameIndex];
 
