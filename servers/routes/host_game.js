@@ -134,9 +134,9 @@ function _createGame(userId, values)
         gameObject.setPort(port);
         return gameObject.loadSettingsFromInput(values);
     })
-    .then(() => gamesStore.addOngoingGame(gameObject))
     .then(() => gameObject.createNewChannel())
     .then(() => gameObject.createNewRole())
+    .then(() => gamesStore.addOngoingGame(gameObject))
     .then(() => gameObject.pinSettingsToChannel())
     .then(() => gameObject.save())
     .then(() => log.general(log.getNormalLevel(), `Game ${gameObject.getName()} was created successfully.`))
