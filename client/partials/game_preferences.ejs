@@ -26,7 +26,7 @@
                 <div>
                     
                     <legend class="col-form-label mt-2">Send reminder when how many hours are left?</legend>
-                    <select id="<%=preferences.name%>_input_reminders" name="<%=preferences.name%>.reminders" class="form-control selectpicker clockworkSelectPicker mt-1" multiple <% if (!preferences.receiveReminderWhenTurnIsDone) { %> disabled <% } %>>
+                    <select id="<%=preferences.name%>_input_reminders" name="<%=preferences.name%>.reminders" class="form-control selectpicker clockworkSelectPicker mt-1" multiple>
                 
                         <% for (var i = 2; i < 25; i++) {%>
                             <% if (preferences.reminders.includes(i) === true) { %>
@@ -47,16 +47,3 @@
     <% } %>
 
 </div>
-
-<script>
-
-    $(document).on('click', '.clockworkCheck', function() {
-        
-        // enable or disable the selectPicker based on the state of the checkbox
-        $(".clockworkSelectPicker").prop('disabled', !this.checked);
-        $('.clockworkSelectPicker').selectpicker('refresh'); // selectPicker docs suggest this as the best way to update the stae of the selectpicker
-        
-    });
-    
-    
-</script>
