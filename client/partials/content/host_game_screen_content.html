@@ -4,7 +4,7 @@
 
         <div class="card-header bg-dark">
 
-            <i class="bi bi-hdd-network-fill"></i> <span class="headerTitle">Host your own game</span>
+            <div class="position-absolute start-0 translate-middle p-2 border border-3 rounded-circle accentIcon shadow-lg"><span class="bi bi-hdd-network-fill"></span></div> <span class="headerTitle">Host your own game</span>
 
         </div>
 
@@ -17,7 +17,7 @@
 
             <% } else { %>
 
-                <form id="host_game_form" action="/host_game" method="POST" >
+                <form id="host_game_form" action="/host_game" method="POST">
 
                     <input type="hidden" name="sessionId" value="<%=(typeof sessionId === "string") ? sessionId : "none"%>"/>
                     <script src="../../js/load_session_id.js"></script>
@@ -59,8 +59,8 @@
 
                     <div class="row mt-5">
                         <div class="col-sm-10">
-                            <button type="submit" class="btn btn-dark btn-md">
-                                <i class="bi bi-hdd-network-fill"></i>Host a new game
+                            <button type="submit" class="btn btn-dark btn-md" id="submitButton">
+                                <i class="bi bi-hdd-network-fill"></i> Host a new game
                             </button>
                         </div>
                     </div>
@@ -75,3 +75,31 @@
         </div>
     </div>
 </div>
+
+<script>
+    
+    const gameNameField = document.querySelector('#input_game_name');
+    const gamePasswordField = document.querySelector('#input_master_password');
+    const submitButton = document.querySelector('#submitButton');
+ 
+    submitButton.addEventListener('click',()=>{
+
+        if(gameNameField.validity.patternMismatch){
+            gameNameField.setCustomValidity('Please choose a game name that is between 3 and 32 characters and only has alphanumeric characters and underscores');
+        } else if (gameNameField.validity.valueMissing) {
+            gameNameField.setCustomValidity('Please provide a name for the game');
+        }else{
+            gameNameField.setCustomValidity('');
+        }
+        
+        if(gamePasswordField.validity.patternMismatch){
+            gamePasswordField.setCustomValidity('Please choose a game name that is between 3 and 20 characters and only has alphanumeric characters and underscores');
+        } else if (gamePasswordField.validity.valueMissing) {
+            gamePasswordField.setCustomValidity('Please provide a password for the game');
+        }else{
+            gamePasswordField.setCustomValidity('');
+        }
+        
+    })
+
+</script>

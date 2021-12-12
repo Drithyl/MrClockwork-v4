@@ -92,6 +92,9 @@ function Dominions5Game()
         {
             const playerFile = _playerData[playerId].file;
 
+            if (playerFile == null)
+                continue;
+
             if (playerFile.isControllingNationInGame(nationIdentifier, _gameObject.getName()) === true)
                 return playerId;
         }
@@ -150,9 +153,10 @@ function Dominions5Game()
     _gameObject.removeControlOfNation = (nationFilename) => 
     {
         const playerId = _gameObject.getPlayerIdControllingNationInGame(nationFilename);
+        const playerFile = (playerId != null) ? _playerData[playerId].file : null;
 
         // No player controls the nation, no need to do anything
-        if (_playerData[playerId] == null)
+        if (playerFile == null)
             return Promise.resolve();
 
         return playerFile.removeControlOfNationInGame(nationFilename, _gameObject.getName())

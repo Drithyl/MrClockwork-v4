@@ -1,0 +1,750 @@
+<div id="presentationDiv" class="row d-flex align-items-center cwContainer">
+
+    <div class="card shadow-sm clockworkCardWide p-0">
+
+        <div class="card-header bg-dark">
+
+            <div class="position-absolute start-0 translate-middle p-2 border border-3 rounded-circle accentIcon shadow-lg"><span class="bi bi-chat-left-quote-fill"></span></div> <span class="headerTitle">Bot Commands</span>
+
+        </div>
+
+        <div class="card-body">
+            
+            <div class="botCommands">
+                    
+                <h3>capacity</h3>
+                
+                <p>!capacity</p>
+                <p>Prints the list of servers with the number of free hosting slots in each.</p>
+                <p><strong>Where can it be used?</strong>: any channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="channel">channel</h3>
+                
+                <p>!channel</p>
+                <p>Creates a game channel to discuss settings before actually hosting a game.</p>
+                <p><strong>Where can it be used?</strong>: guild channel</p>
+                <p><strong>Arguments</strong>: </p>
+                <ol>
+                <li>TYPE: STRING - A channel name</li>
+                </ol>
+                
+                <h3 id="claim">claim</h3>
+                
+                <p>!claim</p>
+                <p>Claims a submitted pretender. Gives access to turn backups or turn reminders.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: </p>
+                <ol>
+                <li>TYPE: INTEGER - A number that matches the pretender&#39;s index displayed by the pretenders command.</li>
+                </ol>
+                
+                <h3 id="deletegameandchannel">deletegameandchannel</h3>
+                
+                <p>!deletegameandchannel</p>
+                <p>Permanently deletes the game hosted in this channel, as well as the channel itself.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="deletegamenotchannel">deletegamenotchannel</h3>
+                
+                <p>!deletegamenotchannel</p>
+                <p>Permanently deletes the game hosted in this channel, while leaving the channel intact.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="deletependingchannel">deletependingchannel</h3>
+                
+                <p>!deletependingchannel</p>
+                <p>Deletes the last channel that was created via the createchannel command.</p>
+                <p><strong>Where can it be used?</strong>: guild channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="deploy">deploy</h3>
+                
+                <p>!deploy</p>
+                <p>[Guild-owner-only] Deploy bot channels and roles. Can be used to restore categories and roles.</p>
+                <p><strong>Where can it be used?</strong>: guild channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="dom5maps">dom5maps</h3>
+                
+                <p>!dom5maps</p>
+                <p>Prints a list of the Dominions 5 maps available on the given server.</p>
+                <p><strong>Where can it be used?</strong>: any channel</p>
+                <p><strong>Arguments</strong>: </p>
+                <ol>
+                <li>TYPE: STRING - A server&#39;s name</li>
+                </ol>
+                
+                <h3 id="dom5mods">dom5mods</h3>
+                
+                <p>!dom5mods</p>
+                <p>Prints a list of the Dominions 5 mods available on the given server.</p>
+                <p><strong>Where can it be used?</strong>: any channel</p>
+                <p><strong>Arguments</strong>:
+                Below are the commands available. Each one contains information about what it does and the arguments (sometimes optional, sometimes required) that make them work:</p>
+                
+                <h3 id="capacity">capacity</h3>
+                
+                <p>!capacity</p>
+                <p>Prints the list of servers with the number of free hosting slots in each.</p>
+                <p><strong>Where can it be used?</strong>: any channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="channel">channel</h3>
+                
+                <p>!channel</p>
+                <p>Creates a game channel to discuss settings before actually hosting a game.</p>
+                <p><strong>Where can it be used?</strong>: guild channel</p>
+                <p><strong>Arguments</strong>: </p>
+                <ol>
+                <li>TYPE: STRING - A channel name</li>
+                </ol>
+                
+                <h3 id="claim">claim</h3>
+                
+                <p>!claim</p>
+                <p>Claims a submitted pretender. Gives access to turn backups or turn reminders.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: </p>
+                <ol>
+                <li>TYPE: INTEGER - A number that matches the pretender&#39;s index displayed by the pretenders command.</li>
+                </ol>
+                
+                <h3 id="deletegameandchannel">deletegameandchannel</h3>
+                
+                <p>!deletegameandchannel</p>
+                <p>Permanently deletes the game hosted in this channel, as well as the channel itself.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="deletegamenotchannel">deletegamenotchannel</h3>
+                
+                <p>!deletegamenotchannel</p>
+                <p>Permanently deletes the game hosted in this channel, while leaving the channel intact.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="deletependingchannel">deletependingchannel</h3>
+                
+                <p>!deletependingchannel</p>
+                <p>Deletes the last channel that was created via the createchannel command.</p>
+                <p><strong>Where can it be used?</strong>: guild channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="deploy">deploy</h3>
+                
+                <p>!deploy</p>
+                <p>[Guild-owner-only] Deploy bot channels and roles. Can be used to restore categories and roles.</p>
+                <p><strong>Where can it be used?</strong>: guild channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="dom5maps">dom5maps</h3>
+                
+                <p>!dom5maps</p>
+                <p>Prints a list of the Dominions 5 maps available on the given server.</p>
+                <p><strong>Where can it be used?</strong>: any channel</p>
+                <p><strong>Arguments</strong>: </p>
+                <ol>
+                <li>TYPE: STRING - A server&#39;s name</li>
+                </ol>
+                
+                <h3 id="dom5mods">dom5mods</h3>
+                
+                <p>!dom5mods</p>
+                <p>Prints a list of the Dominions 5 mods available on the given server.</p>
+                <p><strong>Where can it be used?</strong>: any channel</p>
+                <p><strong>Arguments</strong>:</p>
+                <ol>
+                <li>TYPE: STRING - A server&#39;s name</li>
+                </ol>
+                
+                <h3 id="dom5nations">dom5nations</h3>
+                
+                <p>!dom5nations</p>
+                <p>Prints a list of all the Dominions 5&#39;s nations and their nation_numbers and filenames.</p>
+                <p><strong>Where can it be used?</strong>: any channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="dtimer">dtimer</h3>
+                
+                <p>!dtimer</p>
+                <p>Check (when used without arguments) or change the default timer.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: </p>
+                <ol>
+                <li>TYPE: STRING - Change the default timer, i.e. 3d20h30m, or a single integer for hours (0 to pause).</li>
+                </ol>
+                
+                <h3 id="forcehost">forcehost</h3>
+                
+                <p>!forcehost</p>
+                <p>[Game-organizer-only] In a game channel, forces a turn to roll immediately.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="games">games</h3>
+                
+                <p>!games</p>
+                <p>Prints a list of all hosted games in this Discord guild, or all games if the command is sent by DM.</p>
+                <p><strong>Where can it be used?</strong>: any channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="help">help</h3>
+                
+                <p>!help</p>
+                <p>Print a list of the available commands.</p>
+                <p><strong>Where can it be used?</strong>: any channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="host">host</h3>
+                
+                <p>!host</p>
+                <p>Host a Dom5 game. You will be asked a series of settings by DM to configure it.</p>
+                <p><strong>Where can it be used?</strong>: guild channel</p>
+                <p><strong>Arguments</strong>: </p>
+                <ol>
+                <li>TYPE: STRING - Server on which to host game. Check with /capacity</li>
+                </ol>
+                
+                <h3 id="info">info</h3>
+                
+                <p>!info</p>
+                <p>In a game channel, prints this game&#39;s information and settings.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="kill">kill</h3>
+                
+                <p>!kill</p>
+                <p>Shuts down the game&#39;s process. Useful to relaunch it to fix common errors. Doesn&#39;t delete anything.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="lasthosted">lasthosted</h3>
+                
+                <p>!lasthosted</p>
+                <p>Prints a list of hosted games in this guild, or all games if sent by DM, sorted by last turn date.</p>
+                <p><strong>Where can it be used?</strong>: any channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="launch">launch</h3>
+                
+                <p>!launch</p>
+                <p>In a game channel, launches a game&#39;s process. Use if the bot mentions the game being offline.</p>
+                <ol>
+                <li>TYPE: STRING - A server&#39;s name</li>
+                </ol>
+                
+                <h3 id="dom5nations">dom5nations</h3>
+                
+                <p>!dom5nations</p>
+                <p>Prints a list of all the Dominions 5&#39;s nations and their nation_numbers and filenames.</p>
+                <p><strong>Where can it be used?</strong>: any channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="dtimer">dtimer</h3>
+                
+                <p>!dtimer</p>
+                <p>Check (when used without arguments) or change the default timer.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: </p>
+                <ol>
+                <li>TYPE: STRING - Change the default timer, i.e. 3d20h30m, or a single integer for hours (0 to pause).</li>
+                </ol>
+                
+                <h3 id="forcehost">forcehost</h3>
+                
+                <p>!forcehost</p>
+                <p>[Game-organizer-only] In a game channel, forces a turn to roll immediately.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="games">games</h3>
+                
+                <p>!games</p>
+                <p>Prints a list of all hosted games in this Discord guild, or all games if the command is sent by DM.</p>
+                <p><strong>Where can it be used?</strong>: any channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="help">help</h3>
+                
+                <p>!help</p>
+                <p>Print a list of the available commands.</p>
+                <p><strong>Where can it be used?</strong>: any channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="host">host</h3>
+                
+                <p>!host</p>
+                <p>Host a Dom5 game. You will be asked a series of settings by DM to configure it.</p>
+                <p><strong>Where can it be used?</strong>: guild channel</p>
+                <p><strong>Arguments</strong>: </p>
+                <ol>
+                <li>TYPE: STRING - Server on which to host game. Check with /capacity</li>
+                </ol>
+                
+                <h3 id="info">info</h3>
+                
+                <p>!info</p>
+                <p>In a game channel, prints this game&#39;s information and settings.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="kill">kill</h3>
+                
+                <p>!kill</p>
+                <p>Shuts down the game&#39;s process. Useful to relaunch it to fix common errors. Doesn&#39;t delete anything.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="lasthosted">lasthosted</h3>
+                
+                <p>!lasthosted</p>
+                <p>Prints a list of hosted games in this guild, or all games if sent by DM, sorted by last turn date.</p>
+                <p><strong>Where can it be used?</strong>: any channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="launch">launch</h3>
+                
+                <p>!launch</p>
+                <p>In a game channel, launches a game&#39;s process. Use if the bot mentions the game being offline.
+                <strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="patreon">patreon</h3>
+                
+                <p>!patreon</p>
+                <p>Prints a link to the Patreon for those who wish to support the project. Thank you!</p>
+                <p><strong>Where can it be used?</strong>: any channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="preferences">preferences</h3>
+                
+                <p>!preferences</p>
+                <p>Displays the player game preferences menu (global preferences if used by DM).</p>
+                <p><strong>Where can it be used?</strong>: any channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="pretenders">pretenders</h3>
+                
+                <p>!pretenders</p>
+                <p>Displays a list of submitted pretenders. Use their numbers for other pretender commands.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="remove">remove</h3>
+                
+                <p>!remove</p>
+                <p>In a game channel, removes a submitted pretender for this game.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: </p>
+                <ol>
+                <li>TYPE: INTEGER - A number that matches the pretender&#39;s index displayed; a.k.a. the nation_number.</li>
+                </ol>
+                
+                <h3 id="replace">replace</h3>
+                
+                <p>!replace</p>
+                <p>[Guild-owner-only] Replaces one of the bot roles by a different existing role.</p>
+                <p><strong>Where can it be used?</strong>: guild channel</p>
+                <p><strong>Arguments</strong>: </p>
+                <ol>
+                <li><p>TYPE: ROLE - The bot&#39;s role id to be replaced.</p>
+                </li>
+                <li><p>TYPE: ROLE - The new role&#39;s id to take its place.</p>
+                </li>
+                </ol>
+                
+                <h3 id="resetport">resetport</h3>
+                
+                <p>!resetport</p>
+                <p>[Organizer-only] Assigns a new port to the game (or the same one if it&#39;s found to be free).</p>
+                <p><strong>Where can it be used?</strong>: guild channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="restablish">restablish</h3>
+                
+                <p>!restablish</p>
+                <p>Restablishes a game&#39;s deleted channel and/or role by creating new ones if none are found.</p>
+                <p><strong>Where can it be used?</strong>: any channel</p>
+                <p><strong>Arguments</strong>: </p>
+                <ol>
+                <li>TYPE: STRING - A game&#39;s name.</li>
+                </ol>
+                
+                <h3 id="restartandgobacktolobby">restartandgobacktolobby</h3>
+                
+                <p>!restartandgobacktolobby</p>
+                <p>[Game-organizer-only] Restarts the game back to the pretender lobby; players must resubmit.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="roll">roll</h3>
+                
+                <p>!roll</p>
+                <p>Rolls dice.</p>
+                <p><strong>Where can it be used?</strong>: any channel</p>
+                <p><strong>Arguments</strong>:
+                <strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="patreon">patreon</h3>
+                
+                <p>!patreon</p>
+                <p>Prints a link to the Patreon for those who wish to support the project. Thank you!</p>
+                <p><strong>Where can it be used?</strong>: any channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="preferences">preferences</h3>
+                
+                <p>!preferences</p>
+                <p>Displays the player game preferences menu (global preferences if used by DM).</p>
+                <p><strong>Where can it be used?</strong>: any channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="pretenders">pretenders</h3>
+                
+                <p>!pretenders</p>
+                <p>Displays a list of submitted pretenders. Use their numbers for other pretender commands.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="remove">remove</h3>
+                
+                <p>!remove</p>
+                <p>In a game channel, removes a submitted pretender for this game.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: </p>
+                <ol>
+                <li>TYPE: INTEGER - A number that matches the pretender&#39;s index displayed; a.k.a. the nation_number.</li>
+                </ol>
+                
+                <h3 id="replace">replace</h3>
+                
+                <p>!replace</p>
+                <p>[Guild-owner-only] Replaces one of the bot roles by a different existing role.</p>
+                <p><strong>Where can it be used?</strong>: guild channel</p>
+                <p><strong>Arguments</strong>: </p>
+                <ol>
+                <li><p>TYPE: ROLE - The bot&#39;s role id to be replaced.</p>
+                </li>
+                <li><p>TYPE: ROLE - The new role&#39;s id to take its place.</p>
+                </li>
+                </ol>
+                
+                <h3 id="resetport">resetport</h3>
+                
+                <p>!resetport</p>
+                <p>[Organizer-only] Assigns a new port to the game (or the same one if it&#39;s found to be free).</p>
+                <p><strong>Where can it be used?</strong>: guild channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="restablish">restablish</h3>
+                
+                <p>!restablish</p>
+                <p>Restablishes a game&#39;s deleted channel and/or role by creating new ones if none are found.</p>
+                <p><strong>Where can it be used?</strong>: any channel</p>
+                <p><strong>Arguments</strong>: </p>
+                <ol>
+                <li>TYPE: STRING - A game&#39;s name.</li>
+                </ol>
+                
+                <h3 id="restartandgobacktolobby">restartandgobacktolobby</h3>
+                
+                <p>!restartandgobacktolobby</p>
+                <p>[Game-organizer-only] Restarts the game back to the pretender lobby; players must resubmit.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="roll">roll</h3>
+                
+                <p>!roll</p>
+                <p>Rolls dice.</p>
+                <p><strong>Where can it be used?</strong>: any channel</p>
+                <p><strong>Arguments</strong>:</p>
+                <ol>
+                <li>TYPE: STRING - A roll. Adding a + after a dice expression will make them explosive, i.e. 5d6++10d10+.</li>
+                </ol>
+                
+                <h3 id="rollback">rollback</h3>
+                
+                <p>!rollback</p>
+                <p>[Game-organizer-only] Rollbacks to the previous turn. Only keeps backups of a few turns back.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="scores">scores</h3>
+                
+                <p>!scores</p>
+                <p>Get current turn&#39;s scores file. Only available if visible scoregraphs, or games which have ended.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="setorganizer">setorganizer</h3>
+                
+                <p>!setorganizer</p>
+                <p>Sets a member as the organizer of this game. If an organizer exists; replaces them.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: </p>
+                <ol>
+                <li>TYPE: USER - A mention to the new organizer (@Username#0000).</li>
+                </ol>
+                
+                <h3 id="settings">settings</h3>
+                
+                <p>!settings</p>
+                <p>[Game-organizer-only] Change game settings, provided the game hasn&#39;t started yet.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="shuffle">shuffle</h3>
+                
+                <p>!shuffle</p>
+                <p>Shuffles a list of space-separated elements, i.e. mentions to members to create a draft order.</p>
+                <p><strong>Where can it be used?</strong>: guild channel</p>
+                <p><strong>Arguments</strong>: </p>
+                <ol>
+                <li>TYPE: STRING - A space-separated list of things, i.e mentions or numbers</li>
+                </ol>
+                
+                <h3 id="start">start</h3>
+                
+                <p>!start</p>
+                <p>[Game-organizer-only] Starts the game. Can take long depending on size (even &gt; 20 minutes).</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="sub">sub</h3>
+                
+                <p>!sub</p>
+                <p>[Game-organizer-only] Transfers the claim on a pretender to another player.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: </p>
+                <ol>
+                <li><p>TYPE: INTEGER - A nation number that matches the pretender&#39;s index displayed by the pretenders command.</p>
+                </li>
+                <li><p>TYPE: USER - A mention to the player who will be taking over (@Username#0000).</p>
+                </li>
+                </ol>
+                
+                <h3 id="subscribe">subscribe</h3>
+                
+                <p>!subscribe</p>
+                <p>Assigns yourself the role of the game. Claiming a pretender assigns it automatically.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                <ol>
+                <li>TYPE: STRING - A roll. Adding a + after a dice expression will make them explosive, i.e. 5d6++10d10+.</li>
+                </ol>
+                
+                <h3 id="rollback">rollback</h3>
+                
+                <p>!rollback</p>
+                <p>[Game-organizer-only] Rollbacks to the previous turn. Only keeps backups of a few turns back.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="scores">scores</h3>
+                
+                <p>!scores</p>
+                <p>Get current turn&#39;s scores file. Only available if visible scoregraphs, or games which have ended.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="setorganizer">setorganizer</h3>
+                
+                <p>!setorganizer</p>
+                <p>Sets a member as the organizer of this game. If an organizer exists; replaces them.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: </p>
+                <ol>
+                <li>TYPE: USER - A mention to the new organizer (@Username#0000).</li>
+                </ol>
+                
+                <h3 id="settings">settings</h3>
+                
+                <p>!settings</p>
+                <p>[Game-organizer-only] Change game settings, provided the game hasn&#39;t started yet.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="shuffle">shuffle</h3>
+                
+                <p>!shuffle</p>
+                <p>Shuffles a list of space-separated elements, i.e. mentions to members to create a draft order.</p>
+                <p><strong>Where can it be used?</strong>: guild channel</p>
+                <p><strong>Arguments</strong>: </p>
+                <ol>
+                <li>TYPE: STRING - A space-separated list of things, i.e mentions or numbers</li>
+                </ol>
+                
+                <h3 id="start">start</h3>
+                
+                <p>!start</p>
+                <p>[Game-organizer-only] Starts the game. Can take long depending on size (even &gt; 20 minutes).</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="sub">sub</h3>
+                
+                <p>!sub</p>
+                <p>[Game-organizer-only] Transfers the claim on a pretender to another player.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: </p>
+                <ol>
+                <li><p>TYPE: INTEGER - A nation number that matches the pretender&#39;s index displayed by the pretenders command.</p>
+                </li>
+                <li><p>TYPE: USER - A mention to the player who will be taking over (@Username#0000).</p>
+                </li>
+                </ol>
+                
+                <h3 id="subscribe">subscribe</h3>
+                
+                <p>!subscribe</p>
+                <p>Assigns yourself the role of the game. Claiming a pretender assigns it automatically.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="switchtimerenforcer">switchtimerenforcer</h3>
+                
+                <p>!switchtimerenforcer</p>
+                <p>[Game-organizer-only] Switches from bot-enforced timer to game-enforced timer, and vice versa.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="timer">timer</h3>
+                
+                <p>!timer</p>
+                <p>Check (when used without arguments) or change the timer of the current turn.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: </p>
+                <ol>
+                <li>TYPE: STRING - Change the timer, i.e. 3d20h30m, or a single integer for hours (0 to pause).</li>
+                </ol>
+                
+                <h3 id="turnfile">turnfile</h3>
+                
+                <p>!turnfile</p>
+                <p>[Game-player-only] Requests the claimed nation&#39;s current turn file, which is then sent by DM.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="unclaim">unclaim</h3>
+                
+                <p>!unclaim</p>
+                <p>Removes your claim from your submitted pretender (without deleting the submitted pretender).</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="undeploybotfromguild">undeploybotfromguild</h3>
+                
+                <p>!undeploybotfromguild</p>
+                <p>[Guild-owner-only] CAREFUL. Will attempt to delete ALL deployment from bot.</p>
+                <p><strong>Where can it be used?</strong>: guild channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="undone">undone</h3>
+                
+                <p>!undone</p>
+                <p>In a game channel, prints a list nations whose turns&#39; are undone or unfinished.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="unsubscribe">unsubscribe</h3>
+                
+                <p>!unsubscribe</p>
+                <p>Removes the role of a game from yourself. Unclaiming/removing pretender does this.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="upload">upload</h3>
+                
+                <p>!upload</p>
+                <p>Upload map or mod to the server through google drive.</p>
+                <p><strong>Where can it be used?</strong>: any channel</p>
+                <p><strong>Arguments</strong>: </p>
+                <ol>
+                <li><p>TYPE: STRING - The type of file you&#39;re uploading</p>
+                </li>
+                <li><p>TYPE: STRING - A google drive file ID or link.</p>
+                </li>
+                <li><p>TYPE: STRING - A server&#39;s name.</p>
+                
+                <h3 id="switchtimerenforcer">switchtimerenforcer</h3>
+                
+                </li>
+                </ol>
+                <p>!switchtimerenforcer</p>
+                <p>[Game-organizer-only] Switches from bot-enforced timer to game-enforced timer, and vice versa.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="timer">timer</h3>
+                
+                <p>!timer</p>
+                <p>Check (when used without arguments) or change the timer of the current turn.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: </p>
+                <ol>
+                <li>TYPE: STRING - Change the timer, i.e. 3d20h30m, or a single integer for hours (0 to pause).</li>
+                </ol>
+                
+                <h3 id="turnfile">turnfile</h3>
+                
+                <p>!turnfile</p>
+                <p>[Game-player-only] Requests the claimed nation&#39;s current turn file, which is then sent by DM.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="unclaim">unclaim</h3>
+                
+                <p>!unclaim</p>
+                <p>Removes your claim from your submitted pretender (without deleting the submitted pretender).</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="undeploybotfromguild">undeploybotfromguild</h3>
+                
+                <p>!undeploybotfromguild</p>
+                <p>[Guild-owner-only] CAREFUL. Will attempt to delete ALL deployment from bot.</p>
+                <p><strong>Where can it be used?</strong>: guild channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="undone">undone</h3>
+                
+                <p>!undone</p>
+                <p>In a game channel, prints a list nations whose turns&#39; are undone or unfinished.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="unsubscribe">unsubscribe</h3>
+                
+                <p>!unsubscribe</p>
+                <p>Removes the role of a game from yourself. Unclaiming/removing pretender does this.</p>
+                <p><strong>Where can it be used?</strong>: game channel</p>
+                <p><strong>Arguments</strong>: No arguments required.</p>
+                
+                <h3 id="upload">upload</h3>
+                
+                <p>!upload</p>
+                <p>Upload map or mod to the server through google drive.</p>
+                <p><strong>Where can it be used?</strong>: any channel</p>
+                <p><strong>Arguments</strong>: </p>
+                <ol>
+                <li><p>TYPE: STRING - The type of file you&#39;re uploading</p>
+                </li>
+                <li><p>TYPE: STRING - A google drive file ID or link.</p>
+                </li>
+                <li><p>TYPE: STRING - A server&#39;s name.</p>
+                </li>
+                </ol>
+                
+            </div>
+            
+        </div>
+        
+    </div>
+    
+</div>
