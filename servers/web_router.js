@@ -16,6 +16,12 @@ const hostGameRoute = require("./routes/host_game.js");
 const updatePartialsRoute = require("./routes/update_partials.js");
 const editPreferencesRoute = require("./routes/edit_preferences.js");
 const changeGameSettingsRoute = require("./routes/change_game_settings.js");
+
+// new content routes
+const aboutRoute = require("./routes/about.js");
+const botCommandsRoute = require("./routes/bot_commands.js");
+const donateRoute = require("./routes/donate.js");
+
 const cookieParser = require("cookie-parser");
 
 exports.setMiddlewares = (expressApp, express) =>
@@ -49,4 +55,7 @@ exports.setRoutes = (expressApp) =>
     updatePartialsRoute.set(expressApp);
     editPreferencesRoute.set(expressApp);
     changeGameSettingsRoute.set(expressApp);
+    aboutRoute.set(expressApp);
+    botCommandsRoute.set(expressApp);
+    donateRoute.set(expressApp);
 };

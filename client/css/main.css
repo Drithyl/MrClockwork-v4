@@ -10,6 +10,27 @@
     body {
         background: #303138;
     }
+    
+    /* accent icon positioning */
+    .accentIcon {
+      top: 20px;
+      width:45px;
+      height:45px;
+      border-color: #36353c;
+      background: #095280;
+    }
+ 
+    /* colour for the icon in the middle of the qccent icon */
+    .accentIcon .bi {
+      color:white;
+      padding-left:.25rem;
+      padding-top:.25rem;
+    }
+    
+    /* styles for the icons in the buttons */
+   button .bi {
+      color: #0a639b;
+    }
 
     /* Smaller headlines used in the news cards */
     h5 {
@@ -34,6 +55,10 @@
     /* sidebar background and links*/
     .navBGDark {
         background: #3c4148;
+    }
+    
+    #sidebarMenu {
+      border-right: solid 2px #2b2f35;
     }
 
     #sidebarMenu .nav-link{
@@ -75,27 +100,27 @@
 
     /* Top bar modal color */
     .modal-content {
-        background: #557A95;
+      background: #557A95;
     }
 
     /* Body modal color */
     .modal-body {
-        background: #7394BF;
+      background: #7394BF;
     }
 
     /* Color of staff cards in our_staff */
     .staff_card {
-        background: #719181;
+      background: #719181;
     }
 
     /* Color of news cards */
     .card.flex-row {
-        background: #719181;
+      background: #719181;
     }
 
     /* Color of key facts in staff cards */
     .list-group-item {
-        background: #719181;
+      background: #719181;
     }
 
     /* Color of links within the footer */
@@ -108,10 +133,45 @@
         max-width: 40px;
     }
 
+/* styles for Bot Commands listing */
+.botCommands {
+   font-size: 1rem;
+}
+
+.botCommands p {
+   margin-left:1rem;
+}
+
+.botCommands h3 {
+   margin-top: 2rem;
+   margin-bottom: 1rem;
+   font-size: 1.5rem;
+}
+
+.botCommands p strong {
+   font-size: 1rem;
+   font-weight: 400;
+}
+
+.botCommands ol {
+   color:white;
+   margin-left:2rem;
+   font-size: .85rem;
+}
+
 /* header styles */
 .clockworkNav {
    height: 75px;
    max-height:75px;
+   border-bottom: solid #2b2f35 2px;
+}
+
+#mainNavbarLinks a:hover {
+   color:rgb(135, 0, 0);
+}
+
+#mainNavbarLinks .active {
+   border-bottom: solid rgb(135, 0, 0) 2px;
 }
 
 /* button bar style */
@@ -138,7 +198,7 @@
 
 .headerTitle {
     color: white;
-    margin-left: .25rem;
+    margin-left: .75rem;
 }
 
 a[role=option] .text{
