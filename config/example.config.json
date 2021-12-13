@@ -27,8 +27,8 @@
   "guildDataFolder": "guild_data",
   "playerDataFolder": "player_data",
 
-  "pathToDom4Exe": "C:/SteamLibrary/steamapps/common/Dominions4/Dominions4.exe",
   "pathToDom5Exe": "C:/SteamLibrary/steamapps/common/Dominions5/Dominions5.exe",
+  "pathToDom5Data": "C:/Users/MyUsername/AppData/Roaming/Dominions5",
 
   "gameMasterRoleName": "GameMaster",
   "blitzerRoleName": "Blitzer",
