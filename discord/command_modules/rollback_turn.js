@@ -6,6 +6,7 @@ const commandPermissions = require("../command_permissions.js");
 const MessagePayload = require("../prototypes/message_payload.js");
 
 const commandData = new CommandData("ROLLBACK_TURN");
+const ROLLEBACK_REQUEST_TIMEOUT = 150000;
 
 module.exports = RollbackTurnCommand;
 
@@ -34,7 +35,8 @@ function _behaviour(commandContext)
     if (assert.isInteger(rollbackTurnNbr) === false || rollbackTurnNbr <= 0)
         return commandContext.respondToCommand(new MessagePayload(`Cannot rollback; turn number '${rollbackTurnNbr}' is incorrect.`));
 
-    return targetedGame.emitPromiseWithGameDataToServer("ROLLBACK", { turnNbr: rollbackTurnNbr })
+    return commandContext.respondToCommand(new MessagePayload(`Attempting to roll turn back...`))
+    .then(() => targetedGame.emitPromiseWithGameDataToServer("ROLLBACK", { turnNbr: rollbackTurnNbr }, ROLLEBACK_REQUEST_TIMEOUT))
     .then(() => commandContext.respondToCommand(new MessagePayload(`The turn has been rolled back. It may take a minute or two to update properly.`)))
     .catch((err) => commandContext.respondToCommand(new MessagePayload(`An error occurred:\n\n${err.message}`)));
 }
