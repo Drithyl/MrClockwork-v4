@@ -31,8 +31,6 @@
                     
                     <% const gameSettings = organizedGames[gameName].settings; %>
                     <% const serverName = organizedGames[gameName].serverName; %>
-                    <% const maps = organizedGames[gameName].maps; %>
-                    <% const mods = organizedGames[gameName].mods; %>
 
                     <div id="<%=gameName%>_container" name="game_container" <% if (i > 0) { %> style="display:none;" <% } %> >
                         <form id="change_game_settings_form" action="/change_game_settings" method="POST" >
