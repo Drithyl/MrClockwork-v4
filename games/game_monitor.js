@@ -163,7 +163,7 @@ function _updateCycle(game)
 
         // Update the status embed with the new data (in case game went offline, for example)
         log.general(log.getVerboseLevel(), `${game.getName()}\tupdating embed.`);
-        game.updateStatusEmbed(updateData);
+        //game.updateStatusEmbed(updateData);
 
         log.general(log.getVerboseLevel(), 
         `${game.getName()}\treceived updated data`,
@@ -319,7 +319,10 @@ function _handleServerOffline(game)
 
 function _handleGameOffline(game)
 {
-    game.sendMessageToChannel(`Game process is offline. Use the launch command to relaunch it.`);
+    // Don't announce in channel, as sometimes games will go offline and right back up due to
+    // things like killing and relaunching from a rollback, or hiccups. Players generally
+    // get confused for no reason
+    //game.sendMessageToChannel(`Game process is offline. Use the launch command to relaunch it.`);
 }
 
 function _handleGameStarted(game)
@@ -384,7 +387,10 @@ function _handleServerBackOnline(game)
 
 function _handleGameBackOnline(game)
 {
-    game.sendMessageToChannel(`Game process is back online.`);
+    // Don't announce in channel, as sometimes games will go offline and right back up due to
+    // things like killing and relaunching from a rollback, or hiccups. Players generally
+    // get confused for no reason
+    //game.sendMessageToChannel(`Game process is back online.`);
 }
 
 
