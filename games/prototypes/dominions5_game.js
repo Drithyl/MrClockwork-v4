@@ -455,7 +455,8 @@ function Dominions5Game()
             name: _gameObject.getName(),
             port: _gameObject.getPort(),
             gameType: _gameObject.getGameType(),
-            args: settingsObject.getSettingFlags()
+            args: settingsObject.getSettingFlags(),
+            isCurrentTurnRollback: _isCurrentTurnRollback
         };
 
         if (_gameObject.isEnforcingTimer() === false)
