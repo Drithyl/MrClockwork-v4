@@ -30,43 +30,32 @@ function _behaviour(commandContext)
     const gameObject = commandContext.getGameTargetedByCommand();
     const commandArguments = commandContext.getCommandArgumentsArray();
     const lastKnownStatus = gameObject.getLastKnownStatus();
-    const lastKnownMsLeft = lastKnownStatus.getMsLeft();
     const lastKnownTurnNumber = lastKnownStatus.getTurnNumber();
-    const timeLeft = new TimeLeft(lastKnownMsLeft);
 
     if (lastKnownTurnNumber <= 0)
         return commandContext.respondToCommand(new MessagePayload(`Game is being setup in lobby.`));
 
     if (commandArguments.length <= 0)
-        return _sendCurrentTimer(commandContext, timeLeft, lastKnownStatus);
+        return _sendCurrentTimer(commandContext, lastKnownStatus);
     
-    return _changeCurrentTimer(gameObject, commandContext, commandArguments, timeLeft);
+    return _changeCurrentTimer(gameObject, commandContext, commandArguments, lastKnownStatus);
 }
 
-function _sendCurrentTimer(commandContext, timeLeft, status)
+function _sendCurrentTimer(commandContext, status)
 {
-    if (status.isPaused() === true)
-        return commandContext.respondToCommand(new MessagePayload(`The timer is paused.`));
-
-    return commandContext.respondToCommand(new MessagePayload(`${timeLeft.printTimeLeft()} left till next turn.`));
+    return commandContext.respondToCommand(new MessagePayload(`${status.printTimeLeft()} left till next turn.`));
 }
 
-function _changeCurrentTimer(gameObject, commandContext, commandArguments, timeLeft)
+function _changeCurrentTimer(gameObject, commandContext, commandArguments, lastKnownStatus)
 {
     const timerChangeArg = commandArguments[0];
-    const timeToSet = _extractTimeToSet(timerChangeArg, timeLeft);
+    const timeToSet = _extractTimeToSet(timerChangeArg, lastKnownStatus.getTimeLeft());
 
     if (commandContext.doesSenderHaveOrganizerPermissions() === false)
         return Promise.reject(new PermissionsError(`You must be the game organizer to change the timer.`));
 
     return gameObject.changeTimer(timeToSet)
-    .then(() =>
-    {
-        if (timeToSet <= 0)
-            return commandContext.respondToCommand(new MessagePayload(`The timer has been paused. It may take a minute to update.`));
-
-        else return commandContext.respondToCommand(new MessagePayload(`The timer was changed. It may take a minute to update.`));
-    });
+    .then(() => commandContext.respondToCommand(new MessagePayload(`The timer was changed. There are now ${lastKnownStatus.printTimeLeft()} left till next turn.`)));
 }
 
 function _extractTimeToSet(timerChangeArg, timeLeft)
