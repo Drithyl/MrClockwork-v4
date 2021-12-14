@@ -297,13 +297,25 @@ function Dominions5Status(gameObject)
     this.isOnline = () => _status !== GAME_OFFLINE;
     this.isServerOnline = () => _status !== SERVER_OFFLINE;
 
-
     this.getTimeLeft = () =>
     {
         if (this.isOngoing() === false)
             return null;
 
         return new TimeLeft(_msLeft);
+    };
+
+    this.printTimeLeft = () =>
+    {
+        const timeLeft = new TimeLeft(_msLeft);
+
+        if (this.isOngoing() === false)
+            return "Game is offline";
+
+        if (this.isPaused() === true)
+            return `${timeLeft.printTimeLeft()} **(currently paused)**`;
+
+        return timeLeft.printTimeLeft();
     };
 
     this.copyTimerValues = (statusObject) =>
@@ -331,13 +343,10 @@ function Dominions5Status(gameObject)
         return clonedStatus;
     };
 
-    this.advanceTimer = (maxMs) =>
+    this.advanceTimer = (msToAdvance) =>
     {
-        const delta = Date.now() - _lastUpdateTimestamp;
-        const elapsedMs = Math.min(maxMs, delta);
-
-        if (assert.isInteger(_msLeft) === true && assert.isInteger(elapsedMs) === true)
-            this.setMsLeft(Math.max(_msLeft - elapsedMs, 0));
+        if (assert.isInteger(_msLeft) === true && assert.isInteger(msToAdvance) === true)
+            this.setMsLeft(Math.max(_msLeft - msToAdvance, 0));
 
         return this;
     };
