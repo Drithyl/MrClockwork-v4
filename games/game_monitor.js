@@ -112,7 +112,7 @@ function _reduceCurrentUpdates()
         currentUpdates = 0;
 }
 
-function _updateCycle(game)
+async function _updateCycle(game)
 {
     // Get our game's last recorded status
     const lastKnownStatus = game.getLastKnownStatus();
@@ -126,67 +126,75 @@ function _updateCycle(game)
     }
 
     // Fetch the most recent status of the game
-    return dom5Status.fetchDom5Status(game)
-    .then((updatedStatus) =>
-    {
-        // If the bot is not enforcing the timer, then Dominions updates its own
-        // timer without us having to manually do it, so skip this step
-        if (game.isEnforcingTimer() === false)
-            return Promise.resolve(updatedStatus);
+    const updatedStatus = await dom5Status.fetchDom5Status(game);
+    
+    // Handle the timer update
+    _updateTimer(game, lastKnownStatus, updatedStatus);
+    await _updateGameEvents(game, lastKnownStatus, updatedStatus);
 
-        // If bot is enforcing timer, but there are no last known ms, set them to 
-        // the full timer. This happens when patching games from v3 to v4, for example
-        if (assert.isInteger(lastKnownStatus.getMsLeft()) === false)
-        {
-            log.general(log.getLeanLevel(), `${game.getName()}'s msLeft is null or incorrect; setting to default.`);
-            lastKnownStatus.setMsToDefaultTimer(game);
-            log.general(log.getLeanLevel(), `${game.getName()} set to ${lastKnownStatus.getMsLeft()}ms.`);
-        }
-
-        // Set our new status to the last known bot enforced timer, to be on the same page
-        updatedStatus.copyTimerValues(lastKnownStatus);
-
-        // Advance the timer if it's not paused. This still needs to be updated with the
-        // game status itself; it's only a simulation until the game.update() line gets called
-        if (updatedStatus.isPaused() === false)
-            updatedStatus.advanceTimer(UPDATE_INTERVAL);
-
-        return Promise.resolve(updatedStatus);
-    })
-    .then((updatedStatus) =>
-    {
-        // Calculate all game events that happened in this update
-        const gameEvents = _getGameEvents(updatedStatus, lastKnownStatus);
-
-        // Attach the new game events to our status object, to enhance it for ease of checking
-        const updateData = Object.assign(updatedStatus, gameEvents);
-
-        // Update the status embed with the new data (in case game went offline, for example)
-        log.general(log.getVerboseLevel(), `${game.getName()}\tupdating embed.`);
-        //game.updateStatusEmbed(updateData);
-
-        log.general(log.getVerboseLevel(), 
-        `${game.getName()}\treceived updated data`,
-        `\tcurrentStatus:\t\t${updateData.getStatus()}
-        \tcurrentMsLeft:\t\t${updateData.getMsLeft()}
-        \tcurrentTurnNumber:\t${updateData.getTurnNumber()}
-        \tcurrent isPaused:\t${updateData.isPaused()}\n
-        \tlastKnownStatus:\t${lastKnownStatus.getStatus()}
-        \tlastKnownMsLeft:\t${lastKnownStatus.getMsLeft()}
-        \tlastKnownTurnNumber:\t${lastKnownStatus.getTurnNumber()}
-        \tlastKnown isPaused:\t${lastKnownStatus.isPaused()}`);
-
-        // Act on the calculated game events (i.e. roll a new turn, send a new turn announcement...)
-        _handleGameEvents(game, updateData);
-
-        // Update our game's data
-        game.update(updateData);
-        return Promise.resolve();
-    })
-    .then(() => game.save())
-    .catch((err) => Promise.reject(err));
+    // Update our game's data with the generated updated status
+    game.update(updatedStatus);
+    await game.save();
 }
 
+function _updateTimer(game, lastKnownStatus, updatedStatus)
+{
+    const elapsedTimeSinceLastUpdate = Date.now() - lastKnownStatus.getLastUpdateTimestamp();
+
+    // Use min() to make sure timer never advances more than the update interval
+    // Otherwise games would advance by a huge amount after they've been offline
+    const timeToAdvanceSinceLastUpdate = Math.min(UPDATE_INTERVAL, elapsedTimeSinceLastUpdate);
+
+    // If the bot is not enforcing the timer, then Dominions updates its own
+    // timer without us having to manually do it, so skip this step
+    // If the game is offline, we also don't want to advance timers
+    if (game.isEnforcingTimer() === false || updatedStatus.isOnline() === false)
+        return;
+
+    // If bot is enforcing timer, but there are no last known ms, set them to 
+    // the full timer. This happens when patching games from v3 to v4, for example
+    if (assert.isInteger(lastKnownStatus.getMsLeft()) === false)
+    {
+        log.general(log.getLeanLevel(), `${game.getName()}'s msLeft is null or incorrect; setting to default.`);
+        lastKnownStatus.setMsToDefaultTimer(game);
+        log.general(log.getLeanLevel(), `${game.getName()} set to ${lastKnownStatus.getMsLeft()}ms.`);
+    }
+
+    // Set our new status to the last known bot enforced timer, to be on the same page
+    updatedStatus.copyTimerValues(lastKnownStatus);
+
+    // Advance the timer if it's not paused. This still needs to be updated with the
+    // game status itself; it's only a simulation until the game.update() line gets called
+    if (updatedStatus.isPaused() === false)
+        updatedStatus.advanceTimer(timeToAdvanceSinceLastUpdate);
+}
+
+async function _updateGameEvents(game, lastKnownStatus, updatedStatus)
+{
+    // Calculate all game events that happened in this update
+    const gameEvents = _getGameEvents(updatedStatus, lastKnownStatus);
+
+    // Attach the new game events to our status object, to enhance it for ease of checking
+    Object.assign(updatedStatus, gameEvents);
+
+    // Update the status embed with the new data (in case game went offline, for example)
+    log.general(log.getVerboseLevel(), `${game.getName()}\tupdating embed.`);
+    //game.updateStatusEmbed(updateData);
+
+    log.general(log.getVerboseLevel(), 
+    `${game.getName()}\treceived updated data`,
+    `\tcurrentStatus:\t\t${updatedStatus.getStatus()}
+    \tcurrentMsLeft:\t\t${updatedStatus.getMsLeft()}
+    \tcurrentTurnNumber:\t${updatedStatus.getTurnNumber()}
+    \tcurrent isPaused:\t${updatedStatus.isPaused()}\n
+    \tlastKnownStatus:\t${lastKnownStatus.getStatus()}
+    \tlastKnownMsLeft:\t${lastKnownStatus.getMsLeft()}
+    \tlastKnownTurnNumber:\t${lastKnownStatus.getTurnNumber()}
+    \tlastKnown isPaused:\t${lastKnownStatus.isPaused()}`);
+
+    // Act on the calculated game events (i.e. roll a new turn, send a new turn announcement...)
+    await _handleGameEvents(game, updatedStatus);
+}
 
 function _getGameEvents(updatedStatus, lastKnownStatus)
 {
@@ -231,7 +239,7 @@ function _handleGameEvents(game, updateData)
     // If our bot is enforcing the timer, then we check here if any turns need to
     // be forced to roll, or if we need to set the timer to the new turn's timer
     if (game.isEnforcingTimer() === true)
-        _enforceTimer(game, updateData);
+        _handleTimerEvents(game, updateData);
 
     /** Order of conditionals matters! A new turn or a restart must be caught before
      *  the server or the game coming back online, as those will only trigger once
@@ -278,7 +286,7 @@ function _handleGameEvents(game, updateData)
                 if (areAllTurnsDone === true && game.isTurnProcessing() === false)
                 {
                     log.general(log.getNormalLevel(), `${game.getName()}\tAll turns done`);
-                    _handleAllTurnsDone(game, updateData);
+                    _handleTurnReadyToHost(game, updateData);
                 }
 
                 else log.general(log.getVerboseLevel(), `${game.getName()}\tSome turns are undone`);
@@ -297,7 +305,7 @@ function _handleGameEvents(game, updateData)
 }
 
 
-function _enforceTimer(game, updateData)
+function _handleTimerEvents(game, updateData)
 {
     if (updateData.isNewTurn === true || updateData.wasTurnRollbacked === true || updateData.didGameStart === true)
     {
@@ -308,7 +316,7 @@ function _enforceTimer(game, updateData)
 
     else if (updateData.getTurnNumber() > 0 && updateData.getMsLeft() <= 0 && updateData.isPaused() === false && game.isTurnProcessing() === false)
     {
-        _handleAllTurnsDone(game, updateData);
+        _handleTurnReadyToHost(game, updateData);
     }
 }
 
@@ -366,7 +374,7 @@ function _handleTurnRollback(game, updateData)
     game.sendGameAnnouncement(`The game has been rollbacked to turn ${updateData.getTurnNumber()}.`);
 }
 
-function _handleAllTurnsDone(game, updateData)
+function _handleTurnReadyToHost(game, updateData)
 {
     log.general(log.getNormalLevel(), `${game.getName()}\t Forcing turn to roll...`);
     game.forceHost();
