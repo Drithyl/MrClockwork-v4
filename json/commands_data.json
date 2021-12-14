@@ -433,6 +433,19 @@
         "helpText": "Launches a game's process."
     },
 
+    "PAUSE_GAME":
+    {
+        "name": "pause",
+        "isEnabled": true,
+        "gameTypesSupported": [],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "PAUSE",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "game",
+        "helpText": "Pauses or unpauses a game's timer."
+    },
+
     "POST_NEWS":
     {
         "name": "post",

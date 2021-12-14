@@ -364,6 +364,14 @@
         "description": "In a game channel, launches a game's process. Use if the bot mentions the **game** being offline."
     },
 
+    "PAUSE_GAME":
+    {
+        "name": "pause",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "game",
+        "description": "In a game channel, pauses or unpauses a game."
+    },
+
     "POST_NEWS":
     {
         "name": "post",
