@@ -446,6 +446,19 @@
         "helpText": "Pauses or unpauses a game's timer."
     },
 
+    "PAUSE_ALL_GAMES":
+    {
+        "name": "pauseall",
+        "isEnabled": true,
+        "gameTypesSupported": [],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "PAUSEALL",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "any",
+        "helpText": "Pauses all games."
+    },
+
     "POST_NEWS":
     {
         "name": "post",

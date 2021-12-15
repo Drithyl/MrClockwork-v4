@@ -372,6 +372,14 @@
         "description": "In a game channel, pauses or unpauses a game."
     },
 
+    "PAUSE_ALL_GAMES":
+    {
+        "name": "pauseall",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "any",
+        "description": "[Dev-only] Pauses all games."
+    },
+
     "POST_NEWS":
     {
         "name": "post",
