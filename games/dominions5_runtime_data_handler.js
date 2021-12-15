@@ -19,8 +19,9 @@ const networkErrorErrRegexp = new RegExp("Network\\s*Error", "i");
 //Exact error: "Terminated"
 const terminatedErrRegexp = new RegExp("terminated", "i");
 
-//Exact error: "Map specified by --mapfile was not found"
-const mapNotFoundErrRegexp = new RegExp("Map\\s*specified\\s*by\\s*--mapfile", "i");
+//Exact error: "Map specified by --mapfile was not found" OR
+//"Cannot find file map file: 1water200.map\r"
+const mapNotFoundErrRegexp = new RegExp("(Map\\s*specified\\s*by\\s*--mapfile)|(Cannot find file map file)", "i");
 
 //Exact error: "myloadmalloc: can't open [path].tga/rgb/png"
 const mapImgNotFoundErrRegexp = new RegExp("can\\'t\\s*open\\s*.+.(tga)|(.rgb)|(.rgb)|(.png)$", "i");
@@ -108,7 +109,7 @@ function parseData(gameName, message)
         return [];
     }
 
-    return message.split("\n");
+    return message.split("\n").filter((str) => /\S+/i.test(str) === true);
 }
 
 function handleData(game, message)
@@ -178,7 +179,7 @@ function handleData(game, message)
     {
         // Don't send channel warnings if this is an unidentified message; could just clutter things up
         log.general(log.getNormalLevel(), `Game ${gameName} reported an unknown message`, message);
-        //sendWarning(game, `The game ${gameName} reported the message:\n\n${message}`);
+        sendWarning(game, `The game ${gameName} reported the message:\n\n${message}`);
     }
 }
 
