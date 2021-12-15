@@ -294,7 +294,7 @@ function Dominions5Game()
         if (_status == null)
             throw new Error("Last known status is not available.");
 
-        return _status.isOngoing();
+        return _status.hasStarted();
     };
 
     _gameObject.getLastKnownStatus = () => _status;
