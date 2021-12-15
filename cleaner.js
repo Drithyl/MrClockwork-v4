@@ -87,7 +87,7 @@ module.exports.cleanUnusedMods = async (force = false) =>
 
 async function _cleanUnusedFiles(filesInUse, dirPath, force = false)
 {
-    var finalFilesToDelete = [];
+    var finalFilesInUse = [];
     
     if (Array.isArray(filesInUse) === false)
         return Promise.reject(new Error(`Expected filesInUse to be an array, got ${typeof filesInUse} instead.`), []);
@@ -97,10 +97,10 @@ async function _cleanUnusedFiles(filesInUse, dirPath, force = false)
     try
     {
         const relatedFiles = await _getListOfRelatedFilesInUse(filesInUse, dirPath);
-        finalFilesToDelete = finalFilesToDelete.concat(relatedFiles);
+        finalFilesInUse = finalFilesInUse.concat(relatedFiles);
     
         const dirFiles = await rw.walkDir(dirPath);
-        const deletedFiles = await _deleteUnusedFiles(dirFiles, finalFilesToDelete, force);
+        const deletedFiles = await _deleteUnusedFiles(dirFiles, finalFilesInUse, force);
 
         log.general(log.getLeanLevel(), `In ${dirPath}, deleted ${deletedFiles.length} unused files`);
         return deletedFiles;
