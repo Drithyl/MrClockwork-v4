@@ -6,7 +6,7 @@ const SpawnedProcess = require("../../spawned_process.js");
 
 const PROCESS_TIMEOUT_MS = config.queryProcessTimeout;
 const IN_LOBBY = "Game is being setup";
-const STARTED = "Game is active";
+const ACTIVE = "Game is active";
 const SERVER_OFFLINE = "Host server offline";
 const GAME_OFFLINE = "Game offline";
 
@@ -46,7 +46,7 @@ async function fetchGameStatus(gameObject)
         dom5Status.setStatus(IN_LOBBY);
 
     else if (statusdumpWrapper.hasStarted === true)
-        dom5Status.setStatus(STARTED);
+        dom5Status.setStatus(ACTIVE);
 
     return dom5Status;
 }
@@ -293,9 +293,11 @@ function Dominions5Status(gameObject)
 
 
     this.isInLobby = () => _status === IN_LOBBY;
-    this.isOngoing = () => _status === STARTED;
+    this.isOngoing = () => _status === ACTIVE;
     this.isOnline = () => _status !== GAME_OFFLINE;
     this.isServerOnline = () => _status !== SERVER_OFFLINE;
+    this.hasStarted = () => assert.isInteger(_turnNumber) === true && _turnNumber > 0;
+    
 
     this.getTimeLeft = () =>
     {
@@ -466,7 +468,7 @@ function _parsePlayers(tcpQueryResponse)
  * 
  */
 
-/** ACTIVE, STARTED GAME TCPQUERY OUTPUT:
+/** STARTED, ACTIVE GAME TCPQUERY OUTPUT:
  * 
  * Connecting to Server (127.0.0.1:6000)                          
  * Waiting for game info                                          
@@ -480,7 +482,7 @@ function _parsePlayers(tcpQueryResponse)
  * 
  */
 
-/** WHEN ACTIVE AND PAUSED, "Time left" will show as 
+/** WHEN STARTED AND PAUSED, "Time left" will show as 
  * Connecting to Server (127.0.0.1:6000)
  * Waiting for game info
  * Gamename: timerTest
