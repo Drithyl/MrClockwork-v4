@@ -1,7 +1,6 @@
 
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
-const TimeLeft = require("../../games/prototypes/time_left.js");
 const commandPermissions = require("../command_permissions.js");
 const MessagePayload = require("../prototypes/message_payload.js");
 
@@ -17,7 +16,6 @@ function PauseCommand()
 
     pauseCommand.addRequirements(
         commandPermissions.assertCommandIsUsedInGameChannel,
-        commandPermissions.assertGameIsOnline,
         commandPermissions.assertGameHasStarted,
         commandPermissions.assertMemberIsOrganizer
     );
