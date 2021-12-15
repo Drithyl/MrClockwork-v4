@@ -266,34 +266,6 @@ function _handleGameEvents(game, updateData)
     else if (updateData.wasTurnRollbacked === true)
         return _handleTurnRollback(game, updateData);
 
-    // Double check that game is ongoing when checking if all turns are done, otherwise the
-    // statusdump will give false positives, since all nations show up with controller 0
-    else if (game.isCurrentTurnRollback() === false && updateData.isOngoing() === true)
-    {
-        // If the data is not more up to date than the last one, we shouldn't check for new
-        // turns. This is to protect this update cycle going faster than the game's
-        // statusdump updates, and several turns rolling in a row, as the bot sees turns still
-        // finished in the statusdump while it hasn't yet updated since the turn rolled
-        if (updateData.isNewData === true)
-        {
-            // This check will emit an event to the slave server to verify the statusdump
-            // Reason being that tcpquery data does not show dead nations and considers them
-            // undone turns; so they will block new turns. Statusdump shows this info as -1 controller
-            log.general(log.getVerboseLevel(), `${game.getName()}\tChecking with slave if all turns are done...`);
-            return _checkIfAllTurnsAreDone(game)
-            .then((areAllTurnsDone) =>
-            {
-                if (areAllTurnsDone === true && game.isTurnProcessing() === false)
-                {
-                    log.general(log.getNormalLevel(), `${game.getName()}\tAll turns done`);
-                    _handleTurnReadyToHost(game, updateData);
-                }
-
-                else log.general(log.getVerboseLevel(), `${game.getName()}\tSome turns are undone`);
-            });
-        }
-    }
-
     if (updateData.didHourPass === true)
         return _handleHourPassed(game, updateData);
 
