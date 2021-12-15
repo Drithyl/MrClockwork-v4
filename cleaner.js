@@ -1,14 +1,22 @@
 
+const fs = require("fs");
+const path = require("path");
+const fsp = require("fs").promises;
 const log = require("./logger.js");
+const rw = require("./reader_writer.js");
 const config = require("./config/config.json");
-const hostServerStore = require("./servers/host_server_store.js");
 const ongoingGamesStore = require("./games/ongoing_games_store.js");
 
-var modsAndMapsCleaningInterval;
 const UTC_DAYS_TO_CLEAN = [3, 6];
 const UTC_HOUR_TO_CLEAN = 22;
 const ONE_HOUR = 3600000;
+
+const DOM5_MAP_PATH = path.resolve(config.pathToDom5Data, "maps");
+const DOM5_MOD_PATH = path.resolve(config.pathToDom5Data, "mods");
+
+var modsAndMapsCleaningInterval;
 var isCleaningEnabled = config.isCleaningEnabled;
+
 
 
 module.exports.toggleIsCleaningEnabled = () =>
@@ -38,57 +46,74 @@ module.exports.startCleaningInterval = () =>
 
 
         log.general(log.getLeanLevel(), `Process to clean unused files starting...`);
-        exports.cleanUnusedMaps();
-        exports.cleanUnusedMods();
+        exports.cleanUnusedMaps(true);
+        exports.cleanUnusedMods(true);
 
     }, ONE_HOUR);
 };
 
-module.exports.cleanUnusedMaps = () =>
+module.exports.cleanUnusedMaps = async (force = false) =>
 {
-    const servers = hostServerStore.getOnlineServers();
-
-    return servers.forAllPromises((server) =>
+    try
     {
-        const mapsInUse = _getListOfMapsInUse(server);
-        return _cleanUnusedFiles(mapsInUse, server, "DELETE_UNUSED_MAPS");
-    })
-    .then((results) => log.general(log.getLeanLevel(), `Map cleaning finished. Cleaned ${results.length} servers out of ${results.reduce((totalFiles, currentTotal, i, arr) => totalFiles + arr[i].length, 0)} files.`))
-    .catch((err, resultsTillErr) => log.error(log.getLeanLevel(), `Map cleaning ERROR, cleaned ${resultsTillErr.length} servers out of ${resultsTillErr.reduce((totalFiles, currentTotal, i, arr) => totalFiles + arr[i].length, 0)} map files before error.`, err));
+        const mapsInUse = _getListOfMapsInUse();
+        const results = await _cleanUnusedFiles(mapsInUse, DOM5_MAP_PATH, force);
+        log.general(log.getLeanLevel(), `Map cleaning finished. Cleaned ${results.length} map files.`);
+        return results;
+    }
+
+    catch(err)
+    {
+        log.error(log.getLeanLevel(), `Map cleaning ERROR`, err)
+    }
 };
 
-module.exports.cleanUnusedMods = () =>
+module.exports.cleanUnusedMods = async (force = false) =>
 {
-    const servers = hostServerStore.getOnlineServers();
-
-    return servers.forAllPromises((server) =>
+    try
     {
-        const modsInUse = _getListOfModsInUse(server);
-        return _cleanUnusedFiles(modsInUse, server, "DELETE_UNUSED_MODS");
-    })
-    .then((results) => log.general(log.getLeanLevel(), `Mod cleaning finished. Cleaned ${results.length} servers out of ${results.reduce((totalFiles, currentTotal, i, arr) => totalFiles + arr[i].length, 0)} files.`))
-    .catch((err, resultsTillErr) => log.error(log.getLeanLevel(), `Mod cleaning ERROR, cleaned ${resultsTillErr.length} servers out of ${resultsTillErr.reduce((totalFiles, currentTotal, i, arr) => totalFiles + arr[i].length, 0)} mod files before error.`, err));
+        const modsInUse = _getListOfModsInUse();
+        const results = await _cleanUnusedFiles(modsInUse, DOM5_MOD_PATH, force);
+        log.general(log.getLeanLevel(), `Mod cleaning finished. Cleaned ${results.length} mod files.`);
+        return results;
+    }
+
+    catch(err)
+    {
+        log.error(log.getLeanLevel(), `Mod cleaning ERROR`, err)
+    }
 };
 
 
-function _cleanUnusedFiles(filesInUse, server, serverMessage)
+async function _cleanUnusedFiles(filesInUse, dirPath, force = false)
 {
-    log.general(log.getLeanLevel(), `${server.getName()} - ${serverMessage}: begin cleaning unused files...`);
+    var finalFilesToDelete = [];
+    
+    if (Array.isArray(filesInUse) === false)
+        return Promise.reject(new Error(`Expected filesInUse to be an array, got ${typeof filesInUse} instead.`), []);
 
-    return server.emitPromise(serverMessage, filesInUse)
-    .then((filesDeleted) => 
+    log.general(log.getLeanLevel(), `Begin cleaning unused files...`);
+
+    try
     {
-        log.general(log.getLeanLevel(), `${server.getName()} - ${serverMessage}: cleaned unused files`, filesDeleted);
-        return Promise.resolve(filesDeleted);
-    })
-    .catch((err) => 
+        const relatedFiles = await _getListOfRelatedFilesInUse(filesInUse, dirPath);
+        finalFilesToDelete = finalFilesToDelete.concat(relatedFiles);
+    
+        const dirFiles = await rw.walkDir(dirPath);
+        const deletedFiles = await _deleteUnusedFiles(dirFiles, finalFilesToDelete, force);
+
+        log.general(log.getLeanLevel(), `In ${dirPath}, deleted ${deletedFiles.length} unused files`);
+        return deletedFiles;
+    }
+
+    catch(err)
     {
-        log.error(log.getLeanLevel(), `${server.getName()} - ${serverMessage}: error occurred when cleaning files`, err);
+        log.general(log.getLeanLevel(), `Error occurred when deleting unused files in ${dirPath}`, err);
         return Promise.reject(err);
-    });
+    };
 }
 
-function _getListOfMapsInUse(targetServer)
+function _getListOfMapsInUse()
 {
     const usedMaps = [];
     const games = ongoingGamesStore.getArrayOfGames();
@@ -97,15 +122,13 @@ function _getListOfMapsInUse(targetServer)
     {
         const settingsObject = game.getSettingsObject();
         const mapSetting = settingsObject.getMapSetting();
-
-        if (game.getServerId() === targetServer.getId() === true)
-            usedMaps.push(mapSetting.getValue());
+        usedMaps.push(mapSetting.getValue());
     });
 
     return usedMaps;
 }
 
-function _getListOfModsInUse(targetServer)
+function _getListOfModsInUse()
 {
     const usedMods = [];
     const games = ongoingGamesStore.getArrayOfGames();
@@ -114,15 +137,81 @@ function _getListOfModsInUse(targetServer)
     {
         const settingsObject = game.getSettingsObject();
         const modSetting = settingsObject.getModsSetting();
+        const modsInUse = modSetting.getValue();
 
-        if (game.getServerId() === targetServer.getId() === true)
-        {
-            const modsInUse = modSetting.getValue();
-
-            if (Array.isArray(modsInUse) === true && modsInUse.length > 0)
-                usedMods.push([...modSetting.getValue()]);
-        }
+        if (Array.isArray(modsInUse) === true && modsInUse.length > 0)
+            usedMods.push(...modSetting.getValue());
     });
 
     return usedMods;
 }
+
+/** uses the list of filenames in use to check the file contents and add the
+ *  related asset files to the list as well, so they do not get deleted
+ */
+ function _getListOfRelatedFilesInUse(filesInUse, dirPath)
+ {
+    var list = [];
+
+    return filesInUse.forAllPromises((filename) =>
+    {
+        var assetTagssMatch;
+        const filePath = path.resolve(dirPath, filename);
+
+        if (fs.existsSync(filePath) === false)
+            return;
+
+        list.push(filePath);
+
+        return fsp.readFile(filePath, "utf8")
+        .then((fileContent) =>
+        {
+            assetTagssMatch = fileContent.match(/\#(spr|spr1|spr2|icon|flag|indepflag|sample|imagefile|winterimagefile)\s*"?.+"?/ig);
+
+            if (Array.isArray(assetTagssMatch) === false)
+                return;
+
+            assetTagssMatch.forEach((assetTag) =>
+            {
+                const relPath = assetTag.replace(/^\#\w+\s*("?.+"?)$/i, "$1").replace(/"/ig, "");
+                const absolutePath = path.resolve(dirPath, relPath);
+
+                if (fs.existsSync(absolutePath) === true)
+                {
+                    log.general(log.getNormalLevel(), `Found related file in use at ${absolutePath}`);
+                    list.push(absolutePath);
+                }
+
+                else log.general(log.getLeanLevel(), `Related file in use found at path ${absolutePath} does not exist?`);
+            });
+        });
+    })
+    .then(() => Promise.resolve(list));
+ }
+ 
+ function _deleteUnusedFiles(filePaths, filesInUse, force)
+ {
+     var deletedFiles = [];
+     log.general(log.getLeanLevel(), "Total related files to check for cleaning", filePaths.length);
+ 
+     if (filePaths.length <= 0)
+         return Promise.resolve(deletedFiles);
+ 
+     return filePaths.forAllPromises((filePath) =>
+     {
+         if (filesInUse.includes(filePath) === false)
+         {
+             return Promise.resolve()
+             .then(() =>
+             {
+                 if (force === true)
+                     return fsp.unlink(filePath);
+ 
+                 else return Promise.resolve();
+             })
+             .then(() => deletedFiles.push(filePath))
+             .catch((err) => log.general(log.getLeanLevel(), `Failed to delete file ${filePath}`, err));
+         }
+     })
+     .then(() => Promise.resolve(deletedFiles));
+ }
