@@ -1,4 +1,5 @@
 
+const assert = require("../../asserter.js");
 const webSessionsStore = require("../web_sessions_store.js");
 const ongoingGames = require("../../games/ongoing_games_store.js");
 
@@ -38,16 +39,16 @@ exports.set = (expressApp) =>
 function _getPlayedGamesData(userId)
 {
     const games = ongoingGames.getGamesWhereUserIsPlayer(userId);
-    return games.map(_extractGameInfo);
+    return games.map((game) => _extractGameInfo(game, userId));
 }
 
 function _getOrganizedGamesData(userId)
 {
     const games = ongoingGames.getGamesWhereUserIsOrganizer(userId);
-    return games.map(_extractGameInfo);
+    return games.map((game) => _extractGameInfo(game, userId));
 }
 
-function _extractGameInfo(game)
+function _extractGameInfo(game, userId)
 {
     const statusData = game.getLastKnownStatus();
 
@@ -62,6 +63,43 @@ function _extractGameInfo(game)
         status: statusData?.getStatus(),
         turnNumber: statusData?.getTurnNumber(),
         timeLeft: statusData?.getTimeLeft()?.printTimeLeftShort(),
-        isPaused: statusData?.isPaused()
+        isPaused: statusData?.isPaused(),
+        turnStatus: _extractGameTurnStatus(game, userId)
     };
+}
+
+function _extractGameTurnStatus(game, userId)
+{
+    const statusData = game.getLastKnownStatus();
+    const nations = statusData.getPlayers();
+    var humanNations;
+    var controlledNations;
+    var allTurnsFinished;
+    var allTurnsAtLeastUnfinished;
+
+
+    if (assert.isArray(nations) === false)
+        return "Data unavailable";
+
+
+    humanNations = nations.filter((nation) => nation.isHuman);
+    controlledNations = humanNations.filter((nation) => game.isPlayerControllingNation(userId, nation.filename));
+    allTurnsFinished = controlledNations.every((nation) => nation.isTurnFinished);
+
+
+    if (controlledNations.length <= 0)
+        return "No controlled nation";
+
+    if (allTurnsFinished === true)
+        return "Finished";
+    
+    allTurnsAtLeastUnfinished = controlledNations.every((nation) => 
+    {
+        return nation.isTurnFinished === true || nation.isTurnUnfinished === true;
+    });
+
+    if (allTurnsAtLeastUnfinished === true)
+        return "Unfinished";
+
+    return "Unchecked!";
 }
