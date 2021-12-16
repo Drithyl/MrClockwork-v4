@@ -39,6 +39,7 @@ async function fetchGameStatus(gameObject)
         return dom5Status;
 
     dom5Status.setLastUpdateTimestamp(statusdumpWrapper.lastUpdateTimestamp);
+    dom5Status.setUptimeSinceLastCheck(statusdumpWrapper.uptime);
     dom5Status.setTurnNumber(statusdumpWrapper.turnNbr);
     dom5Status.setPlayers(statusdumpWrapper.nationStatusArray);
 
@@ -153,10 +154,8 @@ function _parseTcpQuery(tcpQueryResponse, statusObject)
     return statusObject;
 }
 
-function Dominions5Status(gameObject)
+function Dominions5Status()
 {
-    const _game = gameObject;
-
     var _name = "";
     var _status = "Unknown";
     var _isPaused = false;
@@ -164,8 +163,9 @@ function Dominions5Status(gameObject)
     var _msLeft;
     var _players;
     var _lastTurnTimestamp;
-    var _isTurnProcessing = false;
     var _lastUpdateTimestamp;
+    var _isTurnProcessing = false;
+    var _uptimeSinceLastCheck = 0;
 
     this.getName = () => _name;
     this.setName = (name) =>
@@ -211,6 +211,13 @@ function Dominions5Status(gameObject)
     {
         if (assert.isInteger(msLeft) === true)
             _msLeft = msLeft;
+    };
+
+    this.getUptimeSinceLastCheck = () => _uptimeSinceLastCheck;
+    this.setUptimeSinceLastCheck = (uptime) =>
+    {
+        if (assert.isInteger(uptime) === true && uptime > 0)
+            _uptimeSinceLastCheck += uptime;
     };
     
     this.setMsToDefaultTimer = (game) =>
@@ -348,7 +355,10 @@ function Dominions5Status(gameObject)
     this.advanceTimer = (msToAdvance) =>
     {
         if (assert.isInteger(_msLeft) === true && assert.isInteger(msToAdvance) === true)
+        {
             this.setMsLeft(Math.max(_msLeft - msToAdvance, 0));
+            
+        }
 
         return this;
     };
