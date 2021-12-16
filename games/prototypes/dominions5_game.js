@@ -68,20 +68,20 @@ function Dominions5Game()
         return nationArray;
     };
 
-    _gameObject.fetchSubmittedNationFilename = async (nationIdentifier) =>
+    _gameObject.fetchSubmittedNationData = async (nationIdentifier) =>
     {
         const nation = await _gameObject.emitPromiseWithGameDataToServer("GET_SUBMITTED_PRETENDER", { identifier: nationIdentifier });
 
         if (nation == null)
             return null;
 
-        return nation.filename;
+        return nation;
     };
 
     _gameObject.checkIfNationIsSubmitted = (nationIdentifier) =>
     {
-        return _gameObject.fetchSubmittedNationFilename(nationIdentifier)
-        .then((filename) => Promise.resolve(filename != null));
+        return _gameObject.fetchSubmittedNationData(nationIdentifier)
+        .then((data) => Promise.resolve(data != null));
     };
 
     _gameObject.forEachPlayerFile = (fnToCall) => _playerData.forEachItem((data, id) => fnToCall(data.file, id, data.username));
