@@ -28,18 +28,18 @@ the command to display pretenders can be used to check the names of nations
 that have a pretender file submitted, to easily copy and paste it for this command,
 but it does not necessarily need to be used if one already knows the nation name
 of the pretender submitted, which will be checked within the game.unclaimPretender() function*/
-function _behaviour(commandContext)
+async function _behaviour(commandContext)
 {
     const gameObject = commandContext.getGameTargetedByCommand();
     const commandArguments = commandContext.getCommandArgumentsArray();
-    const nameOfNationToBeUnclaimed = commandArguments[0];
-    var nationObject;
+    const numberOfNationToBeUnclaimed = commandArguments[0];
+    var nationData;
 
-    if (nameOfNationToBeUnclaimed == null)
+    if (numberOfNationToBeUnclaimed == null)
         return commandContext.respondToCommand(new MessagePayload(`You must specify a nation identifier to unclaim.`));
 
-    nationObject = dominions5NationStore.getNation(nameOfNationToBeUnclaimed);
-
-    return gameObject.removeControlOfNation(nationObject.getFilename())
-    .then(() => commandContext.respondToCommand(new MessagePayload(`Pretender was unclaimed.`)));
+    nationData = await gameObject.fetchSubmittedNationData(numberOfNationToBeUnclaimed);
+    
+    await gameObject.removeControlOfNation(nationData.filename)
+    return commandContext.respondToCommand(new MessagePayload(`Pretender for nation \`${nationData.fullName}\` was unclaimed.`));
 }
