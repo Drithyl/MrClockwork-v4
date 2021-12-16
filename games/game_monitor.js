@@ -52,10 +52,6 @@ exports.stopMonitoringDom5Game = (game) =>
 // of running queries for the next interval. 
 function _updateDom5Games()
 {
-    // Don't do anything if all servers are down, or else we'll have an infinite loop below
-    if (serverStore.getOnlineServers().length <= 0)
-        return;
-
     // Queued up updates guarantee that every game update will always be
     // spaced out by at least a certain time. This is relevant because Discord rate limits
     // will be very affected by the game's status embed editing. This route falls under global
@@ -65,7 +61,7 @@ function _updateDom5Games()
     {
         const gameToUpdate = monitoredGames[currentPendingGameIndex];
 
-        _cyclePendingGameIndex();
+        _increasePendingGameIndex();
 
         if (gameToUpdate == null)
             continue;
@@ -76,10 +72,6 @@ function _updateDom5Games()
             exports.stopMonitoringDom5Game(gameToUpdate);
             continue;
         }
-
-        // Queries with offline servers are pointless
-        if (gameToUpdate.isServerOnline() === false)
-            continue;
      
         currentUpdates++;
         log.general(log.getVerboseLevel(), `Total game updates running now: ${currentUpdates}`);
@@ -98,11 +90,18 @@ function _updateDom5Games()
     }
 }
 
-function _cyclePendingGameIndex()
+function _increasePendingGameIndex()
 {
     currentPendingGameIndex++;
     if (currentPendingGameIndex >= monitoredGames.length)
         currentPendingGameIndex = 0;
+}
+
+function _reducePendingGameIndex()
+{
+    currentPendingGameIndex--;
+    if (currentPendingGameIndex < 0)
+        currentPendingGameIndex = monitoredGames.length - 1;
 }
 
 function _reduceCurrentUpdates()
@@ -144,7 +143,7 @@ function _updateTimer(game, lastKnownStatus, updatedStatus)
     // If the bot is not enforcing the timer, then Dominions updates its own
     // timer without us having to manually do it, so skip this step
     // If the game is offline, we also don't want to advance timers
-    if (game.isEnforcingTimer() === false || updatedStatus.isOnline() === false)
+    if (game.isEnforcingTimer() === false || updatedStatus.isOnline() === false || updatedStatus.isServerOnline() === false)
         return;
 
     // If bot is enforcing timer, but there are no last known ms, set them to 
