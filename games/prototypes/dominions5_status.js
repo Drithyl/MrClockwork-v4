@@ -320,7 +320,7 @@ function Dominions5Status()
         var offlineStr = "";
 
         if (this.isOngoing() === false)
-            offlineStr = " **(Game is offline)**";
+            offlineStr = " **(game is offline)**";
 
         if (this.isPaused() === true)
             return `${timeLeft.printTimeLeft()} **(currently paused)**` + offlineStr;
