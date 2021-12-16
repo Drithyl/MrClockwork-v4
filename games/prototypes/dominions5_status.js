@@ -317,14 +317,15 @@ function Dominions5Status()
     this.printTimeLeft = () =>
     {
         const timeLeft = new TimeLeft(_msLeft);
+        var offlineStr = "";
 
         if (this.isOngoing() === false)
-            return "Game is offline";
+            offlineStr = " **(Game is offline)**";
 
         if (this.isPaused() === true)
-            return `${timeLeft.printTimeLeft()} **(currently paused)**`;
+            return `${timeLeft.printTimeLeft()} **(currently paused)**` + offlineStr;
 
-        return timeLeft.printTimeLeft();
+        return timeLeft.printTimeLeft() + offlineStr;
     };
 
     this.copyTimerValues = (statusObject) =>
