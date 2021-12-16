@@ -139,11 +139,7 @@ async function _updateCycle(game)
 
 function _updateTimer(game, lastKnownStatus, updatedStatus)
 {
-    const elapsedTimeSinceLastUpdate = Date.now() - lastKnownStatus.getLastUpdateTimestamp();
-
-    // Use min() to make sure timer never advances more than the update interval
-    // Otherwise games would advance by a huge amount after they've been offline
-    const timeToAdvanceSinceLastUpdate = Math.min(UPDATE_INTERVAL, elapsedTimeSinceLastUpdate);
+    const elapsedTimeSinceLastUpdate = updatedStatus.getUptimeSinceLastCheck();
 
     // If the bot is not enforcing the timer, then Dominions updates its own
     // timer without us having to manually do it, so skip this step
@@ -166,7 +162,7 @@ function _updateTimer(game, lastKnownStatus, updatedStatus)
     // Advance the timer if it's not paused. This still needs to be updated with the
     // game status itself; it's only a simulation until the game.update() line gets called
     if (updatedStatus.isPaused() === false)
-        updatedStatus.advanceTimer(timeToAdvanceSinceLastUpdate);
+        updatedStatus.advanceTimer(elapsedTimeSinceLastUpdate);
 }
 
 async function _updateGameEvents(game, lastKnownStatus, updatedStatus)
