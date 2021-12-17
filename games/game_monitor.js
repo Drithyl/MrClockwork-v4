@@ -289,7 +289,7 @@ function _handleTimerEvents(game, updateData)
 
 function _handleServerOffline(game)
 {
-    game.sendMessageToChannel(`Host server is offline. It will be back online shortly.`);
+    //game.sendMessageToChannel(`Host server is offline. It will be back online shortly.`);
 }
 
 function _handleGameOffline(game)
@@ -357,7 +357,7 @@ function _handleHourPassed(game, updateData)
 
 function _handleServerBackOnline(game)
 {
-    game.sendMessageToChannel(`Host server is online again. If the game does not go online shortly, you can relaunch it.`);
+    //game.sendMessageToChannel(`Host server is online again. If the game does not go online shortly, you can relaunch it.`);
 }
 
 function _handleGameBackOnline(game)
