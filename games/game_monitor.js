@@ -397,7 +397,7 @@ function _processNewTurnPreferences(game, turnNumber)
     game.emitPromiseWithGameDataToServer("GET_TURN_FILES", { nationNames: nationFilesToFetch })
     .then((turnFiles) =>
     {
-        const scoresFile = turnFiles.scores;
+        const scoresFile = (turnFiles != null) ? turnFiles.scores : null;
         const nationTurnFiles = turnFiles.turnFiles;
 
         filesRequestingBackups.forEach((playerFile) =>
@@ -409,7 +409,7 @@ function _processNewTurnPreferences(game, turnNumber)
             botClientWrapper.fetchUser(playerFile.getId())
             .then((userWrapper) =>
             {
-                if (preferences.isReceivingScores() === true && +scoregraphsValue === +dom5SettingFlags.VISIBLE_SCOREGRAPHS)
+                if (preferences.isReceivingScores() === true && +scoregraphsValue === +dom5SettingFlags.VISIBLE_SCOREGRAPHS && scoresFile != null)
                     payload.setAttachment(`scores.html`, scoresFile);
 
                 controlledNations.forEach((nationFilename) =>
