@@ -16,7 +16,6 @@ module.exports.Dominions5Status = Dominions5Status;
 
 async function fetchGameStatus(gameObject)
 {
-    const isOnline = await gameObject.isOnlineCheck();
     const dom5Status = new Dominions5Status(gameObject);
 
     dom5Status.setName(gameObject.getName());
@@ -27,16 +26,16 @@ async function fetchGameStatus(gameObject)
         return dom5Status;
     }
 
-    else if (isOnline === false)
-    {
-        dom5Status.setStatus(GAME_OFFLINE);
-        return dom5Status;
-    }
-
     const statusdumpWrapper = await gameObject.fetchStatusDump();
 
     if (statusdumpWrapper == null)
         return dom5Status;
+
+    if (statusdumpWrapper.isOnline === false)
+    {
+        dom5Status.setStatus(GAME_OFFLINE);
+        return dom5Status;
+    }
 
     dom5Status.setLastUpdateTimestamp(statusdumpWrapper.lastUpdateTimestamp);
     dom5Status.setUptimeSinceLastCheck(statusdumpWrapper.uptime);
