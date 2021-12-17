@@ -270,7 +270,7 @@ function Dominions5Game()
     };
 
     _gameObject.launch = () => _gameObject.emitPromiseWithGameDataToServer("LAUNCH_GAME");
-    _gameObject.kill = () => _gameObject.emitPromiseWithGameDataToServer("KILL_GAME");
+    _gameObject.kill = () => _gameObject.emitPromiseWithGameDataToServer("KILL_GAME", null, 130000);
 
     _gameObject.fetchStatusDump = () => _gameObject.emitPromiseWithGameDataToServer("GET_STATUS_DUMP");
 
