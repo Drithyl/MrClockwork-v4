@@ -120,14 +120,14 @@ function HostServer(id)
 
     this.getDom5MapsOnServer = () =>
     {
-        return this.emitPromise("GET_MAP_LIST")
+        return this.emitPromise("GET_MAP_LIST", null, 300000)
         .then((mapList) => Promise.resolve(mapList))
         .catch((err) => Promise.reject(new Error(`Could not retrieve the list of maps: ${err.message}`)));
     };
 
     this.getDom5ModsOnServer = () =>
     {
-        return this.emitPromise("GET_MOD_LIST")
+        return this.emitPromise("GET_MOD_LIST", null, 300000)
         .then((mapList) => Promise.resolve(mapList))
         .catch((err) => Promise.reject(new Error(`Could not retrieve the list of mods: ${err.message}`)));
     };
