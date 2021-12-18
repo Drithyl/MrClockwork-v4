@@ -42,7 +42,8 @@ function getListOfMapsOnServerAndSend(serverObject, commandContext)
     const payload = new MessagePayload("Below is the list of maps available:\n\n");
     var stringList = "";
 
-    return serverObject.getDom5MapsOnServer()
+    return commandContext.respondToCommand(new MessagePayload(`Fetching maps, this may take a while...`))
+    .then(() => serverObject.getDom5MapsOnServer())
     .then((list) =>
     {
         if (list.length <= 0)

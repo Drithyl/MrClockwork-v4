@@ -41,7 +41,8 @@ function getListOfModsOnServerAndSend(serverObject, commandContext)
 {
     const payload = new MessagePayload("Below is the list of mods available:\n\n");
 
-    return serverObject.getDom5ModsOnServer()
+    return commandContext.respondToCommand(new MessagePayload(`Fetching mods, this may take a while...`))
+    .then(() => serverObject.getDom5ModsOnServer())
     .then((list) =>
     {
         if (list.length <= 0)
