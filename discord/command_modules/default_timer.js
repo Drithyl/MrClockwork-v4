@@ -47,7 +47,10 @@ function _changeDefaultTimer(gameObject, commandContext, commandArguments)
 {
     const timerChangeArg = commandArguments[0];
     const timeToSet = _extractTimeToSet(timerChangeArg, gameObject.getMsLeftPerTurn());
-    const lastKnownTurnNumber = gameObject.getLastKnownStatus().getTurnNumber();
+    const lastKnownStatus = gameObject.getLastKnownStatus();
+    const lastKnownTurnNumber = lastKnownStatus.getTurnNumber();
+    const settingsObject = gameObject.getSettingsObject();
+    const timerSetting = settingsObject.getTimerSetting();
 
     if (commandContext.doesSenderHaveOrganizerPermissions() === false)
         return Promise.reject(new PermissionsError(`You must be the game organizer to change the timer.`));
@@ -61,7 +64,7 @@ function _changeDefaultTimer(gameObject, commandContext, commandArguments)
         if (timeToSet <= 0)
             return commandContext.respondToCommand(new MessagePayload(`The time per turn has been paused. It may take a minute to update.`));
 
-        else return commandContext.respondToCommand(new MessagePayload(`The time per turn was changed. It may take a minute to update.`));
+        else return commandContext.respondToCommand(new MessagePayload(`The time per turn was changed. New turns will now have ${timerSetting.getValue().printTimeLeft()}.`));
     });
 }
 

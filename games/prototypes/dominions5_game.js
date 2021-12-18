@@ -68,20 +68,20 @@ function Dominions5Game()
         return nationArray;
     };
 
-    _gameObject.fetchSubmittedNationFilename = async (nationIdentifier) =>
+    _gameObject.fetchSubmittedNationData = async (nationIdentifier) =>
     {
         const nation = await _gameObject.emitPromiseWithGameDataToServer("GET_SUBMITTED_PRETENDER", { identifier: nationIdentifier });
 
         if (nation == null)
             return null;
 
-        return nation.filename;
+        return nation;
     };
 
     _gameObject.checkIfNationIsSubmitted = (nationIdentifier) =>
     {
-        return _gameObject.fetchSubmittedNationFilename(nationIdentifier)
-        .then((filename) => Promise.resolve(filename != null));
+        return _gameObject.fetchSubmittedNationData(nationIdentifier)
+        .then((data) => Promise.resolve(data != null));
     };
 
     _gameObject.forEachPlayerFile = (fnToCall) => _playerData.forEachItem((data, id) => fnToCall(data.file, id, data.username));
@@ -270,7 +270,7 @@ function Dominions5Game()
     };
 
     _gameObject.launch = () => _gameObject.emitPromiseWithGameDataToServer("LAUNCH_GAME");
-    _gameObject.kill = () => _gameObject.emitPromiseWithGameDataToServer("KILL_GAME");
+    _gameObject.kill = () => _gameObject.emitPromiseWithGameDataToServer("KILL_GAME", null, 130000);
 
     _gameObject.fetchStatusDump = () => _gameObject.emitPromiseWithGameDataToServer("GET_STATUS_DUMP");
 
@@ -294,7 +294,7 @@ function Dominions5Game()
         if (_status == null)
             throw new Error("Last known status is not available.");
 
-        return _status.isOngoing();
+        return _status.hasStarted();
     };
 
     _gameObject.getLastKnownStatus = () => _status;
@@ -455,7 +455,8 @@ function Dominions5Game()
             name: _gameObject.getName(),
             port: _gameObject.getPort(),
             gameType: _gameObject.getGameType(),
-            args: settingsObject.getSettingFlags()
+            args: settingsObject.getSettingFlags(),
+            isCurrentTurnRollback: _isCurrentTurnRollback
         };
 
         if (_gameObject.isEnforcingTimer() === false)

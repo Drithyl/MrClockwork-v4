@@ -1,9 +1,7 @@
 
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
-const commandPermissions = require("../command_permissions.js");
 const hostServerStore = require("../../servers/host_server_store.js");
-const { SemanticError } = require("../../errors/custom_errors.js");
 const MessagePayload = require("../prototypes/message_payload.js");
 
 const commandData = new CommandData("GET_DOM5_MODS_ON_SERVER");
@@ -19,38 +17,17 @@ function GetDom5ModsOnServerCommand()
     return getDom5ModsOnServerCommand;
 }
 
-function _behaviour(commandContext)
+async function _behaviour(commandContext)
 {
-    var commandArguments = commandContext.getCommandArgumentsArray();
-    var targetedServerName = commandArguments[0];
-    var targetedServerObject;
+    const payload = new MessagePayload("Attached below is the list of mods available:\n\n");
+    const mods = await hostServerStore.getDom5Mods();
+    const stringList = mods.join("\n");
 
-    if (targetedServerName == null)
-    return commandContext.respondToCommand(new MessagePayload(`You must specify a server name from the ones available below:\n\n${hostServerStore.printListOfOnlineHostServers().toBox()}`));
 
-    if (hostServerStore.hasHostServerByName(targetedServerName) === false)
-        return commandContext.respondToCommand(new MessagePayload(`Selected server is does not exist.`));
+    if (mods.length <= 0)
+        return commandContext.respondToCommand(new MessagePayload("No mods are available. You'll have to upload some with the corresponding command."));
 
-    targetedServerObject = hostServerStore.getHostServerByName(targetedServerName);
+    payload.setAttachment("mods.txt", Buffer.from(stringList));
 
-    if (targetedServerObject.isOnline() === false)
-        return commandContext.respondToCommand(new MessagePayload(`Selected server is offline.`));
-
-    return getListOfModsOnServerAndSend(targetedServerObject, commandContext);
-}
-
-function getListOfModsOnServerAndSend(serverObject, commandContext)
-{
-    var introductionString = "Below is the list of mods available:\n\n";
-    var stringList = "";
-
-    return serverObject.getDom5ModsOnServer()
-    .then((list) =>
-    {
-        if (list.length <= 0)
-            return commandContext.respondToCommand(new MessagePayload("No mods are available on this server."));
-
-        list.forEach((modFilename) => stringList += `${modFilename}\n`);
-        return commandContext.respondToCommand(new MessagePayload(introductionString, stringList.toBox(), true, "```"));
-    });
+    return commandContext.respondToCommand(payload);
 }

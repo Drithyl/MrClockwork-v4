@@ -4,6 +4,7 @@ const UserWrapper = require("../wrappers/user_wrapper.js");
 const MessageWrapper = require("../wrappers/message_wrapper.js");
 const activeMenuStore = require("../../menus/active_menu_store.js");
 const BotClientWrapper = require("../wrappers/bot_client_wrapper.js");
+const MessagePayload = require("../prototypes/message_payload.js");
 
 exports.startListening = () =>
 {
@@ -37,5 +38,5 @@ function _onReactionAdded(discordJsMessageReaction, discordJsUser)
 function _handleReactionError(reactedMessageWrapper, err)
 {
     log.error(log.getLeanLevel(), `ERROR HANDLING COMMAND`, err);
-    return reactedMessageWrapper.respond(`Error occurred: ${err.message}`);
+    return reactedMessageWrapper.respond(new MessagePayload(`Error occurred: ${err.message}`));
 }

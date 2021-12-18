@@ -1,10 +1,8 @@
 
+const cleaner = require("../../cleaner.js");
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
-const { SemanticError } = require("../../errors/custom_errors.js");
-const hostServerStore = require("../../servers/host_server_store.js");
-const ongoingGamesStore = require("../../games/ongoing_games_store.js");
 const MessagePayload = require("../prototypes/message_payload.js");
 
 const commandData = new CommandData("DELETE_UNUSED_MODS");
@@ -26,43 +24,17 @@ function DeleteUnusedModsCommand()
 
 function _behaviour(commandContext)
 {
-    var usedMods = [];
-    const games = ongoingGamesStore.getArrayOfGames();
-    const commandArguments = commandContext.getCommandArgumentsArray();
-    const targetedServerName = commandArguments[0];
-    var targetedServer;
+    const commandArgumentsArray = commandContext.getCommandArgumentsArray();
+    const isForcingDeletion = /^force$/i.test(commandArgumentsArray[0]);
 
-
-    if (targetedServerName == null)
-    return commandContext.respondToCommand(new MessagePayload(`You must specify a server name from the ones available below:\n\n${hostServerStore.printListOfOnlineHostServers().toBox()}`));
-
-    if (hostServerStore.hasHostServerByName(targetedServerName) === false)
-        return commandContext.respondToCommand(new MessagePayload(`Selected server does not exist.`));
-
-
-    targetedServer = hostServerStore.getHostServerByName(targetedServerName);
-
-
-    if (targetedServer.isOnline() === false)
-        return commandContext.respondToCommand(new MessagePayload(`Selected server is offline.`));
-
-
-    games.forEach((game) =>
+    return cleaner.cleanUnusedMods(isForcingDeletion)
+    .then((deletedMods) =>
     {
-        const settingsObject = game.getSettingsObject();
-        const modsSetting = settingsObject.getModsSetting();
-
-        if (game.getServerId() === targetedServer.getId() === true)
-            usedMods = usedMods.concat(modsSetting.getValue());
-    });
-
-    return targetedServer.emitPromise("DELETE_UNUSED_MODS", usedMods)
-    .then((deletedMods) => 
-    {
-        const deletedModsStringList = deletedMods.join("\n").toBox();
-        const payload = new MessagePayload(`The following mod files were deleted:`);
+        const deletedModsStringList = deletedMods.join("\n");
+        const payload = new MessagePayload(`A total of ${deletedMods.length} mod-related files were deleted.`);
         payload.setAttachment("deleted_mods.txt", Buffer.from(deletedModsStringList, "utf8"));
-
+        
         return commandContext.respondToCommand(payload);
-    });
+    })
+    .catch((err) => commandContext.respondToCommand(new MessagePayload(`Error occurred: ${err.message}\n\n${err.stack}`)));
 }

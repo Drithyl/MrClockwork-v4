@@ -9,7 +9,9 @@ var _expressAppHttps;
 const _expressHttpServer = require('http').Server(_expressApp);
 var _expressHttpsServer;
 
-const _ioObject = require('socket.io')(_expressHttpServer);
+// Raise pingTimeout and pingInterval since slaves have a lot of overhead on their first connection
+// and won't make the default timeout of 20 seconds, thus creating constant connections and disconnections
+const _ioObject = require('socket.io')(_expressHttpServer, { pingTimeout: 60000, pingInterval: 65000 });
 const _router = require("./web_router.js");
 const _hostServerStore = require("./host_server_store.js");
 const SocketWrapper = require("./prototypes/socket_wrapper.js");

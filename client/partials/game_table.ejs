@@ -16,6 +16,7 @@
                 <th class="th-sm" data-sortable="true">Status</th>
                 <th class="th-sm" data-sortable="true">Turn Nbr</th>
                 <th class="th-sm" data-sortable="true">Timer</th>
+                <th class="th-sm" data-sortable="true">*Your* Turn</th>
             </tr>
         </thead>
         
@@ -42,6 +43,8 @@
                     <%} else {  %>
                         <td></td>
                     <% } %>
+
+                    <td><%=gameData.turnStatus %></td>
                     
                 </tr>
 

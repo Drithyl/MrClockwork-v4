@@ -91,6 +91,9 @@ module.exports.handleInput = function(userId, messageWrapper)
 
 module.exports.handleReaction = function(userId, emoji, reactedMessageWrapper)
 {
+    if (activeMenus[userId] == null)
+        return;
+        
     const activeMenuInstance = activeMenus[userId].instance;
     activeMenuInstance.handleReaction(emoji, reactedMessageWrapper);
 };

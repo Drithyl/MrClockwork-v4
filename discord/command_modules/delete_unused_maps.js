@@ -1,10 +1,8 @@
 
+const cleaner = require("../../cleaner.js");
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
-const { SemanticError } = require("../../errors/custom_errors.js");
-const hostServerStore = require("../../servers/host_server_store.js");
-const ongoingGamesStore = require("../../games/ongoing_games_store.js");
 const MessagePayload = require("../prototypes/message_payload.js");
 
 const commandData = new CommandData("DELETE_UNUSED_MAPS");
@@ -26,41 +24,14 @@ function DeleteUnusedMapsCommand()
 
 function _behaviour(commandContext)
 {
-    const usedMaps = [];
-    const games = ongoingGamesStore.getArrayOfGames();
-    const commandArguments = commandContext.getCommandArgumentsArray();
-    const targetedServerName = commandArguments[0];
-    var targetedServer;
+    const commandArgumentsArray = commandContext.getCommandArgumentsArray();
+    const isForcingDeletion = /^force$/i.test(commandArgumentsArray[0]);
 
-
-    if (targetedServerName == null)
-        return commandContext.respondToCommand(new MessagePayload(`You must specify a server name from the ones available below:\n\n${hostServerStore.printListOfOnlineHostServers().toBox()}`));
-
-    if (hostServerStore.hasHostServerByName(targetedServerName) === false)
-        return commandContext.respondToCommand(new MessagePayload(`Selected server does not exist.`));
-
-
-    targetedServer = hostServerStore.getHostServerByName(targetedServerName);
-
-
-    if (targetedServer.isOnline() === false)
-        return commandContext.respondToCommand(new MessagePayload(`Selected server is offline.`));
-
-
-    games.forEach((game) =>
+    return cleaner.cleanUnusedMaps(isForcingDeletion)
+    .then((deletedMaps) =>
     {
-        const settingsObject = game.getSettingsObject();
-        const mapSetting = settingsObject.getMapSetting();
-
-        if (game.getServerId() === targetedServer.getId() === true)
-            usedMaps.push(mapSetting.getValue());
-    });
-
-    return targetedServer.emitPromise("DELETE_UNUSED_MAPS", usedMaps)
-    .then((deletedMaps) => 
-    {
-        const deletedMapsStringList = deletedMaps.join("\n").toBox();
-        const payload = new MessagePayload(`The following map files were deleted:`);
+        const deletedMapsStringList = deletedMaps.join("\n");
+        const payload = new MessagePayload(`A total of ${deletedMaps.length} map-related files were deleted.`);
         payload.setAttachment("deleted_maps.txt", Buffer.from(deletedMapsStringList, "utf8"));
         
         return commandContext.respondToCommand(payload);

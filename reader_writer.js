@@ -1,5 +1,6 @@
 
 const fs = require("fs");
+const path = require("path");
 const fsp = require("fs").promises;
 const log = require("./logger.js");
 
@@ -167,6 +168,25 @@ module.exports.checkAndCreateFilepath = function(filepath)
 			nextPromise();
 		}
 	});
+};
+
+module.exports.getDirFilenames = async function(dirPath, extensionFilter = "")
+{
+	var readFilenames = [];
+	var filenames;
+
+	if (fs.existsSync(dirPath) === false)
+		return Promise.reject(new Error(`The directory ${dirPath} was not found on the server.`));
+
+	filenames = await fsp.readdir(dirPath, "utf8");
+
+	filenames.forEach((filename) =>
+	{
+		if (extensionFilter === "" || path.extname(filename) === extensionFilter)
+			readFilenames.push(filename);
+	});
+
+	return readFilenames;
 };
 
 //gets an array with all the filenames inside a directory, folders or not

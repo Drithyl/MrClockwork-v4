@@ -6,7 +6,7 @@ const SpawnedProcess = require("../../spawned_process.js");
 
 const PROCESS_TIMEOUT_MS = config.queryProcessTimeout;
 const IN_LOBBY = "Game is being setup";
-const STARTED = "Game is active";
+const ACTIVE = "Game is active";
 const SERVER_OFFLINE = "Host server offline";
 const GAME_OFFLINE = "Game offline";
 
@@ -16,7 +16,6 @@ module.exports.Dominions5Status = Dominions5Status;
 
 async function fetchGameStatus(gameObject)
 {
-    const isOnline = await gameObject.isOnlineCheck();
     const dom5Status = new Dominions5Status(gameObject);
 
     dom5Status.setName(gameObject.getName());
@@ -27,18 +26,19 @@ async function fetchGameStatus(gameObject)
         return dom5Status;
     }
 
-    else if (isOnline === false)
-    {
-        dom5Status.setStatus(GAME_OFFLINE);
-        return dom5Status;
-    }
-
     const statusdumpWrapper = await gameObject.fetchStatusDump();
 
     if (statusdumpWrapper == null)
         return dom5Status;
 
+    if (statusdumpWrapper.isOnline === false)
+    {
+        dom5Status.setStatus(GAME_OFFLINE);
+        return dom5Status;
+    }
+
     dom5Status.setLastUpdateTimestamp(statusdumpWrapper.lastUpdateTimestamp);
+    dom5Status.setUptimeSinceLastCheck(statusdumpWrapper.uptime);
     dom5Status.setTurnNumber(statusdumpWrapper.turnNbr);
     dom5Status.setPlayers(statusdumpWrapper.nationStatusArray);
 
@@ -46,7 +46,7 @@ async function fetchGameStatus(gameObject)
         dom5Status.setStatus(IN_LOBBY);
 
     else if (statusdumpWrapper.hasStarted === true)
-        dom5Status.setStatus(STARTED);
+        dom5Status.setStatus(ACTIVE);
 
     return dom5Status;
 }
@@ -153,10 +153,8 @@ function _parseTcpQuery(tcpQueryResponse, statusObject)
     return statusObject;
 }
 
-function Dominions5Status(gameObject)
+function Dominions5Status()
 {
-    const _game = gameObject;
-
     var _name = "";
     var _status = "Unknown";
     var _isPaused = false;
@@ -164,8 +162,9 @@ function Dominions5Status(gameObject)
     var _msLeft;
     var _players;
     var _lastTurnTimestamp;
-    var _isTurnProcessing = false;
     var _lastUpdateTimestamp;
+    var _isTurnProcessing = false;
+    var _uptimeSinceLastCheck = 0;
 
     this.getName = () => _name;
     this.setName = (name) =>
@@ -211,6 +210,13 @@ function Dominions5Status(gameObject)
     {
         if (assert.isInteger(msLeft) === true)
             _msLeft = msLeft;
+    };
+
+    this.getUptimeSinceLastCheck = () => _uptimeSinceLastCheck;
+    this.setUptimeSinceLastCheck = (uptime) =>
+    {
+        if (assert.isInteger(uptime) === true && uptime > 0)
+            _uptimeSinceLastCheck += uptime;
     };
     
     this.setMsToDefaultTimer = (game) =>
@@ -293,17 +299,32 @@ function Dominions5Status(gameObject)
 
 
     this.isInLobby = () => _status === IN_LOBBY;
-    this.isOngoing = () => _status === STARTED;
+    this.isOngoing = () => _status === ACTIVE;
     this.isOnline = () => _status !== GAME_OFFLINE;
     this.isServerOnline = () => _status !== SERVER_OFFLINE;
-
+    this.hasStarted = () => assert.isInteger(_turnNumber) === true && _turnNumber > 0;
+    
 
     this.getTimeLeft = () =>
     {
-        if (this.isOngoing() === false)
+        if (_msLeft == null)
             return null;
 
         return new TimeLeft(_msLeft);
+    };
+
+    this.printTimeLeft = () =>
+    {
+        const timeLeft = new TimeLeft(_msLeft);
+        var offlineStr = "";
+
+        if (this.isOngoing() === false)
+            offlineStr = " **(game is offline)**";
+
+        if (this.isPaused() === true)
+            return `${timeLeft.printTimeLeft()} **(currently paused)**` + offlineStr;
+
+        return timeLeft.printTimeLeft() + offlineStr;
     };
 
     this.copyTimerValues = (statusObject) =>
@@ -331,13 +352,13 @@ function Dominions5Status(gameObject)
         return clonedStatus;
     };
 
-    this.advanceTimer = (maxMs) =>
+    this.advanceTimer = (msToAdvance) =>
     {
-        const delta = Date.now() - _lastUpdateTimestamp;
-        const elapsedMs = Math.min(maxMs, delta);
-
-        if (assert.isInteger(_msLeft) === true && assert.isInteger(elapsedMs) === true)
-            this.setMsLeft(Math.max(_msLeft - elapsedMs, 0));
+        if (assert.isInteger(_msLeft) === true && assert.isInteger(msToAdvance) === true)
+        {
+            this.setMsLeft(Math.max(_msLeft - msToAdvance, 0));
+            
+        }
 
         return this;
     };
@@ -457,7 +478,7 @@ function _parsePlayers(tcpQueryResponse)
  * 
  */
 
-/** ACTIVE, STARTED GAME TCPQUERY OUTPUT:
+/** STARTED, ACTIVE GAME TCPQUERY OUTPUT:
  * 
  * Connecting to Server (127.0.0.1:6000)                          
  * Waiting for game info                                          
@@ -471,7 +492,7 @@ function _parsePlayers(tcpQueryResponse)
  * 
  */
 
-/** WHEN ACTIVE AND PAUSED, "Time left" will show as 
+/** WHEN STARTED AND PAUSED, "Time left" will show as 
  * Connecting to Server (127.0.0.1:6000)
  * Waiting for game info
  * Gamename: timerTest

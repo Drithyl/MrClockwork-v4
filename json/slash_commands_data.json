@@ -146,10 +146,10 @@
         "description": "[Dev-only] Deletes the maps on a target server which are currently not used by any ongoing game.",
         "options": [
             {
-                "name": "server_name",
+                "name": "force",
                 "type": "STRING",
-                "description": "A server's name",
-                "required": true
+                "description": "'force' to actually delete the files",
+                "required": false
             }
         ]
     },
@@ -163,10 +163,10 @@
         "description": "[Dev-only] Deletes the mods on a target server which are currently not used by any ongoing game.",
         "options": [
             {
-                "name": "server_name",
+                "name": "force",
                 "type": "STRING",
-                "description": "A server's name",
-                "required": true
+                "description": "'force' to actually delete the files",
+                "required": false
             }
         ]
     },
@@ -362,6 +362,22 @@
         "isEnabled": true,
         "channelRequiredToInvoke": "game",
         "description": "In a game channel, launches a game's process. Use if the bot mentions the **game** being offline."
+    },
+
+    "PAUSE_GAME":
+    {
+        "name": "pause",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "game",
+        "description": "In a game channel, pauses or unpauses a game."
+    },
+
+    "PAUSE_ALL_GAMES":
+    {
+        "name": "pauseall",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "any",
+        "description": "[Dev-only] Pauses all games."
     },
 
     "POST_NEWS":

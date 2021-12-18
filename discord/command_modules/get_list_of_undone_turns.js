@@ -1,4 +1,5 @@
 
+const assert = require("../../asserter.js");
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
@@ -16,7 +17,6 @@ function GetListOfUndoneTurnsCommand()
 
     getListOfUndoneTurnsCommand.addRequirements(
         commandPermissions.assertCommandIsUsedInGameChannel,
-        commandPermissions.assertServerIsOnline,
         commandPermissions.assertGameHasStarted
     );
 
@@ -27,7 +27,8 @@ function _behaviour(commandContext)
 {
     const gameObject = commandContext.getGameTargetedByCommand();
     const status = gameObject.getLastKnownStatus();
-    var messageString = `Below is the list of undone turns:\n\n`;
+    var lastUpdateTimestamp;
+    var messageString;
     var listString = "";
     var unfinishedTurns;
     var uncheckedTurns;
@@ -37,10 +38,12 @@ function _behaviour(commandContext)
 
     unfinishedTurns = status.getUnfinishedTurns();
     uncheckedTurns = status.getUncheckedTurns();
+    lastUpdateTimestamp = status.getLastUpdateTimestamp();
 
-    if (uncheckedTurns == null || unfinishedTurns == null)
+    if (uncheckedTurns == null || unfinishedTurns == null || assert.isInteger(lastUpdateTimestamp) === false)
         return commandContext.respondToCommand(new MessagePayload(`Undone turn data is currently unavailable`));
 
+    messageString = `Below is the list of undone turns (as of **${new Date(lastUpdateTimestamp).toTimeString()}**):\n\n`;
 
     if (unfinishedTurns.length > 0)
     {

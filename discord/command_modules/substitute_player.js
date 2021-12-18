@@ -25,29 +25,25 @@ function SubstitutePlayerCommand()
     return substitutePlayerCommand;
 }
 
-function _behaviour(commandContext)
+async function _behaviour(commandContext)
 {
+    const members = await commandContext.getMentionedMembers();
     const gameObject = commandContext.getGameTargetedByCommand();
     const numberOfNation = _extractNationNumberArgument(commandContext);
     var subPlayerWrapper;
+    var nationData;
 
-    return commandContext.getMentionedMembers()
-    .then((members) =>
-    {
-        if (members.length <= 0)
-            return Promise.reject(new SemanticError(`You must mention the member who you wish to appoint as substitute.`));
-        
-        subPlayerWrapper = members[0];
-        return gameObject.fetchSubmittedNationFilename(numberOfNation)
-    })
-    .then((nationFilename) =>
-    {
-        if (nationFilename == null)
-            return Promise.reject(new SemanticError(`Invalid nation selected. Number does not match any submitted nation.`));
+    if (members.length <= 0)
+        return Promise.reject(new SemanticError(`You must mention the member who you wish to appoint as substitute.`));
     
-        return gameObject.substitutePlayerControllingNation(subPlayerWrapper, nationFilename)
-        .then(() => commandContext.respondToCommand(new MessagePayload(`Player was replaced.`)));
-    });
+    subPlayerWrapper = members[0];
+    nationData = await gameObject.fetchSubmittedNationData(numberOfNation);
+
+    if (nationData == null)
+        return Promise.reject(new SemanticError(`Invalid nation selected. Number does not match any submitted nation.`));
+
+    await gameObject.substitutePlayerControllingNation(subPlayerWrapper, nationData.filename);
+    return commandContext.respondToCommand(new MessagePayload(`Player for nation \`${nationData.fullName}\` was replaced.`));
 }
 
 function _extractNationNumberArgument(commandContext)

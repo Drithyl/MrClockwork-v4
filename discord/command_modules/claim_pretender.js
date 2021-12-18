@@ -23,20 +23,17 @@ function ClaimPretenderCommand()
     return claimPretenderCommand;
 }
 
-function _behaviour(commandContext)
+async function _behaviour(commandContext)
 {
     const gameObject = commandContext.getGameTargetedByCommand();
     const memberWrapper = commandContext.getSenderGuildMemberWrapper();
     const commandArguments = commandContext.getCommandArgumentsArray();
     const nationNumberSent = commandArguments[0];
+    const nationData = await gameObject.fetchSubmittedNationData(nationNumberSent);
 
-    return gameObject.fetchSubmittedNationFilename(nationNumberSent)
-    .then((nationFilename) =>
-    {
-        if (nationFilename == null)
-            return Promise.reject(new SemanticError(`Invalid nation selected. Number does not match any submitted nation.`));
+    if (nationData == null)
+        return Promise.reject(new SemanticError(`Invalid nation selected. Number does not match any submitted nation.`));
 
-        else return gameObject.claimNation(memberWrapper, nationFilename);
-    })
-    .then(() => commandContext.respondToCommand(new MessagePayload(`Pretender was claimed.`)));
+    await gameObject.claimNation(memberWrapper, nationData.filename);
+    return commandContext.respondToCommand(new MessagePayload(`Pretender for nation \`${nationData.fullName}\` was claimed.`));
 }

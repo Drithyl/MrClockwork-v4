@@ -24,31 +24,32 @@ function RemovePretenderCommand()
     return removePretenderCommand;
 }
 
-function _behaviour(commandContext)
+async function _behaviour(commandContext)
 {
-    var _nationFilename;
     const gameObject = commandContext.getGameTargetedByCommand();
     const playerGuildMemberWrapper = commandContext.getSenderGuildMemberWrapper();
     const numberOfNationToBeRemoved = _extractNationNumberArgument(commandContext);
+    var nationData;
+
 
     if (numberOfNationToBeRemoved == null)
         return commandContext.respondToCommand(new MessagePayload(`You must specify a nation identifier to unclaim.`));
 
-    return gameObject.fetchSubmittedNationFilename(numberOfNationToBeRemoved)
-    .then((nationFilename) =>
-    {
-        if (nationFilename == null)
-            return Promise.reject(new SemanticError(`Invalid nation selected. Number does not match any submitted nation.`));
+    nationData = await gameObject.fetchSubmittedNationData(numberOfNationToBeRemoved);
+    
 
-        if (gameObject.isPlayerControllingNation(playerGuildMemberWrapper.getId(), nationFilename) === false &&
-            commandContext.isSenderGameOrganizer() === false)
-            return Promise.reject(new Error(`Only the game organizer or the owner of this nation can do this.`));
+    if (nationData == null)
+        return Promise.reject(new SemanticError(`Invalid nation selected. Number does not match any submitted nation.`));
 
-        _nationFilename = nationFilename;
-        return gameObject.emitPromiseWithGameDataToServer("REMOVE_NATION", { nationFilename })  
-    })
-    .then(() => gameObject.removeControlOfNation(_nationFilename))
-    .then(() => commandContext.respondToCommand(new MessagePayload(`Pretender was removed.`)));
+    if (gameObject.isPlayerControllingNation(playerGuildMemberWrapper.getId(), nationData.filename) === false &&
+        commandContext.isSenderGameOrganizer() === false)
+        return Promise.reject(new Error(`Only the game organizer or the owner of this nation can do this.`));
+
+    
+    await gameObject.emitPromiseWithGameDataToServer("REMOVE_NATION", { nationFilename: nationData.filename });
+    await gameObject.removeControlOfNation(nationData.filename);
+
+    return commandContext.respondToCommand(new MessagePayload(`Pretender for nation \`${nationData.fullName}\` was removed.`));
 }
 
 function _extractNationNumberArgument(commandContext)
