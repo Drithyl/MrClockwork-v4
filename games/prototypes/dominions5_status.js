@@ -307,7 +307,7 @@ function Dominions5Status()
 
     this.getTimeLeft = () =>
     {
-        if (this.isOngoing() === false)
+        if (_msLeft == null)
             return null;
 
         return new TimeLeft(_msLeft);
