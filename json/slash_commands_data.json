@@ -146,6 +146,12 @@
         "description": "[Dev-only] Deletes the maps on a target server which are currently not used by any ongoing game.",
         "options": [
             {
+                "name": "server_name",
+                "type": "STRING",
+                "description": "A server's name",
+                "required": true
+            },
+            {
                 "name": "force",
                 "type": "STRING",
                 "description": "'force' to actually delete the files",
@@ -162,6 +168,12 @@
         "channelRequiredToInvoke": "dm",
         "description": "[Dev-only] Deletes the mods on a target server which are currently not used by any ongoing game.",
         "options": [
+            {
+                "name": "server_name",
+                "type": "STRING",
+                "description": "A server's name",
+                "required": true
+            },
             {
                 "name": "force",
                 "type": "STRING",

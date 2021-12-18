@@ -17,17 +17,37 @@ function GetDom5ModsOnServerCommand()
     return getDom5ModsOnServerCommand;
 }
 
-async function _behaviour(commandContext)
+function _behaviour(commandContext)
 {
-    const payload = new MessagePayload("Attached below is the list of mods available:\n\n");
-    const mods = await hostServerStore.getDom5Mods();
-    const stringList = mods.join("\n");
+    const commandArguments = commandContext.getCommandArgumentsArray();
+    const targetedServerName = commandArguments[0];
+    var targetedServerObject;
 
+    if (targetedServerName == null)
+        return commandContext.respondToCommand(new MessagePayload(`You must specify a server name from the ones available below:\n\n${hostServerStore.printListOfOnlineHostServers().toBox()}`));
 
-    if (mods.length <= 0)
-        return commandContext.respondToCommand(new MessagePayload("No mods are available. You'll have to upload some with the corresponding command."));
+    if (hostServerStore.hasHostServerByName(targetedServerName) === false)
+        return commandContext.respondToCommand(new MessagePayload(`Selected server is does not exist.`));
 
-    payload.setAttachment("mods.txt", Buffer.from(stringList));
+    targetedServerObject = hostServerStore.getHostServerByName(targetedServerName);
 
-    return commandContext.respondToCommand(payload);
+    if (targetedServerObject.isOnline() === false)
+        return commandContext.respondToCommand(new MessagePayload(`Selected server is offline.`));
+
+    return getListOfModsOnServerAndSend(targetedServerObject, commandContext);
 }
+
+function getListOfModsOnServerAndSend(serverObject, commandContext)
+{
+    const payload = new MessagePayload("Below is the list of mods available:\n\n");
+
+    return serverObject.getDom5ModsOnServer()
+    .then((list) =>
+    {
+        if (list.length <= 0)
+            return commandContext.respondToCommand(new MessagePayload("No mods are available on this server."));
+
+        payload.setAttachment("mods.txt", Buffer.from(list.join("\n")));
+        return commandContext.respondToCommand(payload);
+    });
+} 
