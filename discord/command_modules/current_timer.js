@@ -61,9 +61,10 @@ function _extractTimeToSet(timerChangeArg, timeLeft)
 {
     const isAddition = (_isTimerAddition(timerChangeArg)) ? true : false;
     const addedTimeLeft = TimeLeft.fromStringInput(timerChangeArg.replace(/\+/g, ""));
+    const originalMsLeft = (timeLeft == null) ? 0 : timeLeft.getMsLeft();
 
     if (isAddition === true)
-        return timeLeft.getMsLeft() + addedTimeLeft.getMsLeft();
+        return originalMsLeft + addedTimeLeft.getMsLeft();
 
     else return addedTimeLeft.getMsLeft();
 }
