@@ -1,7 +1,12 @@
 
+const path = require("path");
+const fsp = require("fs").promises;
 const log = require("../logger.js");
+const rw = require("../reader_writer.js");
+const config = require("../config/config.json");
 const HostServer = require("./prototypes/host_server.js");
 const { isInstanceOfPrototypeOrThrow } = require("../asserter.js");
+const parseProvinceCount = require("../games/parse_povince_count.js");
 const trustedServerData = require("../config/trusted_server_data.json");
 
 
@@ -106,6 +111,34 @@ exports.printListOfFreeSlots = () =>
     }
 
     return stringList;
+};
+
+module.exports.getDom5Mods = function()
+{
+    const mapsDirPath = path.resolve(config.pathToDom5Data, "mods");
+
+	return rw.getDirFilenames(mapsDirPath, ".dm")
+	.then((filenames) => Promise.resolve(filenames));
+};
+
+exports.getDom5Maps = async () =>
+{
+    const mapsDirPath = path.resolve(config.pathToDom5Data, "maps");
+    const mapsWithProvinceCount = [];
+    const filenames = await fsp.readdir(mapsDirPath);
+    const mapFilenames = filenames.filter((filename) => path.extname(filename) === ".map");
+
+    await mapFilenames.forAllPromises(async (filename) =>
+    {
+        const filePath = path.resolve(mapsDirPath, filename);
+        const content = await fsp.readFile(filePath, "utf-8");
+        const provs = parseProvinceCount(content);
+
+        if (provs != null)
+            mapsWithProvinceCount.push({name: filename, ...provs});
+    });
+
+    return mapsWithProvinceCount;
 };
 
 function _populateStore()
