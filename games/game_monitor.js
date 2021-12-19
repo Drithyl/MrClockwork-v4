@@ -10,7 +10,7 @@ const dom5SettingFlags = require("../json/dominions5_setting_flags.json");
 const MessagePayload = require("../discord/prototypes/message_payload.js");
 
 const UPDATE_INTERVAL = config.gameUpdateInterval;
-const MAX_PARALLEL_UPDATES = config.gameUpdateInterval;
+const MAX_PARALLEL_UPDATES = config.maxParallelGameUpdates;
 const monitoredGames = [];
 var currentPendingGameIndex = 0;
 var currentUpdates = 0;
