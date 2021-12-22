@@ -136,7 +136,7 @@ function _updateStreamPaths()
         errorWriteStream.destroy();
 
     if (uploadWriteStream != null && uploadWriteStream.destroyed === false)
-        uploadWriteStream.detroy();
+        uploadWriteStream.destroy();
 
     generalWriteStream = fs.createWriteStream(_getLogPath(date, "general.txt"), { flags: "a", autoClose: true });
     errorWriteStream = fs.createWriteStream(_getLogPath(date, "error.txt"), { flags: "a", autoClose: true });
