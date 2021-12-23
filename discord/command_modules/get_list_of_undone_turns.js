@@ -27,7 +27,7 @@ function _behaviour(commandContext)
 {
     const gameObject = commandContext.getGameTargetedByCommand();
     const status = gameObject.getLastKnownStatus();
-    var lastUpdateTimestamp;
+    var latestTimestamp;
     var messageString;
     var listString = "";
     var unfinishedTurns;
@@ -38,12 +38,12 @@ function _behaviour(commandContext)
 
     unfinishedTurns = status.getUnfinishedTurns();
     uncheckedTurns = status.getUncheckedTurns();
-    lastUpdateTimestamp = status.getLastUpdateTimestamp();
+    latestTimestamp = _getLatestUpdateTimestamp(status);
 
-    if (uncheckedTurns == null || unfinishedTurns == null || assert.isInteger(lastUpdateTimestamp) === false)
+    if (uncheckedTurns == null || unfinishedTurns == null || assert.isInteger(latestTimestamp) === false)
         return commandContext.respondToCommand(new MessagePayload(`Undone turn data is currently unavailable`));
 
-    messageString = `Below is the list of undone turns (as of **${new Date(lastUpdateTimestamp).toTimeString()}**):\n\n`;
+    messageString = `Below is the list of undone turns (last successful check: **${new Date(latestTimestamp).toTimeString()}**):\n\n`;
 
     if (unfinishedTurns.length > 0)
     {
@@ -60,4 +60,21 @@ function _behaviour(commandContext)
     }
 
     return commandContext.respondToCommand(new MessagePayload(messageString, listString, true, "```"));
+}
+
+function _getLatestUpdateTimestamp(lastKnownStatus)
+{
+    const lastUpdateTimestamp = lastKnownStatus.getLastUpdateTimestamp();
+    const successfulCheckTimestamp = lastKnownStatus.getSuccessfulCheckTimestamp();
+    
+    if (assert.isInteger(lastUpdateTimestamp) === false && assert.isInteger(successfulCheckTimestamp) === false)
+        return null;
+
+    if (assert.isInteger(successfulCheckTimestamp) === false)
+        return lastUpdateTimestamp;
+
+    if (assert.isInteger(lastUpdateTimestamp) === false)
+        return successfulCheckTimestamp;
+
+    else return Math.max(lastUpdateTimestamp, successfulCheckTimestamp);
 }
