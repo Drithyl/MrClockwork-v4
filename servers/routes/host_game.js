@@ -29,8 +29,6 @@ exports.set = (expressApp) =>
 
         const userId = session.getUserId();
         const sessionId = session.getSessionId();
-        const maps = await hostServerStore.getDom5Maps();
-        const mods = await hostServerStore.getDom5Mods();
         availableServers = hostServerStore.getAvailableServersClientData();
         guildsWhereUserIsMember = await guildStore.getGuildsWhereUserIsMember(userId);
 
@@ -48,9 +46,7 @@ exports.set = (expressApp) =>
             sessionId,
             guilds: guildData, 
             servers: availableServers,
-            nations: dom5Nations,
-            maps,
-            mods
+            nations: dom5Nations
         });
     });
 

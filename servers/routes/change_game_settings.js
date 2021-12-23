@@ -1,6 +1,5 @@
 
 const log = require("../../logger.js");
-const hostServerStore = require("../host_server_store.js");
 const dom5Nations = require("../../json/dom5_nations.json");
 const webSessionsStore = require("../web_sessions_store.js");
 const gameStore = require("../../games/ongoing_games_store.js");
@@ -26,6 +25,8 @@ exports.set = (expressApp) =>
         {
             var hostServer;
             var gameSettings;
+            var maps;
+            var mods;
 
             hostServer = game.getServer();
 
@@ -36,25 +37,24 @@ exports.set = (expressApp) =>
                 return;
 
             gameSettings = game.getSettingsObject();
+            maps = await hostServer.getDom5MapsOnServer();
+            mods = await hostServer.getDom5ModsOnServer();
                 
             organizedGames[game.getName()] = { 
                 serverName: hostServer.getName(), 
-                settings: gameSettings.toEjsData()
+                settings: gameSettings.toEjsData(),
+                maps,
+                mods
             };
         })
-        .then(async () =>
+        .then(() =>
         {
-            const maps = await hostServerStore.getDom5Maps();
-            const mods = await hostServerStore.getDom5Mods();
-
             log.general(log.getVerboseLevel(), "Final organized games data rendered", organizedGames);
             res.render("change_game_settings_screen.ejs", Object.assign({ 
                 userId,
                 sessionId,
                 organizedGames: organizedGames, 
-                nations: dom5Nations,
-                maps,
-                mods
+                nations: dom5Nations
             }));
         })
         .catch((err) => res.render("results_screen.ejs", { result: `Error occurred while fetching game's data: ${err.message}` }));

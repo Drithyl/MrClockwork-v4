@@ -17,23 +17,40 @@ function GetDom5MapsOnServerCommand()
     return getDom5MapsOnServerCommand;
 }
 
-async function _behaviour(commandContext)
+function _behaviour(commandContext)
 {
-    const payload = new MessagePayload("Attached below is the list of maps available:\n\n");
-    const maps = await hostServerStore.getDom5Maps();
+    const commandArguments = commandContext.getCommandArgumentsArray();
+    const targetedServerName = commandArguments[0];
+    var targetedServerObject;
+
+    if (targetedServerName == null)
+        return commandContext.respondToCommand(new MessagePayload(`You must specify a server name from the ones available below:\n\n${hostServerStore.printListOfOnlineHostServers().toBox()}`));
+
+    if (hostServerStore.hasHostServerByName(targetedServerName) === false)
+        return commandContext.respondToCommand(new MessagePayload(`Selected server does not exist.`));
+
+    targetedServerObject = hostServerStore.getHostServerByName(targetedServerName);
+
+    if (targetedServerObject.isOnline() === false)
+        return commandContext.respondToCommand(new MessagePayload(`Selected server is offline.`));
+
+    return getListOfMapsOnServerAndSend(targetedServerObject, commandContext);
+}
+
+function getListOfMapsOnServerAndSend(serverObject, commandContext)
+{
+    const payload = new MessagePayload("Below is the list of maps available:\n\n");
     var stringList = "";
 
-
-    if (maps.length <= 0)
-        return commandContext.respondToCommand(new MessagePayload("No maps are available. You'll have to upload some with the corresponding command."));
-
-        
-    maps.forEach((mapData) => 
+    return serverObject.getDom5MapsOnServer()
+    .then((list) =>
     {
-        stringList += `${(mapData.name).width(48)} (${mapData.land.toString().width(4)} land, ${mapData.sea.toString().width(3)} sea).\n`
+        if (list.length <= 0)
+            return commandContext.respondToCommand("No maps are available on this server.");
+
+        list.forEach((map) => stringList += `${(map.name).width(48)} (${map.land.toString().width(4)} land, ${map.sea.toString().width(3)} sea).\n`);
+        payload.setAttachment("maps.txt", Buffer.from(stringList));
+
+        return commandContext.respondToCommand(payload);
     });
-
-    payload.setAttachment("maps.txt", Buffer.from(stringList));
-
-    return commandContext.respondToCommand(payload);
 }
