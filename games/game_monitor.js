@@ -10,24 +10,33 @@ const dom5SettingFlags = require("../json/dominions5_setting_flags.json");
 const MessagePayload = require("../discord/prototypes/message_payload.js");
 
 const UPDATE_INTERVAL = config.gameUpdateInterval;
-const MAX_PARALLEL_UPDATES = config.maxParallelGameUpdates;
 const monitoredGames = [];
 var currentPendingGameIndex = 0;
 var currentUpdates = 0;
 
-// Start the interval to launch as many queries as the MAX_PARALLEL_UPDATES,
-// or the amount of monitoredGames, whichever is smaller
-exports.startGameUpdates = () => setInterval(_updateDom5Games, UPDATE_INTERVAL);
-
-
 // Add a game to be monitored and updated
-exports.monitorDom5Game = (game) =>
+exports.monitorDom5Game = (game, delay = null) =>
 {
     if (monitoredGames.find((g) => g.getName() === game.getName()) != null)
         return log.general(log.getLeanLevel(), `${game.getName()} is already being monitored.`);
         
     monitoredGames.push(game);
+
+    if (assert.isInteger(delay) === true)
+        setTimeout(() => _updateGame(game), delay);
+
+    else _updateGame(game);
+    
     log.general(log.getNormalLevel(), `${game.getName()} will be monitored for updates.`);
+};
+
+// Add several games to be monitored and updated
+exports.monitorDom5Games = (games) =>
+{
+    if (assert.isArray(games) === false)
+        exports.monitorDom5Game(games);
+
+    else games.forEach((game, i) => exports.monitorDom5Game(game, i * 500));
 };
 
 // Remove a game from the monitoring list
@@ -45,70 +54,26 @@ exports.stopMonitoringDom5Game = (game) =>
     log.general(log.getLeanLevel(), `${game.getName()} is not in the list of monitored games; no need to remove.`);
 };
 
-
-// Launch as many queries as the space allows, between the currentUpdates and the
-// max allowed, as well as number of games. Each time, increment the currentPendingGameIndex
-// so the next loop starts a different game. Once a query finishes, reduce the number
-// of running queries for the next interval. 
-function _updateDom5Games()
+async function _updateGame(game)
 {
-    // Queued up updates guarantee that every game update will always be
-    // spaced out by at least a certain time. This is relevant because Discord rate limits
-    // will be very affected by the game's status embed editing. This route falls under global
-    // rate limits, which should be of 50 requests per second. More information below:
-    // https://discord.com/developers/docs/topics/rate-limits
-    while(currentUpdates < MAX_PARALLEL_UPDATES && currentUpdates < monitoredGames.length)
+    if (game == null || ongoingGameStore.hasOngoingGameByName(game.getName()) === false)
     {
-        const gameToUpdate = monitoredGames[currentPendingGameIndex];
-
-        _increasePendingGameIndex();
-
-        if (gameToUpdate == null)
-            continue;
-
-        if (ongoingGameStore.hasOngoingGameByName(gameToUpdate.getName()) === false)
-        {
-            log.general(log.getLeanLevel(), `${gameToUpdate.getName()} not found on store; removing from list.`);
-            exports.stopMonitoringDom5Game(gameToUpdate);
-            continue;
-        }
-     
-        currentUpdates++;
-        log.general(log.getVerboseLevel(), `Total game updates running now: ${currentUpdates}`);
-
-        _updateCycle(gameToUpdate)
-        .then(() => 
-        {
-            _reduceCurrentUpdates();
-            log.general(log.getVerboseLevel(), `Game update finished, reducing current queries.`);
-        })
-        .catch((err) => 
-        {
-            _reduceCurrentUpdates();
-            log.error(log.getNormalLevel(), `ERROR UPDATING DOM5 GAME ${gameToUpdate.getName()}`, err);
-        });
+        log.general(log.getLeanLevel(), `${game.getName()} not found on store; removing from list.`);
+        exports.stopMonitoringDom5Game(game);
+        return Promise.resolve();
     }
-}
+    
+    try
+    {
+        await _updateCycle(game);
+        setTimeout(() => _updateGame(game), UPDATE_INTERVAL);
+    }
 
-function _increasePendingGameIndex()
-{
-    currentPendingGameIndex++;
-    if (currentPendingGameIndex >= monitoredGames.length)
-        currentPendingGameIndex = 0;
-}
-
-function _reducePendingGameIndex()
-{
-    currentPendingGameIndex--;
-    if (currentPendingGameIndex < 0)
-        currentPendingGameIndex = monitoredGames.length - 1;
-}
-
-function _reduceCurrentUpdates()
-{
-    currentUpdates--;
-    if (currentUpdates < 0)
-        currentUpdates = 0;
+    catch(err)
+    {
+        log.error(log.getLeanLevel(), `${game.getName()} encountered error while updating`, err);
+        setTimeout(() => _updateGame(game), UPDATE_INTERVAL);
+    }
 }
 
 async function _updateCycle(game)
