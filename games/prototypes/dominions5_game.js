@@ -310,6 +310,9 @@ function Dominions5Game()
         if (assert.isInteger(updatedStatus.getLastUpdateTimestamp()) === true)
             _status.setLastUpdateTimestamp(updatedStatus.getLastUpdateTimestamp());
 
+        if (assert.isInteger(updatedStatus.getSuccessfulCheckTimestamp()) === true)
+            _status.setSuccessfulCheckTimestamp(updatedStatus.getSuccessfulCheckTimestamp());
+
         if (assert.isInteger(updatedStatus.getTurnNumber()) === true)
             _status.setTurnNumber(updatedStatus.getTurnNumber());
 
