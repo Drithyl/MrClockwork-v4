@@ -1,5 +1,6 @@
 
 
+const path = require("path");
 const log = require("../logger.js");
 const assert = require("../asserter.js");
 const rw = require("../reader_writer.js");
@@ -14,13 +15,13 @@ const _ongoingGamesByName = {};
 
 exports.loadAll = function()
 {
-    const pathToGameDataDir = `${config.dataPath}/${config.gameDataFolder}`;
+    const pathToGameDataDir = path.resolve(config.dataPath, config.gameDataFolder);
     const gameDirNames = rw.getDirSubfolderNamesSync(pathToGameDataDir);
     const initializedGames = [];
     
     return gameDirNames.forEachPromise((gameDirName, i, nextPromise) =>
     {
-        var gameJSONDataPath = `${pathToGameDataDir}/${gameDirName}/data.json`;
+        const gameJSONDataPath = path.resolve(pathToGameDataDir, gameDirName, "data.json");
         log.general(log.getLeanLevel(), `Loading ${gameDirName} (${i+1}/${gameDirNames.length})...`);
         
         return gameFactory.loadGame(gameJSONDataPath)
