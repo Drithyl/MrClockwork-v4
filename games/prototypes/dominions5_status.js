@@ -37,6 +37,8 @@ async function fetchGameStatus(gameObject)
         return dom5Status;
     }
 
+    // Successful checks happen when both server and game are online
+    dom5Status.setSuccessfulCheckTimestamp(Date.now());
     dom5Status.setLastUpdateTimestamp(statusdumpWrapper.lastUpdateTimestamp);
     dom5Status.setUptimeSinceLastCheck(statusdumpWrapper.uptime);
     dom5Status.setTurnNumber(statusdumpWrapper.turnNbr);
@@ -162,6 +164,7 @@ function Dominions5Status()
     var _msLeft;
     var _players;
     var _lastTurnTimestamp;
+    var _successfulCheckTimestamp;
     var _lastUpdateTimestamp;
     var _isTurnProcessing = false;
     var _uptimeSinceLastCheck = 0;
@@ -296,7 +299,13 @@ function Dominions5Status()
         if (assert.isInteger(timestamp) === true)
             _lastUpdateTimestamp = timestamp;
     };
-
+    
+    this.getSuccessfulCheckTimestamp = () => _successfulCheckTimestamp;
+    this.setSuccessfulCheckTimestamp = (timestamp) =>
+    {
+        if (assert.isInteger(timestamp) === true)
+        _successfulCheckTimestamp = timestamp;
+    };
 
     this.isInLobby = () => _status === IN_LOBBY;
     this.isOngoing = () => _status === ACTIVE;
