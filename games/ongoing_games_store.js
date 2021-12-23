@@ -29,7 +29,6 @@ exports.loadAll = function()
             log.general(log.getLeanLevel(), `${gameDirName} loaded, adding to store (${i+1}/${gameDirNames.length})...`);
             _ongoingGamesByName[loadedGame.getName()] = loadedGame;
             initializedGames.push(loadedGame);
-            gameMonitor.monitorDom5Game(loadedGame);
             return nextPromise();
         })
         .catch((err) => 
@@ -41,7 +40,7 @@ exports.loadAll = function()
     .then(() => 
     {
         log.general(log.getLeanLevel(), `All games loaded, starting monitoring...`);
-        gameMonitor.startGameUpdates();
+        gameMonitor.monitorDom5Games(initializedGames);
         log.general(log.getLeanLevel(), `Monitoring started!`);
         return Promise.resolve();
     });
