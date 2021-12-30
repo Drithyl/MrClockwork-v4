@@ -11,7 +11,7 @@ function ChangeSettingsMenu(gameObject, memberWrapper)
 {
     const settingsObject = gameObject.getSettingsObject();
     const _menuStructure = new MenuStructure(memberWrapper);
-    const _screens = _createMenuScreens(_menuStructure, settingsObject);
+    const _screens = _createMenuScreens(_menuStructure, gameObject);
 
     _menuStructure.addIntroductionMessage(`Choose a number from the menu below to change a setting, or type \`${config.commandPrefix}finish\` to finish changing settings.:\n\n`);
     _menuStructure.addScreens(..._screens);
@@ -20,9 +20,10 @@ function ChangeSettingsMenu(gameObject, memberWrapper)
 }
 
 
-function _createMenuScreens(menuStructure, settingsObject)
+function _createMenuScreens(menuStructure, gameObject)
 {
     const menuScreens = [];
+    const settingsObject = gameObject.getSettingsObject();
     const mainScreen = _createMainScreen(menuStructure, settingsObject);
 
     menuScreens.push(mainScreen);
@@ -36,6 +37,9 @@ function _createMenuScreens(menuStructure, settingsObject)
             return Promise.resolve(setting.setValue(input))
             .then(() =>
             {
+                // Delete ftherlnd so that some settings that get
+                // encoded in it (like maps) are cleared properly
+                gameObject.deleteFtherlndFile();
                 _updateMainScreenDisplay(mainScreen, settingsObject);
                 menuStructure.goBackToPreviousScreen();
             })

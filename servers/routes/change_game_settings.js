@@ -98,8 +98,12 @@ exports.set = (expressApp) =>
         {
             session.storeSessionData("Settings were changed.");
             session.redirectTo("result", res);
-            return game.kill();
+            
+            // Delete ftherlnd so that some settings that get
+            // encoded in it (like maps) are cleared properly
+            return game.deleteFtherlndFile();
         })
+        .then(() => game.kill())
         .then(() => game.launch())
         .catch((err) =>
         {
