@@ -26,7 +26,7 @@ async function fetchGameStatus(gameObject)
         return dom5Status;
     }
 
-    const statusdumpWrapper = await gameObject.fetchStatusDump();
+    const statusdumpWrapper = await gameObject.consumeStatusDump();
 
     if (statusdumpWrapper == null)
         return dom5Status;
