@@ -210,7 +210,7 @@ function Game()
 
     this.pinSettingsToChannel = () =>
     {
-        var addressString = `IP: ${this.getIp()}:${this.getPort()}\n`;
+        var addressString = `IP: ${this.getIp()}:${this.getPort()}\nServer: ${this.getServer().getName()}\n\n`;
         var settingsStringList = _settingsObject.getPublicSettingsStringList();
         var channel = this.getChannel();
         const payload = new MessagePayload((addressString + settingsStringList).toBox());
