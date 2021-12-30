@@ -101,7 +101,7 @@ exports.set = (expressApp) =>
             
             // Delete ftherlnd so that some settings that get
             // encoded in it (like maps) are cleared properly
-            return game.deleteFtherlndFile();
+            return game.overwriteSettings();
         })
         .then(() => game.kill())
         .then(() => game.launch())

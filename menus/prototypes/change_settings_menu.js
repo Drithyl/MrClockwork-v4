@@ -39,7 +39,7 @@ function _createMenuScreens(menuStructure, gameObject)
             {
                 // Delete ftherlnd so that some settings that get
                 // encoded in it (like maps) are cleared properly
-                gameObject.deleteFtherlndFile();
+                gameObject.overwriteSettings();
                 _updateMainScreenDisplay(mainScreen, settingsObject);
                 menuStructure.goBackToPreviousScreen();
             })
