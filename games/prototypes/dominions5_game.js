@@ -177,10 +177,8 @@ function Dominions5Game()
         });
     };
 
-    _gameObject.deleteFtherlndFile = () =>
-    {
-        return _gameObject.emitPromiseWithGameDataToServer("DELETE_FTHERLND");
-    };
+    _gameObject.overwriteSettings = () => _gameObject.emitPromiseWithGameDataToServer("OVERWRITE_SETTINGS");
+    _gameObject.deleteFtherlndFile = () => _gameObject.emitPromiseWithGameDataToServer("DELETE_FTHERLND");
 
     _gameObject.deleteGame = () =>
     {
