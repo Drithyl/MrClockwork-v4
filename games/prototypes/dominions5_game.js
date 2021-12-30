@@ -177,6 +177,11 @@ function Dominions5Game()
         });
     };
 
+    _gameObject.deleteFtherlndFile = () =>
+    {
+        return _gameObject.emitPromiseWithGameDataToServer("DELETE_FTHERLND");
+    };
+
     _gameObject.deleteGame = () =>
     {
         return ongoingGameStore.deleteGame(_gameObject.getName())
@@ -273,6 +278,7 @@ function Dominions5Game()
     _gameObject.kill = () => _gameObject.emitPromiseWithGameDataToServer("KILL_GAME", null, 130000);
 
     _gameObject.fetchStatusDump = () => _gameObject.emitPromiseWithGameDataToServer("GET_STATUS_DUMP");
+    _gameObject.consumeStatusDump = () => _gameObject.emitPromiseWithGameDataToServer("CONSUME_STATUS_DUMP");
 
     _gameObject.start = () =>
     {
