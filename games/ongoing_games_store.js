@@ -96,7 +96,8 @@ exports.deleteGame = function(gameName)
     // Stop monitoring game as first step, because game updates force game data saves,
     // which might result in the game data not actually being deleted, as a save triggers
     // right after being deleted and recreates the files
-    gameMonitor.stopMonitoringDom5Game(game);
+    if (game != null)
+        gameMonitor.stopMonitoringDom5Game(game);
 
     return rw.deleteDir(pathToBotData)
     .then(() =>
