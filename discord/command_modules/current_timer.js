@@ -4,9 +4,10 @@ const CommandData = require("../prototypes/command_data.js");
 const TimeLeft = require("../../games/prototypes/time_left.js");
 const commandPermissions = require("../command_permissions.js");
 const MessagePayload = require("../prototypes/message_payload.js");
-const { PermissionsError } = require("../../errors/custom_errors.js");
+const { PermissionsError, SemanticError } = require("../../errors/custom_errors.js");
 
 const commandData = new CommandData("CURRENT_TIMER");
+const MIN_MS_LEFT = 300000;
 
 module.exports = CurrentTimerCommand;
 
@@ -42,7 +43,7 @@ function _behaviour(commandContext)
 
 function _sendCurrentTimer(commandContext, status)
 {
-    return commandContext.respondToCommand(new MessagePayload(`${status.printTimeLeft()} left till next turn.`));
+    return commandContext.respondToCommand(new MessagePayload(`Current time left: ${status.printTimeLeft()}.`));
 }
 
 function _changeCurrentTimer(gameObject, commandContext, commandArguments, lastKnownStatus)
@@ -53,8 +54,11 @@ function _changeCurrentTimer(gameObject, commandContext, commandArguments, lastK
     if (commandContext.doesSenderHaveOrganizerPermissions() === false)
         return Promise.reject(new PermissionsError(`You must be the game organizer to change the timer.`));
 
+    if (timeToSet < MIN_MS_LEFT)
+        return Promise.reject(new SemanticError(`Cannot set a timer of less than ${Math.floor(MIN_MS_LEFT / 60000)} minutes. If you have to force the turn, use the !forcehost command instead.`));
+
     return gameObject.changeTimer(timeToSet)
-    .then(() => commandContext.respondToCommand(new MessagePayload(`The timer was changed. There are now ${lastKnownStatus.printTimeLeft()} left till next turn.`)));
+    .then(() => commandContext.respondToCommand(new MessagePayload(`The timer was changed. New timer: ${lastKnownStatus.printTimeLeft()}.`)));
 }
 
 function _extractTimeToSet(timerChangeArg, timeLeft)
