@@ -15,48 +15,51 @@ module.exports = TimeLeft;
 
 function TimeLeft(ms)
 {
-  assert.isIntegerOrThrow(ms);
+    assert.isIntegerOrThrow(ms);
 
-  let _ms = ms;
-  let _days;
-  let _hours;
-  let _minutes;
-  let _seconds;
+    let _ms = ms;
+    let _days;
+    let _hours;
+    let _minutes;
+    let _seconds;
 
-  _update(_ms);
+    _update(_ms);
 
-  this.update = _update;
-  this.getDaysLeft = () => _days;
-  this.getHoursLeft = () => _hours;
-  this.getMinutesLeft = () => _minutes;
-  this.getSecondsLeft = () => _seconds;
-  this.getMsLeft = () => _ms;
+    this.update = _update;
+    this.getDaysLeft = () => _days;
+    this.getHoursLeft = () => _hours;
+    this.getMinutesLeft = () => _minutes;
+    this.getSecondsLeft = () => _seconds;
+    this.getMsLeft = () => _ms;
 
-  this.printTimeLeft = (ignoreSeconds = true) =>
-  {
-    let str = "";
-    let days = this.getDaysLeft();
-    let hours = this.getHoursLeft();
-    let minutes = this.getMinutesLeft();
-    let seconds = this.getSecondsLeft();
+    this.printTimeLeft = (ignoreSeconds = false) =>
+    {
+        let str = "";
+        let days = this.getDaysLeft();
+        let hours = this.getHoursLeft();
+        let minutes = this.getMinutesLeft();
+        let seconds = this.getSecondsLeft();
 
-    if (days > 0)
-      str += days + " day(s), ";
+        if (days > 0)
+            str += days + " day(s), ";
 
-    if (hours > 0)
-      str += hours + " hour(s), ";
+        if (hours > 0)
+            str += hours + " hour(s), ";
 
-    if (minutes > 0)
-      str += minutes + " minute(s), ";
+        if (minutes > 0)
+            str += minutes + " minute(s), ";
 
-    if (seconds > 0 && ignoreSeconds === false)
-      str += seconds + " second(s) ";
+        if (seconds > 0 && ignoreSeconds === false)
+            str += seconds + " second(s) ";
 
-    if (/, $/i.test(str) === true)
-        return str.replace(/, $/i, "");
+        if (/\S/.test(str) === false)
+            return "none";
 
-    return str.trim();
-  };
+        if (/, $/i.test(str) === true)
+            return str.replace(/, $/i, "");
+
+        return str.trim();
+    };
 
   this.printTimeLeftShort = () =>
   {
@@ -73,76 +76,76 @@ function TimeLeft(ms)
     return str;
   };
 
-  this.toJSON = () => this.getMsLeft();
+    this.toJSON = () => this.getMsLeft();
 
-  function _update(msLeftNow)
-  {
-    _ms = msLeftNow;
+    function _update(msLeftNow)
+    {
+        _ms = msLeftNow;
 
-    _days = _msToDays(msLeftNow);
-    msLeftNow -= _days * MS_IN_A_DAY;
+        _days = _msToDays(msLeftNow);
+        msLeftNow -= _days * MS_IN_A_DAY;
 
-    _hours = _msToHours(msLeftNow);
-    msLeftNow -= _hours * MS_IN_AN_HOUR;
+        _hours = _msToHours(msLeftNow);
+        msLeftNow -= _hours * MS_IN_AN_HOUR;
 
-    _minutes = _msToMinutes(msLeftNow);
-    msLeftNow -= _minutes * MS_IN_A_MINUTE;
+        _minutes = _msToMinutes(msLeftNow);
+        msLeftNow -= _minutes * MS_IN_A_MINUTE;
 
-    _seconds = _msToSeconds(msLeftNow);
-  }
+        _seconds = _msToSeconds(msLeftNow);
+    }
 }
 
 TimeLeft.fromStringInput = (timeLeftAsString) =>
 {
-  assert.isStringOrThrow(timeLeftAsString);
+    assert.isStringOrThrow(timeLeftAsString);
 
-  //treat straight numbers as hours
-  if (assert.isInteger(+timeLeftAsString) === true)
-    return new TimeLeft(+timeLeftAsString * MS_IN_AN_HOUR);
+    //treat straight numbers as hours
+    if (assert.isInteger(+timeLeftAsString) === true)
+        return new TimeLeft(+timeLeftAsString * MS_IN_AN_HOUR);
 
-  else if (_isStringInRightFormat(timeLeftAsString) === false)
-    throw new SemanticError(`Invalid time format.`);
+    else if (_isStringInRightFormat(timeLeftAsString) === false)
+        throw new SemanticError(`Invalid time format.`);
 
-  var daysMatch = timeLeftAsString.match(daysLeftRegExp);
-  var hoursMatch = timeLeftAsString.match(hoursLeftRegExp);
-  var minutesMatch = timeLeftAsString.match(minutesLeftRegExp);
-  var secondsMatch = timeLeftAsString.match(secondsLeftRegExp);
+    var daysMatch = timeLeftAsString.match(daysLeftRegExp);
+    var hoursMatch = timeLeftAsString.match(hoursLeftRegExp);
+    var minutesMatch = timeLeftAsString.match(minutesLeftRegExp);
+    var secondsMatch = timeLeftAsString.match(secondsLeftRegExp);
 
-  var days = _extractNumberFromMatch(daysMatch);
-  var hours = _extractNumberFromMatch(hoursMatch);
-  var minutes = _extractNumberFromMatch(minutesMatch);
-  var seconds = _extractNumberFromMatch(secondsMatch);
-  var totalMs = (days * MS_IN_A_DAY) + (hours * MS_IN_AN_HOUR) + (minutes * MS_IN_A_MINUTE) + (seconds * MS_IN_A_SECOND);
-  
-  return new TimeLeft(totalMs);
+    var days = _extractNumberFromMatch(daysMatch);
+    var hours = _extractNumberFromMatch(hoursMatch);
+    var minutes = _extractNumberFromMatch(minutesMatch);
+    var seconds = _extractNumberFromMatch(secondsMatch);
+    var totalMs = (days * MS_IN_A_DAY) + (hours * MS_IN_AN_HOUR) + (minutes * MS_IN_A_MINUTE) + (seconds * MS_IN_A_SECOND);
+
+    return new TimeLeft(totalMs);
 };
 
 function _msToSeconds(ms)
 {
-  return Math.floor(ms/MS_IN_A_SECOND);
+    return Math.floor(ms/MS_IN_A_SECOND);
 }
 
 function _msToMinutes(ms)
 {
-  return Math.floor(ms/MS_IN_A_MINUTE);
+    return Math.floor(ms/MS_IN_A_MINUTE);
 }
 
 function _msToHours(ms)
 {
-  return Math.floor(ms/MS_IN_AN_HOUR);
+    return Math.floor(ms/MS_IN_AN_HOUR);
 }
 
 function _msToDays(ms)
 {
-  return Math.floor(ms/MS_IN_A_DAY);
+    return Math.floor(ms/MS_IN_A_DAY);
 }
 
 function _isStringInRightFormat(timeLeftAsString)
 {
-  return daysLeftRegExp.test(timeLeftAsString) || hoursLeftRegExp.test(timeLeftAsString) || minutesLeftRegExp.test(timeLeftAsString) || secondsLeftRegExp(timeLeftAsString);
+    return daysLeftRegExp.test(timeLeftAsString) || hoursLeftRegExp.test(timeLeftAsString) || minutesLeftRegExp.test(timeLeftAsString) || secondsLeftRegExp(timeLeftAsString);
 }
 
 function _extractNumberFromMatch(stringMatchResult)
 {
-  return (stringMatchResult != null) ? +stringMatchResult[0].replace(/\D/g, "") : 0;
+    return (stringMatchResult != null) ? +stringMatchResult[0].replace(/\D/g, "") : 0;
 }
