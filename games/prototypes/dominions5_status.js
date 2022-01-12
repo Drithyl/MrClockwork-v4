@@ -159,7 +159,7 @@ function Dominions5Status()
 {
     var _name = "";
     var _status = "Unknown";
-    var _isPaused = false;
+    var _isPaused = true;
     var _turnNumber;
     var _msLeft;
     var _players;
@@ -229,7 +229,13 @@ function Dominions5Status()
         const msPerTurn = timePerTurnObject.getMsLeft();
 
         if (assert.isInteger(msPerTurn) === true)
+        {
+            // Make sure if the dtimer is zero to also pause as well!
+            if (msPerTurn <= 0)
+                _isPaused = true;
+
             _msLeft = msPerTurn;
+        }
     };
 
     this.getPlayers = () => (assert.isArray(_players)) ? [..._players] : null;
@@ -331,9 +337,13 @@ function Dominions5Status()
             offlineStr = " **(game is offline)**";
 
         if (this.isPaused() === true)
-            return `${timeLeft.printTimeLeft()} **(currently paused)**` + offlineStr;
+            return `${timeLeft.printTimeLeft()} **(paused)**` + offlineStr;
 
-        return timeLeft.printTimeLeft() + offlineStr;
+        // Less than 1 second
+        if (timeLeft.getMsLeft() <= 999)
+            return `The new turn should be processing shortly. Otherwise, you can !forcehost it`;
+
+        return `**${timeLeft.printTimeLeft()}**` + offlineStr;
     };
 
     this.copyTimerValues = (statusObject) =>
