@@ -38,9 +38,12 @@ function _sendDefaultTimer(gameObject, commandContext)
 {
     const gameSettings = gameObject.getSettingsObject();
     const timerSetting = gameSettings.getTimerSetting();
-    const defaultTimeLeft = timerSetting.getValue();
+    const defaultTimeLeftObject = timerSetting.getValue();
 
-    return commandContext.respondToCommand(new MessagePayload(`The default timer is ${defaultTimeLeft.printTimeLeft()}.`));
+    if (defaultTimeLeftObject.getMsLeft() === 0)
+        return commandContext.respondToCommand(new MessagePayload(`Default timer: **paused**.`));
+
+    return commandContext.respondToCommand(new MessagePayload(`Default timer: ${defaultTimeLeftObject.printTimeLeft()}.`));
 }
 
 function _changeDefaultTimer(gameObject, commandContext, commandArguments)
