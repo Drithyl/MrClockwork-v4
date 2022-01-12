@@ -144,7 +144,7 @@
         "name": "Master Password",
         "defaultInput": "1234",
         "description": "Must not contain spaces or special characters other than underscores. Must be 3 to 20 characters long.",
-        "expectedInputFormatRegexp": "^\\w+|_{3, 20}$",
+        "expectedInputFormatRegexp": "^\\w{3,20}$",
         "canBeChanged": false,
         "isPublic": false
     },
@@ -164,7 +164,7 @@
         "name": "Game Name",
         "defaultInput": "defaultGame",
         "description": "Game name must be unique. No spaces or special characters other than underscores allowed. Must be 3 to 32 characters long.",
-        "expectedInputFormatRegexp": "^\\w+|_{3, 32}$",
+        "expectedInputFormatRegexp": "^\\w{3,32}$",
         "canBeChanged": false,
         "isPublic": true
     },
