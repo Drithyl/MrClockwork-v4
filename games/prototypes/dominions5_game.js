@@ -307,6 +307,9 @@ function Dominions5Game()
     {
         if (assert.isInteger(updatedStatus.getMsLeft()) === true)
             _status.setMsLeft(updatedStatus.getMsLeft());
+            
+        if (assert.isBoolean(updatedStatus.isPaused()) === true)
+            _status.setIsPaused(updatedStatus.isPaused());
 
         if (assert.isInteger(updatedStatus.getLastTurnTimestamp()) === true)
             _status.setLastTurnTimestamp(updatedStatus.getLastTurnTimestamp());
