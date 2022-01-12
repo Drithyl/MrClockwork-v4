@@ -3,7 +3,6 @@ const log = require("../logger.js");
 const assert = require("../asserter.js");
 const config = require("../config/config.json");
 const ongoingGameStore = require("./ongoing_games_store.js");
-const serverStore = require("../servers/host_server_store.js");
 const botClientWrapper = require("../discord/wrappers/bot_client_wrapper.js");
 const dom5Status = require("./prototypes/dominions5_status.js");
 const dom5SettingFlags = require("../json/dominions5_setting_flags.json");
@@ -11,8 +10,6 @@ const MessagePayload = require("../discord/prototypes/message_payload.js");
 
 const UPDATE_INTERVAL = config.gameUpdateInterval;
 const monitoredGames = [];
-var currentPendingGameIndex = 0;
-var currentUpdates = 0;
 
 // Add a game to be monitored and updated
 exports.monitorDom5Game = (game, delay = null) =>
@@ -105,12 +102,6 @@ function _updateTimer(game, lastKnownStatus, updatedStatus)
 {
     const elapsedTimeSinceLastUpdate = updatedStatus.getUptimeSinceLastCheck();
 
-    // If the bot is not enforcing the timer, then Dominions updates its own
-    // timer without us having to manually do it, so skip this step
-    // If the game is offline, we also don't want to advance timers
-    if (game.isEnforcingTimer() === false || updatedStatus.isOnline() === false || updatedStatus.isServerOnline() === false)
-        return;
-
     // If bot is enforcing timer, but there are no last known ms, set them to 
     // the full timer. This happens when patching games from v3 to v4, for example
     if (assert.isInteger(lastKnownStatus.getMsLeft()) === false)
@@ -122,6 +113,12 @@ function _updateTimer(game, lastKnownStatus, updatedStatus)
 
     // Set our new status to the last known bot enforced timer, to be on the same page
     updatedStatus.copyTimerValues(lastKnownStatus);
+
+    // If the bot is not enforcing the timer, then Dominions updates its own
+    // timer without us having to manually do it, so skip this step
+    // If the game is offline, we also don't want to advance timers
+    if (game.isEnforcingTimer() === false || updatedStatus.isOnline() === false || updatedStatus.isServerOnline() === false)
+        return;
 
     // Advance the timer if it's not paused. This still needs to be updated with the
     // game status itself; it's only a simulation until the game.update() line gets called
@@ -138,19 +135,21 @@ async function _updateGameEvents(game, lastKnownStatus, updatedStatus)
     Object.assign(updatedStatus, gameEvents);
 
     // Update the status embed with the new data (in case game went offline, for example)
-    log.general(log.getVerboseLevel(), `${game.getName()}\tupdating embed.`);
+    // Disabled for now as it taxes Discord's rate limits way too much and ends up with
+    // the bot temporarily banned from API requests
+    //log.general(log.getVerboseLevel(), `${game.getName()}\tupdating embed.`);
     //game.updateStatusEmbed(updateData);
 
     log.general(log.getVerboseLevel(), 
     `${game.getName()}\treceived updated data`,
-    `\tcurrentStatus:\t\t${updatedStatus.getStatus()}
-    \tcurrentMsLeft:\t\t${updatedStatus.getMsLeft()}
-    \tcurrentTurnNumber:\t${updatedStatus.getTurnNumber()}
-    \tcurrent isPaused:\t${updatedStatus.isPaused()}\n
-    \tlastKnownStatus:\t${lastKnownStatus.getStatus()}
+    `\tlastKnownStatus:\t${lastKnownStatus.getStatus()}
     \tlastKnownMsLeft:\t${lastKnownStatus.getMsLeft()}
     \tlastKnownTurnNumber:\t${lastKnownStatus.getTurnNumber()}
-    \tlastKnown isPaused:\t${lastKnownStatus.isPaused()}`);
+    \tlastKnown isPaused:\t${lastKnownStatus.isPaused()}\n
+    \tcurrentStatus:\t\t${updatedStatus.getStatus()}
+    \tcurrentMsLeft:\t\t${updatedStatus.getMsLeft()}
+    \tcurrentTurnNumber:\t${updatedStatus.getTurnNumber()}
+    \tcurrent isPaused:\t${updatedStatus.isPaused()}`);
 
     // Act on the calculated game events (i.e. roll a new turn, send a new turn announcement...)
     await _handleGameEvents(game, updatedStatus);
@@ -175,8 +174,7 @@ function _getGameEvents(updatedStatus, lastKnownStatus)
         didGameGoOffline:       updatedStatus.isOnline() === false && lastKnownStatus.isOnline() === true,
         isServerBackOnline:     updatedStatus.isServerOnline() === true && lastKnownStatus.isServerOnline() === false,
         isGameBackOnline:       updatedStatus.isOnline() === true && lastKnownStatus.isOnline() === false,
-        didGameStart:           updatedStatus.isOngoing() === true && lastKnownStatus.isInLobby() === true,
-        didGameRestart:         updatedStatus.isInLobby() === true && lastKnownStatus.isOngoing() === true,
+        didGameStart:           updatedStatus.isOngoing() === true && lastKnownStatus.isInLobby() === true && currentTurnNumber > 0,
         didHourPass:            updatedStatus.getMsLeft() != null && lastKnownHourMark !== currentHourMark,
         isLastHourBeforeTurn:   updatedStatus.isOngoing() === true && lastKnownHourMark !== currentHourMark && currentHourMark === 0,
         isNewTurn:              assert.isInteger(currentTurnNumber) === true && assert.isInteger(lastKnownTurnNumber) === true &&
@@ -185,10 +183,6 @@ function _getGameEvents(updatedStatus, lastKnownStatus)
                                 currentTurnNumber > 0 && currentTurnNumber < lastKnownTurnNumber,
         lastTurnTimestamp
     };
-
-    // If it is a new turn, update the timestamp of the last turn
-    if (events.isNewTurn === true)
-        updatedStatus.setLastTurnTimestamp(Date.now());
 
     return events;
 }
@@ -214,9 +208,6 @@ function _handleGameEvents(game, updateData)
     else if (updateData.didGameStart === true)
         return _handleGameStarted(game);
 
-    else if (updateData.didGameRestart === true)
-        return _handleGameRestarted(game);
-
     else if (updateData.isLastHourBeforeTurn === true)
         return _handleLastHourBeforeTurn(game, updateData);
 
@@ -241,6 +232,9 @@ function _handleTimerEvents(game, updateData)
 {
     if (updateData.isNewTurn === true || updateData.wasTurnRollbacked === true || updateData.didGameStart === true)
     {
+        // If it is a new turn, update the timestamp of the last turn
+        updateData.setLastTurnTimestamp(Date.now());
+
         log.general(log.getNormalLevel(), `Setting ${game.getName()}'s timer back to default.`);
         updateData.setMsToDefaultTimer(game);
         log.general(log.getNormalLevel(), `${game.getName()} set to ${updateData.getMsLeft()}ms.`);
@@ -271,12 +265,6 @@ function _handleGameStarted(game)
     game.sendGameAnnouncement(`The game has started!`);
 }
 
-function _handleGameRestarted(game)
-{
-    log.general(log.getNormalLevel(), `${game.getName()}\trestarted.`);
-    game.sendGameAnnouncement(`The game has restarted; please submit your pretenders!`);
-}
-
 async function _handleLastHourBeforeTurn(game, updateData)
 {
     const uncheckedTurns = updateData.getUncheckedTurns();
@@ -295,7 +283,7 @@ function _handleNewTurn(game, updateData)
     log.general(log.getNormalLevel(), `${game.getName()}\tnew turn.`);
 
     updateData.setIsTurnProcessing(false);
-    game.sendGameAnnouncement(`Turn ${updateData.getTurnNumber()} has arrived.`);
+    game.sendGameAnnouncement(`Turn ${updateData.getTurnNumber()} has arrived. The new timer is set to: ${updateData.printTimeLeft()}.`);
     _processNewTurnPreferences(game, updateData.getTurnNumber());
     _processStales(game, updateData);
 }
@@ -436,6 +424,9 @@ function _processStales(game, updateData)
     game.emitPromiseWithGameDataToServer("GET_STALES")
     .then((staleData) =>
     {
+        if (staleData == null)
+            return game.sendMessageToOrganizer("No stale data was available for this turn.");
+
         if (staleData.wentAi.length <= 0 && staleData.stales.length <= 0)
             return Promise.resolve();
 
