@@ -69,7 +69,7 @@ const connectionsMessageRegexp = new RegExp("Connections\\s*\\d+", "i");
 
 // Exact message: "(Arc) (Ul) (Mav) (Sa) (Mac) (Ct) (Pa) (Ag) (Fom) Va+ Rus? *La-", depending on each nation name, normally preceded by the message above; also
 // happens every second after game start, as a way to keep the status
-const nationsTurnStatusMessageRegExp = new RegExp("^(\\(?\\*?(\\w*|\\?)(\\)|\\?|\\-|\\+)?\\s*)+$", "i");
+const nationsTurnStatusMessageRegExp =  new RegExp("^(\\(?\\*?(\\w*|\\?)(\\)|\\?|\\-|\\+)?\\s*)+$", "i");
 
 const generatingNextTurnMessageRegExp = new RegExp("Generating next turn", "i");
 
@@ -123,9 +123,6 @@ function handleData(game, message)
 
     if (failedToCreateTmpDirErrRegexp.test(message) === true)
         handleFailedToCreateTmpDir(game, message);
-
-    else if (brokenPipeErrRegexp.test(message) === true)
-        handleBrokenPipe(game, message);
 
     else if (addressInUseErrRegexp.test(message) === true)
         handleAddressInUse(game, message);
@@ -185,7 +182,11 @@ function handleData(game, message)
 
 function isIgnorableMessage(message)
 {
-    if (message === "")
+    // Empty string or only whitespace
+    if (/\S/.test(message) === false)
+        return true;
+        
+    if (brokenPipeErrRegexp.test(message) === true)
         return true;
         
     if (setupMessageRegexp.test(message) === true)
@@ -205,11 +206,6 @@ function handleFailedToCreateTmpDir(game, message)
 {
     log.general(log.getVerboseLevel(), `Handling failedToCreateTmpDir error ${message}`);
     sendWarning(game, `Dominions reported an error: the game instance could not be started because it failed to create a temp dir. Try killing it and launching it again.`);
-}
-
-function handleBrokenPipe(game, message)
-{
-    log.general(log.getVerboseLevel(), `Ignoring brokenPipe error ${message}`);
 }
 
 function handleAddressInUse(game, message)
@@ -240,7 +236,7 @@ function handleMapNotFound(game, message)
     log.general(log.getVerboseLevel(), `Handling mapNotFound error ${message}`);
 
     //this error string is pretty explicit and informative so send it as is
-    sendWarning(game, message);
+    debounce(game, message);
 }
 
 function handleMapImgNotFound(game, message)
@@ -254,7 +250,7 @@ function handleModNotFound(game, message)
     log.general(log.getVerboseLevel(), `Handling modNotFound error ${message}`);
 
     //this error string is pretty explicit and informative so send it as is
-    sendWarning(game, message);
+    debounce(sendWarning(game, message));
 }
 
 function handleSoundNotFound(game, message)
