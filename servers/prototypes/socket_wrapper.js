@@ -68,18 +68,10 @@ function SocketWrapper(socketIoObject)
     };
 
     
-    this.listenTo("NEW_TURN", (data) => log.general(log.getNormalLevel(), `${data.name}: New turn!`));
-    this.listenTo("STDIO_CLOSED", (data) => log.general(log.getNormalLevel(), `${data.name}: stdio closed with code ${data.code}`));
     this.listenTo("STDIO_DATA", (data) => 
     {
         log.general(log.getVerboseLevel(), `${data.name}: ${data.type} data received`, data.data);
         handleDom5Data(data.name, data.data);
-    });
-
-    this.listenTo("STDIO_ERROR", (data) => 
-    {
-        log.error(log.getLeanLevel(), `${data.name}: ${data.type} ERROR RECEIVED`, data.error);
-        handleDom5Data(data.name, data.error);
     });
 
     this.listenTo("GAME_ERROR", (data) => 
