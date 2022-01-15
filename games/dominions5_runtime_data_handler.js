@@ -176,7 +176,6 @@ function handleData(game, message)
     {
         // Don't send channel warnings if this is an unidentified message; could just clutter things up
         log.general(log.getNormalLevel(), `Game ${gameName} reported an unknown message`, message);
-        sendWarning(game, `The game ${gameName} reported the message:\n\n${message}`);
     }
 }
 
