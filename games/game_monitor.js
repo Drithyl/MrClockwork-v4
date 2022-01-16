@@ -142,7 +142,7 @@ async function _updateGameEvents(game, lastKnownStatus, updatedStatus)
 
     log.general(log.getVerboseLevel(), 
     `${game.getName()}\treceived updated data`,
-    `\tlastKnownStatus:\t${lastKnownStatus.getStatus()}
+    `lastKnownStatus:\t${lastKnownStatus.getStatus()}
     \tlastKnownMsLeft:\t${lastKnownStatus.getMsLeft()}
     \tlastKnownTurnNumber:\t${lastKnownStatus.getTurnNumber()}
     \tlastKnown isPaused:\t${lastKnownStatus.isPaused()}\n
