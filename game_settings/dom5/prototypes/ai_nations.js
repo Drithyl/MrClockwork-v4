@@ -109,7 +109,7 @@ function AiNations(parentGameObject)
         if (AiNations.prototype.isExpectedFormat(input) === false)
             throw new SemanticError(`Invalid value format for AI nations.`);
 
-        if (input === "none")
+        if (input.toLowerCase() === "none")
             return aiNations;
 
         input.split(",").forEach((aiNationStr) =>
