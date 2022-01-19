@@ -30,7 +30,6 @@ function _behaviour(commandContext)
     return game.fetchSubmittedNations()
     .then((listAsArray) => 
     {
-        console.log(listAsArray);
         const humanPretenders = listAsArray.filter((pretender) => pretender.isHuman === true);
         const formattedString = _formatSubmittedPretenders(humanPretenders);
 
