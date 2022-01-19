@@ -134,7 +134,7 @@
         "name": "Mapfile",
         "defaultInput": "peliwyr",
         "description": "The filename of the map to use. You can type `!dom5maps [server name] to see what maps are available on the given server.`",
-        "expectedInputFormatRegexp": "^(\\w| )+(\\.map)?$",
+        "expectedInputFormatRegexp": "^[0-9a-zA-Z\\^\\&\\'\\@\\{\\}\\[\\]\\,\\$\\=\\!\\-\\#\\(\\)\\.\\%\\+\\~\\_ ]+(\\.map)?$",
         "canBeChanged": true,
         "isPublic": true
     },
