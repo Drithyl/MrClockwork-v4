@@ -60,6 +60,9 @@ function Thrones(parentGameObject)
             thrones.push(+throneLevel.replace(/\D*/g, ""));
         });
 
+        if (thrones.length < 3)
+            throw new SemanticError(`Throne values missing; expected 3 values, got ${thrones}`);
+
         if (thrones[0] < 0 || thrones[0] > 20)
             throw new SemanticError(`Level 1 thrones must be between 0 and 20`);
 
