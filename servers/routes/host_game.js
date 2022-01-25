@@ -107,8 +107,8 @@ function _formatPostValues(values)
         values.mods = values.mods.join(",");
 
 
-    values.thrones = `${values.level1Thrones}, ${values.level2Thrones}, ${values.level3Thrones}`;
-    values.timer = `${values.timerDays}d${values.timerHours}h${values.timerMinutes}m`;
+    values.thrones = `${+values.level1Thrones}, ${+values.level2Thrones}, ${+values.level3Thrones}`;
+    values.timer = `${+values.timerDays}d${+values.timerHours}h${+values.timerMinutes}m`;
 
     log.general(log.getNormalLevel(), `host_game formatted POST values`, values);
     return values;
