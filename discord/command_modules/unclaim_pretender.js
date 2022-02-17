@@ -3,7 +3,7 @@ const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
 const MessagePayload = require("../prototypes/message_payload.js");
-const dominions5NationStore = require("../../games/dominions5_nation_store.js");
+const { SemanticError } = require("../../errors/custom_errors.js");
 
 const commandData = new CommandData("UNCLAIM_PRETENDER");
 
@@ -31,15 +31,28 @@ of the pretender submitted, which will be checked within the game.unclaimPretend
 async function _behaviour(commandContext)
 {
     const gameObject = commandContext.getGameTargetedByCommand();
+    const gameRole = gameObject.getRole();
+    const status = gameObject.getLastKnownStatus();
+    const nations = status.getPlayers();
+    const memberWrapper = commandContext.getSenderGuildMemberWrapper();
     const commandArguments = commandContext.getCommandArgumentsArray();
-    const numberOfNationToBeUnclaimed = commandArguments[0];
-    var nationData;
+    const nationNumberSent = +commandArguments[0];
+    const nationData = nations.find((nation) => nation.nationNbr === nationNumberSent);
 
-    if (numberOfNationToBeUnclaimed == null)
+
+    if (nationNumberSent == null)
         return commandContext.respondToCommand(new MessagePayload(`You must specify a nation identifier to unclaim.`));
+        
+    if (nationData == null)
+        return Promise.reject(new SemanticError(`Invalid nation selected. Number does not match any submitted nation.`));
 
-    nationData = await gameObject.fetchSubmittedNationData(numberOfNationToBeUnclaimed);
     
-    await gameObject.removeControlOfNation(nationData.filename)
+    await gameObject.removeControlOfNation(nationData.filename);
+
+
+    if (gameRole != null && gameObject.memberIsPlayer(memberWrapper.getId()) === false)
+        await memberWrapper.removeRole(gameRole);
+
+
     return commandContext.respondToCommand(new MessagePayload(`Pretender for nation \`${nationData.fullName}\` was unclaimed.`));
 }
