@@ -22,6 +22,7 @@ function MessageWrapper(discordJsMessageObject)
     this.getSenderId = () => _userWrapper.getId();
     this.getSenderUsername = () => _userWrapper.getUsername();
     this.getDestinationChannel = () => _discordJsMessageObject.channel;
+    this.getDestinationChannelId = () => _discordJsMessageObject.channel.id;
     this.getDestinationChannelType = () => _discordJsMessageObject.channel.type;
     this.getMessageContent = () => _discordJsMessageObject.content;
     this.getMentionedMembers = () => 
@@ -50,7 +51,7 @@ function MessageWrapper(discordJsMessageObject)
     if (_discordJsMessageObject.guild != null)
         _guildWrapper = guildStore.getGuildWrapperById(_discordJsMessageObject.guild.id);
 
-    if (_guildWrapper != null)
+    if (_guildWrapper != null && _discordJsMessageObject.member != null)
         _guildMemberWrapper = new GuildMemberWrapper(_discordJsMessageObject.member, _guildWrapper);
 
     this.getGuildWrapper = () => _guildWrapper;
@@ -66,10 +67,8 @@ function MessageWrapper(discordJsMessageObject)
 
     this.respond = (messagePayload) => messagePayload.send(this.getDestinationChannel());
     this.respondToSender = (messagePayload) => messagePayload.send(_discordJsMessageObject.author);
-    this.pin = () => 
-    {
-        return _discordJsMessageObject.pin();
-    };
+    this.pin = () => _discordJsMessageObject.pin();
+    this.unpin = () => _discordJsMessageObject.unpin();
 
     this.react = (emojiResolvable) => _discordJsMessageObject.react(emojiResolvable);
     this.edit = (newText, editedEmbed) => 
