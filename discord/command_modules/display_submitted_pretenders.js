@@ -30,7 +30,7 @@ function _behaviour(commandContext)
     return game.fetchSubmittedNations()
     .then((listAsArray) => 
     {
-        const humanPretenders = listAsArray.filter((pretender) => pretender.isHuman === true);
+        const humanPretenders = listAsArray.filter((pretender) => pretender.isSubmitted === true);
         const formattedString = _formatSubmittedPretenders(humanPretenders);
 
         if (humanPretenders.length <= 0)
@@ -43,32 +43,46 @@ function _behaviour(commandContext)
 function _formatSubmittedPretenders(humanPretenderList)
 {
     var totalClaimed = 0;
-    var countString = "";
-    var formattedString = "";
+    var formattedStr = "";
+    var livingNationsString = "";
+    var deadNationsString  = "";
 
     humanPretenderList.forEach((pretender) =>
     {
-        const fullNationName = pretender.fullName;
-        const pretenderOwnerMember = pretender.owner;
-
-        const indexString = `${pretender.nationNbr}. `.width(5);
-        var pretenderStr = fullNationName.width(40);
-
         // If claimed, increment our count
-        if (pretenderOwnerMember != null)
+        if (pretender.owner != null)
             totalClaimed++;
 
-        // If .owner property is a string, just add it
-        if (assert.isString(pretenderOwnerMember) === true)
-            pretenderStr += `${pretenderOwnerMember}`;
-    
-        // If owner property would be a GuildMemberWrapper, use getUsername()
-        else if (pretenderOwnerMember != null)
-            pretenderStr += `${fullNationName.width(40)} ${pretenderOwnerMember.getUsername()}`;
+        if (pretender.isHuman === true)
+            livingNationsString += _formatSubmittedPretenderLine(pretender);
 
-        formattedString += indexString + pretenderStr + "\n";
+        else if (pretender.isDead === true)
+            deadNationsString += _formatSubmittedPretenderLine(pretender);
     });
 
-    countString = `Total Submitted: ${humanPretenderList.length}\nTotal Claimed: ${totalClaimed}\n`;
-    return countString + formattedString.toBox();
+    formattedStr = `Total Submitted: ${humanPretenderList.length}\nTotal Claimed: ${totalClaimed}\n`;
+
+    if (livingNationsString.length > 0)
+        formattedStr += `\n**Living nations**:\n${livingNationsString.toBox()}\n`;
+        
+    if (deadNationsString.length > 0)
+        formattedStr += `\n**Dead nations** (use !unclaim X to have the game removed from your played games list):\n${deadNationsString.toBox()}`;
+
+    return formattedStr;
+}
+
+function _formatSubmittedPretenderLine(pretenderData)
+{
+    const indexString = `${pretenderData.nationNbr}. `.width(5);
+    var pretenderStr = pretenderData.fullName.width(40);
+
+    // If .owner property is a string, just add it
+    if (assert.isString(pretenderData.owner) === true)
+        pretenderStr += `${pretenderData.owner}`;
+
+    // If owner property would be a GuildMemberWrapper, use getUsername()
+    else if (pretenderData.owner != null)
+        pretenderStr += `${pretenderData.fullName.width(40)} ${pretenderData.owner.getUsername()}`;
+
+    return indexString + pretenderStr + "\n";
 }
