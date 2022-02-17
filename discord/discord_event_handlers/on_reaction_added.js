@@ -5,6 +5,7 @@ const MessageWrapper = require("../wrappers/message_wrapper.js");
 const activeMenuStore = require("../../menus/active_menu_store.js");
 const BotClientWrapper = require("../wrappers/bot_client_wrapper.js");
 const MessagePayload = require("../prototypes/message_payload.js");
+const gamesStore = require("../../games/ongoing_games_store.js");
 
 exports.startListening = () =>
 {
@@ -14,19 +15,24 @@ exports.startListening = () =>
 
 function _onReactionAdded(discordJsMessageReaction, discordJsUser)
 {
-    var userWrapper = new UserWrapper(discordJsUser);
-    var reactedMessageWrapper = new MessageWrapper(discordJsMessageReaction.message);
-    var userId = userWrapper.getId();
+    const emoji = discordJsMessageReaction.emoji;
+    const userWrapper = new UserWrapper(discordJsUser);
+    const reactedMessageWrapper = new MessageWrapper(discordJsMessageReaction.message);
+    const messageChannelId = reactedMessageWrapper.getDestinationChannelId();
+    const gameHostedOnChannel = gamesStore.getOngoingGameByChannel(messageChannelId);
+    const userId = userWrapper.getId();
 
     if (userWrapper.isBot() === true)
         return;
 
-    if (reactedMessageWrapper.isDirectMessage() === false)
-        return;
 
     try
     {
-        activeMenuStore.handleReaction(userId, discordJsMessageReaction.emoji, reactedMessageWrapper);
+        if (gameHostedOnChannel != null)
+            _handleReactionOnGameChannel(emoji, reactedMessageWrapper, gameHostedOnChannel, userWrapper);
+
+        else if (reactedMessageWrapper.isDirectMessage() === true) 
+            activeMenuStore.handleReaction(userId, emoji, reactedMessageWrapper);
     }
 
     catch(err)
@@ -35,8 +41,21 @@ function _onReactionAdded(discordJsMessageReaction, discordJsUser)
     }
 }
 
+async function _handleReactionOnGameChannel(emoji, reactedMessageWrapper, game, userWrapper)
+{
+    const userId = userWrapper.getId();
+
+    if (emoji.name !== "📌" && emoji.name !== "📍" )
+        return;
+
+    if (game.getOrganizerId() !== userId)
+        return;
+
+    await reactedMessageWrapper.pin();
+}
+
 function _handleReactionError(reactedMessageWrapper, err)
 {
-    log.error(log.getLeanLevel(), `ERROR HANDLING COMMAND`, err);
+    log.error(log.getLeanLevel(), `Error on reaction added`, err);
     return reactedMessageWrapper.respond(new MessagePayload(`Error occurred: ${err.message}`));
 }
