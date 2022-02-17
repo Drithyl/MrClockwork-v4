@@ -26,28 +26,32 @@ function RemovePretenderCommand()
 
 async function _behaviour(commandContext)
 {
+    const memberWrapper = commandContext.getSenderGuildMemberWrapper();
     const gameObject = commandContext.getGameTargetedByCommand();
-    const playerGuildMemberWrapper = commandContext.getSenderGuildMemberWrapper();
-    const numberOfNationToBeRemoved = _extractNationNumberArgument(commandContext);
-    var nationData;
+    const gameRole = gameObject.getRole();
+    const status = gameObject.getLastKnownStatus();
+    const nations = status.getPlayers();
+    const commandArguments = commandContext.getCommandArgumentsArray();
+    const nationNumberSent = +commandArguments[0];
+    const nationData = nations.find((nation) => nation.nationNbr === nationNumberSent);
 
 
-    if (numberOfNationToBeRemoved == null)
+    if (nationNumberSent == null)
         return commandContext.respondToCommand(new MessagePayload(`You must specify a nation identifier to unclaim.`));
-
-    nationData = await gameObject.fetchSubmittedNationData(numberOfNationToBeRemoved);
-    
 
     if (nationData == null)
         return Promise.reject(new SemanticError(`Invalid nation selected. Number does not match any submitted nation.`));
 
-    if (gameObject.isPlayerControllingNation(playerGuildMemberWrapper.getId(), nationData.filename) === false &&
+    if (gameObject.isPlayerControllingNation(memberWrapper.getId(), nationData.filename) === false &&
         commandContext.isSenderGameOrganizer() === false)
         return Promise.reject(new Error(`Only the game organizer or the owner of this nation can do this.`));
 
     
     await gameObject.emitPromiseWithGameDataToServer("REMOVE_NATION", { nationFilename: nationData.filename });
     await gameObject.removeControlOfNation(nationData.filename);
+
+    if (gameRole != null && gameObject.memberIsPlayer(memberWrapper.getId()) === false)
+        await memberWrapper.removeRole(gameRole);
 
     return commandContext.respondToCommand(new MessagePayload(`Pretender for nation \`${nationData.fullName}\` was removed.`));
 }
