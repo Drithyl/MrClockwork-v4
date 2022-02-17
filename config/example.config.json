@@ -16,6 +16,7 @@
   "discordClientSecret": "???????-u?c?qz?SI_j?xikr-???????",
   "discordRedirectUri": "http://localhost:80/login",
 
+  "socketPort": 8080,
   "hostServerConnectionPort": 3080,
   "hostServerSslConnectionPort": 3443,
 
@@ -57,5 +58,7 @@
   "devIds": [
     "123456789876566666",
     "123456789876566666"
-  ]
+  ],
+
+  "useWs": true
 }
