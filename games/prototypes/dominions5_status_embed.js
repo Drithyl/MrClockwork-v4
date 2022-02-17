@@ -123,7 +123,7 @@ function Dominions5StatusEmbed(embedWrapper)
             else _embed.editField(3, UNDONE_TURNS_HEADER, "unavailable");
         }
 
-        else _embed.editField(0, STATUS_HEADER, updateData.getStatus(), true);
+        else _embed.editField(0, STATUS_HEADER, updateData.getStatusString(), true);
 
         return _embed.update();
     };
