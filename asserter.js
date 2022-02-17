@@ -5,6 +5,7 @@ const { TypeError, RangeError, LengthError, SemanticError, InstanceOfError, Inva
 
 exports.isArray = isArray;
 exports.isObject = isObject;
+exports.isSerializedBuffer = isSerializedBuffer;
 exports.isString = isString;
 exports.isNumber = isNumber;
 exports.isInteger = isInteger;
@@ -26,6 +27,7 @@ exports.isValidDiscordId = isValidDiscordId;
 
 exports.isArrayOrThrow = isArrayOrThrow;
 exports.isObjectOrThrow = isObjectOrThrow;
+exports.isSerializedBufferOrThrow = isSerializedBufferOrThrow;
 exports.isStringOrThrow = isStringOrThrow;
 exports.isNumberOrThrow = isNumberOrThrow;
 exports.isIntegerOrThrow = isIntegerOrThrow;
@@ -52,7 +54,12 @@ function isArray(arr)
 
 function isObject(obj)
 {
-	return Array.isArray(obj) === false && typeof obj === "object";
+	return Array.isArray(obj) === false && typeof obj === "object" && obj != null;
+}
+
+function isSerializedBuffer(obj)
+{
+  return isObject(obj) === true && obj.type === "Buffer" && isArray(obj.data) === true;
 }
 
 function isString(str)
@@ -162,6 +169,12 @@ function isObjectOrThrow(obj)
 {
   if (isObject(obj) === false)
     throw new TypeError(`Expected Object, got: <${obj}> (${typeof obj})`);
+}
+
+function isSerializedBufferOrThrow(obj)
+{
+  if (isSerializedBuffer(obj) === false)
+    throw new TypeError(`Expected Serialized Buffer, got: <${obj}> (${typeof obj})`);
 }
 
 function isStringOrThrow(str)
