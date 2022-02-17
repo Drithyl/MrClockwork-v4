@@ -30,9 +30,8 @@ function _behaviour(commandContext)
     const gameObject = commandContext.getGameTargetedByCommand();
     const commandArguments = commandContext.getCommandArgumentsArray();
     const lastKnownStatus = gameObject.getLastKnownStatus();
-    const lastKnownTurnNumber = lastKnownStatus.getTurnNumber();
 
-    if (lastKnownTurnNumber <= 0)
+    if (lastKnownStatus.hasStarted() === false)
         return commandContext.respondToCommand(new MessagePayload(`Game is being setup in lobby.`));
 
     if (commandArguments.length <= 0)
