@@ -4,7 +4,7 @@ const log = require("../../logger.js");
 const assert = require("../../asserter.js");
 const config = require("../../config/config.json");
 const guildStore = require("../../discord/guild_store.js");
-const dominions5Status = require("./dominions5_status.js");
+const Dominions5Status = require("./dominions5_status.js");
 const ongoingGameStore = require("../ongoing_games_store.js");
 const Dominions5Settings = require("./dominions5_settings.js");
 const playerFileStore = require("../../player_data/player_file_store.js");
@@ -16,12 +16,10 @@ function Dominions5Game()
 {
     const _gameObject = new Game();
     const _playerData = {};
-    const _status = new dominions5Status.Dominions5Status();
+    const _status = new Dominions5Status();
 
     var _statusEmbed;
     var _isEnforcingTimer = true;
-    var _isCurrentTurnRollback = false;
-    var _isTurnProcessing = false;
 
     _gameObject.setSettingsObject(new Dominions5Settings(_gameObject));
 
@@ -78,12 +76,7 @@ function Dominions5Game()
         return nation;
     };
 
-    _gameObject.checkIfNationIsSubmitted = (nationIdentifier) =>
-    {
-        return _gameObject.fetchSubmittedNationData(nationIdentifier)
-        .then((data) => Promise.resolve(data != null));
-    };
-
+    _gameObject.getPlayerFiles = () => Object.values(_playerData).map((data) => data.file);
     _gameObject.forEachPlayerFile = (fnToCall) => _playerData.forEachItem((data, id) => fnToCall(data.file, id, data.username));
 
     _gameObject.getPlayerIdControllingNationInGame = (nationIdentifier) =>
@@ -177,14 +170,18 @@ function Dominions5Game()
         });
     };
 
-    _gameObject.overwriteSettings = () => _gameObject.emitPromiseWithGameDataToServer("OVERWRITE_SETTINGS");
-    _gameObject.deleteFtherlndFile = () => _gameObject.emitPromiseWithGameDataToServer("DELETE_FTHERLND");
+    _gameObject.overwriteSettings = () => _gameObject.emitPromiseWithGameDataToServer("OVERWRITE_SETTINGS", null, 130000);
+    _gameObject.deleteFtherlndFile = () => _gameObject.emitPromiseWithGameDataToServer("DELETE_FTHERLND", null, 130000);
 
+    // TODO: emitPromiseWithGameDataToServer() will usually throw an error if the game has not
+    // been properly created, i.e. if one of the settings fails to validate while creating the
+    // final game object, like mods not found. "value is not iterable" happens with thrones when
+    // trying to expand the throne values array while the setting has not been written yet
     _gameObject.deleteGame = () =>
     {
         return ongoingGameStore.deleteGame(_gameObject.getName())
         .then(() => _gameObject.removeAllPlayerData(_gameObject.getName()))
-        .then(() => _gameObject.emitPromiseWithGameDataToServer("DELETE_GAME"));
+        .then(() => _gameObject.emitPromiseWithGameDataToServer("DELETE_GAME", null, 130000));
     };
 
     _gameObject.removeAllPlayerData = () =>
@@ -252,12 +249,9 @@ function Dominions5Game()
 
     _gameObject.forceHost = () => 
     {
-        _isTurnProcessing = true;
         return _gameObject.emitPromiseWithGameDataToServer("FORCE_HOST");
     };
 
-    _gameObject.isCurrentTurnRollback = () => _isCurrentTurnRollback;
-    _gameObject.isTurnProcessing = () => _isTurnProcessing;
     _gameObject.isEnforcingTimer = () => _isEnforcingTimer;
     _gameObject.switchTimerEnforcer = () => 
     {
@@ -289,6 +283,7 @@ function Dominions5Game()
             if (channel == null)
                 return Promise.resolve();
 
+            _status.setMsToDefaultTimer(_gameObject);
             return channel.setParent(guildStore.getGameCategoryId(guildId));
         });
     };
@@ -303,44 +298,9 @@ function Dominions5Game()
 
     _gameObject.getLastKnownStatus = () => _status;
 
-    _gameObject.update = (updatedStatus) => 
+    _gameObject.updateStatus = (updatedSnapshot, dom5Events) => 
     {
-        if (assert.isInteger(updatedStatus.getMsLeft()) === true)
-            _status.setMsLeft(updatedStatus.getMsLeft());
-            
-        if (assert.isBoolean(updatedStatus.isPaused()) === true)
-            _status.setIsPaused(updatedStatus.isPaused());
-
-        if (assert.isInteger(updatedStatus.getLastTurnTimestamp()) === true)
-            _status.setLastTurnTimestamp(updatedStatus.getLastTurnTimestamp());
-
-        if (assert.isInteger(updatedStatus.getLastUpdateTimestamp()) === true)
-            _status.setLastUpdateTimestamp(updatedStatus.getLastUpdateTimestamp());
-
-        if (assert.isInteger(updatedStatus.getSuccessfulCheckTimestamp()) === true)
-            _status.setSuccessfulCheckTimestamp(updatedStatus.getSuccessfulCheckTimestamp());
-
-        if (assert.isInteger(updatedStatus.getTurnNumber()) === true)
-            _status.setTurnNumber(updatedStatus.getTurnNumber());
-
-        if (assert.isString(updatedStatus.getStatus()) === true)
-            _status.setStatus(updatedStatus.getStatus());
-
-        if (assert.isArray(updatedStatus.getPlayers()) === true)
-            _status.setPlayers(updatedStatus.getPlayers());
-
-        if (updatedStatus.isNewTurn === true)
-        {
-            _isCurrentTurnRollback = false;
-            _isTurnProcessing = false;
-            log.general(log.getNormalLevel(), `${_gameObject.getName()}\t_isCurrentRollback set to ${_isCurrentTurnRollback}`);
-        }
-
-        else if (updatedStatus.wasTurnRollbacked === true)
-        {
-            _isCurrentTurnRollback = true;
-            log.general(log.getNormalLevel(), `${_gameObject.getName()}\t_isCurrentRollback set to ${_isCurrentTurnRollback}`);
-        }
+        _status.updateSnapshot(updatedSnapshot);
 
         return _status;
     };
@@ -378,7 +338,6 @@ function Dominions5Game()
     {
         await _gameObject.loadJSONDataSuper(jsonData);
 
-
         log.general(log.getLeanLevel(), `${jsonData.name}: loading game status...`);
 
         if (assert.isObject(jsonData.status) === true)
@@ -386,9 +345,6 @@ function Dominions5Game()
 
         if (assert.isBoolean(jsonData.isEnforcingTimer) === true)
             _isEnforcingTimer = jsonData.isEnforcingTimer;
-
-        if (assert.isBoolean(jsonData.isCurrentTurnRollback) === true)
-            _isCurrentTurnRollback = jsonData.isCurrentTurnRollback;
 
 
         if (Array.isArray(jsonData.playerData) === true)
@@ -444,7 +400,6 @@ function Dominions5Game()
             jsonData.statusEmbedId = _statusEmbed.getMessageId();
             
         jsonData.isEnforcingTimer = _isEnforcingTimer;
-        jsonData.isCurrentTurnRollback = _isCurrentTurnRollback;
 
         jsonData.playerData = [];
         _playerData.forEachItem((playerData, id) => jsonData.playerData.push({ id, username: playerData.username }));
@@ -466,7 +421,7 @@ function Dominions5Game()
             port: _gameObject.getPort(),
             gameType: _gameObject.getGameType(),
             args: settingsObject.getSettingFlags(),
-            isCurrentTurnRollback: _isCurrentTurnRollback
+            isCurrentTurnRollback: _status.isCurrentTurnRollback()
         };
 
         if (_gameObject.isEnforcingTimer() === false)
