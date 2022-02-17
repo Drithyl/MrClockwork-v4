@@ -8,7 +8,7 @@ module.exports = Thrones;
 
 function Thrones(parentGameObject)
 {
-    var _value;
+    var _value = [];
     const _parentGame = parentGameObject;
 
     this.getValue = () => _value;
