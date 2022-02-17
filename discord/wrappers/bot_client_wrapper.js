@@ -13,6 +13,7 @@ const myIntents = new Intents().add(
     "GUILD_MEMBERS",
     "GUILD_MESSAGES",
     "DIRECT_MESSAGES",
+    "GUILD_MESSAGE_REACTIONS",
     "DIRECT_MESSAGE_REACTIONS"
 );
 
@@ -62,6 +63,7 @@ exports.addOnRoleDeletedHandler = (handler) => _discordJsBotClient.on("roleDelet
 exports.addOnMessageReceivedHandler = (handler) => _discordJsBotClient.on("messageCreate", (discordJsMessage) => handler(discordJsMessage));
 exports.addOnMessageDeletedHandler = (handler) => _discordJsBotClient.on("messageDelete", (discordJsMessage) => handler(discordJsMessage));
 exports.addOnReactionAddedHandler = (handler) => _discordJsBotClient.on("messageReactionAdd", (discordJsMessageReaction, discordJsUser) => handler(discordJsMessageReaction, discordJsUser));
+exports.addOnReactionRemovedHandler = (handler) => _discordJsBotClient.on("messageReactionRemove", (discordJsMessageReaction, discordJsUser) => handler(discordJsMessageReaction, discordJsUser));
 
 exports.addOnBotDisconnectedHandler = (handler) => _discordJsBotClient.on("disconnect", () => handler());
 exports.addOnBotReconnectingHandler = (handler) => _discordJsBotClient.on("reconnecting", () => handler());
