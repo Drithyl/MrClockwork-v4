@@ -52,6 +52,22 @@ module.exports.getGuildsWhereUserIsMember = async (userId) =>
     return guildsWhereUserIsMember;
 };
 
+module.exports.getGuildsWhereUserIsTrusted = async (userId) =>
+{
+    const guildsWhereUserIsTrusted = [];
+
+    for (var id in guildWrappers)
+    {
+        const guild = guildWrappers[id];
+        const isTrusted = await guild.checkMemberHasTrustedRoleOrHigher(userId);
+
+        if (isTrusted === true)
+            guildsWhereUserIsTrusted.push(guild);
+    }
+
+    return guildsWhereUserIsTrusted;
+};
+
 module.exports.fetchGuildClientData = (userId) =>
 {
     var guildData = [];
