@@ -28,6 +28,7 @@ async function _behaviour(commandContext)
     const nameOfGameToRepair = commandArgumentsArray[0];
     const payload = new MessagePayload("Below is the game's state:");
     var game;
+    var status;
     var nations;
     var areAllTurnsDone;
     var debugInfo;
@@ -37,8 +38,8 @@ async function _behaviour(commandContext)
         return commandContext.respondToCommand(new MessagePayload(`No game found with this name.`));
 
     game = ongoingGamesStore.getOngoingGameByName(nameOfGameToRepair);
+    status = game.getLastKnownStatus();
     nations = await game.fetchSubmittedNations();
-    areAllTurnsDone = nations.find((nation) => nation.wasTurnChecked === false) == null;
 
     debugInfo = {
         guild: `${game.getGuild()?.getName()} (${game.getGuildId()})`,
@@ -48,12 +49,22 @@ async function _behaviour(commandContext)
         server: game.getServer()?.getName(),
         address: `${game.getIp()}:${game.getPort()}`,
         statusEmbed: game.getStatusEmbedId(),
-        isServerOnline: game.isServerOnline(),
-        isEnforcingTimer: game.isEnforcingTimer(),
-        isCurrentTurnRollback: game.isCurrentTurnRollback(),
-        isTurnProcessing: game.isTurnProcessing(),
-        areAllTurnsDone, 
-        status: game.getLastKnownStatus(),
+        status: {
+            isServerOnline: game.isServerOnline(),
+            isEnforcingTimer: game.isEnforcingTimer(),
+            hasStarted: status.hasStarted(),
+            isCurrentTurnRollback: status.isCurrentTurnRollback(),
+            isTurnProcessing: status.isTurnProcessing(),
+            areAllTurnsDone: status.areAllTurnsDone(),
+            isPaused: status.isPaused(),
+            turnNumber: status.getTurnNumber(),
+            msLeft: status.getMsLeft(),
+            successfulCheckTimestamp: status.getSuccessfulCheckTimestamp(),
+            lastUpdateTimestamp: status.getLastUpdateTimestamp(),
+            lastTurnTimestamp: status.getLastTurnTimestamp(),
+            players: status.getPlayers()
+        },
+        
         settings: game.getSettingsObject(),
         nations
     };
