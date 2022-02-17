@@ -93,7 +93,7 @@ function _initializeComponents()
     .then(() => log.general(log.getLeanLevel(), "Initialized successfully."))
     .catch((err) => 
     {
-        log.error(log.getLeanLevel(), `INITIALIZATION ERROR`, err)
+        Promise.resolve(log.error(log.getLeanLevel(), `INITIALIZATION ERROR`, err))
         .then(() => process.exit());
     });
 }
