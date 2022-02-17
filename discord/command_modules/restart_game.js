@@ -25,13 +25,20 @@ function RestartGameCommand()
     return restartGameCommand;
 }
 
-function _behaviour(commandContext)
+async function _behaviour(commandContext)
 {
     const targetedGame = commandContext.getGameTargetedByCommand();
+    const status = targetedGame.getLastKnownStatus();
+    const commandArguments = commandContext.getCommandArgumentsArray();
+    const deletePretenders = (/^true$/i.test(commandArguments[0]) === true) ? true : false;
 
-    return commandContext.respondToCommand(new MessagePayload(`Restarting game...`))
-    .then(() => targetedGame.emitPromiseWithGameDataToServer("RESTART_GAME"))
-    .then(() => targetedGame.removeNationClaims())
-    .then(() => commandContext.respondToCommand(new MessagePayload(`The game has been restarted. It may take a minute or two to update properly.`)))
-    .catch((err) => commandContext.respondToCommand(new MessagePayload(`An error occurred:\n\n${err.message}`)));
+    await commandContext.respondToCommand(new MessagePayload(`Restarting game...`));
+    await targetedGame.emitPromiseWithGameDataToServer("RESTART_GAME", { deletePretenders }, 130000);
+
+    if (deletePretenders === true)
+        await targetedGame.removeNationClaims();
+
+    status.setHasStarted(false);
+    status.setMsToDefaultTimer(targetedGame);
+    return commandContext.respondToCommand(new MessagePayload(`The game has been restarted. It may take a minute or two to update properly.`));
 }
