@@ -26,14 +26,28 @@ function ClaimPretenderCommand()
 async function _behaviour(commandContext)
 {
     const gameObject = commandContext.getGameTargetedByCommand();
+    const status = gameObject.getLastKnownStatus();
+    const nations = status.getPlayers();
+    const gameRole = gameObject.getRole();
     const memberWrapper = commandContext.getSenderGuildMemberWrapper();
     const commandArguments = commandContext.getCommandArgumentsArray();
-    const nationNumberSent = commandArguments[0];
-    const nationData = await gameObject.fetchSubmittedNationData(nationNumberSent);
+    const nationNumberSent = +commandArguments[0];
+    const nationData = nations.find((nation) => nation.nationNbr === nationNumberSent);
 
+
+    if (nationNumberSent == null)
+        return commandContext.respondToCommand(new MessagePayload(`You must specify a nation identifier to unclaim.`));
+    
     if (nationData == null)
         return Promise.reject(new SemanticError(`Invalid nation selected. Number does not match any submitted nation.`));
 
+
     await gameObject.claimNation(memberWrapper, nationData.filename);
+
+
+    if (gameRole != null)
+        await memberWrapper.addRole(gameRole);
+
+
     return commandContext.respondToCommand(new MessagePayload(`Pretender for nation \`${nationData.fullName}\` was claimed.`));
 }
