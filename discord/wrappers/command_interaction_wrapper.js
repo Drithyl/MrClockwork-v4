@@ -1,10 +1,11 @@
 
 
+const UserWrapper = require("./user_wrapper");
 const config = require("../../config/config.json");
 const InteractionWrapper = require("./interaction_wrapper.js");
 const { SemanticError } = require("../../errors/custom_errors");
+const MessagePayload = require("../prototypes/message_payload.js");
 const ongoingGamesStore = require("../../games/ongoing_games_store.js");
-const UserWrapper = require("./user_wrapper");
 
 
 module.exports = CommandInteractionWrapper;
@@ -51,10 +52,12 @@ function CommandInteractionWrapper(discordJsInteractionObject)
         return messagePayload.send(_interactionWrapper);
     };
 
-    _interactionWrapper.respondToSender = (messagePayload) => 
+    _interactionWrapper.respondToSender = async (messagePayload) => 
     {
-        return messagePayload.send(_interactionWrapper, { ephemeral: true });
+        await _interactionWrapper.respondToCommand(new MessagePayload(`Check your DMs.`));
+        return _interactionWrapper.getSenderUserWrapper().sendMessage(messagePayload);
     };
+
     _interactionWrapper.respondByDm = (messagePayload) => _interactionWrapper.getSenderUserWrapper().sendMessage(messagePayload);
 
     _interactionWrapper.isGameCommand = () => _gameTargetedByCommand != null;
