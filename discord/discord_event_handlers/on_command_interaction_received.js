@@ -37,19 +37,19 @@ function _handleCommandInteractionError(commandInteractionWrapper, err)
 {
     if (assert.isSemanticError(err) === true)
     {
-        log.general(log.getNormalLevel(), err.message);
-        return commandInteractionWrapper.respondToSender(new MessagePayload(`Invalid command format: ${err.message}`));
+        log.general(log.getNormalLevel(), `SemanticError: ${err.message}`);
+        return commandInteractionWrapper.respondToCommand(new MessagePayload(`Invalid command format: ${err.message}`));
     }
 
     if (assert.isPermissionsError(err) === true)
     {
-        log.general(log.getNormalLevel(), err.message);
-        return commandInteractionWrapper.respondToSender(new MessagePayload(err.message));
+        log.general(log.getNormalLevel(), `PermissionsError: ${err.message}`);
+        return commandInteractionWrapper.respondToCommand(new MessagePayload(err.message));
     }
 
     else
     {
         log.error(log.getLeanLevel(), `ERROR HANDLING COMMAND`, err);
-        return commandInteractionWrapper.respondToSender(new MessagePayload(`Interaction Error occurred: ${err.message}\n\n${err.stack}`));
+        return commandInteractionWrapper.respondToCommand(new MessagePayload(`Interaction Error occurred: ${err.message}\n\n${err.stack}`));
     }
 }
