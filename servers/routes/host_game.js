@@ -17,7 +17,7 @@ exports.set = (expressApp) =>
     expressApp.get("/host_game", async (req, res) =>
     {
         var availableServers;
-        var guildsWhereUserIsMember;
+        var guildsWhereUserIsTrusted;
 
         const guildData = [];
 
@@ -32,9 +32,9 @@ exports.set = (expressApp) =>
         const maps = await hostServerStore.getDom5Maps();
         const mods = await hostServerStore.getDom5Mods();
         availableServers = hostServerStore.getAvailableServersClientData();
-        guildsWhereUserIsMember = await guildStore.getGuildsWhereUserIsMember(userId);
+        guildsWhereUserIsTrusted = await guildStore.getGuildsWhereUserIsTrusted(userId);
 
-        guildsWhereUserIsMember.forEach((wrapper) =>
+        guildsWhereUserIsTrusted.forEach((wrapper) =>
         {
             guildData.push({
                 id: wrapper.getId(),
