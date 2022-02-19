@@ -121,7 +121,12 @@ exports.set = (expressApp) =>
             if (formattedData[gameName] == null)
                 formattedData[gameName] = {};
 
-            formattedData[gameName][valueKey] = value;
+            // Single selections of reminders come in as 
+            // string numbers rather than an array
+            if (valueKey === "reminders" && assert.isArray(value) === false)
+                formattedData[gameName][valueKey] = [ value ];
+
+            else formattedData[gameName][valueKey] = value;
         }
     }
 
