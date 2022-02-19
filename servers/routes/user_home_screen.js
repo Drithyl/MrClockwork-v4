@@ -52,6 +52,7 @@ function _extractGameInfo(game, userId)
 {
     const statusData = game.getLastKnownStatus();
 
+
     return {
         name: game.getName(),
         guild: game.getGuild()?.getName(),
@@ -60,9 +61,9 @@ function _extractGameInfo(game, userId)
         organizerId: game.getOrganizerId(),
         ip: game.getIp(),
         port: game.getPort(),
-        status: statusData?.getStatus(),
+        status: statusData.getStatusString(),
         turnNumber: statusData?.getTurnNumber(),
-        timeLeft: statusData?.getTimeLeft()?.printTimeLeftShort(),
+        timeLeft: (statusData.hasStarted() === true) ? statusData?.getTimeLeft()?.printTimeLeftShort() : "Waiting",
         isPaused: statusData?.isPaused(),
         turnStatus: _extractGameTurnStatus(game, userId)
     };
