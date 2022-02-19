@@ -1,6 +1,7 @@
 
 const log = require("../../logger.js");
 const assert = require("../../asserter.js");
+const gameMonitor = require("../../games/game_monitor.js");
 const { SocketResponseError } = require("../../errors/custom_errors.js");
 const ongoingGamesStore = require("../../games/ongoing_games_store");
 const trustedServerData = require("../../config/trusted_server_data.json");
@@ -47,6 +48,12 @@ function HostServer(id)
         _socketWrapper = socketWrapper;
         _capacity = capacity;
         _isOnline = true;
+
+        _socketWrapper.listenTo("GAME_UPDATE", (data) =>
+        {
+            const game = ongoingGamesStore.getOngoingGameByName(data.gameName);
+            gameMonitor.updateDom5Game(game, data);
+        });
     };
 
     this.setOffline = () =>
