@@ -86,6 +86,29 @@ module.exports.upload = (logLevel, header, ...data) =>
     _logToFile(logStr, uploadWriteStream);
 };
 
+const timers = {};
+
+module.exports.time = (tag, display) =>
+{
+    timers[tag] = {
+        start: Date.now(),
+        display: display ?? tag
+    };
+};
+
+module.exports.timeEnd = (tag, logLevel) =>
+{
+    logLevel = logLevel ?? NORMAL_LEVEL;
+    const data = timers[tag];
+    delete timers[tag];
+
+    if (data == null)
+        return;
+
+    const timeTaken = (Date.now() - data.start) * 0.001;
+    module.exports.general(logLevel, `${data.display}: ${timeTaken.toFixed(3)}s`);
+};
+
 
 function _log(logLevel, header, ...data)
 {
