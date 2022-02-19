@@ -1,6 +1,7 @@
 
 const _express = require("express");
 const log = require("../logger.js");
+const assert = require("../asserter.js");
 const config = require("../config/config.json");
 
 const _expressApp = _express();
@@ -9,12 +10,20 @@ var _expressAppHttps;
 const _expressHttpServer = require('http').Server(_expressApp);
 var _expressHttpsServer;
 
+// Wrappers for socket and socket server. We can use socket io wrapers or ws wrappers
+const SocketServerWrapper = (config.useWs === true) ? 
+    require('./prototypes/ws_server_wrapper.js') : 
+    require("./prototypes/socket_io_server_wrapper.js");
+
+const SocketWrapper = (config.useWs === true) ? 
+    require('./prototypes/ws_wrapper.js') : 
+    require("./prototypes/socket_io_wrapper.js");
+
 // Raise pingTimeout and pingInterval since slaves have a lot of overhead on their first connection
 // and won't make the default timeout of 20 seconds, thus creating constant connections and disconnections
-const _ioObject = require('socket.io')(_expressHttpServer, { pingTimeout: 60000, pingInterval: 65000 });
+var _socketServer;
 const _router = require("./web_router.js");
 const _hostServerStore = require("./host_server_store.js");
-const SocketWrapper = require("./prototypes/socket_wrapper.js");
 
 
 _initializeHttpsServer();
@@ -22,23 +31,32 @@ _initializeHttpsServer();
 
 exports.startListening = (port) => 
 {
+    _socketServer = new SocketServerWrapper(config.socketPort, 60000, 65000);
+
+    _socketServer.onListening(() => 
+    {
+        log.general(log.getLeanLevel(), `Socket server listening on port ${config.socketPort}`);
+    });
+
+    _socketServer.onSocketConnection((socket, req) => 
+    {
+        const wrapper = new SocketWrapper(socket, req);
+        log.general(log.getNormalLevel(), `Connection attempt by socket ${wrapper.getId()}`);
+        _handleSocketConnection(wrapper);
+    });
+
+    _socketServer.onServerError((err) => 
+    {
+        log.general(log.getLeanLevel(), `Server connection error occurred`, err);
+    });
+
+
     _router.setMiddlewares(_expressApp, _express);
     _router.setRoutes(_expressApp);
 
     _expressHttpServer.listen(port, () => 
     {
         log.general(log.getNormalLevel(), `Express HTTP server running on port ${_expressHttpServer.address().port}`);
-    });
-
-    _ioObject.on("connection", (socket) => 
-    {
-        const wrapper = new SocketWrapper(socket);
-        _requestServerData(wrapper);
-    });
-
-    _ioObject.engine.on("connection_error", (err) => 
-    {
-        log.general(log.getLeanLevel(), `Connection error occurred`, err);
     });
 };
 
@@ -92,45 +110,69 @@ function _initializeHttpsServer()
     log.general(log.getNormalLevel(), "HTTPS server initialized.");
 }
 
-function _requestServerData(socketWrapper)
+async function _handleSocketConnection(socketWrapper)
 {
-    log.general(log.getNormalLevel(), `Connection attempt by socket ${socketWrapper.getId()}`);
+    const serverData = await _requestAuthenticationData(socketWrapper) ?? {};
+    const { id, capacity } = serverData;
 
-    socketWrapper.emitPromise("REQUEST_SERVER_DATA")
-    .then((requestedData) =>
+    if (_isTrustedSlave(id, capacity) !== true)
     {
-        var hostServer;
+        log.general(log.getNormalLevel(), `Socket ${socketWrapper.getId()} failed to authenticate`);
+        return socketWrapper.terminate();
+    }
 
-        log.general(log.getVerboseLevel(), `Socket responded.`);
+    _initializeHostServer(socketWrapper, id, capacity);
+}
 
-        if (requestedData == null)
-            return log.general(log.getNormalLevel(), "Socket sent no data; ignoring.");
+async function _requestAuthenticationData(socketWrapper)
+{
+    try
+    {
+        const serverData = await socketWrapper.emitPromise("REQUEST_SERVER_DATA") ?? {};
+        return serverData;
+    }
 
-        else log.general(log.getNormalLevel(), "Data sent by socket: ", requestedData);
+    catch(err)
+    {
+        if (err.name === "SocketTimeout")
+            log.general(log.getNormalLevel(), `Request to socket ${socketWrapper.getId()} for authentication data timed out`, err.stack);
 
-        if (_hostServerStore.hasHostServerById(requestedData.id) === false)
-        {
-            log.general(log.getNormalLevel(), `Unrecognized server id ${requestedData.id}; closing socket.`);
-            return socketWrapper.close();
-        }
+        return null;
+    }
+}
 
-        log.general(log.getNormalLevel(), `Received recognized server's data. Instantiating HostServer object.`);
-        hostServer = _hostServerStore.getHostServerById(requestedData.id);
+function _isTrustedSlave(slaveId, capacity)
+{
+    if (slaveId == null)
+        return false;
+
+    if (assert.isInteger(capacity) === false || capacity <= 0)
+        return false;
+
+    if (_hostServerStore.hasHostServerById(slaveId) === false)
+        return false;
         
-        hostServer.setOnline(socketWrapper, requestedData.capacity);
-        
-        hostServer.onDisconnect((reason) =>
-        {
-            hostServer.setOffline();
-            log.general(log.getLeanLevel(), `Server ${hostServer.getName()} disconnected (reason: ${reason})`);
-        });
-        
-        log.general(log.getNormalLevel(), "Sending game data...");
+    return true;
+}
 
-        return hostServer.sendGameData()
-        .then(() => log.general(log.getNormalLevel(), "Server acknowledged game data. Launching games..."))
-        .then(() => hostServer.launchGames())
-        .then(() => log.general(log.getNormalLevel(), "Launch requests sent."));
-    })
-    .catch((err) => log.error(log.getNormalLevel(), `ERROR WITH SOCKET REQUEST_DATA`, err));
+async function _initializeHostServer(socketWrapper, id, capacity)
+{
+    log.general(log.getNormalLevel(), `Received recognized server's data. Instantiating HostServer object.`);
+    hostServer = _hostServerStore.getHostServerById(id);
+    
+    hostServer.setOnline(socketWrapper, capacity);
+    
+    hostServer.onDisconnect((reason) =>
+    {
+        hostServer.setOffline();
+        log.general(log.getLeanLevel(), `Server ${hostServer.getName()} disconnected (reason: ${reason})`);
+    });
+    
+    log.general(log.getNormalLevel(), "Sending game data...");
+
+    await hostServer.sendGameData();
+    log.general(log.getNormalLevel(), "Server acknowledged game data. Launching games...");
+
+    hostServer.launchGames();
+    log.general(log.getNormalLevel(), "Launch requests sent.");
 }
