@@ -64,19 +64,6 @@
         "helpText": "Claims a submitted pretender as yours for this game, which will give you access to advanced features like getting turn backups or turn reminders."
     },
 
-    "CREATE_GAME_CHANNEL":
-    {
-        "name": "channel",
-        "isEnabled": true,
-        "gameTypesSupported": [],
-        "argumentsRequiredInfo": ["A channel name"],
-        "optionalArguments": 0,
-        "regexpRequiredToInvoke": "CHANNEL",
-        "argumentRegexpArray": ["^[^ !@#$%^&*()+\\-=\\[\\]{};':\"\\\\|,.<>\/?]{3,32}$"],
-        "channelRequiredToInvoke": "guild",
-        "helpText": "Creates a game channel so you can first discuss things with other players before actually hosting a game. You must specify the name of the channel as the first argument of the command."
-    },
-
     "DEBUG_GAME":
     {
         "name": "debug",
@@ -129,19 +116,6 @@
         "argumentRegexpArray": ["^[A-Z_0-9]{3,32}$"],
         "channelRequiredToInvoke": "dm",
         "helpText": "Permanently deletes the game and its channel and role."
-    },
-
-    "DELETE_PENDING_CHANNEL":
-    {
-        "name": "deletependingchannel",
-        "isEnabled": true,
-        "gameTypesSupported": ["dom5"],
-        "argumentsRequiredInfo": [],
-        "optionalArguments": 0,
-        "regexpRequiredToInvoke": "DELETEPENDINGCHANNEL",
-        "argumentRegexpArray": [],
-        "channelRequiredToInvoke": "guild",
-        "helpText": "Deletes a channel that was created via command to host a game on it."
     },
 
     "DELETE_UNUSED_MAPS":
@@ -315,6 +289,19 @@
         "helpText": "Prints a list of all hosted games in this Discord guild, or all games if the command is sent by DM."
     },
 
+    "GET_LIST_OF_PROCESSING_TURNS":
+    {
+        "name": "processing",
+        "isEnabled": true,
+        "gameTypesSupported": [],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "PROCESSING",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "any",
+        "helpText": "Prints currently processing turns, ordered by the time at which they started doing so."
+    },
+
     "GET_LIST_OF_UNDONE_TURNS":
     {
         "name": "undone",
@@ -339,6 +326,19 @@
         "argumentRegexpArray": [],
         "channelRequiredToInvoke": "any",
         "helpText": "Prints the list of servers with the number of free hosting slots in each."
+    },
+
+    "GET_MASTER_PASSWORD":
+    {
+        "name": "password",
+        "isEnabled": true,
+        "gameTypesSupported": [],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "PASSWORD",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "game",
+        "helpText": "[Organizer-only] Sends the game's master password by DM."
     },
 
     "GET_PATREON_LINK":
@@ -535,7 +535,7 @@
         "argumentsRequiredInfo": ["A game's name"],
         "optionalArguments": 0,
         "regexpRequiredToInvoke": "RESTABLISH",
-        "argumentRegexpArray": ["^[A-Z_]{3,32}$"],
+        "argumentRegexpArray": ["^\\w{3,32}$"],
         "channelRequiredToInvoke": "any",
         "helpText": "Restablishes a game's deleted channel and/or role."
     },
@@ -545,10 +545,10 @@
         "name": "restartandgobacktolobby",
         "isEnabled": true,
         "gameTypesSupported": ["dom5"],
-        "argumentsRequiredInfo": [],
-        "optionalArguments": 0,
+        "argumentsRequiredInfo": ["`True` if you want the previously submitted pretenders to be deleted"],
+        "optionalArguments": 1,
         "regexpRequiredToInvoke": "RESTARTANDGOBACKTOLOBBY",
-        "argumentRegexpArray": [],
+        "argumentRegexpArray": ["^true$"],
         "channelRequiredToInvoke": "game",
         "helpText": "Restarts a game and goes back to turn 0, in the pretender submission lobby, where every player will have to resubmit their pretenders."
     },
