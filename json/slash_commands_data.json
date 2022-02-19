@@ -63,22 +63,6 @@
         ]
     },
 
-    "CREATE_GAME_CHANNEL":
-    {
-        "name": "channel",
-        "isEnabled": true,
-        "channelRequiredToInvoke": "guild",
-        "description": "Creates a game channel to discuss settings before actually hosting a game.",
-        "options": [
-            {
-                "name": "channel_name",
-                "type": "STRING",
-                "description": "A channel name",
-                "required": true
-            }
-        ]
-    },
-
     "DELETE_GAME":
     {
         "name": "deletegamenotchannel",
@@ -127,14 +111,6 @@
                 "required": true
             }
         ]
-    },
-
-    "DELETE_PENDING_CHANNEL":
-    {
-        "name": "deletependingchannel",
-        "isEnabled": true,
-        "channelRequiredToInvoke": "guild",
-        "description": "Deletes the last channel that was created via the createchannel command."
     },
 
     "DELETE_UNUSED_MAPS":
@@ -275,6 +251,14 @@
         "description": "Prints a list of all hosted games in this Discord guild, or all games if the command is sent by DM."
     },
 
+    "GET_LIST_OF_PROCESSING_TURNS":
+    {
+        "name": "processing",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "any",
+        "description": "Prints currently processing turns, ordered by the time at which they started doing so."
+    },
+
     "GET_LIST_OF_UNDONE_TURNS":
     {
         "name": "undone",
@@ -289,6 +273,14 @@
         "isEnabled": true,
         "channelRequiredToInvoke": "any",
         "description": "Prints the list of servers with the number of free hosting slots in each."
+    },
+
+    "GET_MASTER_PASSWORD":
+    {
+        "name": "password",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "game",
+        "description": "[Organizer-only] Sends the game's master password by DM."
     },
 
     "GET_PATREON_LINK":
@@ -473,7 +465,15 @@
         "name": "restartandgobacktolobby",
         "isEnabled": true,
         "channelRequiredToInvoke": "game",
-        "description": "[Game-organizer-only] Restarts the game back to the pretender lobby; players must resubmit."
+        "description": "[Game-organizer-only] Restarts the game back to the pretender lobby; players must resubmit.",
+        "options": [
+            {
+                "name": "delete_pretenders",
+                "type": "STRING",
+                "description": "`True` if you want the previously submitted pretenders to be deleted",
+                "required": false
+            }
+        ]
     },
 
     "ROLL_DICE":
