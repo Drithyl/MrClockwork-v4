@@ -14,13 +14,13 @@ module.exports = async (game, dom5Events) =>
         status.setLastTurnTimestamp(Date.now());
         status.setMsToDefaultTimer(game);
         status.setIsTurnProcessing(false);
-        _status.setIsCurrentTurnRollback(true);
+        status.setIsCurrentTurnRollback(true);
 
-        log.general(log.getNormalLevel(), `${game.getName()}\t_isCurrentRollback set to ${_status.isCurrentTurnRollback()}`);
+        log.general(log.getNormalLevel(), `${game.getName()}\t_isCurrentRollback set to ${status.isCurrentTurnRollback()}`);
 
         // Log and announce the turn rollback
         log.general(log.getNormalLevel(), `${gameName}\trollbacked to turn ${turnNumber}.`);
-        await game.sendGameAnnouncement(`The game has been **rollbacked to turn ${turnNumber}**. This turn will not process automatically; instead, it must be force hosted using !forcehost once everyone is ready.`);
+        await game.sendGameAnnouncement(`The game has been **rollbacked to turn ${turnNumber}**. This turn will not process automatically; instead, it must be force-hosted using \`!forcehost\` once everyone is ready.`);
     }
 
     catch(err)
