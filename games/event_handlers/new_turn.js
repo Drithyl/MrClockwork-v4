@@ -1,5 +1,6 @@
 
 const log = require("../../logger.js");
+const assert = require("../../asserter.js");
 const dom5SettingFlags = require("../../json/dominions5_setting_flags.json");
 const MessagePayload = require("../../discord/prototypes/message_payload.js");
 const botClientWrapper = require("../../discord/wrappers/bot_client_wrapper.js");
@@ -134,7 +135,7 @@ function _buildMessagePayload(game, playerFile, fetchedTurnFiles)
     const scoreFile = (fetchedTurnFiles != null) ? fetchedTurnFiles.scores : null;
     const nationTurnFiles = (fetchedTurnFiles != null) ? fetchedTurnFiles.turnFiles : {};
 
-    const payload = new MessagePayload(`Find below your nation files for turn ${turnNumber}.`);
+    const payload = new MessagePayload(`Find below your nation files for turn ${turnNumber}.\n\n`);
 
 
     if (scoreFile != null && 
@@ -146,7 +147,11 @@ function _buildMessagePayload(game, playerFile, fetchedTurnFiles)
 
     controlledNations.forEach((nationFilename) =>
     {
-        if (nationTurnFiles[nationFilename] != null)
+        // If it's a string, then an error occurred; add it onto the payload as a message
+        if (assert.isString(nationTurnFiles[nationFilename]) === true)
+            payload.addContent(`**${nationFilename}**: ${nationTurnFiles[nationFilename]}`);
+
+        else if (nationTurnFiles[nationFilename] != null)
             payload.setAttachment(`${nationFilename}.trn`, nationTurnFiles[nationFilename]);
     });
 
