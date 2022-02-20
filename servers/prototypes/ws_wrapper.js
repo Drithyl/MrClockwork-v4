@@ -50,7 +50,7 @@ function WebSocketWrapper(ws, req)
             trigger,
             data: data,
             expectsResponse,
-            error: (assert.isObject(error) === true) ? error.stack : error
+            error: (assert.isObject(error) === true) ? error.message : error
         };
 
         _ws.send( _stringify(wrappedData) );
