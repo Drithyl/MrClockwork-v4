@@ -13,72 +13,23 @@ function MessagePayload(header, content = "", splitContent = true, splitWrapper 
     assert.isStringOrThrow(content);
 
     const _header = header;
-    const _content = content;
     const _payloadObject = {};
     const _attachments = [];
     const _splitContent = splitContent;
+    var _content = content;
     var _contentArray = [];
 
-    // If the total length of the header and content is less than the max allowed,
-    // then add them together to be sent in a single message
-    if (_header.length + _content.length < MAX_MESSAGE_CHARACTERS)
-        _contentArray.push(_header + _content);
+    _ensureContentIsUnderMaxLimit();
 
-    // If the length is more than allowed and split content is true,
-    // we will split the content payload into several substrings
-    else if (_splitContent === true)
+
+    this.addContent = (content) =>
     {
-        // Split by newlines first so we don't cut off sentences in the middle
-        const lines = _content.split(/\n/g);
-
-        // Account for the wrap characters' length
-        const maxCombinedLength = MAX_MESSAGE_CHARACTERS - (splitWrapper.length*2);
-
-        // Add the header to the start of our lines, splitting it as well
-        // if it turns out to be larger than the max characters by itself
-        if (_header.length >= maxCombinedLength)
-            lines.unshift(..._header.split(/\n/g));
-
-        else lines.unshift(_header);
-
-        // If the content is one single big line of over the allowed length, 
-        // then split it by chunks of at most the allowed length
-        if (/\S+/i.test(_content) === true && lines.length === 1)
-            _contentArray = lines[0].match(new RegExp(`[\\s\\S]{1,${maxCombinedLength}}`, "g"));
-
-        // Otherwise, recompile all the lines into several submessages of at most the allowed length each
-        else lines.forEach((line) =>
+        if (assert.isString(content) === true)
         {
-            var lastIndex = (_contentArray.length-1 < 0) ? 0 : _contentArray.length-1;
-
-            if (_contentArray.length < 1)
-                _contentArray.push(`${line}\n`);
-
-            // If adding the new line to this submessage would push it above max length, make a new submessage
-            else if (_contentArray[lastIndex].length + line.length > maxCombinedLength)
-                _contentArray.push(`${line}\n`);
-
-            // Otherwise, attach it to the current submessage
-            else _contentArray[lastIndex] += `${line}\n`;
-        });
-
-        // Add the wrapping characters in-between each submessage
-        _contentArray = _contentArray.map((contentChunk, i, arr) =>
-        {
-            if (i > 0) contentChunk = `${splitWrapper}${contentChunk}`;
-            if (i < arr.length - 1) contentChunk = `${contentChunk}${splitWrapper}`;
-            return contentChunk;
-        });
-    }
-
-    // If the length is more than allowed but splitContent is false,
-    // then turn the content into an attached text file instead
-    else
-    {
-        _contentArray.push(_header);
-        _attachments.push({ name: "content.txt", attachment: Buffer.from(_content, "utf8") });
-    }
-
+            _content += content;
+            _splitContent();
+        }
+    };
 
     this.setEmbed = (embed) =>
     {
@@ -158,7 +109,74 @@ function MessagePayload(header, content = "", splitContent = true, splitWrapper 
         return new MessageWrapper(sentMessage);
     };
 
+    
+    // Takes care of splitting the content in proper chunks if they are too large
+    function _ensureContentIsUnderMaxLimit()
+    {
+        _contentArray = [];
+
+        // If the total length of the header and content is less than the max allowed,
+        // then add them together to be sent in a single message
+        if (_header.length + _content.length < MAX_MESSAGE_CHARACTERS)
+            _contentArray.push(_header + _content);
+
+        // If the length is more than allowed and split content is true,
+        // we will split the content payload into several substrings
+        else if (_splitContent === true)
+        {
+            // Split by newlines first so we don't cut off sentences in the middle
+            const lines = _content.split(/\n/g);
+
+            // Account for the wrap characters' length
+            const maxCombinedLength = MAX_MESSAGE_CHARACTERS - (splitWrapper.length*2);
+
+            // Add the header to the start of our lines, splitting it as well
+            // if it turns out to be larger than the max characters by itself
+            if (_header.length >= maxCombinedLength)
+                lines.unshift(..._header.split(/\n/g));
+
+            else lines.unshift(_header);
+
+            // If the content is one single big line of over the allowed length, 
+            // then split it by chunks of at most the allowed length
+            if (/\S+/i.test(_content) === true && lines.length === 1)
+                _contentArray = lines[0].match(new RegExp(`[\\s\\S]{1,${maxCombinedLength}}`, "g"));
+
+            // Otherwise, recompile all the lines into several submessages of at most the allowed length each
+            else lines.forEach((line) =>
+            {
+                var lastIndex = (_contentArray.length-1 < 0) ? 0 : _contentArray.length-1;
+
+                if (_contentArray.length < 1)
+                    _contentArray.push(`${line}\n`);
+
+                // If adding the new line to this submessage would push it above max length, make a new submessage
+                else if (_contentArray[lastIndex].length + line.length > maxCombinedLength)
+                    _contentArray.push(`${line}\n`);
+
+                // Otherwise, attach it to the current submessage
+                else _contentArray[lastIndex] += `${line}\n`;
+            });
+
+            // Add the wrapping characters in-between each submessage
+            _contentArray = _contentArray.map((contentChunk, i, arr) =>
+            {
+                if (i > 0) contentChunk = `${splitWrapper}${contentChunk}`;
+                if (i < arr.length - 1) contentChunk = `${contentChunk}${splitWrapper}`;
+                return contentChunk;
+            });
+        }
+
+        // If the length is more than allowed but splitContent is false,
+        // then turn the content into an attached text file instead
+        else
+        {
+            _contentArray.push(_header);
+            _attachments.push({ name: "content.txt", attachment: Buffer.from(_content, "utf8") });
+        }
+    }
 }
+
 
 
 function _areAttachmentsTooLarge(files)
