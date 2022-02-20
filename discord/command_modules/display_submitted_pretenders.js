@@ -66,7 +66,7 @@ function _formatSubmittedPretenders(humanPretenderList)
         formattedStr += `\n**Living nations**:\n${livingNationsString.toBox()}\n`;
         
     if (deadNationsString.length > 0)
-        formattedStr += `\n**Dead nations** (use !unclaim X to have the game removed from your played games list):\n${deadNationsString.toBox()}`;
+        formattedStr += `\n**Dead nations** (use \`!unclaim X\` to have the game removed from your played games list):\n${deadNationsString.toBox()}`;
 
     return formattedStr;
 }
