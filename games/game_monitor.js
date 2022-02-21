@@ -66,8 +66,6 @@ function _updateGame(game, updateData)
     // Get our game's last recorded status
     const gameStatus = game.getLastKnownStatus();
 
-    log.general(log.getVerboseLevel(), `${game.getName()}\tupdating...`);
-
     // Fetch the most recent status of the game
     const newStatusSnapshot = parseDom5Update(game, updateData);
 

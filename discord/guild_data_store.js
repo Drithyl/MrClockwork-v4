@@ -238,7 +238,6 @@ function _saveGuildData(guildId)
     const pathToGuildData = `${config.dataPath}/${config.guildDataFolder}`;
     const stringifiedData = JSON.stringify(loadedGuildData[guildId], null, 2);
 
-    log.general(log.getVerboseLevel(), `Saving data of guild ${guildId}...`);
     return Promise.resolve()
     .then(() =>
     {
@@ -250,10 +249,5 @@ function _saveGuildData(guildId)
 
         else return Promise.resolve();
     })
-    .then(() => 
-    {
-        log.general(log.getVerboseLevel(), `Writing data file...`);
-        return fsp.writeFile(`${pathToGuildData}/${guildId}/data.json`, stringifiedData);
-    })
-    .then(() => log.general(log.getVerboseLevel(), `Data for guild ${guildId} saved successfully.`));
+    .then(() => fsp.writeFile(`${pathToGuildData}/${guildId}/data.json`, stringifiedData));
 }

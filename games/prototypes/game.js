@@ -229,8 +229,6 @@ function Game()
         var data = JSON.stringify(this, null, 2);
         var path = `${config.dataPath}/${config.gameDataFolder}`;
 
-        log.general(log.getVerboseLevel(), `Saving data of game ${name}...`);
-
         return Promise.resolve()
         .then(() =>
         {
@@ -242,15 +240,7 @@ function Game()
 
             else return Promise.resolve();
         })
-        .then(() => 
-        {
-            log.general(log.getVerboseLevel(), `Writing data file...`);
-            return fsp.writeFile(`${path}/${name}/data.json`, data);
-        })
-        .then(() => 
-        {
-            log.general(log.getVerboseLevel(), `Data for game ${name} saved successfully.`);
-        });
+        .then(() => fsp.writeFile(`${path}/${name}/data.json`, data));
     };
 
     this.loadSettingsFromInput = (inputValues) =>
