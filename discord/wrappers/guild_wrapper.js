@@ -45,7 +45,7 @@ function GuildWrapper(discordJsGuildObject)
     this.memberHasGameMasterRole = (guildMemberWrapper) => guildMemberWrapper.hasRole(guildDataStore.getGameMasterRoleId(this.getId())) === true;
     this.checkMemberHasTrustedRoleOrHigher = async (guildMemberWrapper) =>
     {
-        if (this.memberIsOwner() === true)
+        if (this.memberIsOwner(guildMemberWrapper.getId()) === true)
             return true;
 
         const trustedRole = await this.fetchTrustedRole();
@@ -58,7 +58,7 @@ function GuildWrapper(discordJsGuildObject)
     
     this.checkMemberHasGameMasterRoleOrHigher = async (guildMemberWrapper) =>
     {
-        if (this.memberIsOwner() === true)
+        if (this.memberIsOwner(guildMemberWrapper.getId()) === true)
             return true;
             
         const gameMasterRole = await this.fetchGameMasterRole();
