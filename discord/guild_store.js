@@ -59,7 +59,8 @@ module.exports.getGuildsWhereUserIsTrusted = async (userId) =>
     for (var id in guildWrappers)
     {
         const guild = guildWrappers[id];
-        const isTrusted = await guild.checkMemberHasTrustedRoleOrHigher(userId);
+        const guildMemberWrapper = await guild.fetchGuildMemberWrapperById(userId);
+        const isTrusted = await guild.checkMemberHasTrustedRoleOrHigher(guildMemberWrapper);
 
         if (isTrusted === true)
             guildsWhereUserIsTrusted.push(guild);
