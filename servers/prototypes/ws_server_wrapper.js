@@ -117,7 +117,4 @@ function _ensureIsOnline(ws)
     
     if (server != null)
         return server.setOnline(true);
-    
-    const wrapper = new WebSocketWrapper(ws, ws.ip);
-    server.setSocket(wrapper);
 }
