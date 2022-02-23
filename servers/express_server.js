@@ -40,7 +40,7 @@ exports.startListening = (port) =>
 
     _socketServer.onSocketConnection((socket, req) => 
     {
-        const wrapper = new SocketWrapper(socket, req);
+        const wrapper = new SocketWrapper(socket, (req != null) ? req.socket.remoteAddress : undefined);
         log.general(log.getNormalLevel(), `Connection attempt by socket ${wrapper.getId()}`);
         _handleSocketConnection(wrapper);
     });
@@ -160,11 +160,11 @@ async function _initializeHostServer(socketWrapper, id, capacity)
     log.general(log.getNormalLevel(), `Received recognized server's data. Instantiating HostServer object.`);
     hostServer = _hostServerStore.getHostServerById(id);
     
-    hostServer.setOnline(socketWrapper, capacity);
+    hostServer.initializeConnection(socketWrapper, capacity);
     
     hostServer.onDisconnect((reason) =>
     {
-        hostServer.setOffline();
+        hostServer.terminateConnection();
         log.general(log.getLeanLevel(), `Server ${hostServer.getName()} disconnected (reason: ${reason})`);
     });
     
