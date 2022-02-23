@@ -59,11 +59,20 @@ module.exports.getGuildsWhereUserIsTrusted = async (userId) =>
     for (var id in guildWrappers)
     {
         const guild = guildWrappers[id];
-        const guildMemberWrapper = await guild.fetchGuildMemberWrapperById(userId);
-        const isTrusted = await guild.checkMemberHasTrustedRoleOrHigher(guildMemberWrapper);
 
-        if (isTrusted === true)
-            guildsWhereUserIsTrusted.push(guild);
+        try
+        {
+            const guildMemberWrapper = await guild.fetchGuildMemberWrapperById(userId);
+            const isTrusted = await guild.checkMemberHasTrustedRoleOrHigher(guildMemberWrapper);
+    
+            if (isTrusted === true)
+                guildsWhereUserIsTrusted.push(guild);
+        }
+
+        catch(err)
+        {
+            log.error(log.getLeanLevel(), `Guild ${guild.getName()} (${id}) error checking trusted role`, err.stack);
+        }
     }
 
     return guildsWhereUserIsTrusted;
