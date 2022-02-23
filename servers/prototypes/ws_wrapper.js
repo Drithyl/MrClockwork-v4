@@ -8,12 +8,12 @@ const { TimeoutError, SocketResponseError } = require("../../errors/custom_error
 
 module.exports = WebSocketWrapper;
 
-function WebSocketWrapper(ws, req)
+function WebSocketWrapper(ws, ip)
 {
     const _ws = ws;
     const _sentMessages = [];
     const _eventHandlers = {};
-    const _ip = req.socket.remoteAddress;
+    const _ip = ip;
 
     // Handle incoming messages on this socket distributing them
     // among listening handlers or treating them as responses
