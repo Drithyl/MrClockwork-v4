@@ -14,28 +14,28 @@ exports.startListening = () =>
     BotClientWrapper.addOnMessageReceivedHandler(_onMessageReceived);
 };
 
-function _onMessageReceived(discordJsMessage)
+async function _onMessageReceived(discordJsMessage)
 {
     var messageWrapper = new MessageWrapper(discordJsMessage);
     var senderId = messageWrapper.getSenderId();
 
     if (messageWrapper.startsWithCommandPrefix() === true)
     {
-        var context = new CommandContext(messageWrapper);
-        
-        if (commandStore.isCommandInvoked(context) === true)
-        {
-            try
-            {
-                log.command(log.getNormalLevel(), context);
-                commandStore.invokeCommand(context)
-                .catch((err) => _handleCommandError(messageWrapper, err));
-            }
+        const context = new CommandContext(messageWrapper);
+        const command = commandStore.getInvokedCommand(context);
 
-            catch(err)
-            {
-                _handleCommandError(messageWrapper, err);
-            }
+        if (command == null)
+            return;
+        
+        try
+        {
+            log.command(log.getNormalLevel(), context);
+            await command.invoke(context)
+        }
+
+        catch(err)
+        {
+            _handleCommandError(messageWrapper, err);
         }
     }
 

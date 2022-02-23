@@ -12,19 +12,20 @@ exports.startListening = () =>
     BotClientWrapper.addOnCommandInteractionReceivedHandler(_onCommandInteractionReceived);
 };
 
-function _onCommandInteractionReceived(discordJsInteraction)
+async function _onCommandInteractionReceived(discordJsInteraction)
 {
     var commandInteractionWrapper = new CommandInteractionWrapper(discordJsInteraction);
     log.command(log.getNormalLevel(), commandInteractionWrapper);
     
     try
     {
-        commandInteractionWrapper.deferReply()
-        .then(() => commandStore.invokeCommandInteraction(commandInteractionWrapper))
-        .catch((err) => 
-        {
-            _handleCommandInteractionError(commandInteractionWrapper, err)
-        });
+        await commandInteractionWrapper.deferReply();
+        const command = commandStore.getInvokedCommand(commandInteractionWrapper);
+
+        if (command == null)
+            return commandInteractionWrapper.respondToCommand(new MessagePayload(`Command cannot be used here; check the command requirements.`));
+
+        await command.invoke(commandInteractionWrapper);
     }
 
     catch(err)
