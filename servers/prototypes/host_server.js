@@ -29,6 +29,7 @@ function HostServer(id)
     this.getName = () => _name;
     this.getId = () => _id;
     this.getIp = () => _ip;
+    this.getSocketId = () => (_socketWrapper != null) ? _socketWrapper.getId() : null;
     this.getTotalCapacity = () => (_capacity == null) ? 0 : _capacity;
 
     //Data used by client-side code when accessing hosting website
@@ -42,11 +43,21 @@ function HostServer(id)
     };
 
     this.isOnline = () => _isOnline;
+    this.setOnline = (isOnline) => 
+    {
+        if (assert.isBoolean(isOnline) === true)
+            _isOnline = isOnline;
+    };
     
-    this.setOnline = (socketWrapper, capacity) =>
+    this.initializeConnection = (socketWrapper, capacity) =>
+    {
+        this.setSocket(socketWrapper);
+        this.setCapacity(capacity);
+    };
+
+    this.setSocket = (socketWrapper) => 
     {
         _socketWrapper = socketWrapper;
-        _capacity = capacity;
         _isOnline = true;
 
         _socketWrapper.listenTo("GAME_UPDATE", (data) =>
@@ -55,11 +66,18 @@ function HostServer(id)
             gameMonitor.updateDom5Game(game, data);
         });
     };
+    
+    this.setCapacity = (capacity) =>
+    {
+        if (assert.isInteger(capacity) === true && capacity >= 0)
+            _capacity = capacity;
+    };
 
-    this.setOffline = () =>
+    this.terminateConnection = () =>
     {
         _capacity = null;
         _isOnline = false;
+        _socketWrapper = null;
     };
 
     this.onDisconnect = (fnToCall) => 
