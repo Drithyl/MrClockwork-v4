@@ -3,6 +3,8 @@
 const log = require("../../logger.js");
 const { WebSocketServer } = require("ws");
 const assert = require("../../asserter.js");
+const WebSocketWrapper = require("./ws_wrapper.js");
+const hostServerStore = require("../host_server_store.js");
 
 module.exports = WebSocketServerWrapper;
 
@@ -105,5 +107,17 @@ function _heartbeat()
 {
     // 'this' is passed by context to the function on the event listeners
     this.isAlive = true;
+    _ensureIsOnline(this);
     log.timeEnd(this.ip);
+}
+
+function _ensureIsOnline(ws)
+{
+    const server = hostServerStore.getHostServerBySocketId(ws.ip);
+    
+    if (server != null)
+        return server.setOnline(true);
+    
+    const wrapper = new WebSocketWrapper(ws, ws.ip);
+    server.setSocket(wrapper);
 }
