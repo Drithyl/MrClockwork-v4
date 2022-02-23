@@ -21,41 +21,14 @@ exports.deployCommandIntegration = () =>
     }));
 };
 
-exports.isCommandInvoked = (commandContext) =>
+exports.getInvokedCommand = (commandContext) => 
 {
     for (var i = 0; i < commandStore.length; i++)
     {
         var command = commandStore[i];
 
         if (command.isInvoked(commandContext) === true)
-            return true;
-    }
-
-    log.general(log.getNormalLevel(), "No command was found that matched the requirements");
-    return false;
-};
-
-exports.invokeCommand = (commandContext) =>
-{
-    for (var i = 0; i < commandStore.length; i++)
-    {
-        var command = commandStore[i];
-
-        if (command.isInvoked(commandContext) === true)
-            return command.invoke(commandContext)
-            .catch((err) => Promise.reject(err));
-    }
-};
-
-exports.invokeCommandInteraction = (commandInteractionWrapper) =>
-{
-    for (var i = 0; i < commandStore.length; i++)
-    {
-        var command = commandStore[i];
-
-        if (command.isInvoked(commandInteractionWrapper) === true)
-            return command.invoke(commandInteractionWrapper)
-            .catch((err) => Promise.reject(err));
+            return command;
     }
 };
 
