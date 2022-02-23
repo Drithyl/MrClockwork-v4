@@ -37,6 +37,7 @@ exports.hasServersOnline = () =>
 
 exports.getHostServerById = (...args) => _findServerById(...args);
 exports.hasHostServerById = (...args) => _findServerById(...args) != null;
+exports.getHostServerBySocketId = (...args) => _findServerBySocketId(...args);
 
 exports.getHostServerByName = (...args) => _findServerByName(...args);
 exports.hasHostServerByName = (...args) => _findServerByName(...args) != null;
@@ -201,6 +202,20 @@ function _findServerById(idToFind)
     {
         if (id.toLowerCase() === idToFind.toLowerCase())
             return _hostServersById[id];
+    }
+}
+
+function _findServerBySocketId(idToFind)
+{
+    if (idToFind == null)
+        return null;
+
+    for (var id in _hostServersById)
+    {
+        const server = _hostServersById[id];
+
+        if (server.getSocketId() === idToFind.toLowerCase())
+            return server;
     }
 }
 
