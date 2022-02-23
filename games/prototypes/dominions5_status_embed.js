@@ -78,7 +78,7 @@ function Dominions5StatusEmbed(embedWrapper)
                 _embed.removeFields(1, 3);
         }
 
-        else if (updateData.isOngoing() === true)
+        else if (updateData.hasStarted() === true)
         {
             _embed.replaceField(0, STATUS_HEADER, "online", true);
 
