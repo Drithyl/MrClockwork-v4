@@ -71,6 +71,10 @@ module.exports.getGuildsWhereUserIsTrusted = async (userId) =>
 
         catch(err)
         {
+            // If member can't be found or guild doesn't have trusted role, it's not an error
+            if (err.name === "DiscordAPIError")
+                continue;
+
             log.error(log.getLeanLevel(), `Guild ${guild.getName()} (${id}) error checking trusted role`, err.stack);
         }
     }
