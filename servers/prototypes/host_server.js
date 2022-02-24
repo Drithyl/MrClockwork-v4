@@ -75,7 +75,6 @@ function HostServer(id)
 
     this.terminateConnection = () =>
     {
-        _capacity = null;
         _isOnline = false;
         _socketWrapper = null;
     };

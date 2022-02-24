@@ -3,7 +3,6 @@
 const log = require("../../logger.js");
 const { WebSocketServer } = require("ws");
 const assert = require("../../asserter.js");
-const WebSocketWrapper = require("./ws_wrapper.js");
 const hostServerStore = require("../host_server_store.js");
 
 module.exports = WebSocketServerWrapper;

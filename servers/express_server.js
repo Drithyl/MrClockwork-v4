@@ -3,6 +3,7 @@ const _express = require("express");
 const log = require("../logger.js");
 const assert = require("../asserter.js");
 const config = require("../config/config.json");
+const botClientWrapper = require("../discord/wrappers/bot_client_wrapper.js");
 
 const _expressApp = _express();
 var _expressAppHttps;
@@ -24,6 +25,7 @@ const SocketWrapper = (config.useWs === true) ?
 var _socketServer;
 const _router = require("./web_router.js");
 const _hostServerStore = require("./host_server_store.js");
+const MessagePayload = require("../discord/prototypes/message_payload.js");
 
 
 _initializeHttpsServer();
@@ -38,11 +40,12 @@ exports.startListening = (port) =>
         log.general(log.getLeanLevel(), `Socket server listening on port ${config.socketPort}`);
     });
 
-    _socketServer.onSocketConnection((socket, req) => 
+    _socketServer.onSocketConnection(async (socket, req) => 
     {
         const wrapper = new SocketWrapper(socket, (req != null) ? req.socket.remoteAddress : undefined);
         log.general(log.getNormalLevel(), `Connection attempt by socket ${wrapper.getId()}`);
-        _handleSocketConnection(wrapper);
+        await botClientWrapper.messageDev(new MessagePayload(`Connection attempt by socket ${wrapper.getId()}`));
+        await _handleSocketConnection(wrapper);
     });
 
     _socketServer.onServerError((err) => 
@@ -118,6 +121,7 @@ async function _handleSocketConnection(socketWrapper)
     if (_isTrustedSlave(id, capacity) !== true)
     {
         log.general(log.getNormalLevel(), `Socket ${socketWrapper.getId()} failed to authenticate`);
+        botClientWrapper.messageDev(new MessagePayload(`Socket ${socketWrapper.getId()} failed to authenticate.`));
         return socketWrapper.terminate();
     }
 
@@ -159,13 +163,15 @@ async function _initializeHostServer(socketWrapper, id, capacity)
 {
     log.general(log.getNormalLevel(), `Received recognized server's data. Instantiating HostServer object.`);
     hostServer = _hostServerStore.getHostServerById(id);
+    botClientWrapper.messageDev(new MessagePayload(`Server ${hostServer.getName()} (${hostServer.getIp()}) authenticated.`));
     
     hostServer.initializeConnection(socketWrapper, capacity);
     
-    hostServer.onDisconnect((reason) =>
+    hostServer.onDisconnect((code, reason) =>
     {
         hostServer.terminateConnection();
-        log.general(log.getLeanLevel(), `Server ${hostServer.getName()} disconnected (reason: ${reason})`);
+        log.general(log.getLeanLevel(), `Server ${hostServer.getName()} disconnected (code: ${code}, reason: ${reason})`);
+        botClientWrapper.messageDev(new MessagePayload(`Server ${hostServer.getName()} disconnected (code: ${code}, reason: ${reason})`));
     });
     
     log.general(log.getNormalLevel(), "Sending game data...");

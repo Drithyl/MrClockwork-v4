@@ -24,19 +24,28 @@ const _discordJsBotClient = new Client({
     partials: [ "MESSAGE", "CHANNEL", "REACTION" ]
 });
 
+var _devUserWrapper;
+
 
 exports.getId = () => _discordJsBotClient.user.id;
 
-exports.loginToDiscord = () => 
+exports.loginToDiscord = async () => 
 {
     log.general(log.getNormalLevel(), "Logging into Discord...");
-    return _discordJsBotClient.login(config.loginToken)
-    .then(() => 
+    await _discordJsBotClient.login(config.loginToken);
+    log.general(log.getNormalLevel(), "Bot logged in.");
+
+    // Fetch dev Discord user for potential messaging
+    if (config.devIds != null && config.devIds.length > 0)
     {
-        log.general(log.getNormalLevel(), "Bot logged in.");
-        return Promise.resolve(_discordJsBotClient.guilds.cache);
-    });
+        _devUserWrapper = await _discordJsBotClient.users.fetch(config.devIds[0]);
+        _devUserWrapper = new UserWrapper(_devUserWrapper)
+    }
+
+    return _discordJsBotClient.guilds.cache;
 };
+
+exports.messageDev = async (payload) => _devUserWrapper.sendMessage(payload);
 
 //wrappers for discord events caught by the bot client in the DiscordJs library
 exports.addOnLoggedInHandler = (handler) => _discordJsBotClient.on("ready", () => handler());
