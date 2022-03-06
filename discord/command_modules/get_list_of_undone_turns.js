@@ -43,7 +43,7 @@ function _behaviour(commandContext)
     if (uncheckedTurns == null || unfinishedTurns == null || assert.isInteger(latestTimestamp) === false)
         return commandContext.respondToCommand(new MessagePayload(`Undone turn data is currently unavailable`));
 
-    messageString = `Below is the list of undone turns (last successful check: **${new Date(latestTimestamp).toTimeString()}**):\n\n`;
+    messageString = `Current time left: **${status.printTimeLeft()}**. Below is the list of undone turns (last successful check: **${new Date(latestTimestamp).toTimeString()}**):\n\n`;
 
     if (unfinishedTurns.length > 0)
     {
