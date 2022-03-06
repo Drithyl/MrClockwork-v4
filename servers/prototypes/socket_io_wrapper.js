@@ -52,7 +52,7 @@ function SocketWrapper(socketIoObject)
         });
     };
 
-    this.listenTo = (trigger, handler) =>
+    this.onMessage = (trigger, handler) =>
     {
         return new Promise((resolve, reject) =>
         {
@@ -70,13 +70,13 @@ function SocketWrapper(socketIoObject)
     };
 
     
-    this.listenTo("STDIO_DATA", (data) => 
+    this.onMessage("STDIO_DATA", (data) => 
     {
         log.general(log.getVerboseLevel(), `${data.name}: ${data.type} data received`, data.data);
         handleDom5Data(data.name, data.data);
     });
 
-    this.listenTo("GAME_ERROR", (data) => 
+    this.onMessage("GAME_ERROR", (data) => 
     {
         log.error(log.getLeanLevel(), `${data.name} REPORTED GAME ERROR`, data.error);
         handleDom5Data(data.name, data.error);

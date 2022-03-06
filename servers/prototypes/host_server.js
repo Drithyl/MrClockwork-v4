@@ -5,6 +5,8 @@ const gameMonitor = require("../../games/game_monitor.js");
 const { SocketResponseError } = require("../../errors/custom_errors.js");
 const ongoingGamesStore = require("../../games/ongoing_games_store");
 const trustedServerData = require("../../config/trusted_server_data.json");
+const botClientWrapper = require("../../discord/wrappers/bot_client_wrapper.js");
+const MessagePayload = require("../../discord/prototypes/message_payload.js");
 
 module.exports = HostServer;
 
@@ -22,7 +24,6 @@ function HostServer(id)
     const _name = _data.name;
     const _ip = _data.ip;
 
-    var _isOnline = false;
     var _capacity;
     var _socketWrapper;
 
@@ -42,12 +43,7 @@ function HostServer(id)
         };
     };
 
-    this.isOnline = () => _isOnline;
-    this.setOnline = (isOnline) => 
-    {
-        if (assert.isBoolean(isOnline) === true)
-            _isOnline = isOnline;
-    };
+    this.isOnline = () => (_socketWrapper != null) ? _socketWrapper.isConnected() : false;
     
     this.initializeConnection = (socketWrapper, capacity) =>
     {
@@ -58,12 +54,17 @@ function HostServer(id)
     this.setSocket = (socketWrapper) => 
     {
         _socketWrapper = socketWrapper;
-        _isOnline = true;
 
-        _socketWrapper.listenTo("GAME_UPDATE", (data) =>
+        _socketWrapper.onMessage("GAME_UPDATE", (data) =>
         {
             const game = ongoingGamesStore.getOngoingGameByName(data.gameName);
             gameMonitor.updateDom5Game(game, data);
+        });
+
+        _socketWrapper.onClose((code, reason) =>
+        {
+            log.general(log.getLeanLevel(), `Server ${this.getName()} disconnected (code: ${code}, reason: ${reason})`);
+            botClientWrapper.messageDev(new MessagePayload(`Server ${this.getName()} disconnected (code: ${code}, reason: ${reason})`));
         });
     };
     
@@ -73,34 +74,16 @@ function HostServer(id)
             _capacity = capacity;
     };
 
-    this.terminateConnection = () =>
-    {
-        _isOnline = false;
-        _socketWrapper = null;
-    };
-
-    this.onDisconnect = (fnToCall) => 
-    {
-        if (_isOnline === false)
-            throw new SocketResponseError(`Server is offline.`);
-
-        return _socketWrapper.onDisconnect(fnToCall);
-    };
-
     this.emitPromise = (...args) => 
     {
-        if (_isOnline === false)
+        if (this.isOnline() === false)
             return Promise.reject(new SocketResponseError(`Server is offline.`));
 
         return _socketWrapper.emitPromise(...args);
     };
-    this.listenTo = (...args) => 
-    {
-        if (_isOnline === false)
-            return Promise.reject(new SocketResponseError(`Server is offline.`));
-            
-        return _socketWrapper.listenTo(...args);
-    };
+
+    this.onDisconnect = (fnToCall) => _socketWrapper.onClose(fnToCall);
+    this.onMessage = (...args) => _socketWrapper.onMessage(...args);
 
     this.getAvailableSlots = () => this.getTotalCapacity() - this.getNbrOfGames();
     this.hasAvailableSlots = () => this.getAvailableSlots() > 0;

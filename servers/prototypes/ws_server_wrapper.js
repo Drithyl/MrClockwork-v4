@@ -1,23 +1,96 @@
 
-
-const log = require("../../logger.js");
-const { WebSocketServer } = require("ws");
+const { createServer } = require('http');
+const { WebSocketServer } = require('ws');
 const assert = require("../../asserter.js");
-const hostServerStore = require("../host_server_store.js");
+const ServerSocketWrapper = require('./ws_wrapper');
+const trustedServers = require("../../config/trusted_server_data.json");
+
 
 module.exports = WebSocketServerWrapper;
-
 
 function WebSocketServerWrapper(port)
 {
     const _port = port ?? 8080;
-    const _wss = new WebSocketServer({ port: _port });
-    const interval = setInterval(_ping.bind(null, _wss), 30000);
+    const _connectedSockets = [];
+    const _server = createServer();
+    const _wss = new WebSocketServer({ noServer: true });
+    const _pingIntervalId = setInterval(_pingClients.bind(null, _connectedSockets), 30000);
 
     var _onListeningHandler;
     var _onServerClosedHandler;
     var _onSocketConnectionHandler;
     var _onServerErrorHandler;
+
+
+    // First comes an upgrade request to the HTTP server to move to WebSockets
+    _server.on('upgrade', function upgrade(request, socket, head) 
+    {
+        const passedAuthentication = _authenticate(request);
+
+        if (passedAuthentication !== true)
+        {
+            socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
+            socket.destroy();
+            return;
+        }
+
+        // When authenticated properly, we accept the upgrade telling the
+        // WSS to handle it. When done, we emit the connection event.
+        _wss.handleUpgrade(request, socket, head, function done(ws) 
+        {
+            _wss.emit('connection', ws, request);
+        });
+    });
+
+    // Now socket is connected to WebSocket!
+    _wss.on('connection', function connection(ws, request) 
+    {
+        const wsWrapper = new ServerSocketWrapper(ws);
+        wsWrapper.setId(request.socket.remoteAddress);
+        
+        _connectedSockets.push(wsWrapper);
+        _ensureConnectionsMatch(_wss, _connectedSockets);
+        _onSocketConnectionHandler(wsWrapper, request);
+        
+        // Set ws connection alive
+        wsWrapper.setIsAlive(true);
+    
+        wsWrapper.onMessage("authentication", (id) =>
+        {
+            wsWrapper.setId(id);
+        });
+    
+        // On client closed, run _close()
+        wsWrapper.onClose(function onSocketClose(code, reason) {
+            _onSocketClose(code, reason, wsWrapper);
+        });
+    
+        wsWrapper.onError(function onSocketError(err) {
+            _onSocketError(err, wss);
+        });
+    });
+    
+    _wss.on("listening", (err) =>
+    {
+        if (assert.isFunction(_onListeningHandler) === true)
+            _onListeningHandler();
+    });
+
+    _wss.on("close", () =>
+    {
+        if (assert.isFunction(_onServerClosedHandler) === true)
+            _onServerClosedHandler();
+            
+        clearInterval(_pingIntervalId);
+    });
+
+    _wss.on("error", (err) =>
+    {
+        if (assert.isFunction(_onServerErrorHandler) === true)
+            _onServerErrorHandler(err);
+    });
+
+    _server.listen(_port);
 
     this.getPort = () => _port;
 
@@ -53,67 +126,71 @@ function WebSocketServerWrapper(port)
         _onServerErrorHandler = handler;
     };
 
-    _wss.on("listening", (err) =>
-    {
-        if (assert.isFunction(_onListeningHandler) === true)
-            _onListeningHandler();
-    });
 
-    _wss.on("close", () =>
+    function _onSocketClose(code, reason, wsWrapper)
     {
-        if (assert.isFunction(_onServerClosedHandler) === true)
-            _onServerClosedHandler();
-            
-        clearInterval(interval);
-    });
+        const index = _connectedSockets.map((ws) => {
+            return ws.getId();
 
-    _wss.on("connection", (ws, req) =>
+        }).indexOf(wsWrapper.getId());
+
+        _connectedSockets.splice(index, 1);
+        _ensureConnectionsMatch(_wss, _connectedSockets);
+    }
+}
+
+
+function _authenticate(req)
+{
+    const connectingIp = req.socket.remoteAddress;
+
+    for (var id in trustedServers)
     {
-        if (assert.isFunction(_onSocketConnectionHandler) === true)
-            _onSocketConnectionHandler(ws, req);
+        const serverData = trustedServers[id];
+        const isAuthorizedIp = connectingIp.includes(serverData.ip);
 
-        ws.isAlive = true;
-        ws.ip = req.socket.remoteAddress;
-        ws.on("pong", _heartbeat);
-    });
+        if (isAuthorizedIp === true)
+            return true;
+    }
 
-    _wss.on("error", (err) =>
+    return false;
+}
+
+function _pingClients(clients)
+{
+    clients.forEach((wsWrapper) =>
     {
-        if (assert.isFunction(_onServerErrorHandler) === true)
-            _onServerErrorHandler(err);
+        // If on a new ping, ws is still not alive from _heartbeat(),
+        // connection is likely broken, so terminate it
+        if (wsWrapper.isAlive() === false)
+            return _softSocketShutdown(wsWrapper);
+
+        // Otherwise set it to false and ping again to await pong
+        wsWrapper.setIsAlive(false);
+        wsWrapper.ping();
     });
 }
 
-// Following recommended implentation:
-// https://github.com/websockets/ws#how-to-detect-and-close-broken-connections
-function _ping(server)
+function _ensureConnectionsMatch(wss, connectedSockets)
 {
-    server.clients.forEach((ws) =>
-    {
-        if (ws.isAlive === false)
-        {
-            log.error(log.getLeanLevel(), `Connection with socket ${ws.ip} timed out, terminating it...`);
-            return ws.terminate();
-        }
+    if (wss.clients.size !== connectedSockets.length)
+        throw new Error(`WebSocketServer's size (${wss.clients.size}) does not match connectedSockets' length (${connectedSockets.length})`);
+}
+
+function _softSocketShutdown(wsWrapper)
+{
+    // First attempt, soft close. This sends a message to socket
+    // to close gently, and waits for the response.
+    wsWrapper.close();
     
-        ws.isAlive = false;
-        ws.ping();
-        log.time(ws.ip, `${ws.ip} pong, time since ping`);
-    });
-}
+    // Wait for a number of seconds on the socket response
+    setTimeout(() => {
 
-function _heartbeat()
-{
-    // 'this' is passed by context to the function on the event listeners
-    this.isAlive = true;
-    _ensureIsOnline(this);
-    log.timeEnd(this.ip);
-}
+        // Second attempt, hard close if ws is still alive.
+        // If the socket's current state is either the
+        // OPEN or CLOSING constant values, terminate it
+        if (wsWrapper.isConnected() === true || wsWrapper.isClosing() === true)
+            wsWrapper.terminate();
 
-function _ensureIsOnline(ws)
-{
-    const server = hostServerStore.getHostServerBySocketId(ws.ip);
-    
-    if (server != null)
-        return server.setOnline(true);
+    }, 10000);
 }

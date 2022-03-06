@@ -16,10 +16,6 @@ const SocketServerWrapper = (config.useWs === true) ?
     require('./prototypes/ws_server_wrapper.js') : 
     require("./prototypes/socket_io_server_wrapper.js");
 
-const SocketWrapper = (config.useWs === true) ? 
-    require('./prototypes/ws_wrapper.js') : 
-    require("./prototypes/socket_io_wrapper.js");
-
 // Raise pingTimeout and pingInterval since slaves have a lot of overhead on their first connection
 // and won't make the default timeout of 20 seconds, thus creating constant connections and disconnections
 var _socketServer;
@@ -34,18 +30,13 @@ _initializeHttpsServer();
 exports.startListening = (port) => 
 {
     _socketServer = new SocketServerWrapper(config.socketPort, 60000, 65000);
+    log.general(log.getLeanLevel(), `Socket server listening on port ${config.socketPort}`);
 
-    _socketServer.onListening(() => 
+    _socketServer.onSocketConnection(async (socketWrapper, req) => 
     {
-        log.general(log.getLeanLevel(), `Socket server listening on port ${config.socketPort}`);
-    });
-
-    _socketServer.onSocketConnection(async (socket, req) => 
-    {
-        const wrapper = new SocketWrapper(socket, (req != null) ? req.socket.remoteAddress : undefined);
-        log.general(log.getNormalLevel(), `Connection attempt by socket ${wrapper.getId()}`);
-        await botClientWrapper.messageDev(new MessagePayload(`Connection attempt by socket ${wrapper.getId()}`));
-        await _handleSocketConnection(wrapper);
+        log.general(log.getNormalLevel(), `Connection attempt by socket ${socketWrapper.getId()}`);
+        _handleSocketConnection(socketWrapper);
+        await botClientWrapper.messageDev(new MessagePayload(`Connection attempt by socket ${socketWrapper.getId()}`));
     });
 
     _socketServer.onServerError((err) => 
@@ -115,34 +106,19 @@ function _initializeHttpsServer()
 
 async function _handleSocketConnection(socketWrapper)
 {
-    const serverData = await _requestAuthenticationData(socketWrapper) ?? {};
-    const { id, capacity } = serverData;
-
-    if (_isTrustedSlave(id, capacity) !== true)
+    socketWrapper.onMessage("SERVER_DATA", (serverData) =>
     {
-        log.general(log.getNormalLevel(), `Socket ${socketWrapper.getId()} failed to authenticate`);
-        botClientWrapper.messageDev(new MessagePayload(`Socket ${socketWrapper.getId()} failed to authenticate.`));
-        return socketWrapper.terminate();
-    }
+        const { id, capacity } = serverData;
 
-    _initializeHostServer(socketWrapper, id, capacity);
-}
+        if (_isTrustedSlave(id, capacity) !== true)
+        {
+            log.general(log.getNormalLevel(), `Socket ${socketWrapper.getId()} failed to authenticate`);
+            botClientWrapper.messageDev(new MessagePayload(`Socket ${socketWrapper.getId()} failed to authenticate.`));
+            return socketWrapper.terminate();
+        }
 
-async function _requestAuthenticationData(socketWrapper)
-{
-    try
-    {
-        const serverData = await socketWrapper.emitPromise("REQUEST_SERVER_DATA") ?? {};
-        return serverData;
-    }
-
-    catch(err)
-    {
-        if (err.name === "SocketTimeout")
-            log.general(log.getNormalLevel(), `Request to socket ${socketWrapper.getId()} for authentication data timed out`, err.stack);
-
-        return null;
-    }
+        _initializeHostServer(socketWrapper, id, capacity);
+    });
 }
 
 function _isTrustedSlave(slaveId, capacity)
@@ -166,13 +142,6 @@ async function _initializeHostServer(socketWrapper, id, capacity)
     botClientWrapper.messageDev(new MessagePayload(`Server ${hostServer.getName()} (${hostServer.getIp()}) authenticated.`));
     
     hostServer.initializeConnection(socketWrapper, capacity);
-    
-    hostServer.onDisconnect((code, reason) =>
-    {
-        hostServer.terminateConnection();
-        log.general(log.getLeanLevel(), `Server ${hostServer.getName()} disconnected (code: ${code}, reason: ${reason})`);
-        botClientWrapper.messageDev(new MessagePayload(`Server ${hostServer.getName()} disconnected (code: ${code}, reason: ${reason})`));
-    });
     
     log.general(log.getNormalLevel(), "Sending game data...");
 

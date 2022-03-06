@@ -1,193 +1,210 @@
 
-
-
 const log = require("../../logger.js");
-const assert = require("../../asserter.js");
 const handleDom5Data = require("../../games/dominions5_runtime_data_handler.js");
 const { TimeoutError, SocketResponseError } = require("../../errors/custom_errors");
 
-module.exports = WebSocketWrapper;
 
-function WebSocketWrapper(ws, ip)
+module.exports = ServerSocketWrapper;
+
+function ServerSocketWrapper(ws)
 {
+    const _self = this;
     const _ws = ws;
-    const _sentMessages = [];
-    const _eventHandlers = {};
-    const _ip = ip;
+    const _awaitingResponse = [];
+    const _handlers = [];
 
-    // Handle incoming messages on this socket distributing them
-    // among listening handlers or treating them as responses
-    // from previously sent messages by this socket
-    _ws.on("message", (data) =>
-    {
-        const parsedData = _parse(data);
-        const trigger = parsedData.trigger;
-        const pendingPromise = _sentMessages.find((wsPromise) => trigger === wsPromise.getTrigger());
-        const handler = _eventHandlers[trigger];
+    var _id;
+    var _isAlive = true;
+    var _onCloseHandlers = [];
+    var _onErrorHandlers = [];
 
-        // If we were pending a response, handle it directly in the WebSocketPromise object
-        if (assert.isInstanceOfPrototype(pendingPromise, WebSocketPromise) === true)
-            pendingPromise.handleResponse(parsedData);
+    _initialize();
 
-        // Otherwise this is a direct message, so handle its data with the registered handler
-        else if (assert.isFunction(handler) === true)
-            handler(parsedData.data, parsedData.expectsResponse);
-
-        else log.error(log.getLeanLevel(), `Received message with unregistered trigger ${trigger}`);
-    });
-
-    this.getId = () => _ip;
-
-    this.close = (code, reason) => _ws.close(code, reason);
     
-    this.terminate = () => _ws.terminate();
+    _self.isConnecting = () => _ws != null && _ws.readyState === _ws.CONNECTING;
+    _self.isConnected = () => _ws != null && _ws.readyState === _ws.OPEN;
+    _self.isClosing = () => _ws != null && _ws.readyState === _ws.CLOSING;
+    _self.isClosed = () => _ws != null && _ws.readyState === _ws.CLOSED;
+    
+    _self.getId = () => _id;
+    _self.setId = (id) => _id = id;
+    
+    _self.ping = () => _ws.ping();
 
-    this.onDisconnect = (fnToCall) => _ws.on("close", fnToCall);
+    _self.isAlive = () => _isAlive;
+    _self.setIsAlive = (isAlive) => _isAlive = isAlive;
 
-    this.emit = (trigger, data, error = null, expectsResponse = false) => 
+    _self.close = () => _ws?.close();
+    _self.terminate = () => _ws?.terminate();
+
+    _self.emit = (trigger, data, error = null, expectsResponse = false) =>
     {
         const wrappedData = {
-            trigger,
+            trigger: trigger,
             data: data,
-            expectsResponse,
-            error: (assert.isObject(error) === true) ? error.message : error
+            error: (typeof error === "object" && error != null) ? error.message : error,
+            expectsResponse: expectsResponse
         };
-
+    
         _ws.send( _stringify(wrappedData) );
     };
 
-    this.emitPromise = (trigger, data, timeout = 60000) =>
+    _self.emitPromise = (trigger, data, timeout = 60000) =>
     {
         return new Promise((resolve, reject) =>
         {
-            const wsPromise = new WebSocketPromise(trigger, resolve, reject, timeout);
-            this.emit(trigger, data, null, true);
-            _sentMessages.push(wsPromise);
-
-            // Cleanup the promise from the array of sent messages
-            // once it resolves, rejects or timeouts
-            wsPromise.onFinished(() => 
+            try
             {
-                _sentMessages.find((promise, i) =>
-                {
-                    if (promise.getTrigger() === trigger)
-                    {
-                        _sentMessages.splice(i, 1);
-                        return true;
-                    }
+                _self.emit(trigger, data, null, true);
+                _awaitingResponse.push({
+                    trigger,
+                    resolve,
+                    reject
                 });
-            });
+        
+                setTimeout(() =>
+                {
+                    const index = _awaitingResponse.findIndex((p) => p.trigger === trigger);
+
+                    // Promise already got deleted beforehand
+                    if (index === -1)
+                        return;
+        
+                    _awaitingResponse[index].reject(new TimeoutError(`Request ${trigger} to socket ${_id} timed out`));
+                    _awaitingResponse.splice(index, 1);
+        
+                }, timeout);
+            }
+
+            catch(err)
+            {
+                reject(err);
+            }
         });
     };
 
-    this.listenTo = (trigger, handler) =>
+    _self.onMessage = (trigger, handler, respond = false) =>
     {
-        if (assert.isFunction(handler) === false)
-            throw new Error(`Handler must be a function; received ${typeof handler} instead!`);
-
-        _eventHandlers[trigger] = (data, expectsResponse) =>
-        {
-            // Process data with the given handler
-            Promise.resolve(handler(data))
-            .then((result) =>
-            {
-                // Response to the received message
-                // with resulting data
-                if (expectsResponse === true)
-                    module.exports.emit(trigger, result);
-            })
-            // Respond with an error if an exception was caught
-            .catch((err) => 
-            {
-                if (expectsResponse === true)
-                    this.emit(trigger, null, err)
-            });
-        };
+        if (typeof handler !== "function")
+            throw new TypeError(`Expected handler to be a function; received ${typeof handler}`);
+    
+        _handlers[trigger] = _wrapHandler(handler, trigger, respond);
     };
 
-    
-    this.listenTo("STDIO_DATA", (data) => 
+    _self.onMessage("STDIO_DATA", (data) => 
     {
         log.general(log.getVerboseLevel(), `${data.name}: ${data.type} data received`, data.data);
         handleDom5Data(data.name, data.data);
     });
 
-    this.listenTo("GAME_ERROR", (data) => 
+    _self.onMessage("GAME_ERROR", (data) => 
     {
         log.error(log.getLeanLevel(), `${data.name} REPORTED GAME ERROR`, data.error);
         handleDom5Data(data.name, data.error);
     });
-}
 
-function WebSocketPromise(trigger, resolveFn, rejectFn, timeout)
-{
-    const _trigger = trigger;
-    const _resolveFn = resolveFn;
-    const _rejectFn = rejectFn;
-    const _timeout = timeout ?? 60000;
 
-    var _receivedResponse = false;
-    var _cleanupHandler;
-
-    this.getTrigger = () => _trigger;
-
-    this.onFinished = (cleanupFn) => _cleanupHandler = cleanupFn;
-
-    this.handleResponse = (data) =>
-    {
-        if (_receivedResponse === true)
-            return;
-
-        if (data == null)
-            _settle(_rejectFn.bind(this, new SocketResponseError(`No data packet for this response was received!`)));
-
-        else if (data.error != null)
-            _settle(_rejectFn.bind(this, new SocketResponseError(data.error)));
-
-        else _settle(_resolveFn.bind(this, data.data));
+    _self.onClose = (handler) => {
+        (typeof handler === "function")
+            _onCloseHandlers.push(handler);
     };
 
-    // If a timeout was given, start it as the creation of this object
-    if (assert.isInteger(_timeout) === true && _timeout > 0)
+    _self.onError = (handler) => {
+        (typeof handler === "function")
+            _onErrorHandlers.push(handler);
+    };
+
+
+    function _initialize()
     {
-        setTimeout(function handleTimeout()
-        {
-            if (_receivedResponse === true)
-                return;
+        _ws.on("message", (data) => {
+            _onMessageHandler(data);
+        });
 
-            _receivedResponse = true;
-            _settle(_rejectFn.bind(this, new TimeoutError(`Request timed out.`)));
+        _ws.on("close", (code, reason) => {
+            _onCloseHandlers.forEach((handler) => handler(code, reason, _self));
+        });
 
-            if (assert.isFunction(_cleanupHandler) === true)
-                _cleanupHandler();
+        _ws.on("error", (err) => {
+            _onErrorHandlers.forEach((handler) => handler(err, _self));
+        });
 
-        }, _timeout);
+        // Add pong listener to catch client's socket response to ping
+        // This means connection is alive if done within heartbeat interval
+        _ws.on("pong", () => {
+            if (Math.random() > 0.05)
+                _heartbeat();
+        });
     }
 
-    function _settle(handlerFn)
+    function _onMessageHandler(message)
     {
-        if (_receivedResponse === true)
-            return;
+        const { trigger, data, error, expectsResponse } = _parse(message);
+        const promiseIndex = _awaitingResponse.findIndex((p) => p.trigger === trigger);
+        const pendingPromise = _awaitingResponse[promiseIndex];
+        const handler = _handlers[trigger];
+    
+        if (promiseIndex === -1 && handler != null)
+            handler(data, expectsResponse);
+    
+        if (promiseIndex > -1)
+        {
+            if (error != null)
+                pendingPromise.reject(new SocketResponseError(error));
+        
+            else pendingPromise.resolve(data);
 
-        _receivedResponse = true;
-        handlerFn();
+            // Remove promise after resolving/rejecting it
+            _awaitingResponse.splice(promiseIndex, 1);
+        }
+    }
 
-        if (assert.isFunction(_cleanupHandler) === true)
-            _cleanupHandler();
+    // Private heartbeat function to check for broken connection
+    function _heartbeat()
+    {
+        _self.setIsAlive(true);
     }
 }
+
+
+function _wrapHandler(handler, trigger)
+{
+    return async (data, expectsResponse) =>
+    {
+        try
+        {
+            const returnValue = await handler(data);
+
+            if (expectsResponse === true)
+                module.exports.emit(trigger, returnValue);
+        }
+     
+        catch(err)
+        {
+            if (expectsResponse === true)
+                module.exports.emit(trigger, null, err);
+        }
+    }
+}
+
 
 function _parse(data)
 {
+    var formattedData = {};
     var parsedData;
 
     if (Buffer.isBuffer(data) === true)
         parsedData = _jsonParseWithBufferRevival(data.toString());
 
-    if (assert.isString(data) === true)
+    if (typeof data === "string")
         parsedData = _jsonParseWithBufferRevival(data);
 
-    return parsedData;
+    formattedData.trigger = parsedData.trigger;
+    formattedData.data = parsedData.data;
+    formattedData.error = parsedData.error;
+    formattedData.expectsResponse = parsedData.expectsResponse;
+
+    return formattedData;
 }
 
 // Parse JSON while also checking if there is any nested serialized
@@ -214,6 +231,7 @@ function _isSerializedBuffer(value)
     value.type === "Buffer" && 
     Array.isArray(value.data) === true;
 }
+
 
 // Stringify that prevents circular references taken from https://antony.fyi/pretty-printing-javascript-objects-as-json/
 function _stringify(data, spacing = 0)
