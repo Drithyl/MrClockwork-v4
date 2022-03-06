@@ -70,7 +70,7 @@ function Dominions5StatusEmbed(embedWrapper)
     {
         const timeLeft = updateData.getTimeLeft();
 
-        if (updateData.isInLobby() === true)
+        if (updateData.hasStarted() === false)
         {
             _embed.editField(0, STATUS_HEADER, "waiting for pretenders", true);
 
