@@ -6,11 +6,15 @@ const MessagePayload = require("../../discord/prototypes/message_payload.js");
 const botClientWrapper = require("../../discord/wrappers/bot_client_wrapper.js");
 
 
-module.exports = (game, dom5Events) =>
+module.exports = async (game, dom5Events) =>
 {
     const gameName = game.getName();
     const status = game.getLastKnownStatus();
     const turnNumber = dom5Events.getTurnNumber();
+
+    var staleData;
+    var staleMessage;
+    var announcement = `**Turn ${turnNumber}** has arrived. The new timer is set to: ${status.printTimeLeft()}.`;
     
     try
     {
@@ -20,11 +24,20 @@ module.exports = (game, dom5Events) =>
         status.setMsToDefaultTimer(game);
         status.setIsTurnProcessing(false);
         status.setIsCurrentTurnRollback(false);
+
+
+        staleData = await _fetchStales(game);
+        staleMessage = _formatStales(staleData);
+
+
+        if (/\S+/i.test(staleMessage) === true)
+            announcement += ` Below are the nations that staled this turn: ${staleMessage}`;
+
         
         // Perform the necessary activities as a result of the new turn
-        game.sendGameAnnouncement(`Turn ${turnNumber} has arrived. The new timer is set to: ${status.printTimeLeft()}.`);
+        game.sendGameAnnouncement(announcement);
         _processNewTurnPreferences(game);
-        _processStales(game, dom5Events);
+
 
         // Log the new turn
         log.general(log.getNormalLevel(), `${gameName}\t_isCurrentRollback set to ${status.isCurrentTurnRollback()}`);
@@ -160,43 +173,43 @@ function _buildMessagePayload(game, playerFile, fetchedTurnFiles)
 }
 
 
-// Fetch the stales for this turn and send them to the game organizer
-async function _processStales(game, dom5Events)
+async function _fetchStales(game)
 {
-    const gameName = game.getName();
-    const turnNumber = dom5Events.getTurnNumber();
-    var staleMessage = `**${gameName}**'s stale data for **turn ${turnNumber}**:`;
-
     try
     {
         const staleData = await game.emitPromiseWithGameDataToServer("GET_STALES");
-
-        
-        if (staleData == null)
-        {
-            game.sendMessageToOrganizer("No stale data was available for this turn.");
-            return;
-        }
-
-        else if (staleData.wentAi.length <= 0 && staleData.stales.length <= 0)
-            return;
-
-
-        if (staleData.wentAi.length > 0)
-            staleMessage += `\n\nNations that **went AI**:\n\n${staleData.wentAi.join("\n").toBox()}`;
-        
-        if (staleData.stales.length > 0)
-            staleMessage += `\n\nNations that **staled**:\n\n${staleData.stales.join("\n").toBox()}`;
-
-        else staleMessage += `\n\nNo stales happened`;
-
-
-        game.sendMessageToOrganizer(staleMessage);
+        return staleData;
     }
-    
+        
     catch(err)
     {
-        log.error(log.getLeanLevel(), `${gameName}\tError processing stales`, err.stack);
+        log.error(log.getLeanLevel(), `${gameName}\tError fetching stales`, err.stack);
         game.sendMessageToOrganizer(`Error when fetching stale data: ${err.message}`);
     }
+}
+
+function _formatStales(staleData)
+{
+    var staleMessage = "";
+
+    if (staleData == null)
+    {
+        game.sendMessageToOrganizer("No stale data was available for this turn.");
+        return;
+    }
+
+    else if (staleData.wentAi.length <= 0 && staleData.stales.length <= 0)
+        return;
+
+
+    if (staleData.wentAi.length > 0)
+        staleMessage += `\n\nNations that **went AI**:\n\n${staleData.wentAi.join("\n").toBox()}`;
+    
+    if (staleData.stales.length > 0)
+        staleMessage += `\n\nNations that **staled**:\n\n${staleData.stales.join("\n").toBox()}`;
+
+    else staleMessage += `\n\nNo stales happened`;
+
+
+    return staleMessage;
 }
