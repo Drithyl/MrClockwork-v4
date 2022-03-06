@@ -86,12 +86,12 @@ function _embedSortedGuildGames(sortedGamesArray, guild)
 
     sortedGuildGames.sort((a, b) => 
     {
-        const aStarted = a.getLastKnownStatus().isInLobby();
-        const bStarted = b.getLastKnownStatus().isInLobby();
+        const aStarted = a.getLastKnownStatus().hasStarted();
+        const bStarted = b.getLastKnownStatus().hasStarted();
 
         // Return 0 if both have same value; 1 if a is true, and -1 otherwise
         // to sort by false values first and true values after
-        return (aStarted === bStarted)? 0 : aStarted? 1 : -1;
+        return (aStarted === bStarted)? 0 : aStarted? -1 : 1;
     });
 
     sortedGuildGames.forEach((game) =>
@@ -148,7 +148,7 @@ function _getGameEntry(game)
 
     var fieldValue = `\n${channel}\`${serverName} ${ip}`;
 
-    if (lastKnownStatus.isInLobby() === true)
+    if (lastKnownStatus.hasStarted() === false)
         fieldValue += " (not started)`";
 
     else fieldValue += "`"; //close code tag
