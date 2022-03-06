@@ -164,7 +164,7 @@ function Game()
     };
 
     this.emitPromiseToServer = (...args) => _hostServer.emitPromise(...args);
-    this.listenToServer = (trigger, handler) => _hostServer.listenTo(trigger, handler);
+    this.listenToServer = (trigger, handler) => _hostServer.onMessage(trigger, handler);
 
     this.getDiscordGuildWrapper = () => _guildWrapper;
     this.getOrganizerMemberWrapper = () => _organizerWrapper;
