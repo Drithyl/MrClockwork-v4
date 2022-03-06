@@ -132,8 +132,7 @@ function ServerSocketWrapper(ws)
         // Add pong listener to catch client's socket response to ping
         // This means connection is alive if done within heartbeat interval
         _ws.on("pong", () => {
-            if (Math.random() > 0.05)
-                _heartbeat();
+            _heartbeat();
         });
     }
 
