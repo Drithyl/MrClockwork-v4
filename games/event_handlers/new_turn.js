@@ -193,13 +193,10 @@ function _formatStales(staleData)
     var staleMessage = "";
 
     if (staleData == null)
-    {
-        game.sendMessageToOrganizer("No stale data was available for this turn.");
-        return;
-    }
+        return "No stale data was available for this turn.";
 
     else if (staleData.wentAi.length <= 0 && staleData.stales.length <= 0)
-        return;
+        return staleMessage;
 
 
     if (staleData.wentAi.length > 0)
