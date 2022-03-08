@@ -11,10 +11,7 @@ var _expressAppHttps;
 const _expressHttpServer = require('http').Server(_expressApp);
 var _expressHttpsServer;
 
-// Wrappers for socket and socket server. We can use socket io wrapers or ws wrappers
-const SocketServerWrapper = (config.useWs === true) ? 
-    require('./prototypes/ws_server_wrapper.js') : 
-    require("./prototypes/socket_io_server_wrapper.js");
+const SocketServerWrapper = require('./prototypes/ws_server_wrapper.js')
 
 // Raise pingTimeout and pingInterval since slaves have a lot of overhead on their first connection
 // and won't make the default timeout of 20 seconds, thus creating constant connections and disconnections
