@@ -14,7 +14,7 @@ module.exports = async (game, dom5Events) =>
 
     var staleData;
     var staleMessage;
-    var announcement = `**Turn ${turnNumber}** has arrived. The new timer is set to: ${status.printTimeLeft()}.`;
+    var announcement;
     
     try
     {
@@ -25,7 +25,7 @@ module.exports = async (game, dom5Events) =>
         status.setIsTurnProcessing(false);
         status.setIsCurrentTurnRollback(false);
 
-
+        announcement = `**Turn ${turnNumber}** has arrived. The new timer is set to: ${status.printTimeLeft()}.`;
         staleData = await _fetchStales(game);
         staleMessage = _formatStales(staleData);
 
