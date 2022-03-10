@@ -148,7 +148,7 @@ function _buildMessagePayload(game, playerFile, fetchedTurnFiles)
     const scoreFile = (fetchedTurnFiles != null) ? fetchedTurnFiles.scores : null;
     const nationTurnFiles = (fetchedTurnFiles != null) ? fetchedTurnFiles.turnFiles : {};
 
-    const payload = new MessagePayload(`Find below your nation files for turn ${turnNumber}.\n\n`);
+    const payload = new MessagePayload(`**${game.getName()}**: Find below your nation files for **turn ${turnNumber}**.\n\n`);
 
 
     if (scoreFile != null && 
