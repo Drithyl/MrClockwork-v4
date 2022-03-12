@@ -44,7 +44,7 @@ function _behaviour(commandContext)
     {
         return controlledNationFilenames.forAllPromises((nationFilename) =>
         {
-            return gameObject.emitPromiseWithGameDataToServer("GET_TURN_FILE", { nationFilename })
+            return gameObject.emitPromiseWithGameDataToServer("GET_TURN_FILE", { nationFilename }, 130000)
             .then((turnFileBuffer) => payload.setAttachment(`${nationFilename}_turn_${status.getTurnNumber()}.trn`, turnFileBuffer));
         })
     })
