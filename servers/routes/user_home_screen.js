@@ -51,6 +51,18 @@ function _getOrganizedGamesData(userId)
 function _extractGameInfo(game, userId)
 {
     const statusData = game.getLastKnownStatus();
+    var timeLeft;
+
+    if (statusData.isTurnProcessing() === true)
+        timeLeft = "Processing...";
+
+    else if (statusData.hasStarted() === true)
+        timeLeft = statusData?.getTimeLeft()?.printTimeLeftShort();
+    
+    else if (statusData.hasStarted() === false)
+        timeLeft = "Unstarted";
+
+    else timeLeft = "Unknown";
 
 
     return {
@@ -63,7 +75,7 @@ function _extractGameInfo(game, userId)
         port: game.getPort(),
         status: statusData.getStatusString(),
         turnNumber: statusData?.getTurnNumber(),
-        timeLeft: (statusData.hasStarted() === true) ? statusData?.getTimeLeft()?.printTimeLeftShort() : "Waiting",
+        timeLeft: timeLeft,
         isPaused: statusData?.isPaused(),
         turnStatus: _extractGameTurnStatus(game, userId)
     };
