@@ -43,9 +43,6 @@ exports.stopMonitoringDom5Game = (game) =>
 
 exports.updateDom5Game = (game, updateData) =>
 {
-    if (game == null)
-        return log.error(log.getLeanLevel(), `Received update for null game`);
-
     if (monitoredGames.find((g) => g.getName() === game.getName()) == null)
         return log.general(log.getNormalLevel(), `${game.getName()} is not being monitored.`);
 
