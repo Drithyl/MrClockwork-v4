@@ -58,6 +58,10 @@ function HostServer(id)
         _socketWrapper.onMessage("GAME_UPDATE", (data) =>
         {
             const game = ongoingGamesStore.getOngoingGameByName(data.gameName);
+
+            if (game == null || data == null)
+                return log.error(log.getLeanLevel(), `Received update for null game from server ${this.getName()}. Data:`, data);
+
             gameMonitor.updateDom5Game(game, data);
         });
 
