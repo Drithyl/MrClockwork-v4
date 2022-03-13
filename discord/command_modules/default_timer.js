@@ -54,6 +54,7 @@ function _changeDefaultTimer(gameObject, commandContext, commandArguments)
     const lastKnownTurnNumber = lastKnownStatus.getTurnNumber();
     const settingsObject = gameObject.getSettingsObject();
     const timerSetting = settingsObject.getTimerSetting();
+    const currentTimer  = gameObject.getLastKnownStatus().getMsLeft();
 
     if (commandContext.doesSenderHaveOrganizerPermissions() === false)
         return Promise.reject(new PermissionsError(`You must be the game organizer to change the timer.`));
@@ -61,7 +62,7 @@ function _changeDefaultTimer(gameObject, commandContext, commandArguments)
     if (lastKnownTurnNumber <= 0)
         return commandContext.respondToCommand(new MessagePayload(`Game is being setup in lobby.`));
 
-    return gameObject.changeTimer(gameObject.getLastKnownStatus().getMsLeft(), timeToSet)
+    return gameObject.changeTimer(currentTimer, timeToSet)
     .then(() =>
     {
         if (timeToSet <= 0)
