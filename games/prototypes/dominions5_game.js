@@ -223,12 +223,17 @@ function Dominions5Game()
         if (defaultMs == null)
             defaultMs = _gameObject.getMsLeftPerTurn();
 
-        if (isNaN(defaultMs) === true || isNaN(currentMs) === true)
-            return Promise.reject(new Error(`Timers must be expressed in ms; got ${defaultMs} and ${currentMs}.`));
+        if (isNaN(defaultMs) === true)
+            return Promise.reject(new Error(`Default timers must be expressed in ms; got ${defaultMs}.`));
 
         if (_gameObject.isEnforcingTimer() === true)
         {
             timerSetting.fromJSON(defaultMs);
+
+            // If current timer is null or NaN (for example, when game hasn't started),
+            // Don't change anything
+            if (isNaN(currentMs) === true)
+                return Promise.resolve();
 
             if (currentMs > 0)
             {
