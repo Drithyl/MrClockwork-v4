@@ -60,7 +60,7 @@ function HostServer(id)
             const game = ongoingGamesStore.getOngoingGameByName(data.gameName);
 
             if (game == null || data == null)
-                return log.error(log.getLeanLevel(), `Received update for null game from server ${this.getName()}. Data:`, data);
+                return log.error(log.getLeanLevel(), `Received update for game ${data.gameName} from server ${this.getName()} that is not in master store. Data:`, data);
 
             gameMonitor.updateDom5Game(game, data);
         });
