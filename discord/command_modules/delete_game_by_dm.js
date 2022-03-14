@@ -3,6 +3,7 @@ const log = require("../../logger.js");
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
+const hostServerStore = require("../../servers/host_server_store.js");
 const ongoingGamesStore = require("../../games/ongoing_games_store.js");
 const MessagePayload = require("../prototypes/message_payload.js");
 
@@ -26,19 +27,30 @@ function DeleteGameByDmCommand()
 async function _behaviour(commandContext)
 {
     const commandArgumentsArray = commandContext.getCommandArgumentsArray();
-    const nameOfGameToRepair = commandArgumentsArray[0];
-    const gameObject = ongoingGamesStore.getOngoingGameByName(nameOfGameToRepair);
+    const nameOfGameToDelete = commandArgumentsArray[0];
+    const gameObject = ongoingGamesStore.getOngoingGameByName(nameOfGameToDelete);
 
     
     await commandContext.respondToCommand(new MessagePayload(`Deleting game...`));
 
     if (gameObject == null)
-        await gameObject.emitPromiseWithGameDataToServer("DELETE_GAME", null, 130000);
+    {
+        const servers = hostServerStore.getOnlineServers();
+        const promises = servers.map((server) => server.emitPromise("DELETE_GAME", { 
+            name: nameOfGameToDelete 
+        }, 130000));
 
-    else await gameObject.deleteGame();
+        await Promise.allSettled(promises);
+        await commandContext.respondToCommand(new MessagePayload(`${nameOfGameToDelete} does not exist on master; sent message to online slaves to delete leftover files.`));
+        log.general(log.getLeanLevel(), `${nameOfGameToDelete} does not exist on master; sent message to online slaves to delete leftover files.`);
+    }
 
-    await gameObject.deleteRole();
-    await gameObject.deleteChannel();
-    await commandContext.respondToCommand(new MessagePayload(`The game was successfully deleted.`));
-    log.general(log.getLeanLevel(), `${gameObject.getName()} and its role and channel were deleted successfully.`);
+    else
+    {
+        await gameObject.deleteGame();
+        await gameObject.deleteRole();
+        await gameObject.deleteChannel();
+        await commandContext.respondToCommand(new MessagePayload(`The game was successfully deleted.`));
+        log.general(log.getLeanLevel(), `${nameOfGameToDelete} and its role and channel were deleted successfully.`);
+    }
 }
