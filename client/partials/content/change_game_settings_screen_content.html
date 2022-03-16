@@ -38,7 +38,7 @@
                             <input type="hidden" name="sessionId" value="<%=(typeof sessionId === "string") ? sessionId : "none"%>"/>
                             <input type="hidden" name="name" value="<%=gameName%>"/>
                         
-            
+                            <%- include('../settings/default_ai_level.ejs')-%>
                             <%- include('../settings/mod_list.ejs', { gameSettings, mods })-%>
                             <%- include('../settings/map_list.ejs', { gameSettings, maps })-%>                
                             <%- include('../settings/modifiers.ejs', { gameSettings })-%>

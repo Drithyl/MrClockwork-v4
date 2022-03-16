@@ -1,0 +1,20 @@
+
+<div class="row mb-2">
+    
+    <legend class="col-form-label col-sm-3 pt-0">Difficulty level when player goes AI</legend>
+    
+    <div class="col-sm-9">
+        <select id="input_default_ai" name="defaultAiLevel" class="form-control selectpicker w-100">
+    
+            <option value="0" <% if (typeof gameSettings === "object" && gameSettings.defaultAiLevel == 0) { %> selected <% } %> >No going AI allowed</option>
+            <option value="1" <% if (typeof gameSettings === "object" && gameSettings.defaultAiLevel == 1) { %> selected <% } %> >Easy AI</option>
+            <option value="2" <% if (typeof gameSettings === "object" && gameSettings.defaultAiLevel == 2) { %> selected <% } %> >Normal AI</option>
+            <option value="3" <% if (typeof gameSettings === "object" && gameSettings.defaultAiLevel == 3) { %> selected <% } %> >Difficult AI</option>
+            <option value="4" <% if (typeof gameSettings === "object" && gameSettings.defaultAiLevel == 4) { %> selected <% } %> >Mighty AI</option>
+            <option value="5" <% if (typeof gameSettings === "object" && gameSettings.defaultAiLevel == 5) { %> selected <% } %> >Master AI</option>
+            <option value="6" <% if (typeof gameSettings === "object" && gameSettings.defaultAiLevel == 6) { %> selected <% } %> >Impossible AI</option>
+    
+        </select>
+    </div>
+    
+</div>
