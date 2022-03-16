@@ -28,6 +28,7 @@ function HostMenu(gameObject, useDefaults = false)
         .then(() => gamesStore.addOngoingGame(gameObject))
         .then(() => gameObject.pinSettingsToChannel())
         .then(() => gameObject.save())
+        .then(() => gameObject.launch())
         .then(() => log.general(log.getNormalLevel(), `Game ${gameObject.getName()} was created successfully.`))
         .then(() => gameObject.sendMessageToOrganizer(`Game ${gameObject.getName()} was created successfully. You can connect to it at IP **${gameObject.getIp()}** and Port **${gameObject.getPort()}**. You will find its channel in the open games category, with a pinned post detailing the chosen settings.`))
         .catch((err) =>
