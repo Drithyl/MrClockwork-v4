@@ -39,7 +39,6 @@ function _createMenuScreens(menuStructure, gameObject)
         {
             try
             {
-                //TODO: Send provisional setting changing message
                 await menuStructure.sendMessage(new MessagePayload(`Changing setting; this may take a while...`));
                 await setting.setValue(input);
                 
