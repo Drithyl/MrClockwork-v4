@@ -183,7 +183,7 @@ async function _fetchStales(game)
         
     catch(err)
     {
-        log.error(log.getLeanLevel(), `${gameName}\tError fetching stales`, err.stack);
+        log.error(log.getLeanLevel(), `${game.getName()}\tError fetching stales`, err.stack);
         game.sendMessageToOrganizer(`Error when fetching stale data: ${err.message}`);
     }
 }
