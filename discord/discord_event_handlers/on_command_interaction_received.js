@@ -51,6 +51,6 @@ function _handleCommandInteractionError(commandInteractionWrapper, err)
     else
     {
         log.error(log.getLeanLevel(), `ERROR HANDLING COMMAND`, err);
-        return commandInteractionWrapper.respondToCommand(new MessagePayload(`Interaction Error occurred: ${err.message}\n\n${err.stack}`));
+        return commandInteractionWrapper.respondToCommand(new MessagePayload(`Interaction Error occurred: ${err.message}`));
     }
 }
