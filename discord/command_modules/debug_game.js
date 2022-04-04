@@ -30,7 +30,6 @@ async function _behaviour(commandContext)
     var game;
     var status;
     var nations;
-    var areAllTurnsDone;
     var debugInfo;
     
 
@@ -51,6 +50,7 @@ async function _behaviour(commandContext)
         statusEmbed: game.getStatusEmbedId(),
         status: {
             isServerOnline: game.isServerOnline(),
+            isOnline: status.isOnline(),
             isEnforcingTimer: game.isEnforcingTimer(),
             hasStarted: status.hasStarted(),
             isCurrentTurnRollback: status.isCurrentTurnRollback(),
