@@ -22,10 +22,10 @@ module.exports = (game, dom5Events) =>
 
 
     if (dom5Events.didGameGoOffline() === true)
-        handleGameWentOffline(game);
+        //handleGameWentOffline(game);
     
     else if (dom5Events.isGameBackOnline() === true)
-        handleGameBackOnline(game);
+        //handleGameBackOnline(game);
 
 
     if (dom5Events.didGameStart() === true)
