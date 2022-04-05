@@ -31,6 +31,6 @@ function _behaviour(commandContext)
 
     return commandContext.respondToCommand(new MessagePayload(`Launching process...`))
     .then(() => targetedGame.launch())
-    .then(() => commandContext.respondToCommand(new MessagePayload(`The process has been launched.`)))
+    .then(() => commandContext.respondToCommand(new MessagePayload(`The process has been launched. It might take a couple of minutes to load the game.`)))
     .catch((err) => commandContext.respondToCommand(new MessagePayload(`An error occurred:\n\n${err.message}`)));
 }
