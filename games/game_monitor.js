@@ -95,6 +95,12 @@ function _updateGame(game, updateData)
     // Set the new turn number on the game status
     gameStatus.setTurnNumber(newStatusSnapshot.getTurnNumber());
 
+    // Update game online status. This is also done in the back online and went offline
+    // event scripts, but should the return of isOnline() be undefined or null, they
+    // will never trigger. Thus this ensures they get properly overwritten after
+    // all relevant events get processed
+    gameStatus.setIsOnline(newStatusSnapshot.isOnline());
+
     game.save();
 }
 
