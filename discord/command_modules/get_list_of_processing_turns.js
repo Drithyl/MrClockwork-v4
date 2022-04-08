@@ -38,7 +38,7 @@ function _behaviour(commandContext)
         const startedAt = status.getTurnStartProcessingTimestamp();
         const timeStr = new Date(startedAt).toString();
 
-        stringListOfTurns += `\n${name.width(33)} ` + timeStr.width(24) + hostServerName.width(20) + `${ip}:${port.toString()}`.width(33);
+        stringListOfTurns += `\n${name.width(33)} ` + timeStr.width(24) + " " + hostServerName.width(20) + `${ip}:${port.toString()}`.width(33);
     });
 
     return commandContext.respondToCommand(new MessagePayload(stringIntroduction, stringListOfTurns.toBox(), true, "```"));
