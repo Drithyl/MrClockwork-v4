@@ -9,8 +9,8 @@ function Dominions5StatusSnapshot(snapshotData)
     // Ensure parameter is always a dictionary
     snapshotData = snapshotData ?? {};
 
-    var _isOnline = snapshotData.isOnline;
-    var _isServerOnline = snapshotData.isServerOnline;
+    var _isOnline = snapshotData.isOnline ?? false;
+    var _isServerOnline = snapshotData.isServerOnline ?? false;
 
     var _uptime = snapshotData.uptime;
     var _players = snapshotData.nationStatusArray;
