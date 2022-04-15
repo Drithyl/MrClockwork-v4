@@ -616,7 +616,15 @@
         "name": "unclaim",
         "isEnabled": true,
         "channelRequiredToInvoke": "game",
-        "description": "Removes your claim from your submitted pretender (without deleting the submitted pretender)."
+        "description": "Removes your claim from your submitted pretender (without deleting the submitted pretender).",
+        "options": [
+            {
+                "name": "nation_number",
+                "type": "INTEGER",
+                "description": "A nation number that matches the pretender's index displayed by the pretenders command.",
+                "required": true
+            }
+        ]
     },
 
     "UNDEPLOY_BOT":

@@ -704,10 +704,10 @@
         "name": "unclaim",
         "isEnabled": true,
         "gameTypesSupported": ["dom5"],
-        "argumentsRequiredInfo": [],
+        "argumentsRequiredInfo": ["A number that matches the pretender's index displayed"],
         "optionalArguments": 0,
         "regexpRequiredToInvoke": "UNCLAIM",
-        "argumentRegexpArray": [],
+        "argumentRegexpArray": ["\\d+"],
         "channelRequiredToInvoke": "game",
         "helpText": "Removes your claim from your submitted pretender."
     },
