@@ -7,6 +7,7 @@ const ongoingGamesStore = require("../../games/ongoing_games_store");
 const trustedServerData = require("../../config/trusted_server_data.json");
 const botClientWrapper = require("../../discord/wrappers/bot_client_wrapper.js");
 const MessagePayload = require("../../discord/prototypes/message_payload.js");
+const onGameWentOffline = require("../../games/event_handlers/game_went_offline.js");
 
 module.exports = HostServer;
 
@@ -54,6 +55,18 @@ function HostServer(id)
     this.setSocket = (socketWrapper) => 
     {
         _socketWrapper = socketWrapper;
+
+        _socketWrapper.onMessage("GAME_CLOSED", (data) =>
+        {
+            const game = ongoingGamesStore.getOngoingGameByName(data.gameName);
+            const code = data.code;
+            const signal = data.signal;
+
+            if (game == null || data == null)
+                return;
+
+            onGameWentOffline(game, code, signal);
+        });
 
         _socketWrapper.onMessage("GAME_UPDATE", (data) =>
         {
