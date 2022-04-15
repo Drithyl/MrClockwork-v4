@@ -93,14 +93,16 @@ function ServerSocketWrapper(ws)
 
     _self.onMessage("STDIO_DATA", (data) => 
     {
-        log.general(log.getVerboseLevel(), `${data.name}: ${data.type} data received`, data.data);
-        handleDom5Data(data.name, data.data);
+        console.log(`${data.name}: ${data.type} data received`, data.data);
+        //log.general(log.getVerboseLevel(), `${data.name}: ${data.type} data received`, data.data);
+        //handleDom5Data(data.name, data.data);
     });
 
     _self.onMessage("GAME_ERROR", (data) => 
     {
-        log.error(log.getLeanLevel(), `${data.name} REPORTED GAME ERROR`, data.error);
-        handleDom5Data(data.name, data.error);
+        console.log(`${data.name} REPORTED GAME ERROR`, data.error);
+        //log.error(log.getLeanLevel(), `${data.name} REPORTED GAME ERROR`, data.error);
+        //handleDom5Data(data.name, data.error);
     });
 
 
