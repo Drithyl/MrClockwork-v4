@@ -1,16 +1,19 @@
 
 const log = require("../../logger.js");
 const assert = require("../../asserter.js");
+const guildStore = require("../../discord/guild_store.js");
 const webSessionsStore = require("../web_sessions_store.js");
 const playerFileStore = require("../../player_data/player_file_store.js");
 const DominionsPreferences = require("../../player_data/prototypes/dominions_preferences.js");
 
 exports.set = (expressApp) => 
 {
-    expressApp.get("/edit_preferences", (req, res) =>
+    expressApp.get("/edit_preferences", async (req, res) =>
     {
         var playerFile;
         var gamePreferences;
+        var guildsWhereUserIsTrusted;
+
         const dataToSend = [];
 
         // Fetch session from either the URL params or the cookies, wherever we can find the sessionId
@@ -22,9 +25,16 @@ exports.set = (expressApp) =>
         
         const userId = session.getUserId();
         const sessionId = session.getSessionId();
-        
+
         try
         {
+            guildsWhereUserIsTrusted = await guildStore.getGuildsWhereUserIsTrusted(userId);
+            
+            // User is in no guilds where the bot is present or where they are trusted
+            if (guildsWhereUserIsTrusted.length <= 0)
+                return res.render("results_screen.ejs", { result: `Sorry, your Discord account is not part of any guild in which Mr. Clockwork is present, or you do not have the Trusted role to use the bot in them.` });
+
+
             playerFile = playerFileStore.getPlayerFile(userId);
             gamePreferences = playerFile.getAllGamePreferences();
 

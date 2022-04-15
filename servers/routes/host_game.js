@@ -33,6 +33,12 @@ exports.set = (expressApp) =>
         const mods = await hostServerStore.getDom5Mods();
         availableServers = hostServerStore.getAvailableServersClientData();
         guildsWhereUserIsTrusted = await guildStore.getGuildsWhereUserIsTrusted(userId);
+        
+        
+        // User is in no guilds where the bot is present or where they are trusted
+        if (guildsWhereUserIsTrusted.length <= 0)
+            return res.render("results_screen.ejs", { result: `Sorry, your Discord account is not part of any guild in which Mr. Clockwork is present, or you do not have the Trusted role to use the bot in them.` });
+
 
         guildsWhereUserIsTrusted.forEach((wrapper) =>
         {
@@ -41,6 +47,7 @@ exports.set = (expressApp) =>
                 name: wrapper.getName()
             });
         });
+
         
         /** redirect to host_game */
         res.render("host_game_screen.ejs", {
