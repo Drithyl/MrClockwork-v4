@@ -115,20 +115,29 @@ function _getUpdatedTimer(game, newStatusSnapshot)
     if (game.isEnforcingTimer() === false)
         return newStatusSnapshot.getMsLeft();
 
-    // No timer change if things are offline or paused or unstarted
-    if (newStatusSnapshot.isOnline() === false || 
-        newStatusSnapshot.isServerOnline() === false ||
-        newStatusSnapshot.hasStarted() === false ||
-        gameStatus.isPaused() === true || 
-        gameStatus.isTurnProcessing() === true ||
-        gameStatus.hasStarted() === false)
-    {
+
+    if (newStatusSnapshot.isServerOnline() === false)
         return gameStatus.getMsLeft();
-    }
+
+    if (newStatusSnapshot.isOnline() === false)
+        return gameStatus.getMsLeft();
+
+    if (newStatusSnapshot.hasStarted() === false)
+        return gameStatus.getMsLeft();
+
+    if (gameStatus.hasStarted() === false)
+        return gameStatus.getMsLeft();
+
+    if (gameStatus.isPaused() === true)
+        return gameStatus.getMsLeft();
+
+    if (gameStatus.isTurnProcessing() === true)
+        return gameStatus.getMsLeft();
 
     // No timer change if uptime is not a proper integer
     if (assert.isInteger(elapsedTimeSinceLastUpdate) === false)
         return gameStatus.getMsLeft();
+        
         
     // Return new timer after uptime. Once it dips into negatives, turn will be forced to roll
     return gameStatus.getMsLeft() - elapsedTimeSinceLastUpdate;
