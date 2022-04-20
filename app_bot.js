@@ -13,6 +13,7 @@ var expressServer;
 var gamesStore;
 var hostServerStore;
 var playerFileStore;
+var fileDownloader;
 
 
 Promise.resolve()
@@ -33,7 +34,7 @@ Promise.resolve()
 });
 
 
-function _initializeComponents()
+async function _initializeComponents()
 {
     //import the modules required for initialization
     log = require("./logger.js");
@@ -44,6 +45,7 @@ function _initializeComponents()
     gamesStore = require("./games/ongoing_games_store.js");
     hostServerStore = require("./servers/host_server_store.js");
     playerFileStore = require("./player_data/player_file_store.js");
+    fileDownloader = require("./downloader/file_downloader.js");
 
     //Catch process exceptions and log them here
     process.on("error", (err) => log.error(log.getLeanLevel(), `PROCESS ERROR`, err));
@@ -57,44 +59,41 @@ function _initializeComponents()
         process.exit("SIGINT");
     });
 
-    //Begin initialization
-    Promise.resolve(patcher.runPatchers())
-    .then(() =>
+    try
     {
+        await patcher.runPatchers();
         log.general(log.getLeanLevel(), "Finished patching data.");
-        return discord.startDiscordIntegration();
-    })
-    .then(() =>
-    {
+    
+        await discord.startDiscordIntegration();
         log.general(log.getLeanLevel(), "Finished Discord integration.");
-        return playerFileStore.populate();
-    })
-    .then(() =>
-    {
+    
+        await playerFileStore.populate();
         log.general(log.getLeanLevel(), "Player data loaded.");
-        return Promise.resolve(hostServerStore.populate());
-    })
-    .then(() =>
-    {
+    
+        hostServerStore.populate();
         log.general(log.getLeanLevel(), "Finished populating server store.");
-        return Promise.resolve(gamesStore.loadAll());
-    })
-    .then(() => 
-    {
+    
+        await gamesStore.loadAll();
         log.general(log.getLeanLevel(), "Finished initialization of games.");
 
+        await fileDownloader.initialize();
+        log.general(log.getLeanLevel(), "Initialized file downloader.");
+
+    
         if (expressServer.isHttpsAvailable() === true)
             expressServer.startListeningSsl(config.hostServerSslConnectionPort);
-
+    
         expressServer.startListening(config.hostServerConnectionPort);
+
+
         cleaner.startCleaningInterval();
-        return Promise.resolve();
-    })
-    .then(() => log.general(log.getLeanLevel(), "Initialized successfully."))
-    .catch((err) => 
+        log.general(log.getLeanLevel(), "Initialized successfully.");
+    }
+    
+    catch(err)
     {
-        Promise.resolve(log.error(log.getLeanLevel(), `INITIALIZATION ERROR`, err))
-        .then(() => process.exit());
-    });
+        log.error(log.getLeanLevel(), `INITIALIZATION ERROR`, err);
+        process.exit();
+    }
 }
 

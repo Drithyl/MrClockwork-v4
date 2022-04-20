@@ -757,11 +757,11 @@
         "name": "upload",
         "isEnabled": true,
         "gameTypesSupported": [],
-        "argumentsRequiredInfo": ["`mod` or `map` (the type of files you're uploading)", "a google drive file ID or link", "a server's name"],
+        "argumentsRequiredInfo": ["a google drive file ID or link"],
         "optionalArguments": 0,
         "regexpRequiredToInvoke": "UPLOAD",
-        "argumentRegexpArray": ["^(MOD)|(MAP)$", "(https?:\\/\\/)?(drive.google.com)?(/file/d/)?(/drive/folders/)?(/open\\?id=)?([a-z0-9\\-_]+)(\\/?\\??.+)?", "\\w+"],
+        "argumentRegexpArray": ["(https?:\\/\\/)?(drive.google.com)?(/file/d/)?(/drive/folders/)?(/open\\?id=)?([a-z0-9\\-_]+)(\\/?\\??.+)?"],
         "channelRequiredToInvoke": "any",
-        "helpText": "Allows you to upload a map or a mod to the server through google drive. To use it, you must specify the server's name, whether the package is a mod or map, and then add the google drive file sharing link at the end of the command (which can be found when you right click a file on the drive website and click on Get Shareable Link). The package must be a .zip file containing the mod or map as is meant to be extracted into the mods or maps folder. If files with the same name exist in the server, they will be overwritten if they are mod image files, but .dm and map-related files will *not* be overwritten so as to not have an impact on ongoing games using that mod or map. To upload an updated version of a mod, just make sure you change the name to add the version number to it so it does not conflict. You can upload more than one map and mod in the same zipfile, just make sure they are all zipped in the same structure in which it'll be extracted to the maps or mods folder."
+        "helpText": "Allows you to upload a map or a mod to the server through google drive. To use it, you must add the google drive file sharing link at the end of the command (which can be found when you right click a file on the drive website and click on Get Shareable Link). The package must be a .zip file containing the mod or map as is meant to be extracted into the mods or maps folder. If files with the same name exist in the server, they will not be overwritten."
     }
 }
