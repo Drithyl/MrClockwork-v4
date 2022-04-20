@@ -114,12 +114,13 @@ exports.printListOfFreeSlots = () =>
     return stringList;
 };
 
-module.exports.getDom5Mods = function()
+module.exports.getDom5Mods = async function()
 {
-    const mapsDirPath = path.resolve(config.pathToDom5Data, "mods");
+    const modsDirPath = path.resolve(config.pathToDom5Data, "mods");
 
-	return rw.getDirFilenames(mapsDirPath, ".dm")
-	.then((filenames) => Promise.resolve(filenames));
+	const filenames = await rw.getDirFilenames(modsDirPath, ".dm");
+    filenames.sort();
+    return filenames;
 };
 
 exports.getDom5Maps = async () =>
@@ -139,6 +140,8 @@ exports.getDom5Maps = async () =>
             mapsWithProvinceCount.push({name: filename, ...provs});
     });
 
+    // Sort map objects alphabetically by the filename
+    mapsWithProvinceCount.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
     return mapsWithProvinceCount;
 };
 
