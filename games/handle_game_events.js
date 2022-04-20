@@ -21,11 +21,11 @@ module.exports = (game, dom5Events) =>
         handleServerBackOnline(game);
 
 
-    //if (dom5Events.didGameGoOffline() === true)
-        //handleGameWentOffline(game);
+    if (dom5Events.didGameGoOffline() === true)
+        handleGameWentOffline(game);
     
-    //else if (dom5Events.isGameBackOnline() === true)
-        //handleGameBackOnline(game);
+    else if (dom5Events.isGameBackOnline() === true)
+        handleGameBackOnline(game);
 
 
     if (dom5Events.didGameStart() === true)
