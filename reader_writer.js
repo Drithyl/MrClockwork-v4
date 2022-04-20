@@ -7,7 +7,7 @@ const log = require("./logger.js");
 
 module.exports.copyFile = function(source, target)
 {
-	return exports.checkAndCreateFilepath(target)
+	return exports.checkAndCreateFilePath(target)
 	.then(() => fsp.readFile(source))
     .then((buffer) => fsp.writeFile(target, buffer))
     .catch((err) => Promise.reject(err));
@@ -139,35 +139,32 @@ module.exports.deleteDir = function(path)
 	});
 };
 
-//If a directory does not exist, this will create it
-module.exports.checkAndCreateFilepath = function(filepath)
+//If the dir path up to a filename does not exist, this will create it
+module.exports.checkAndCreateFilePath = function(filePath)
 {
-	var splitPath = filepath.split("/");
-	var compoundPath = splitPath[0];
+    var directories = [];
+    var currentPath = path.dirname(filePath);
 
-	return splitPath.forEachPromise((pathSegment, index, nextPromise) =>
-	{
-		//last element of the path should not be iterated through as it will be a file
-		if (index >= splitPath.length - 1)
-			return Promise.resolve();
+	if (fs.existsSync(currentPath) === true)
+		return Promise.resolve();
 
-		//prevent empty paths from being created
-		if (fs.existsSync(compoundPath) === false && /[\w]/.test(compoundPath) === true)
-		{
-			return fsp.mkdir(compoundPath)
-			.then(() => 
-			{
-				compoundPath += `/${splitPath[index+1]}`;
-				nextPromise();
-			});
-		}
-			
-		else
-		{
-			compoundPath += `/${splitPath[index+1]}`;
-			nextPromise();
-		}
-	});
+    while (currentPath !== path.dirname(currentPath))
+    {
+        directories.unshift(currentPath);
+        currentPath = path.dirname(currentPath);
+    }
+
+    return directories.forEachPromise((dir, index, nextPromise) =>
+    {
+        if (fs.existsSync(dir) === false)
+        {
+            return fsp.mkdir(dir)
+            .then(() => nextPromise());
+        }
+            
+        else return nextPromise();
+    })
+    .catch((err) => Promise.reject(err));
 };
 
 module.exports.getDirFilenames = async function(dirPath, extensionFilter = "")
