@@ -137,17 +137,23 @@ async function _autodetectPath(zipfilePath)
 
 
         if (path.extname(entry.fileName) === ".map")
+        {
             targetPath = PATH_TO_DOM5_MAPS;
+            closeFile();
+        }
 
         else if (path.extname(entry.fileName) === ".dm")
+        {
             targetPath = PATH_TO_DOM5_MODS;
-
-        else if (i > TOP_LEVEL_MAX_FILES && targetPath == null)
             closeFile();
+        }
+
+        //else if (i > TOP_LEVEL_MAX_FILES && targetPath == null)
+        //    closeFile();
 
         
-        if (i > TOP_LEVEL_MAX_FILES)
-            closeFile();
+        //if (i > TOP_LEVEL_MAX_FILES)
+        //    closeFile();
     });
    
     
