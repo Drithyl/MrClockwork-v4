@@ -110,11 +110,17 @@ async function _autodetectPath(zipfilePath)
             levelsDeep--;
 
         // If the second entry is already one level deep, then the zipfile contains a
-        // single directory with other files under it.
+        // single directory with other files under it. Entries are read in the order 
+        // they were added to the zipfile by the user;
+        // this means it's impossible to detect how many files are at the top level
+        // of the zipfile reliably without checking all entries. This makes this check
+        // unfeasible, even though it would be desirable to ensure zipfiles uploaded
+        // only contain as many necessary files on their top level as needed (4, 
+        // for maps' .map and .tga files)
         if (i === 1 && levelsDeep > 0)
         {
-            hasDirInBetweenFiles = true;
-            closeFile();
+            //hasDirInBetweenFiles = true;
+            //closeFile();
         }
 
         // Entries are read in the order they were added to the zipfile by the user;
