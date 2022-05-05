@@ -112,11 +112,15 @@ function HostServer(id)
 
     this.launchGames = () =>
     {
-        ongoingGamesStore.getOngoingGamesOnServer(this).forEach((game) =>
+        const games = ongoingGamesStore.getOngoingGamesOnServer(this);
+
+        log.general(log.getNormalLevel(), `Launching ${games.length} hosted on ${this.getName()}`)
+
+        games.forEach((game) =>
         {
             game.launch()
-            .then(() => log.general(log.getNormalLevel(), `${game.getName()} launched!`))
-            .catch((err) => log.error(log.getLeanLevel(), `${game.getName()} LAUNCH ERROR`, err));
+            .then(() => log.general(log.getNormalLevel(), `${this.getName()} - ${game.getName()} launched!`))
+            .catch((err) => log.error(log.getLeanLevel(), `${this.getName()} - ${game.getName()} LAUNCH ERROR`, err));
         });
     };
 
