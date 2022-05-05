@@ -28,14 +28,24 @@ function ServerSocketWrapper(ws)
     
     _self.getId = () => _id;
     _self.setId = (id) => _id = id;
-    
-    _self.ping = () => _ws.ping();
 
     _self.isAlive = () => _isAlive;
     _self.setIsAlive = (isAlive) => _isAlive = isAlive;
 
     _self.close = () => _ws?.close();
     _self.terminate = () => _ws?.terminate();
+
+    _self.ping = (interval) => 
+    {
+        return new Promise((resolve, reject) =>
+        {
+            _ws.ping(interval, (err, duration) =>
+            {
+                if (err != null) return reject(err);
+                else return resolve(duration);
+            });
+        });
+    };
 
     _self.emit = (trigger, data, error = null, expectsResponse = false) =>
     {
