@@ -5,6 +5,8 @@ const assert = require("../../asserter.js");
 const ServerSocketWrapper = require('./ws_wrapper');
 const trustedServers = require("../../config/trusted_server_data.json");
 
+const PING_INTERVAL = 3000;
+
 
 module.exports = WebSocketServerWrapper;
 
@@ -167,7 +169,7 @@ function _pingClients(clients)
 
         // Otherwise set it to false and ping again to await pong
         wsWrapper.setIsAlive(false);
-        wsWrapper.ping();
+        const promise = wsWrapper.ping(PING_INTERVAL);
     });
 }
 
