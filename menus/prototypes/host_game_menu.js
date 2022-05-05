@@ -5,6 +5,7 @@ const config = require("../../config/config.json");
 const MenuStructure = require("./menu_structure.js");
 const activeMenuStore = require("../active_menu_store.js");
 const gamesStore = require("../../games/ongoing_games_store.js");
+const MessagePayload = require("../../discord/prototypes/message_payload.js");
 
 module.exports = HostMenu;
 
@@ -33,14 +34,23 @@ function HostMenu(gameObject, useDefaults = false)
         .then(() => gameObject.sendMessageToOrganizer(`Game ${gameObject.getName()} was created successfully. You can connect to it at IP **${gameObject.getIp()}** and Port **${gameObject.getPort()}**. You will find its channel in the open games category, with a pinned post detailing the chosen settings.`))
         .catch((err) =>
         {
-            log.error(log.getLeanLevel(), `ERROR when creating ${gameObject.getName()} through hosting menu. Cleaning it up`, err);
             if (gameObject == null)
-                return Promise.reject(err);
+            {
+                log.error(log.getLeanLevel(), `ERROR when creating game through hosting menu; no game instance to clean up`, err);
+                return _menuStructure.sendMessage(new MessagePayload(`Error occurred when creating the game: ${err.message}`));
+            }
     
+            log.error(log.getLeanLevel(), `ERROR when creating ${gameObject.getName()} through hosting menu. Cleaning it up`, err);
+            _menuStructure.sendMessage(new MessagePayload(`Error occurred when creating the game: ${err.message}`));
+
             return gameObject.deleteGame()
             .then(() => gameObject.deleteRole())
             .then(() => gameObject.deleteChannel())
-            .then(() => Promise.reject(err));
+            .catch((err) =>
+            {
+                log.error(log.getLeanLevel(), `ERROR when cleaning game`, err);
+                _menuStructure.sendMessage(new MessagePayload(`Couldn't clean game properly; a channel or role may remain that will need to be deleted manually: ${err.message}`));
+            });
         });
     });
 
