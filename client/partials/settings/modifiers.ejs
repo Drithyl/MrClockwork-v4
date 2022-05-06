@@ -25,7 +25,7 @@
     <div class="col-sm-3">
         <label for="input_supplies_modifier" class="form-label">Supplies</label>
         <div class="w-auto">
-            <input class="form-control" type="number" id="input_supplies_modifier" name="suppliesModifier" value="100" min="50" max="300" pattern="\d\d\d?"
+            <input class="form-control" type="number" id="input_supplies_modifier" name="suppliesModifier" min="50" max="300" pattern="\d\d\d?"
                 <% if (typeof gameSettings === "object" && typeof gameSettings.suppliesModifier === "number") { %> value=<%=gameSettings.suppliesModifier %> <% } else { %> value="100" <% } %>
             >
         </div>
@@ -34,7 +34,7 @@
     <div class="col-sm-3">
         <label for="input_recruitment_modifier" class="form-label">Recruitment</label>
         <div class="w-auto">
-            <input class="form-control" type="number" id="input_recruitment_modifier" name="recruitmentModifier" value="100" min="50" max="300" pattern="\d\d\d?"
+            <input class="form-control" type="number" id="input_recruitment_modifier" name="recruitmentModifier" min="50" max="300" pattern="\d\d\d?"
                 <% if (typeof gameSettings === "object" && typeof gameSettings.recruitmentModifier === "number") { %> value=<%=gameSettings.recruitmentModifier %> <% } else { %> value="100" <% } %>
             >
         </div>
