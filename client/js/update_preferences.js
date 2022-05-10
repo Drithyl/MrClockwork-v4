@@ -16,3 +16,25 @@ $("#input_game").on("changed.bs.select", function(e, clickedIndex, isSelected, o
     lastSelectedGameName = gameName;
 
 });
+
+// Catch the form submission
+$("#preferences_form").submit(function()
+{
+    var form = $(this);
+
+    // Get all the checkboxes in the form
+    var checkboxes = form.find('input[type="checkbox"]');
+
+    // Iterate through them to check if they are checked
+    checkboxes.each(function()
+    {
+        var checkbox = $(this);
+        var hiddenInput = form.find(`input[type="hidden"][name="${checkbox.attr("name")}"]`);
+
+        // If they are checked, then disable the hidden input that has their same name,
+        // as their 'off' value is not required. These hidden inputs are there because
+        // checkboxes that are unchecked will send no value at all in POST to the server
+        if (checkbox.is(":checked") === true)
+            hiddenInput.prop("disabled", true);
+    });
+});

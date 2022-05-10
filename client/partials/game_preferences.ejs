@@ -9,16 +9,31 @@
             <div id="<%=preferences.name%>_container" class="col-sm-9" style="display:none;">
      
                 <div class="form-check">
+                    <!-- Hidden input with off value. Needed because checkbox inputs send no POST values at all if they are unchecked
+                         The hidden input will be disabled in the update_preferences.js script if the checkbox is checked. If not, the
+                         form will send two values to the server as an array, ['off', 'on'] 
+                    -->
+                    <input type="hidden" name="<%=preferences.name%>.receiveScores" value="off">
                     <input type="checkbox" class="form-check-input" id="<%=preferences.name%>_scores_checkbox" name="<%=preferences.name%>.receiveScores" <% if (preferences.receiveScores) { %> checked <% } %>>
                     <label class="form-check-label" for="<%=preferences.name%>_scores_checkbox">Receive scores file each turn?</label>
                 </div>
             
                 <div class="form-check">
+                    <!-- Hidden input with off value. Needed because checkbox inputs send no POST values at all if they are unchecked
+                         The hidden input will be disabled in the update_preferences.js script if the checkbox is checked. If not, the
+                         form will send two values to the server as an array, ['off', 'on'] 
+                    -->
+                    <input type="hidden" name="<%=preferences.name%>.receiveBackups" value="off">
                     <input type="checkbox" class="form-check-input" id="<%=preferences.name%>_backups_checkbox" name="<%=preferences.name%>.receiveBackups" <% if (preferences.receiveBackups) { %> checked <% } %>>
                     <label class="form-check-label" for="<%=preferences.name%>_backups_checkbox">Receive turn backup each turn?</label>
                 </div>
             
                 <div class="form-check">
+                    <!-- Hidden input with off value. Needed because checkbox inputs send no POST values at all if they are unchecked
+                         The hidden input will be disabled in the update_preferences.js script if the checkbox is checked. If not, the
+                         form will send two values to the server as an array, ['off', 'on'] 
+                    -->
+                    <input type="hidden" name="<%=preferences.name%>.receiveReminderWhenTurnIsDone" value="off">
                     <input type="checkbox" class="form-check-input clockworkCheck" id="<%=preferences.name%>_reminder_when_turn_done_checkbox" name="<%=preferences.name%>.receiveReminderWhenTurnIsDone" <% if (preferences.receiveReminderWhenTurnIsDone) { %> checked <% } %>>
                     <label class="form-check-label" for="<%=preferences.name%>_reminder_when_turn_done_checkbox">Receive timer reminders even when the turn is marked as finished?</label>
                 </div>
