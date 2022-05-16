@@ -107,7 +107,12 @@ function _sendNewTurnFiles(game, playerFiles, fetchedTurnFiles)
 {
     playerFiles.forEach(async (playerFile) =>
     {
-        _sendFilesToUser(game, playerFile, fetchedTurnFiles);
+        const gameData = playerFile.getGameData(game.getName());
+
+        if (gameData.isPlayerStillActive() === true)
+            _sendFilesToUser(game, playerFile, fetchedTurnFiles);
+
+        else console.log(`Player no longer controls a human nation in game; skipping`);
     });
 }
 
