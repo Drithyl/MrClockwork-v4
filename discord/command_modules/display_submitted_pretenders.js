@@ -46,6 +46,7 @@ function _formatSubmittedPretenders(humanPretenderList)
     var formattedStr = "";
     var livingNationsString = "";
     var deadNationsString  = "";
+    var justDeadNationsString  = "";
 
     humanPretenderList.forEach((pretender) =>
     {
@@ -58,6 +59,9 @@ function _formatSubmittedPretenders(humanPretenderList)
 
         else if (pretender.isDead === true)
             deadNationsString += _formatSubmittedPretenderLine(pretender);
+
+        else if (pretender.justDied === true)
+            justDeadNationsString += _formatSubmittedPretenderLine(pretender);
     });
 
     formattedStr = `Total Submitted: ${humanPretenderList.length}\nTotal Claimed: ${totalClaimed}\n`;
@@ -67,6 +71,9 @@ function _formatSubmittedPretenders(humanPretenderList)
         
     if (deadNationsString.length > 0)
         formattedStr += `\n**Dead nations** (use \`!unclaim X\` to have the game removed from your played games list):\n${deadNationsString.toBox()}`;
+        
+    if (justDeadNationsString.length > 0)
+        formattedStr += `\n**Nations that died this turn** (use \`!unclaim X\` to have the game removed from your played games list):\n${justDeadNationsString.toBox()}`;
 
     return formattedStr;
 }
