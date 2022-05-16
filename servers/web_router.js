@@ -16,6 +16,7 @@ const hostGameRoute = require("./routes/host_game.js");
 const updatePartialsRoute = require("./routes/update_partials.js");
 const editPreferencesRoute = require("./routes/edit_preferences.js");
 const changeGameSettingsRoute = require("./routes/change_game_settings.js");
+const turnProcessingRoute = require("./routes/turn_processing.js");
 
 // new content routes
 const aboutRoute = require("./routes/about.js");
@@ -30,7 +31,7 @@ exports.setMiddlewares = (expressApp, express) =>
     //static() will serve all files within the provided directory, including css or js
     expressApp.use(express.static(path.join(__dirname + "/../client")));
     expressApp.use(express.json());
-    expressApp.use(express.urlencoded());
+    expressApp.use(express.urlencoded({ extended: true }));
     expressApp.use(cookieParser());
 
     expressApp.set("views", path.join(__dirname + "/../client/views"));
@@ -58,4 +59,5 @@ exports.setRoutes = (expressApp) =>
     aboutRoute.set(expressApp);
     botCommandsRoute.set(expressApp);
     donateRoute.set(expressApp);
+    turnProcessingRoute.set(expressApp);
 };
