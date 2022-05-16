@@ -1,5 +1,6 @@
 
 const assert = require("../../asserter.js");
+const gamesStore = require("../../games/ongoing_games_store.js");
 const dom5NationStore = require("../../games/dominions5_nation_store.js");
 
 module.exports = PlayerGameData;
@@ -43,6 +44,27 @@ function PlayerGameData(playerId, gameName)
     {
         const filenameWithoutExtension = dom5NationStore.trimFilenameExtension(nationFilename);
         return _controlledNations.find((nation) => nation === filenameWithoutExtension) != null;
+    };
+
+    this.isPlayerStillActive = () => 
+    {
+        const game = gamesStore.getOngoingGameByName(_gameName);
+        const status = game.getLastKnownStatus();
+        const nations = status.getPlayers();
+
+        if (nations == null)
+            return false;
+
+        return nations.some((nation) =>
+        {
+            if (_controlledNations.includes(nation.filename) === false)
+                return false;
+
+            if (nation.isHuman === true)
+                return true;
+
+            return false;
+        });
     };
 
     this.getNationFilenamesControlledByPlayer = () => 
