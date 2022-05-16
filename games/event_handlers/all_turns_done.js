@@ -12,8 +12,7 @@ module.exports = (game) =>
         status.isPaused() === true)
         return;
 
-    log.general(log.getLeanLevel(), `${gameName}\t All turns are done! Setting turn to processing...`);
-    status.setIsTurnProcessing(true);
+    log.general(log.getLeanLevel(), `${gameName}\t All turns are done!`);
 
     // Set the timer back to default immediately so that no double turns occur easily
     status.setMsToDefaultTimer(game);
