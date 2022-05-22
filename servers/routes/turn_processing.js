@@ -2,6 +2,9 @@
 const log = require("../../logger.js");
 const serverStore = require("../host_server_store.js");
 const gamesStore = require("../../games/ongoing_games_store.js");
+const turnStartedProcessing = require("../../games/event_handlers/turn_started_processing.js");
+const turnFinishedProcessing = require("../../games/event_handlers/turn_finished_processing.js");
+
 
 exports.set = (expressApp) => 
 {
@@ -15,6 +18,7 @@ exports.set = (expressApp) =>
 
         log.general(log.getNormalLevel(), `turn_processing POST values received`, values);
 
+
         if (serverStore.hasHostServerById(serverToken) === false)
             return res.sendCode(401);
 
@@ -24,20 +28,13 @@ exports.set = (expressApp) =>
             return res.status(400).send(`Game ${gameName} could not be found`)
         }
 
-        const status = game.getLastKnownStatus();
-        status.setIsTurnProcessing(isTurnProcessing);
 
         if (isTurnProcessing === true)
-        {
-            log.general(log.getNormalLevel(), `${game.getName()}: Turn started processing.`);
-            game.sendMessageToChannel(`New turn just started processing. It may take a long time if other turns are processing.`);
-        }
-
+            turnStartedProcessing(game);
+            
         else if (isTurnProcessing === false)
-        {
-            log.general(log.getNormalLevel(), `${game.getName()}: Turn finished processing.`);
-            game.sendMessageToChannel(`New turn finished processing. The announcement should follow shortly.`);
-        }
+            turnFinishedProcessing(game);
+
 
         res.sendStatus(200);
     });
