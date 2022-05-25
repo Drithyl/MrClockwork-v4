@@ -37,12 +37,19 @@ async function _behaviour(commandContext)
     const memberWrapper = commandContext.getSenderGuildMemberWrapper();
     const commandArguments = commandContext.getCommandArgumentsArray();
     const nationNumberSent = +commandArguments[0];
-    const nationData = nations.find((nation) => nation.nationNbr === nationNumberSent);
+    var nationData;
 
+
+    if (nations == null)
+        return commandContext.respondToCommand(new MessagePayload(`Nation data is unavailable. You may have to wait a minute.`));
 
     if (nationNumberSent == null)
         return commandContext.respondToCommand(new MessagePayload(`You must specify a nation identifier to unclaim.`));
+
         
+    nationData = nations.find((nation) => nation.nationNbr === nationNumberSent);
+    
+
     if (nationData == null)
         return Promise.reject(new SemanticError(`Invalid nation selected. Number does not match any submitted nation.`));
 
