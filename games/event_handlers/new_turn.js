@@ -15,6 +15,7 @@ module.exports = async (game, dom5Events) =>
     var staleData;
     var staleMessage;
     var announcement;
+    var staleStatus;
     
     try
     {
@@ -30,7 +31,7 @@ module.exports = async (game, dom5Events) =>
         staleMessage = _formatStales(staleData);
 
 
-        if (/\S+/i.test(staleMessage) === true)
+        if (staleStatus === true)
             announcement += ` Below are the nations that staled this turn: ${staleMessage}`;
 
         
@@ -196,6 +197,7 @@ async function _fetchStales(game)
 function _formatStales(staleData)
 {
     var staleMessage = "";
+    var staleStatus = false;
 
     if (staleData == null)
         return "No stale data was available for this turn.";
@@ -204,12 +206,14 @@ function _formatStales(staleData)
         return staleMessage;
 
 
-    if (staleData.wentAi.length > 0)
+    if (staleData.wentAi.length > 0){
         staleMessage += `\n\nNations that **went AI**:\n\n${staleData.wentAi.join("\n").toBox()}`;
-    
-    if (staleData.stales.length > 0)
+        staleStatus = true;
+    }
+    if (staleData.stales.length > 0){
         staleMessage += `\n\nNations that **staled**:\n\n${staleData.stales.join("\n").toBox()}`;
-
+        staleStatus = true;
+    }
     else staleMessage += `\n\nNo stales happened`;
 
 
