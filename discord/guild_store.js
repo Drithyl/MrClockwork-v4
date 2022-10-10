@@ -84,13 +84,12 @@ module.exports.getGuildsWhereUserIsTrusted = async (userId) =>
 
 module.exports.fetchGuildClientData = (userId) =>
 {
-    var guildData = [];
+    const guildData = [];
 
     return guildWrappers.forAllPromises((guild) =>
     {
-        var guild = guildWrappers[id];
-        var id = guild.getId();
-        var name = guild.getName();
+        const id = guild.getId();
+        const name = guild.getName();
 
         return guild.fetchGuildMemberWrapperById(userId)
         .then((member) =>
@@ -341,7 +340,7 @@ exports.updateHelpChannels = (payload, idOfGuildToUpdate = "") =>
 
         return wrapper.updateHelpChannel(payload)
         .then(() => log.general(log.getNormalLevel(), `${wrapper.getName()} help channel updated.`))
-        .catch((err) => log.error(log.getLeanLevel(), `ERROR UPDATING ${guildWrapper.getName()} HELP CHANNEL`, err));
+        .catch((err) => log.error(log.getLeanLevel(), `ERROR UPDATING ${wrapper.getName()} HELP CHANNEL`, err));
 
     }, false);
 };
