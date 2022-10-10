@@ -105,7 +105,7 @@ function _addPreferenceRequests(game, nationFilenamesToFetch, playerFilesRequest
 
 function _sendNewTurnFiles(game, playerFiles, fetchedTurnFiles)
 {
-    playerFiles.forEach(async (playerFile) =>
+    playerFiles.forEach((playerFile) =>
     {
         const gameData = playerFile.getGameData(game.getName());
 
@@ -196,7 +196,7 @@ async function _fetchStales(game)
 function _formatStales(staleData)
 {
     var staleMessage = "";
-
+    
     if (staleData == null)
         return "No stale data was available for this turn.";
 
