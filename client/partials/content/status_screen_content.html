@@ -26,7 +26,8 @@
         
                         <tr>
                             <td><%=server.name %></td>
-                            <td><%=server.status %></td>
+                            <!-- added bold and color to the status if the status is online, otherwise it is normal  -->
+                            <td><% if (server.status === "Online") { %><b style="color:green"><%=server.status %></b> <% } else { %> <%=server.status %> <% } %></td>
                             <td><%=server.availableSlots %></td>
                             <td><%=server.maxSlots %></td>
                         </tr>
