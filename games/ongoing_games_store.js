@@ -34,7 +34,7 @@ exports.loadAll = function()
         })
         .catch((err) => 
         {
-            log.error(log.getLeanLevel(), `Error loading game (${i}/${gameDirNames.length})`, err)
+            log.error(log.getLeanLevel(), `Error loading game (${i}/${gameDirNames.length})`, err);
             return nextPromise();
         });
     })
@@ -115,7 +115,7 @@ exports.deleteGame = function(gameName)
     .catch((err) => 
     {
         log.error(log.getLeanLevel(), `ERROR: Could not remove ${gameName} from the store`, err);
-        Promise.reject(err)
+        return Promise.reject(err);
     });
 };
 
@@ -190,13 +190,13 @@ exports.getGamesWhereUserIsPlayer = function(userId)
 {
     const games = exports.filterGames((game) => game.memberIsPlayer(userId) === true);
     return games;
-}
+};
 
 exports.getGamesWhereUserIsOrganizer = function(userId)
 {
     const games = exports.filterGames((game) => game.getOrganizerId() === userId);
     return games;
-}
+};
 
 
 function _findGameByName(nameToFind)
