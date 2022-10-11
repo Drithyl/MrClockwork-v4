@@ -114,7 +114,7 @@ function HostServer(id)
     {
         const games = ongoingGamesStore.getOngoingGamesOnServer(this);
 
-        log.general(log.getNormalLevel(), `Launching ${games.length} games hosted on ${this.getName()}`)
+        log.general(log.getNormalLevel(), `Launching ${games.length} games hosted on ${this.getName()}`);
 
         games.forEach((game) =>
         {
