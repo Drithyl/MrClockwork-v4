@@ -223,24 +223,32 @@ function Game()
 
     this.addToStore = () => ongoingGamesStore.addOngoingGame(this);
 
-    this.save = () =>
+    this.save = async () =>
     {
-        var name = this.getName();
-        var data = JSON.stringify(this, null, 2);
-        var path = `${config.dataPath}/${config.gameDataFolder}`;
+        const filename = "data.json";
+        const gameName = this.getName();
+        const path = `${config.dataPath}/${config.gameDataFolder}/${gameName}`;
+        const filePath = `${path}/${filename}`;
+        const tmpFilePath = `${filePath}.new`;
+        const data = JSON.stringify(this, null, 2);
+        
 
-        return Promise.resolve()
-        .then(() =>
+        if (fs.existsSync(path) === false)
         {
-            if (fs.existsSync(`${path}/${name}`) === false)
-            {
-                log.general(log.getVerboseLevel(), `Directory for game data does not exist, creating it.`);
-                return fsp.mkdir(`${path}/${name}`);
-            }
+            log.general(log.getVerboseLevel(), `Directory for game data does not exist, creating it.`);
+            await fsp.mkdir(path);
+        }
 
-            else return Promise.resolve();
-        })
-        .then(() => fsp.writeFile(`${path}/${name}/data.json`, data));
+        try
+        {
+            await fsp.writeFile(tmpFilePath, data);
+            await fsp.rename(tmpFilePath, filePath);
+        }
+
+        catch(err)
+        {
+            log.error(log.getLeanLevel(), `Error writing game data: ${err.message}`);
+        }
     };
 
     this.loadSettingsFromInput = (inputValues) =>
@@ -338,7 +346,7 @@ function Game()
         var jsonObject = {};
         jsonObject.name = this.getName();
         jsonObject.port = _port;
-        jsonObject.serverId = (_hostServer != null) ? _hostServer.getId() : _serverId;
+        jsonObject.serverId = _hostServer.getId();
         jsonObject.settings = _settingsObject.toJSON();
         jsonObject.organizerId = _organizerWrapper.getId();
         jsonObject.guildId = _guildId;

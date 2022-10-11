@@ -54,7 +54,7 @@ function PlayerFile(playerId)
         }
 
         return _preferencesByGameName;
-    }
+    };
 
     this.getEffectiveGamePreferences = (gameName) => 
     {
@@ -146,12 +146,14 @@ function PlayerFile(playerId)
         };
     };
 
-    this.save = () =>
+    this.save = async () =>
     {
         const filePath = `${config.dataPath}/${config.playerDataFolder}/${_playerId}.json`;
-    
-        return fsp.writeFile(filePath, JSON.stringify(this, null, 2))
-        .catch((err) => Promise.reject(err));
+        const newFilePath = `${filePath}.new`;
+        const data = JSON.stringify(this, null, 2);
+
+        await fsp.writeFile(newFilePath, data);
+        await fsp.rename(newFilePath, filePath);
     };
 
     function _addGameData(gameDataToAdd)
