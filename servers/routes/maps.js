@@ -5,8 +5,8 @@ exports.set = (expressApp) =>
 {
     expressApp.get("/maps/*", (req, res) =>
     {
-        var serverName = req.url.replace("/maps/", "");
-        var server = hostServerStore.getHostServerByName(serverName);
+        let serverName = req.url.replace("/maps/", "");
+        let server = hostServerStore.getHostServerByName(serverName);
 
         if (server.isOnline() === false)
             res.send(["Selected server is offline"]);

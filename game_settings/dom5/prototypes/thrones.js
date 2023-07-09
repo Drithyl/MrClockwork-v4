@@ -8,7 +8,7 @@ module.exports = Thrones;
 
 function Thrones(parentGameObject)
 {
-    var _value = [];
+    let _value = [];
     const _parentGame = parentGameObject;
 
     this.getValue = () => _value;
@@ -43,14 +43,14 @@ function Thrones(parentGameObject)
 
     this.translateValueToCmdFlag = () =>
     {
-        var value = this.getValue();
+        let value = this.getValue();
     
         return [`--thrones`, ...value];
     };
 
     function _validateInputFormatOrThrow(input, apValue)
     {
-        var thrones = [];
+        let thrones = [];
 
         if (Thrones.prototype.isExpectedFormat(input) === false)
             throw new SemanticError(`Invalid value format for thrones.`);

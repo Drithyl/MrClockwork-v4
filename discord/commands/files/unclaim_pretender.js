@@ -1,0 +1,60 @@
+const { SlashCommandBuilder } = require("discord.js");
+const MessagePayload = require("../../prototypes/message_payload.js");
+const commandPermissions = require("../../command_permissions.js");
+const { SemanticError } = require("../../../errors/custom_errors.js");
+
+
+const NATION_OPTION_NAME = "nation_number";
+
+module.exports = {
+	data: new SlashCommandBuilder()
+		.setName("unclaim")
+		.setDescription("Removes your claim from your submitted pretender (without deleting the submitted pretender).")
+        .addIntegerOption(option =>
+            option.setName(NATION_OPTION_NAME)
+            .setDescription("A number that matches the pretender's index displayed; a.k.a. the nation_number.")
+            .setMinValue(0)
+            .setRequired(true)
+        ),
+
+	execute: behaviour
+};
+
+
+async function behaviour(commandContext)
+{
+    await commandPermissions.assertCommandIsUsedInGameChannel(commandContext);
+    await commandPermissions.assertGameIsOnline(commandContext);
+
+    const gameObject = commandContext.targetedGame;
+    const gameRole = gameObject.getRole();
+    const status = gameObject.getLastKnownStatus();
+    const nations = status.getPlayers();
+    const memberWrapper = commandContext.memberWrapper;
+    const nationNumber = commandContext.options.getInteger(NATION_OPTION_NAME);
+    let nationData;
+
+
+    if (nations == null)
+        return commandContext.respondToCommand(new MessagePayload(`Nation data is unavailable. You may have to wait a minute.`));
+
+    if (nationNumber == null)
+        return commandContext.respondToCommand(new MessagePayload(`You must specify a nation identifier to unclaim.`));
+
+        
+    nationData = nations.find((nation) => nation.nationNbr === nationNumber);
+    
+
+    if (nationData == null)
+        throw new new SemanticError(`Invalid nation selected. Number does not match any submitted nation.`);
+
+    
+    await gameObject.removeControlOfNation(nationData.filename);
+
+
+    if (gameRole != null && gameObject.isMemberPlayer(memberWrapper.getId()) === false)
+        await memberWrapper.removeRole(gameRole);
+
+
+    return commandContext.respondToCommand(new MessagePayload(`Pretender for nation \`${nationData.fullName}\` was unclaimed.`));
+}

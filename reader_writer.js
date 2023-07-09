@@ -55,7 +55,7 @@ module.exports.walkDir = function(dir)
 			fsp.readdir(dir)
 			.then((list) =>
 			{
-				var pending = list.length;
+				let pending = list.length;
 
 				if (pending <= 0)
 					return resolve(results);
@@ -142,8 +142,8 @@ module.exports.deleteDir = function(path)
 //If the dir path up to a filename does not exist, this will create it
 module.exports.checkAndCreateFilePath = function(filePath)
 {
-    var directories = [];
-    var currentPath = path.dirname(filePath);
+    let directories = [];
+    let currentPath = path.dirname(filePath);
 
 	if (fs.existsSync(currentPath) === true)
 		return Promise.resolve();
@@ -169,8 +169,8 @@ module.exports.checkAndCreateFilePath = function(filePath)
 
 module.exports.getDirFilenames = async function(dirPath, extensionFilter = "")
 {
-	var readFilenames = [];
-	var filenames;
+	let readFilenames = [];
+	let filenames;
 
 	if (fs.existsSync(dirPath) === false)
 		return Promise.reject(new Error(`The directory ${dirPath} was not found on the server.`));
@@ -195,13 +195,13 @@ exports.getAllDirFilenamesSync = (path) =>
 //gets an array with all the filenames inside a directory, NOT including folders
 exports.getOnlyDirFilenamesSync = (path) =>
 {
-	var filenames = exports.getAllDirFilenamesSync(path);
-	var onlyFilenames = [];
+	let filenames = exports.getAllDirFilenamesSync(path);
+	let onlyFilenames = [];
 	
 	filenames.forEach((filename) =>
 	{
-		var stat = fs.statSync(`${path}/${filename}`);
-		var isDirectory = stat.isDirectory();
+		let stat = fs.statSync(`${path}/${filename}`);
+		let isDirectory = stat.isDirectory();
 
 		if (isDirectory === false)
 			onlyFilenames.push(filename);
@@ -213,13 +213,13 @@ exports.getOnlyDirFilenamesSync = (path) =>
 //gets an array with all the folder names inside a directory
 exports.getDirSubfolderNamesSync = (path) =>
 {
-	var filenames = exports.getAllDirFilenamesSync(path);
-	var subfolderNames = [];
+	let filenames = exports.getAllDirFilenamesSync(path);
+	let subfolderNames = [];
 	
 	filenames.forEach((filename) =>
 	{
-		var stat = fs.statSync(`${path}/${filename}`);
-		var isDirectory = stat.isDirectory();
+		let stat = fs.statSync(`${path}/${filename}`);
+		let isDirectory = stat.isDirectory();
 
 		if (isDirectory === true)
 			subfolderNames.push(filename);
@@ -244,10 +244,10 @@ module.exports.append = (filePath, stringData) =>
 //Stringify that prevents circular references taken from https://antony.fyi/pretty-printing-javascript-objects-as-json/
 module.exports.JSONStringify = function(obj, spacing = 2)
 {
-	var cache = [];
+	let cache = [];
 
 	//custom replacer function gets around the circular reference errors by discarding them
-	var str = JSON.stringify(obj, function(key, value)
+	let str = JSON.stringify(obj, function(key, value)
 	{
 		if (typeof value === "object" && value != null)
 		{

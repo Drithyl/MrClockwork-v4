@@ -18,8 +18,8 @@ function Dominions5Game()
     const _playerData = {};
     const _status = new Dominions5Status();
 
-    var _statusEmbed;
-    var _isEnforcingTimer = true;
+    let _statusEmbed;
+    let _isEnforcingTimer = true;
 
     _gameObject.setSettingsObject(new Dominions5Settings(_gameObject));
 
@@ -81,7 +81,7 @@ function Dominions5Game()
 
     _gameObject.getPlayerIdControllingNationInGame = (nationIdentifier) =>
     {
-        for (var playerId in _playerData)
+        for (let playerId in _playerData)
         {
             const playerFile = _playerData[playerId].file;
 
@@ -93,7 +93,7 @@ function Dominions5Game()
         }
     };
 
-    _gameObject.memberIsPlayer = (memberId) => _playerData[memberId] != null;
+    _gameObject.isMemberPlayer = (memberId) => _playerData[memberId] != null;
 
     _gameObject.isPlayerControllingNation = (playerId, nationIdentifier) => 
     {
@@ -289,7 +289,7 @@ function Dominions5Game()
                 return Promise.resolve();
 
             _status.setMsToDefaultTimer(_gameObject);
-            return channel.setParent(guildStore.getGameCategoryId(guildId));
+            return channel.setParent(guildStore.getOngoingCategoryId(guildId));
         });
     };
 

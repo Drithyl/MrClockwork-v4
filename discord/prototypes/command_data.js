@@ -76,15 +76,15 @@ function CommandData(commandName)
 
     this.validateArgumentsSentOrThrow = (commandContext) =>
     {
-        var commandArguments = commandContext.getCommandArgumentsArray();
+        let commandArguments = commandContext.getCommandArgumentsArray();
 
         if (_data.ignoreArgumentSpaces === true)
             commandArguments = [commandArguments.join()];
 
-        for (var i = 0; i < commandArguments.length; i++)
+        for (let i = 0; i < commandArguments.length; i++)
         {
-            var arg = commandArguments[i];
-            var argRegexp = _argumentRegexpArray[i];
+            let arg = commandArguments[i];
+            let argRegexp = _argumentRegexpArray[i];
 
             if (argRegexp == null)
                 continue;

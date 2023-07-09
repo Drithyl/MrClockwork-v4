@@ -10,12 +10,12 @@ module.exports = DefaultAiLevel;
 
 function DefaultAiLevel()
 {
-    var _value;
+    let _value;
 
     this.getValue = () => _value;
     this.getReadableValue = () =>
     {
-        var value = this.getValue();
+        let value = this.getValue();
 
         if (value === dom5SettingFlags.NO_GOING_AI)
             return "No going AI";
@@ -58,7 +58,7 @@ function DefaultAiLevel()
 
     this.translateValueToCmdFlag = () =>
     {
-        var value = this.getValue();
+        let value = this.getValue();
     
         if (value == 0)
             return ["--nonewai"];

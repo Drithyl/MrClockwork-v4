@@ -6,11 +6,11 @@ const nationObjects = _generateNationObjects();
 
 exports.getNation = (identifier) => 
 {
-    var nationObject;
+    let nationObject;
 
-    for (var i = 0; i < nationObjects.length; i++)
+    for (let i = 0; i < nationObjects.length; i++)
     {
-        var nationObject = nationObjects[i];
+        let nationObject = nationObjects[i];
 
         if (nationObject.doesIdentifierMatchThisNation(identifier) === true)
             return nationObject;
@@ -21,11 +21,11 @@ exports.getNation = (identifier) =>
 
 exports.getNationInEra = (identifier, era) => 
 {
-    var nationObject;
+    let nationObject;
 
-    for (var i = 0; i < nationObjects.length; i++)
+    for (let i = 0; i < nationObjects.length; i++)
     {
-        var nationObject = nationObjects[i];
+        let nationObject = nationObjects[i];
         
         if (nationObject.doesIdentifierMatchThisNation(identifier) === true)
         {
@@ -56,7 +56,7 @@ function _generateNationObjects()
 {
     const nationObjectArray = [];
 
-    for (var eraNumber in dominions5NationData)
+    for (let eraNumber in dominions5NationData)
     {
         let nationDataArray = dominions5NationData[eraNumber];
 

@@ -386,7 +386,7 @@
         "name": "host",
         "isEnabled": true,
         "gameTypesSupported": [],
-        "argumentsRequiredInfo": ["The name of the server to host the game on; use `!capacity` to see the available ones"],
+        "argumentsRequiredInfo": ["The name of the server to host the game on; use `/capacity` to see the available ones"],
         "optionalArguments": 0,
         "regexpRequiredToInvoke": "HOST$",
         "argumentRegexpArray": ["\\w+"],

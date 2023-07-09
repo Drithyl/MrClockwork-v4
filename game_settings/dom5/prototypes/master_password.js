@@ -8,7 +8,7 @@ module.exports = MasterPassword;
 
 function MasterPassword()
 {
-    var _value;
+    let _value;
 
     this.getValue = () => _value;
     this.getReadableValue = () =>
@@ -33,7 +33,7 @@ function MasterPassword()
 
     this.translateValueToCmdFlag = () =>
     {
-        var value = this.getValue();
+        let value = this.getValue();
     
         return [`--masterpass`, value];
     };

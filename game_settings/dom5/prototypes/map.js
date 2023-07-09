@@ -9,7 +9,7 @@ module.exports = Map;
 
 function Map(parentGameObject)
 {
-    var _value;
+    let _value;
     const _parentGame = parentGameObject;
 
     this.getValue = () => _value;
@@ -20,7 +20,7 @@ function Map(parentGameObject)
     
     this.setValue = (input) =>
     {
-        var validatedValue = _validateInputFormatOrThrow(input);
+        let validatedValue = _validateInputFormatOrThrow(input);
 
         return _parentGame.emitPromiseToServer("VERIFY_MAP", validatedValue)
         .then(() => 
@@ -46,7 +46,7 @@ function Map(parentGameObject)
 
     this.translateValueToCmdFlag = () =>
     {
-        var value = this.getValue();
+        let value = this.getValue();
     
         return [`--mapfile`, value];
     };

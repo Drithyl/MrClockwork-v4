@@ -10,12 +10,12 @@ module.exports = Scoregraphs;
 
 function Scoregraphs()
 {
-    var _value;
+    let _value;
 
     this.getValue = () => _value;
     this.getReadableValue = () =>
     {
-        var value = this.getValue();
+        let value = this.getValue();
 
         if (value == dom5SettingFlags.NO_SCOREGRAPHS)
             return "Completely disabled";
@@ -46,7 +46,7 @@ function Scoregraphs()
 
     this.translateValueToCmdFlag = () =>
     {
-        var value = this.getValue();
+        let value = this.getValue();
 
         if (value == dom5SettingFlags.NO_SCOREGRAPHS)
             return ["--nonationinfo"];

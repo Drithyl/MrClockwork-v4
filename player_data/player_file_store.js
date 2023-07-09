@@ -33,7 +33,7 @@ exports.clearObsoleteData = () =>
 {
     return _playerFileStore.forAllPromises((playerFile, playerId) =>
     {
-        var wasDataCleared = false;
+        let wasDataCleared = false;
         const gameDataList = playerFile.getAllGameData();
 
         gameDataList.forEachItem((gameData, gameName) =>

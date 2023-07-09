@@ -49,8 +49,8 @@ exports.loadAll = function()
 
 exports.getGameDataForHostServer = function(hostServer)
 {
-    var dataPack = [];
-    var gamesOnServer = exports.getOngoingGamesOnServer(hostServer);
+    let dataPack = [];
+    let gamesOnServer = exports.getOngoingGamesOnServer(hostServer);
 
     gamesOnServer.forEach((game) => 
     {
@@ -65,7 +65,7 @@ exports.getOngoingGamesOnServer = function(hostServer)
 {
     const games = [];
 
-    for (var gameName in _ongoingGamesByName)
+    for (let gameName in _ongoingGamesByName)
     {
         const game = _ongoingGamesByName[gameName];
 
@@ -149,9 +149,9 @@ exports.channelHasOngoingGame = function(channelId)
 
 exports.getArrayOfGames = function()
 {
-    var arr = [];
+    let arr = [];
 
-    for (var name in _ongoingGamesByName)
+    for (let name in _ongoingGamesByName)
     {
         let game = _ongoingGamesByName[name];
         arr.push(game);
@@ -164,7 +164,7 @@ exports.forEachGame = function(fnToApply)
 {
     assert.isFunctionOrThrow(fnToApply);
 
-    for (var name in _ongoingGamesByName)
+    for (let name in _ongoingGamesByName)
     {
         let game = _ongoingGamesByName[name];
         fnToApply(game, name);
@@ -176,7 +176,7 @@ exports.filterGames = function(fnToApply)
     const filteredGames = [];
     assert.isFunctionOrThrow(fnToApply);
 
-    for (var name in _ongoingGamesByName)
+    for (let name in _ongoingGamesByName)
     {
         let game = _ongoingGamesByName[name];
         if (fnToApply(game, name) === true)
@@ -188,7 +188,7 @@ exports.filterGames = function(fnToApply)
 
 exports.getGamesWhereUserIsPlayer = function(userId)
 {
-    const games = exports.filterGames((game) => game.memberIsPlayer(userId) === true);
+    const games = exports.filterGames((game) => game.isMemberPlayer(userId) === true);
     return games;
 };
 
@@ -201,7 +201,7 @@ exports.getGamesWhereUserIsOrganizer = function(userId)
 
 function _findGameByName(nameToFind)
 {
-    for (var name in _ongoingGamesByName)
+    for (let name in _ongoingGamesByName)
     {
         if (name.toLowerCase() === nameToFind.toLowerCase())
             return _ongoingGamesByName[name];
@@ -210,7 +210,7 @@ function _findGameByName(nameToFind)
 
 function _findGameByChannel(channelId)
 {
-    for (var name in _ongoingGamesByName)
+    for (let name in _ongoingGamesByName)
     {
         let game = _ongoingGamesByName[name];
 

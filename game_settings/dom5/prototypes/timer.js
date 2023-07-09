@@ -8,7 +8,7 @@ module.exports = TimerSetting;
 
 function TimerSetting()
 {
-    var _value;
+    let _value;
 
     this.getValue = () => _value;
     this.getReadableValue = () =>
@@ -65,7 +65,7 @@ function TimerSetting()
 
     function _patchFromV3(v3TimerObj)
     {
-        var timerInMs = 0;
+        let timerInMs = 0;
 
         if (Number.isInteger(+v3TimerObj.days) === true)
             timerInMs += +v3TimerObj.days * 24 * 3600 * 1000;

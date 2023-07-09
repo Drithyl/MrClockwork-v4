@@ -1,11 +1,11 @@
 
 module.exports.processRolls = function(input)
 {
-  var inputCopy = input.replace(/\%|\?|\s/g, "");
-  var rollList = [];
-  var literalList = [];
-  var total = 0;
-  var msg = "";
+  let inputCopy = input.replace(/\%|\?|\s/g, "");
+  let rollList = [];
+  let literalList = [];
+  let total = 0;
+  let msg = "";
 
   //single number so just return it
   if (isNaN(input) === false)
@@ -17,12 +17,12 @@ module.exports.processRolls = function(input)
   {
     if (/^\+?\d+D\d+/i.test(inputCopy) === true)
     {
-      var rollStr = inputCopy.match(/\d+D\d+\+?/i)[0];
-      var d = rollStr.toLowerCase().replace(/\+|\s/g, "").split("d");
-    	var num = d[0] || 0;
-    	var max = d[1] || 0;
-    	var explode = false;
-      var result;
+      let rollStr = inputCopy.match(/\d+D\d+\+?/i)[0];
+      let d = rollStr.toLowerCase().replace(/\+|\s/g, "").split("d");
+    	let num = d[0] || 0;
+    	let max = d[1] || 0;
+    	let explode = false;
+      let result;
       rollList.push({num: +num, max: +max});
       inputCopy = inputCopy.slice(inputCopy.indexOf(rollStr) + rollStr.length).trim();
 
@@ -44,7 +44,7 @@ module.exports.processRolls = function(input)
       result = roll(+num, +max, explode);
       total += result.total;
 
-      for (var i = 0; i < result.rolls.length; i++)
+      for (let i = 0; i < result.rolls.length; i++)
       {
         msg += `${result.rolls[i]} + `;
       }
@@ -52,7 +52,7 @@ module.exports.processRolls = function(input)
 
     else if (/^\+?\d+/i.test(inputCopy) === true)
     {
-      var nbr = inputCopy.match(/\d+/)[0];
+      let nbr = inputCopy.match(/\d+/)[0];
       inputCopy = inputCopy.slice(inputCopy.indexOf(nbr) + nbr.length).trim();
 
       if (isNaN(+nbr) === true)
@@ -92,14 +92,14 @@ module.exports.DRNvsDRN = function(atkMod = 0, defMod = 0)
 
 function findAverage(rolls, literals)
 {
-  var result = 0;
+  let result = 0;
 
-  for (var i = 0; i < rolls.length; i++)
+  for (let i = 0; i < rolls.length; i++)
   {
     result += ((rolls[i].max + 1) * 0.5) * rolls[i].num;
   }
 
-  for (var j = 0; j < literals.length; j++)
+  for (let j = 0; j < literals.length; j++)
   {
     result += literals[j];
   }
@@ -109,11 +109,11 @@ function findAverage(rolls, literals)
 
 function roll(diceNum, max, explosive = false)
 {
-  var result = {rolls: [], total: 0};
+  let result = {rolls: [], total: 0};
 
-  for (var i = 0; i < diceNum; i++)
+  for (let i = 0; i < diceNum; i++)
   {
-    var r = Math.floor((Math.random() * max) + 1);
+    let r = Math.floor((Math.random() * max) + 1);
 
     if (explosive === true && r == max)
     {
@@ -129,7 +129,7 @@ function roll(diceNum, max, explosive = false)
 
 function explodeDie(max)
 {
-	var rndm = Math.floor((Math.random() * max) + 1);
+	let rndm = Math.floor((Math.random() * max) + 1);
 
 	if (rndm == max)
 	{
@@ -141,7 +141,7 @@ function explodeDie(max)
 
 function explodeDRN()
 {
-  var rndm = Math.floor((Math.random() * 6) + 1);
+  let rndm = Math.floor((Math.random() * 6) + 1);
 
   if (rndm == 6)
   {

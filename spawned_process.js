@@ -56,13 +56,13 @@ function SpawnedProcess(exePath, args)
     // https://nodejs.org/api/process.html#process_a_note_on_process_i_o
     this.readWholeStdoutData = () => 
     {
-        var accumulatedData = "";
+        let accumulatedData = "";
 
         return new Promise((resolve, reject) =>
         {
             _process.stdout.on("readable", () => 
             {
-                var data;
+                let data;
 
                 while(data = _process.stdout.read())
                     accumulatedData += data;

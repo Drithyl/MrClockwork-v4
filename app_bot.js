@@ -4,16 +4,16 @@ require("./helper_functions.js").extendPrototypes();
 
 const configHelper = require("./config_helper.js");
 
-var config;
-var log;
-var cleaner;
-var discord;
-var patcher;
-var expressServer;
-var gamesStore;
-var hostServerStore;
-var playerFileStore;
-var fileDownloader;
+let config;
+let log;
+let cleaner;
+let discord;
+let patcher;
+let expressServer;
+let gamesStore;
+let hostServerStore;
+let playerFileStore;
+let fileDownloader;
 
 
 Promise.resolve()
@@ -39,7 +39,7 @@ async function _initializeComponents()
     //import the modules required for initialization
     log = require("./logger.js");
     cleaner = require("./cleaner.js");
-    discord = require("./discord/discord.js");
+    discord = require("./discord/index.js");
     patcher = require("./patcher/patcher.js");
     expressServer = require("./servers/express_server.js");
     gamesStore = require("./games/ongoing_games_store.js");

@@ -39,7 +39,7 @@ function Dominions5Nation(eraNumber, nationData)
 
     this.doesIdentifierMatchThisNation = (identifier) =>
     {
-        var lowerCaseIdentifier = identifier.toString().toLowerCase();
+        let lowerCaseIdentifier = identifier.toString().toLowerCase();
 
         if (/\..+$/i.test(lowerCaseIdentifier) === true)
             lowerCaseIdentifier = lowerCaseIdentifier.replace(/\..+$/i, "");

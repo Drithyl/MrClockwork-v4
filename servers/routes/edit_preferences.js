@@ -10,9 +10,9 @@ exports.set = (expressApp) =>
 {
     expressApp.get("/edit_preferences", async (req, res) =>
     {
-        var playerFile;
-        var gamePreferences;
-        var guildsWhereUserIsTrusted;
+        let playerFile;
+        let gamePreferences;
+        let guildsWhereUserIsTrusted;
 
         const dataToSend = [];
 
@@ -63,7 +63,7 @@ exports.set = (expressApp) =>
 
     expressApp.post("/edit_preferences", (req, res) =>
     {
-        var playerFile;
+        let playerFile;
         const values = req.body;
 
         // Fetch session from either the URL params or the cookies, wherever we can find the sessionId
@@ -110,9 +110,9 @@ exports.set = (expressApp) =>
  {
     const formattedData = {};
 
-    for (var key in data)
+    for (let key in data)
     {
-        var value = data[key];
+        let value = data[key];
 
         if (assert.isNumber(+value) === true)
             value = +value;
@@ -149,7 +149,7 @@ exports.set = (expressApp) =>
  {
     const playerId = playerFile.getId();
     
-    for (var gameName in preferencesByGame)
+    for (let gameName in preferencesByGame)
     {
         const preferencesData = Object.assign({ playerId }, preferencesByGame[gameName]);
         const preferencesObject = DominionsPreferences.loadFromJSON(preferencesData);

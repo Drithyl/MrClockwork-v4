@@ -27,7 +27,7 @@ function GuildWrapper(discordJsGuildObject)
 
     this.getRecruitingCategory = () => _discordJsGuildObject.channels.cache.get(guildDataStore.getRecruitingCategoryId(this.getId()));
     this.getBlitzRecruitingCategory = () => _discordJsGuildObject.channels.cache.get(guildDataStore.getBlitzRecruitingCategoryId(this.getId()));
-    this.getGameCategory = () => _discordJsGuildObject.channels.cache.get(guildDataStore.getGameCategoryId(this.getId()));
+    this.getOngoingCategory = () => _discordJsGuildObject.channels.cache.get(guildDataStore.getOngoingCategoryId(this.getId()));
     this.getBlitzCategory = () => _discordJsGuildObject.channels.cache.get(guildDataStore.getBlitzCategoryId(this.getId()));
 
     this.getGameMasterRole = () => _discordJsGuildObject.roles.cache.get(guildDataStore.getGameMasterRoleId(this.getId()));
@@ -43,7 +43,7 @@ function GuildWrapper(discordJsGuildObject)
     this.memberHasTrustedRole = (guildMemberWrapper) => guildMemberWrapper.hasRole(guildDataStore.getTrustedRoleId(this.getId())) === true;
     this.memberHasBlitzerRole = (guildMemberWrapper) => guildMemberWrapper.hasRole(guildDataStore.getBlitzerRoleId(this.getId())) === true;
     this.memberHasGameMasterRole = (guildMemberWrapper) => guildMemberWrapper.hasRole(guildDataStore.getGameMasterRoleId(this.getId())) === true;
-    this.checkMemberHasTrustedRoleOrHigher = async (guildMemberWrapper) =>
+    this.checkMemberIsTrusted = async (guildMemberWrapper) =>
     {
         if (this.memberIsOwner(guildMemberWrapper.getId()) === true)
             return true;
@@ -55,18 +55,13 @@ function GuildWrapper(discordJsGuildObject)
 
         return _memberHasRoleOrHigher(guildMemberWrapper, trustedRole);
     };
-    
-    this.checkMemberHasGameMasterRoleOrHigher = async (guildMemberWrapper) =>
+
+    this.checkMemberHasRoleOrHigher = (guildMemberWrapper, role) =>
     {
         if (this.memberIsOwner(guildMemberWrapper.getId()) === true)
             return true;
-            
-        const gameMasterRole = await this.fetchGameMasterRole();
 
-        if (gameMasterRole == null)
-            throw new Error(`Guild has no Game Master role!`);
-
-        return _memberHasRoleOrHigher(guildMemberWrapper, gameMasterRole);
+        return _memberHasRoleOrHigher(guildMemberWrapper, role);
     };
   
     this.createCommand = (data) => _discordJsGuildObject.commands.create(data);
@@ -76,7 +71,7 @@ function GuildWrapper(discordJsGuildObject)
     {
         const guildData = guildDataStore.getGuildData(this.getId());
 
-        for (var key in guildData)
+        for (let key in guildData)
         {
             if (guildData[key] === discordId)
                 return true;
@@ -95,7 +90,7 @@ function GuildWrapper(discordJsGuildObject)
 
     this.updateHelpChannel = (payload) =>
     {
-        var helpChannel = this.getHelpChannel();
+        let helpChannel = this.getHelpChannel();
 
         if (helpChannel == null)
         {
@@ -111,8 +106,8 @@ function GuildWrapper(discordJsGuildObject)
         });
     };
 
-    this.deployBot = () => guildStore.deployBotOnGuild(this.getId());
-    this.undeployBot = () => guildStore.undeployBotOnGuild(this.getId());
+    this.deployBot = (client) => guildStore.deployBotOnGuild(client, this.getId());
+    this.undeployBot = (client) => guildStore.undeployBotOnGuild(client, this.getId());
 
     this.findChannel = (channelId) => 
     {
@@ -126,20 +121,10 @@ function GuildWrapper(discordJsGuildObject)
         return _discordJsGuildObject.roles.resolve(roleId);
     };
 
-    this.findOrCreateCategory = (existingId, ...args) =>
-    {
-        var existingCategory = this.findChannel(existingId);
-
-        if (existingCategory != null)
-            return Promise.resolve(existingCategory);
-
-        else return this.createCategory(...args);
-    };
-
     this.findOrCreateChannel = (existingId, ...args) =>
     {
         log.general(log.getVerboseLevel(), `Finding channel ${existingId}...`);
-        var existingChannel = this.findChannel(existingId);
+        let existingChannel = this.findChannel(existingId);
 
         if (existingChannel != null)
         {
@@ -157,7 +142,7 @@ function GuildWrapper(discordJsGuildObject)
     this.findOrCreateRole = (existingId, ...args) =>
     {
         log.general(log.getVerboseLevel(), `Finding role ${existingId}...`);
-        var existingRole = this.findRole(existingId);
+        let existingRole = this.findRole(existingId);
 
         if (existingRole != null)
         {
@@ -172,47 +157,23 @@ function GuildWrapper(discordJsGuildObject)
         }
     };
 
-    this.createCategory = (name, permissions) => 
+    this.createChannel = async (options) => 
     {
-        return _discordJsGuildObject.channels.create(name, {type: "category", permissionOverwrites: permissions});
+        log.general(log.getVerboseLevel(), `Creating channel ${options.name}...`);
+        const channel = await _discordJsGuildObject.channels.create(options);
+        
+        log.general(log.getVerboseLevel(), `Channel created`); 
+        return channel;
     };
 
-    this.createChannel = (name, permissionOverwrites = [], parent = null) => 
+    this.createRole = async (options) =>
     {
-        log.general(log.getVerboseLevel(), `Creating channel ${name}...`);
-        return _discordJsGuildObject.channels.create(name, 
-        {
-            type: "text", 
-            permissionOverwrites
-        })
-        .then((channel) =>
-        {
-            log.general(log.getVerboseLevel(), `Channel created`);
+        log.general(log.getVerboseLevel(), `Creating role ${options.name}...`);
+        const role = await _discordJsGuildObject.roles.create(options);
             
-            if (parent != null)
-                return channel.setParent(parent);
-                
-            return Promise.resolve(channel);
-        });
+        log.general(log.getVerboseLevel(), `Role created.`);
+        return role;
     };
-
-    this.createRole = (name, mentionable, permissions = []) =>
-    {
-        log.general(log.getVerboseLevel(), `Creating role ${name}...`);
-        return _discordJsGuildObject.roles.create({
-            name,
-            mentionable,
-            permissions
-        })
-        .then((role) => 
-        {
-            log.general(log.getVerboseLevel(), `Role created.`);
-            return Promise.resolve(role);
-        });
-    };
-
-    this.createGameChannel = (name) => this.createChannel(name, [], this.getRecruitingCategory());
-    this.createGameRole = (name) => this.createRole(name, true);
 
     this.getRoleById = (roleId) => _discordJsGuildObject.roles.cache.get(roleId);
     this.getChannelById = (channelId) => _discordJsGuildObject.channels.cache.get(channelId);
@@ -231,12 +192,12 @@ function GuildWrapper(discordJsGuildObject)
         .catch((err) => Promise.reject(err));
     };
 
-    this.checkIfMember = async (userId) => 
+    this.checkIfMember = (userId) => 
     {
         return this.fetchDiscordJsGuildMemberById(userId)
-        .then((member) => true)
-        .catch((err) => false);
-    }
+        .then(true)
+        .catch(false);
+    };
 
     this.doesBotHavePermission = (permissionFlag) =>
     {
@@ -265,59 +226,70 @@ function GuildWrapper(discordJsGuildObject)
         const highestPosition = guildMemberWrapper.getHighestDiscordRolePosition();
         return highestPosition >= role.position;
     }
+}
 
 
-    /** The channel.bulkDelete method does not work since it cannot delete messages
-     *  older than 14 days, even with the boolean option set to true.
-     */
-    function _clearChannel(channel)
+async function _clearChannel(channel)
+{
+    log.general(log.getVerboseLevel(), "Last message id", channel.lastMessageId);
+
+    if (channel.lastMessageId == null)
     {
-        var _lastMessage;
+        log.general(log.getVerboseLevel(), "Channel already empty.");
+        return;
+    }
 
-        log.general(log.getVerboseLevel(), "Last message id", channel.lastMessageId);
+    try
+    {
+        const messages = await _fetchMessages(channel);
+        await _deleteMessages(messages);
+    }
+    
+    // If last message id exists but gives an error when fetching, it's 
+    // because the message was deleted, but the id is still cached
+    catch(err)
+    {
+        return;
+    }
+}
 
-        if (channel.lastMessageId == null)
+async function _fetchMessages(channel)
+{
+    const messageArray = [];
+    const lastMessage = await channel.messages.fetch(channel.lastMessageId);
+    log.general(log.getVerboseLevel(), `Fetched last message ${lastMessage.id}`);
+    
+    const messages = await channel.messages.fetch({ before: lastMessage.id });
+
+
+    if (lastMessage != null)
+        messageArray.push(lastMessage);
+
+    if (messages != null)
+        messageArray.push(...messages.values());
+    
+
+    log.general(log.getVerboseLevel(), `Fetched previous messages; total fetched: ${messageArray.length}`);
+    return messageArray;
+}
+
+async function _deleteMessages(messages)
+{
+    const promises = messages.map(async (message) =>
+    {
+        log.general(log.getVerboseLevel(), `Deleting message ${message.id}...`);
+
+        try
         {
-            log.general(log.getVerboseLevel(), "Channel already empty.");
-            return Promise.resolve();
+            await message.delete();
+            log.general(log.getVerboseLevel(), "Message deleted.");
         }
 
-        return channel.messages.fetch(channel.lastMessageId)
-        .then((lastMessage) =>
+        catch(err)
         {
-            log.general(log.getVerboseLevel(), `Fetched last message ${lastMessage.id}`);
-            _lastMessage = lastMessage;
-            
-            // Fetch all messages before last in channel
-            return channel.messages.fetch({ before: lastMessage.id });
-        },
-        // If last message id exists but gives an error when fetching, it's because
-        // the message was deleted, but the id is still cached
-        (err) => Promise.resolve())
-        .then((messages) =>
-        {
-            var messageArray = [];
+            log.error(log.getNormalLevel(), `ERROR DELETING MESSAGE`, err);
+        }
+    });
 
-            if (_lastMessage != null)
-                messageArray.push(_lastMessage);
-
-            if (messages != null)
-                messageArray.push(...messages.values());
-            
-            log.general(log.getVerboseLevel(), `Fetched previous messages; total fetched: ${messageArray.length}`);
-
-            // Delete all messages
-            return messageArray.forAllPromises((message) =>
-            {
-                log.general(log.getVerboseLevel(), `Deleting message ${channel.id}...`);
-                return message.delete()
-                .then(() => log.general(log.getVerboseLevel(), "Message deleted."))
-                .catch((err) => 
-                {
-                    log.error(log.getNormalLevel(), `ERROR DELETING MESSAGE`, err);
-                    return Promise.reject(err);
-                });
-            });
-        });
-    }
+    await Promise.allSettled(promises);
 }

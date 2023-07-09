@@ -12,16 +12,16 @@ function DownloadStream(oAuth2Object, downloadPath)
     const drive = google.drive({ version:"v3", oAuth2Object });
     const writeStream = fs.createWriteStream(downloadPath);
 
-    var onDownloadErrorHandler;
+    let onDownloadErrorHandler;
 
-    var onReadErrorHandler;
-    var onReadEndHandler;
-    var onReadCloseHandler;
-    var onReadDataHandler;
+    let onReadErrorHandler;
+    let onReadEndHandler;
+    let onReadCloseHandler;
+    let onReadDataHandler;
     
-    var onWriteErrorHandler;
-    var onWriteFinishHandler;
-    var onWriteCloseHandler;
+    let onWriteErrorHandler;
+    let onWriteFinishHandler;
+    let onWriteCloseHandler;
 
     this.onDownloadError = (handler) => onDownloadErrorHandler = handler;
 
@@ -38,7 +38,7 @@ function DownloadStream(oAuth2Object, downloadPath)
     {
         drive.files.get(getOptions, responseTypeOptions, (err, response) =>
         {
-            var readStream;
+            let readStream;
 
             /*err.response has the following fields:
                 {

@@ -8,7 +8,7 @@ function TimeoutPromise(handler, timeout)
     return new Promise((resolve, reject) =>
     {
         const _timeout = timeout ?? 60000;
-        var _wasSettled = false;
+        let _wasSettled = false;
 
         // Introduce a timeout mechanism in case the process hangs for too long
         setTimeout(() =>

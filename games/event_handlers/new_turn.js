@@ -3,7 +3,6 @@ const log = require("../../logger.js");
 const assert = require("../../asserter.js");
 const dom5SettingFlags = require("../../json/dominions5_setting_flags.json");
 const MessagePayload = require("../../discord/prototypes/message_payload.js");
-const botClientWrapper = require("../../discord/wrappers/bot_client_wrapper.js");
 
 
 module.exports = async (game, dom5Events) =>
@@ -12,9 +11,9 @@ module.exports = async (game, dom5Events) =>
     const status = game.getLastKnownStatus();
     const turnNumber = dom5Events.getTurnNumber();
 
-    var staleData;
-    var staleMessage;
-    var announcement;
+    let staleData;
+    let staleMessage;
+    let announcement;
     
     try
     {
@@ -61,7 +60,7 @@ module.exports = async (game, dom5Events) =>
 
 async function _processNewTurnPreferences(game)
 {
-    var fetchedTurnFiles;
+    let fetchedTurnFiles;
 
     // Nation filenames and playerfiles that need backups will be stored here
     const nationFilesToFetch = [];
@@ -119,14 +118,16 @@ function _sendNewTurnFiles(game, playerFiles, fetchedTurnFiles)
 // Build and send the files to the user that owns this player file
 async function _sendFilesToUser(game, playerFile, fetchedTurnFiles)
 {
-    var payload;
-    var userWrapper;
+    const guild = game.getGuild();
+    
+    let payload;
+    let memberWrapper;
 
     try
     {
-        userWrapper = await botClientWrapper.fetchUser(playerFile.getId());
+        memberWrapper = await guild.fetchGuildMemberWrapperById(playerFile.getId());
         payload = _buildMessagePayload(game, playerFile, fetchedTurnFiles);
-        userWrapper.sendMessage(payload);
+        memberWrapper.sendMessage(payload);
     }
 
     catch(err)
@@ -195,7 +196,7 @@ async function _fetchStales(game)
 
 function _formatStales(staleData)
 {
-    var staleMessage = "";
+    let staleMessage = "";
     
     if (staleData == null)
         return "No stale data was available for this turn.";

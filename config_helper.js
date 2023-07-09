@@ -19,7 +19,7 @@ exports.hasConfig = () => fs.existsSync("./config/config.json");
 
 exports.askConfigQuestions = () =>
 {
-    var config = Object.assign({}, exampleConfig);
+    let config = Object.assign({}, exampleConfig);
 
     return _promisifiedQuestion("Input bot's login token: ", (answer) =>
     {

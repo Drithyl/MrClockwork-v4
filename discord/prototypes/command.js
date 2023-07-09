@@ -13,9 +13,9 @@ function DiscordCommand(commandDataObject)
     const _command = this;
     const _data = commandDataObject;
 
-    var _requirementsArray = [];
-    var _silentRequirementsArray = [];
-    var _runCommand;
+    let _requirementsArray = [];
+    let _silentRequirementsArray = [];
+    let _runCommand;
 
     this.isEnabled = () => _data.isEnabled();
     this.isDevOnly = () => _data.isDevOnly();
@@ -33,8 +33,8 @@ function DiscordCommand(commandDataObject)
     this.getDescription = (...args) => _data.getDescription(...args);
     this.getFormattedHelp = () =>
     {
-        var helpString = this.getDescription();
-        var formatedHelp = `-------------------\n\n**${config.commandPrefix}${this.getName()}**\n\n${helpString}\n\n`;
+        let helpString = this.getDescription();
+        let formatedHelp = `-------------------\n\n**${config.commandPrefix}${this.getName()}**\n\n${helpString}\n\n`;
 
         formatedHelp += `\`Where can it be used?:\` ${this.getChannelRequiredToInvoke()} channel\n\n`;
         formatedHelp += `\`Arguments:\` `;
@@ -61,9 +61,9 @@ function DiscordCommand(commandDataObject)
 
     this.addRequirements = (...requirements) =>
     {
-        for (var i = 0; i < requirements.length; i++)
+        for (let i = 0; i < requirements.length; i++)
         {
-            var requirementFn = requirements[i];
+            let requirementFn = requirements[i];
 
             assert.isFunctionOrThrow(requirementFn);
             _requirementsArray.push(requirementFn);
@@ -72,9 +72,9 @@ function DiscordCommand(commandDataObject)
 
     this.addSilentRequirements = (...requirements) =>
     {
-        for (var i = 0; i < requirements.length; i++)
+        for (let i = 0; i < requirements.length; i++)
         {
-            var requirementFn = requirements[i];
+            let requirementFn = requirements[i];
 
             assert.isFunctionOrThrow(requirementFn);
             _silentRequirementsArray.push(requirementFn);
@@ -159,7 +159,7 @@ function DiscordCommand(commandDataObject)
 
     function _isCommandUsedInValidChannel(commandContext)
     {
-        var channelRequired = _data.getChannelRequiredToInvoke().toLowerCase();
+        let channelRequired = _data.getChannelRequiredToInvoke().toLowerCase();
 
         if (channelRequired === "dm" && commandContext.wasSentByDm() === true)
             return true;

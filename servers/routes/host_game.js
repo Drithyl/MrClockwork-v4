@@ -16,8 +16,8 @@ exports.set = (expressApp) =>
     //since they will also be extracted in the client
     expressApp.get("/host_game", async (req, res) =>
     {
-        var availableServers;
-        var guildsWhereUserIsTrusted;
+        let availableServers;
+        let guildsWhereUserIsTrusted;
 
         const guildData = [];
 
@@ -123,7 +123,7 @@ function _formatPostValues(values)
 
 function _createGame(userId, values)
 {
-    var gameObject;
+    let gameObject;
     const guild = guildStore.getGuildWrapperById(values.guild);
     const server = hostServerStore.getHostServerByName(values.server);
 
@@ -146,7 +146,7 @@ function _createGame(userId, values)
         return gameObject.loadSettingsFromInput(values);
     })
     .then(() => gameObject.createNewChannel())
-    .then(() => gameObject.createNewRole())
+    .then(() => gameObject.createRole())
     .then(() => gamesStore.addOngoingGame(gameObject))
     .then(() => gameObject.pinSettingsToChannel())
     .then(() => gameObject.save())

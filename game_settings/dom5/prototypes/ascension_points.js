@@ -9,7 +9,7 @@ module.exports = AscensionPoints;
 
 function AscensionPoints(parentGameObject)
 {
-    var _value;
+    let _value;
     const _parentGame = parentGameObject;
 
     this.getValue = () => _value;
@@ -35,7 +35,7 @@ function AscensionPoints(parentGameObject)
 
     this.translateValueToCmdFlag = () =>
     {
-        var value = this.getValue();
+        let value = this.getValue();
     
         return [`--requiredap`, value];
     };

@@ -10,8 +10,8 @@ function InteractionWrapper(discordJsInteractionObject)
     const _discordJsInteractionObject = discordJsInteractionObject;
 
     const _userWrapper = new UserWrapper(_discordJsInteractionObject.user);
-    var _guildWrapper;
-    var _guildMemberWrapper;
+    let _guildWrapper;
+    let _guildMemberWrapper;
 
     this.getId = () => _discordJsInteractionObject.id;
     this.getToken = () => _discordJsInteractionObject.token;

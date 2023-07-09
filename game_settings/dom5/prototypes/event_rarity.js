@@ -8,12 +8,12 @@ module.exports = EventRarity;
 
 function EventRarity()
 {
-    var _value;
+    let _value;
 
     this.getValue = () => _value;
     this.getReadableValue = () =>
     {
-        var value = this.getValue();
+        let value = this.getValue();
 
         if (value == 1)
             return "Common";
@@ -41,7 +41,7 @@ function EventRarity()
 
     this.translateValueToCmdFlag = () =>
     {
-        var value = this.getValue();
+        let value = this.getValue();
     
         return [`--eventrarity`, value];
     };

@@ -5,7 +5,7 @@ const gameMonitor = require("../../games/game_monitor.js");
 const { SocketResponseError } = require("../../errors/custom_errors.js");
 const ongoingGamesStore = require("../../games/ongoing_games_store");
 const trustedServerData = require("../../config/trusted_server_data.json");
-const botClientWrapper = require("../../discord/wrappers/bot_client_wrapper.js");
+const client = require("../../discord/client.js");
 const MessagePayload = require("../../discord/prototypes/message_payload.js");
 const onGameWentOffline = require("../../games/event_handlers/game_went_offline.js");
 
@@ -25,8 +25,8 @@ function HostServer(id)
     const _name = _data.name;
     const _ip = _data.ip;
 
-    var _capacity;
-    var _socketWrapper;
+    let _capacity;
+    let _socketWrapper;
 
     this.getName = () => _name;
     this.getId = () => _id;
@@ -81,7 +81,7 @@ function HostServer(id)
         _socketWrapper.onClose((code, reason) =>
         {
             log.general(log.getLeanLevel(), `Server ${this.getName()} disconnected (code: ${code}, reason: ${reason})`);
-            botClientWrapper.messageDev(new MessagePayload(`Server ${this.getName()} disconnected (code: ${code}, reason: ${reason})`));
+            client.messageDev(new MessagePayload(`Server ${this.getName()} disconnected (code: ${code}, reason: ${reason})`));
         });
     };
     

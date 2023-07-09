@@ -106,23 +106,40 @@ TimeLeft.fromStringInput = (timeLeftAsString) =>
     else if (_isStringInRightFormat(timeLeftAsString) === false)
         throw new SemanticError(`Invalid time format.`);
 
-    var daysMatch = timeLeftAsString.match(daysLeftRegExp);
-    var hoursMatch = timeLeftAsString.match(hoursLeftRegExp);
-    var minutesMatch = timeLeftAsString.match(minutesLeftRegExp);
-    var secondsMatch = timeLeftAsString.match(secondsLeftRegExp);
+    let daysMatch = timeLeftAsString.match(daysLeftRegExp);
+    let hoursMatch = timeLeftAsString.match(hoursLeftRegExp);
+    let minutesMatch = timeLeftAsString.match(minutesLeftRegExp);
+    let secondsMatch = timeLeftAsString.match(secondsLeftRegExp);
 
-    var days = _extractNumberFromMatch(daysMatch);
-    var hours = _extractNumberFromMatch(hoursMatch);
-    var minutes = _extractNumberFromMatch(minutesMatch);
-    var seconds = _extractNumberFromMatch(secondsMatch);
-    var totalMs = (days * MS_IN_A_DAY) + (hours * MS_IN_AN_HOUR) + (minutes * MS_IN_A_MINUTE) + (seconds * MS_IN_A_SECOND);
+    let days = _extractNumberFromMatch(daysMatch);
+    let hours = _extractNumberFromMatch(hoursMatch);
+    let minutes = _extractNumberFromMatch(minutesMatch);
+    let seconds = _extractNumberFromMatch(secondsMatch);
+    let totalMs = (days * MS_IN_A_DAY) + (hours * MS_IN_AN_HOUR) + (minutes * MS_IN_A_MINUTE) + (seconds * MS_IN_A_SECOND);
 
     return new TimeLeft(totalMs);
 };
 
+TimeLeft.msToSeconds = _msToSeconds;
+TimeLeft.secondsToMs = _secondsToMs;
+
+TimeLeft.msToMinutes = _msToMinutes;
+TimeLeft.minutesToMs = _minutesToMs;
+
+TimeLeft.msToHours = _msToHours;
+TimeLeft.hoursToMs = _hoursToMs;
+
+TimeLeft.msToDays = _msToDays;
+TimeLeft.daysToMs = _daysToMs;
+
 function _msToSeconds(ms)
 {
     return Math.floor(ms/MS_IN_A_SECOND);
+}
+
+function _secondsToMs(seconds)
+{
+    return Math.floor(seconds*MS_IN_A_SECOND);
 }
 
 function _msToMinutes(ms)
@@ -130,14 +147,29 @@ function _msToMinutes(ms)
     return Math.floor(ms/MS_IN_A_MINUTE);
 }
 
+function _minutesToMs(minutes)
+{
+    return Math.floor(minutes*MS_IN_A_MINUTE);
+}
+
 function _msToHours(ms)
 {
     return Math.floor(ms/MS_IN_AN_HOUR);
 }
 
+function _hoursToMs(hours)
+{
+    return Math.floor(hours*MS_IN_AN_HOUR);
+}
+
 function _msToDays(ms)
 {
     return Math.floor(ms/MS_IN_A_DAY);
+}
+
+function _daysToMs(days)
+{
+    return Math.floor(days*MS_IN_A_DAY);
 }
 
 function _isStringInRightFormat(timeLeftAsString)

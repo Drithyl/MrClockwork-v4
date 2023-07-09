@@ -9,7 +9,7 @@ module.exports = GoldModifier;
 
 function GoldModifier()
 {
-    var _value;
+    let _value;
 
     this.getValue = () => _value;
     this.getReadableValue = () =>
@@ -34,7 +34,7 @@ function GoldModifier()
 
     this.translateValueToCmdFlag = () =>
     {
-        var value = this.getValue();
+        let value = this.getValue();
     
         return [`--richness`, value];
     };

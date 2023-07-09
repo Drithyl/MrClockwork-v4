@@ -9,12 +9,12 @@ module.exports = IndependentsStrength;
 
 function IndependentsStrength()
 {
-    var _value;
+    let _value;
 
     this.getValue = () => _value;
     this.getReadableValue = () =>
     {
-        var value = this.getValue();
+        let value = this.getValue();
 
         return value;
     };
@@ -36,7 +36,7 @@ function IndependentsStrength()
 
     this.translateValueToCmdFlag = () =>
     {
-        var value = this.getValue();
+        let value = this.getValue();
     
         return [`--indepstr`, value];
     };

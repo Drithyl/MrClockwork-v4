@@ -11,7 +11,7 @@ const safePath = require("../safe_path.js");
 
 exports.walkZipfile = async (zipfilePath, onFileFn) =>
 {
-    var i = 0;
+    let i = 0;
     zipfile = await _openZipfile(zipfilePath);
 
     //emits "entry" event once it's done reading an entry

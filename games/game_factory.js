@@ -6,8 +6,8 @@ const Dominions5Game = require("./prototypes/dominions5_game.js");
 
 exports.loadGame = (pathToJSONDataFile) =>
 {
-    var loadedGame;
-    var parsedData;
+    let loadedGame;
+    let parsedData;
 
     return fsp.readFile(pathToJSONDataFile)
     .then((jsonStringData) => 
@@ -33,7 +33,7 @@ exports.loadGame = (pathToJSONDataFile) =>
 
 exports.createDominions5Game = (reservedPort, hostServer, guildWrapper, organizerWrapper) =>
 {
-    var newGameObject = new Dominions5Game();
+    let newGameObject = new Dominions5Game();
     newGameObject.setPort(reservedPort);
     newGameObject.setServer(hostServer);
     newGameObject.setGuild(guildWrapper);

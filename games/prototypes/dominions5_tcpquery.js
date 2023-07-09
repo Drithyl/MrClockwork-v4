@@ -26,7 +26,7 @@ module.exports.queryDom5Status = queryGame;
 
 async function queryGame(gameObject)
 {
-    var isOnline;
+    let isOnline;
     const statusSnapshot = new Dominions5StatusSnapshot();
     statusSnapshot.setIsServerOnline(gameObject.isServerOnline());
 
@@ -154,8 +154,8 @@ function _parsePlayers(tcpQueryResponse)
         {
             const name = playerString.replace(/^(.+)\s\(.+$/ig, "$1");
             const turnStatus = playerString.replace(/^.+\s\((.+)\)$/ig, "$1");
-            var isTurnFinished = false;
-            var isAi = false;
+            let isTurnFinished = false;
+            let isAi = false;
 
             if (turnStatus === "played")
                 isTurnFinished = true;

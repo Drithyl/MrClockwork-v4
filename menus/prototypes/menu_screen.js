@@ -8,7 +8,7 @@ function MenuScreen(displayText, behaviour)
     assert.isStringOrThrow(displayText);
     assert.isFunctionOrThrow(behaviour);
 
-    var _displayText = displayText;
+    let _displayText = displayText;
     const _behaviour = behaviour;
 
     this.getDisplayText = () => _displayText;

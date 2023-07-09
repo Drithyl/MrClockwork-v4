@@ -8,7 +8,7 @@ module.exports = Cataclysm;
 
 function Cataclysm()
 {
-    var _value;
+    let _value;
 
     this.getValue = () => _value;
     this.getReadableValue = () => 
@@ -36,7 +36,7 @@ function Cataclysm()
 
     this.translateValueToCmdFlag = () =>
     {
-        var value = this.getValue();
+        let value = this.getValue();
     
         if (value > 0)
             return [`--cataclysm`, value];

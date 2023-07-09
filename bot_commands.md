@@ -2,7 +2,7 @@
 
 ### capacity ###
 
-`!capacity`
+`/capacity`
 
 Prints the list of servers with the number of free hosting slots in each.
 

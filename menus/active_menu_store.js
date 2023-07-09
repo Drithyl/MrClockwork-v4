@@ -11,7 +11,7 @@ const MessagePayload = require("../discord/prototypes/message_payload.js");
 const backRegexp = new RegExp(`^${config.commandPrefix}BACK`, "i");
 const endRegexp = new RegExp(`^${config.commandPrefix}FINISH`, "i");
 
-var activeMenus = {};
+let activeMenus = {};
 
 module.exports.startHelpMenu = function(commandContext)
 {
@@ -115,9 +115,9 @@ module.exports.getUsersMenuType = function(userId)
 
 module.exports.hasHostingInstanceWithGameNameReserved = (name) =>
 {
-    for (var id in activeMenus)
+    for (let id in activeMenus)
     {
-        var instance = activeMenus[id];
+        let instance = activeMenus[id];
 
         if (typeof instance.hasGameNameReserved === "function" && instance.hasGameNameReserved(name) === true)
         return true;

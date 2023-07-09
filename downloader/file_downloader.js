@@ -97,13 +97,13 @@ async function _extractFiles(zipfilePath)
 
 async function _autodetectPath(zipfilePath)
 {
-    var targetPath = null;
-    var hasDirInBetweenFiles = false;
-    var hasTooManyTopLevelFiles = false;
+    let targetPath = null;
+    let hasDirInBetweenFiles = false;
+    let hasTooManyTopLevelFiles = false;
 
     await unzip.walkZipfile(zipfilePath, async (entry, i, closeFile) =>
     {
-        var levelsDeep = (entry.fileName.match(/\//g) || []).length;
+        let levelsDeep = (entry.fileName.match(/\//g) || []).length;
 
         // Directory entries end with a /; we do not count these as a level deeper
         if (entry.fileName.at(-1) === "/")

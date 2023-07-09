@@ -5,7 +5,7 @@
         
         <legend class="col-form-label col-sm-3 pt-0">AI Nations</legend>
         
-        <% for (var eraNbr in nations) { %>
+        <% for (let eraNbr in nations) { %>
 
             <div id="ai_<%=eraNbr%>_container" class="col-sm-9" name="ai_select_container" <% if (typeof gameSettings === "object" && gameSettings.era != eraNbr) { %> style="display:none;" <% } %> >
                 

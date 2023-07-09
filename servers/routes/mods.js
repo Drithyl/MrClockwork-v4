@@ -6,8 +6,8 @@ exports.set = (expressApp) =>
 {
     expressApp.get("/mods/*", (req, res) =>
     {
-        var serverName = req.url.replace("/mods/", "");
-        var server = hostServerStore.getHostServerByName(serverName);
+        let serverName = req.url.replace("/mods/", "");
+        let server = hostServerStore.getHostServerByName(serverName);
 
         if (server.isOnline() === false)
             res.send(["Selected server is offline"]);

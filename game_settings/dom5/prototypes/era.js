@@ -8,12 +8,12 @@ module.exports = Era;
 
 function Era()
 {
-    var _value;
+    let _value;
 
     this.getValue = () => _value;
     this.getReadableValue = () =>
     {
-        var value = this.getValue();
+        let value = this.getValue();
 
         if (value == 1)
             return "Early Age";
@@ -44,7 +44,7 @@ function Era()
 
     this.translateValueToCmdFlag = () =>
     {
-        var value = this.getValue();
+        let value = this.getValue();
     
         return [`--era`, value];
     };

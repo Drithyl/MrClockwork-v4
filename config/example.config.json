@@ -39,7 +39,7 @@
   "helpChannelName": "clockwork_help",
   "blitzGeneralChannelName": "bot_blitz_general",
   "recruitingCategoryName": "Bot Open Games",
-  "gameCategoryName": "Bot Ongoing Games",
+  "ongoingCategoryName": "Bot Ongoing Games",
   "blitzRecruitingCategoryName": "Bot Open Blitzes",
   "blitzCategoryName": "Bot Ongoing Blitzes",
 

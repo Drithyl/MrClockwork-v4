@@ -8,10 +8,10 @@ exports.set = (expressApp) =>
 {
     expressApp.get("/user_home_screen", (req, res) =>
     {
-        var userId;
-        var sessionId;
-        var playedGames;
-        var organizedGames;
+        let userId;
+        let sessionId;
+        let playedGames;
+        let organizedGames;
 
         // Fetch session from either the URL params or the cookies, wherever we can find the sessionId
         const session = webSessionsStore.getSessionFromUrlParams(req) ?? webSessionsStore.getSessionFromCookies(req);
@@ -51,7 +51,7 @@ function _getOrganizedGamesData(userId)
 function _extractGameInfo(game, userId)
 {
     const statusData = game.getLastKnownStatus();
-    var timeLeft;
+    let timeLeft;
 
     if (statusData.isTurnProcessing() === true)
         timeLeft = "Processing...";
@@ -85,10 +85,10 @@ function _extractGameTurnStatus(game, userId)
 {
     const statusData = game.getLastKnownStatus();
     const nations = statusData.getPlayers();
-    var humanNations;
-    var controlledNations;
-    var allTurnsFinished;
-    var allTurnsAtLeastUnfinished;
+    let humanNations;
+    let controlledNations;
+    let allTurnsFinished;
+    let allTurnsAtLeastUnfinished;
 
 
     if (assert.isArray(nations) === false)

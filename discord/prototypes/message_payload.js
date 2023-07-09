@@ -16,8 +16,8 @@ function MessagePayload(header, content = "", splitContent = true, splitWrapper 
     const _payloadObject = {};
     const _attachments = [];
     const _splitContent = splitContent;
-    var _content = content;
-    var _contentArray = [];
+    let _content = content;
+    let _contentArray = [];
 
     _ensureContentIsUnderMaxLimit();
 
@@ -59,11 +59,11 @@ function MessagePayload(header, content = "", splitContent = true, splitWrapper 
 
     this.send = async (target, options = {}) =>
     {
-        var sentMessage;
+        let sentMessage;
 
         await _contentArray.forEachPromise(async (contentChunk, i, nextPromise) =>
         {
-            var payload = (i === 0) ? Object.assign(_payloadObject, { content: contentChunk }) : { content: contentChunk };
+            let payload = (i === 0) ? Object.assign(_payloadObject, { content: contentChunk }) : { content: contentChunk };
 
             if (options.ephemeral === true)
                 payload.ephemeral = true;
@@ -71,9 +71,9 @@ function MessagePayload(header, content = "", splitContent = true, splitWrapper 
             // Only one single message can be senta as a reply to a command interaction;
             // after that it will be resolved and further messages will have to be sent normally
             // fetchReply option is needed to receive the bot's sent message as a return value
-            if (assert.isFunction(target.isCommandInteraction) === true)
+            if (target.isCommandInteraction === true)
             {
-                var resolvedMessage = await target.reply(Object.assign(payload, { fetchReply: true }));
+                let resolvedMessage = await target.reply(Object.assign(payload, { fetchReply: true }));
 
                 // If this is the first message sent, store it as our sent message to pin it
                 // later if needed; only the first message should be pinned
@@ -83,7 +83,7 @@ function MessagePayload(header, content = "", splitContent = true, splitWrapper 
 
             else if (assert.isFunction(target.send) === true)
             {
-                var resolvedMessage = await target.send(payload);
+                let resolvedMessage = await target.send(payload);
 
                 // If this is the first message sent, store it as our sent message to pin it
                 // later if needed; only the first message should be pinned
@@ -145,7 +145,7 @@ function MessagePayload(header, content = "", splitContent = true, splitWrapper 
             // Otherwise, recompile all the lines into several submessages of at most the allowed length each
             else lines.forEach((line) =>
             {
-                var lastIndex = (_contentArray.length-1 < 0) ? 0 : _contentArray.length-1;
+                let lastIndex = (_contentArray.length-1 < 0) ? 0 : _contentArray.length-1;
 
                 if (_contentArray.length < 1)
                     _contentArray.push(`${line}\n`);
@@ -181,7 +181,7 @@ function MessagePayload(header, content = "", splitContent = true, splitWrapper 
 
 function _areAttachmentsTooLarge(files)
 {
-    for (var i = 0; i < files.length; i++)
+    for (let i = 0; i < files.length; i++)
     {
         const sizeInMB = files[i].attachment.length * 0.000001;
         if (sizeInMB > 8)

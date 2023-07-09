@@ -3,9 +3,9 @@ const log = require("../logger.js");
 
 module.exports = function(mapData)
 {
-	var provLines;
-	var terrainMask;
-	var provCount = {total: 0, land: 0, sea: 0};
+	let provLines;
+	let terrainMask;
+	let provCount = {total: 0, land: 0, sea: 0};
 
 	if (mapData == null)
 	{
@@ -27,7 +27,7 @@ module.exports = function(mapData)
 
 	provLines = mapData.match(/\#terrain\s+\d+\s+\d+/g);
 
-	for (var i = 0; i < provLines.length; i++)
+	for (let i = 0; i < provLines.length; i++)
 	{
 		terrainMask = +provLines[i].slice(provLines[i].indexOf(" ", provLines[i].indexOf(" ") + 1) + 1).replace(/\D/g, "");
 
