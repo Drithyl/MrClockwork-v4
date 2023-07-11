@@ -25,21 +25,16 @@ function ResetPortCommand()
     return resetPortCommand;
 }
 
-function _behaviour(commandContext)
+async function _behaviour(commandContext)
 {
     const targetedGame = commandContext.getGameTargetedByCommand();
     const hostServer = targetedGame.getServer();
-    const ongoingGames = gamesStore.getOngoingGamesOnServer(hostServer);
     const currentPort = targetedGame.getPort();
-    const gameWithSamePort = ongoingGames.find((game) => game.getPort() === currentPort);
 
-    if (gameWithSamePort == null || gameWithSamePort.getName() === targetedGame.getName())
-        return commandContext.respondToCommand(new MessagePayload(`Current port ${currentPort} is free; no need to reset it.`));
+    if (hostServer.hasAvailableSlots() === false)
+        return commandContext.respondToCommand(new MessagePayload(`No other ports are available to use. Port will remain the same (${currentPort})`));
 
-    return targetedGame.emitPromiseWithGameDataToServer("RESET_PORT")
-    .then((newPort) =>
-    {
-        targetedGame.setPort(newPort);
-        return targetedGame.sendGameAnnouncement(`New port ${newPort} has been set. You will have to kill/launch the game manually for it to update.`);
-    });
+    const newPort = await targetedGame.emitPromiseWithGameDataToServer("RESET_PORT");
+    targetedGame.setPort(newPort);
+    return targetedGame.sendGameAnnouncement(`New port ${newPort} has been set. You will have to kill/launch the game manually for it to update.`);
 }
