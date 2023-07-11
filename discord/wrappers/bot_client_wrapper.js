@@ -39,7 +39,7 @@ exports.loginToDiscord = async () =>
     if (config.devIds != null && config.devIds.length > 0)
     {
         _devUserWrapper = await _discordJsBotClient.users.fetch(config.devIds[0]);
-        _devUserWrapper = new UserWrapper(_devUserWrapper)
+        _devUserWrapper = new UserWrapper(_devUserWrapper);
     }
 
     return _discordJsBotClient.guilds.cache;
