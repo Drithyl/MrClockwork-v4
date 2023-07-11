@@ -15,6 +15,7 @@ module.exports = Game;
 
 function Game()
 {
+    var _type = "dom5";
     var _hostServer;
     var _port;
     var _guildWrapper;
@@ -40,6 +41,22 @@ function Game()
         const nameSetting = settings.getNameSetting();
 
         return nameSetting.setValue(name);
+    };
+
+    this.getType = () => 
+    {
+        return _type;
+    };
+
+    this.setType = (type) =>
+    {
+        if (assert.isString(type) === false)
+            return;
+
+        if (type !== "dom5" && type !== "dom6")
+            return;
+        
+        _type = type;
     };
 
     this.getGuild = () => _guildWrapper;
@@ -290,6 +307,7 @@ function Game()
         this.setGuild(guild);
         this.setServer(server);
         this.setName(jsonData.name);
+        this.setType(jsonData.type);
         this.setPort(jsonData.port);
 
         try
@@ -345,6 +363,7 @@ function Game()
     {
         var jsonObject = {};
         jsonObject.name = this.getName();
+        jsonObject.type = _type;
         jsonObject.port = _port;
         jsonObject.serverId = _hostServer.getId();
         jsonObject.settings = _settingsObject.toJSON();

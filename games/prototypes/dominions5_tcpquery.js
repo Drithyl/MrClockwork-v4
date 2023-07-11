@@ -47,7 +47,7 @@ async function queryGame(gameObject)
     return statusSnapshot;
 }
 
-async function _fetchTcpqueryData(gameObject)
+function _fetchTcpqueryData(gameObject)
 {
     const ip = gameObject.getIp();
     const port = gameObject.getPort();
@@ -59,14 +59,14 @@ async function _fetchTcpqueryData(gameObject)
         "--ipadr", ip,
         "--port", port
     ];
-
-    const _process = new SpawnedProcess(config.pathToDom5Exe, cmdFlags);
+    const pathToExe = (gameObject.getType() === "dom6") ? config.pathToDom6Exe : config.pathToDom5Exe;
+    const _process = new SpawnedProcess(pathToExe, cmdFlags);
 
     return TimeoutPromise(async (resolve, reject) =>
     {
         const stdoutData = await _process.readWholeStdoutData();
 
-        _process.onError(reject(error));
+        _process.onError((error) => reject(error));
 
         _process.onExited((code, signal) => {
             reject(new Error(`Process exited without generating stdout data. Code: ${code}, Signal: ${signal}`));
@@ -101,14 +101,6 @@ function _parseTcpQuery(tcpQueryResponse, statusSnapshot)
     statusSnapshot.setLastUpdateTimestamp(Date.now());
 
     return statusSnapshot;
-}
-
-
-function _parseGameName(tcpQueryResponse)
-{
-    let nameLine = tcpQueryResponse.match(/Gamename:.+/i);
-    let name = (nameLine != null) ? nameLine[0].replace(/Gamename:\s+/i, "").trim() : "Could not find name";
-    return name;
 }
 
 function _parseStatus(tcpQueryResponse)
