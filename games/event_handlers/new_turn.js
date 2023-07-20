@@ -170,7 +170,7 @@ function _buildMessagePayload(game, playerFile, fetchedTurnFiles)
             payload.addContent(`**${nationFilename}**: ${nationTurnFiles[nationFilename]}`);
 
         else if (nationTurnFiles[nationFilename] != null)
-            payload.setAttachment(`${nationFilename}.trn`, nationTurnFiles[nationFilename]);
+            payload.setAttachment(`${game.getName()}-${nationFilename}-T${turnNumber}.trn`, nationTurnFiles[nationFilename]);
     });
 
 
