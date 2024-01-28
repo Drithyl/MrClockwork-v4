@@ -15,7 +15,7 @@ module.exports = Game;
 
 function Game()
 {
-    var _type = "dom5";
+    var _type = config.dom5GameTypeName;
     var _hostServer;
     var _port;
     var _guildWrapper;
@@ -53,7 +53,7 @@ function Game()
         if (assert.isString(type) === false)
             return;
 
-        if (type !== "dom5" && type !== "dom6")
+        if (assert.isValidGameType(type) === false)
             return;
         
         _type = type;

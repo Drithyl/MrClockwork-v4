@@ -7,7 +7,7 @@
           
           <div class="row">
             
-            <%- include('../partials/sidebar.ejs', { page: "host", sessionId: (typeof sessionId === "string") ? sessionId : null })-%>
+            <%- include('../partials/sidebar.ejs', { page: "host_dom6", sessionId: (typeof sessionId === "string") ? sessionId : null })-%>
         
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
               
@@ -16,7 +16,7 @@
                 <!--  Data does not need to be explicitly passed to partials; they have access to all data passed to
                       this .ejs file as part of the templating process; but it is clearer this way
                 -->
-                <%- include('../partials/content/host_game_screen_content.html', { 
+                <%- include('../partials/content/host_dom6_screen_content.html', { 
                   sessionId: (typeof sessionId === "string") ? sessionId : null,
                   guilds,
                   servers,

@@ -1,0 +1,30 @@
+<%- include('../partials/head.ejs')-%>
+<%- include('../partials/navbar.ejs', { sessionId: (typeof sessionId === "string") ? sessionId : null })-%>
+
+  <body>
+    
+    <div class="container-fluid">
+          
+          <div class="row">
+            
+            <%- include('../partials/sidebar.ejs', {page: "settings_dom6", sessionId: (typeof sessionId === "string") ? sessionId : null })-%>
+        
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+              
+              <div class="align-items-left pt-3 pb-2 mb-3">
+                
+                <%- include('../partials/content/change_dom6_settings_screen_content.html', { sessionId: (typeof sessionId === "string") ? sessionId : null })-%>
+                
+              </div>
+              
+              <%- include('../partials/footer.ejs')-%>
+              
+            </main>
+    
+          </div>
+      
+      </div>
+    
+    </body>
+  
+</html>

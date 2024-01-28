@@ -2,11 +2,11 @@
 const log = require("../../logger.js");
 
 
-module.exports = async (game, dom5Events) =>
+module.exports = async (game, domEvents) =>
 {
     const gameName = game.getName();
     const status = game.getLastKnownStatus();
-    const turnNumber = dom5Events.getTurnNumber();
+    const turnNumber = domEvents.getTurnNumber();
 
     try
     {
@@ -33,6 +33,4 @@ module.exports = async (game, dom5Events) =>
             `The following error occurred when resolving the game's turn rollback event:\n\n\`\`\`${err.message}\`\`\``
         );
     }
-
-
 };

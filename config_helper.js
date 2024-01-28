@@ -42,6 +42,13 @@ exports.askConfigQuestions = () =>
 
         config.pathToDom5Exe = answer;
     }))
+    .then(() => _promisifiedQuestion("Input Dom6 exe path: ", (answer) =>
+    {
+        if (fs.existsSync(answer) === false)
+            return Promise.reject("Path does not exist.");
+
+        config.pathToDom6Exe = answer;
+    }))
     .then(() => fs.writeFileSync("./config/config.json", JSON.stringify(config, null, 2)));
 };
 

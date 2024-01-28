@@ -1,8 +1,8 @@
 
 /**
- * This module is mutually exclusive with dominions5_statusdump.js
- * They are both methods to get the current status of a Dom5
- * game. This one launches a Dom5 instance with the --tcpquery
+ * This module is mutually exclusive with dominions_statusdump.js
+ * They are both methods to get the current status of a Dom
+ * game. This one launches a Dom instance with the --tcpquery
  * flag on, which returns a raw string through the stdout of
  * the spawned child process. This is then parsed into an
  * object. See bottom of the module for details on the format
@@ -14,20 +14,21 @@ const assert = require("../../asserter.js");
 const config = require("../../config/config.json");
 const TimeoutPromise = require("../../timeout_promise.js");
 const SpawnedProcess = require("../../spawned_process.js");
-const Dominions5StatusSnapshot = require("./dominions5_status_snapshot");
+const DominionsStatusSnapshot = require("./dominions_status_snapshot.js");
+const { getDominionsExePath } = require("../../helper_functions.js");
 
 const PROCESS_TIMEOUT_MS = config.queryProcessTimeout;
 
 const IN_LOBBY = "Game is being setup";
 const ACTIVE = "Game is active";
 
-module.exports.queryDom5Status = queryGame;
+module.exports.queryDomStatus = queryGame;
 
 
 async function queryGame(gameObject)
 {
     var isOnline;
-    const statusSnapshot = new Dominions5StatusSnapshot();
+    const statusSnapshot = new DominionsStatusSnapshot();
     statusSnapshot.setIsServerOnline(gameObject.isServerOnline());
 
     if (statusSnapshot.isServerOnline() === false)
@@ -59,7 +60,7 @@ function _fetchTcpqueryData(gameObject)
         "--ipadr", ip,
         "--port", port
     ];
-    const pathToExe = (gameObject.getType() === "dom6") ? config.pathToDom6Exe : config.pathToDom5Exe;
+    const pathToExe = getDominionsExePath(gameObject.getType());
     const _process = new SpawnedProcess(pathToExe, cmdFlags);
 
     return TimeoutPromise(async (resolve, reject) =>

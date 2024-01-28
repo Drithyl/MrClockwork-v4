@@ -1,11 +1,13 @@
 
 const log = require("../../logger.js");
+const config = require("../../config/config.json");
 const guildStore = require("../../discord/guild_store.js");
 const hostServerStore = require("../host_server_store.js");
-const dom5Nations = require("../../json/dom5_nations.json");
+const dom6Nations = require("../../json/dom6_nations.json");
 const webSessionsStore = require("../web_sessions_store.js");
 const gamesStore = require("../../games/ongoing_games_store.js");
-const Dominions5Game = require("../../games/prototypes/dominions5_game.js");
+const DominionsGame = require("../../games/prototypes/dominions_game.js");
+const triggerOnGameCreatedEvent = require("../../games/event_handlers/game_created.js");
 
 exports.set = (expressApp) => 
 {
@@ -14,7 +16,7 @@ exports.set = (expressApp) =>
     //file looks up the styling and js files, and will not find them. Must then
     //sendFile() as a return to preserve the URL that contains these parameters,
     //since they will also be extracted in the client
-    expressApp.get("/host_game", async (req, res) =>
+    expressApp.get("/host_dom6", async (req, res) =>
     {
         var availableServers;
         var guildsWhereUserIsTrusted;
@@ -29,8 +31,8 @@ exports.set = (expressApp) =>
 
         const userId = session.getUserId();
         const sessionId = session.getSessionId();
-        const maps = await hostServerStore.getDom5Maps();
-        const mods = await hostServerStore.getDom5Mods();
+        const maps = await hostServerStore.getMaps(config.dom6GameTypeName);
+        const mods = await hostServerStore.getMods(config.dom6GameTypeName);
         availableServers = hostServerStore.getAvailableServersClientData();
         guildsWhereUserIsTrusted = await guildStore.getGuildsWhereUserIsTrusted(userId);
         
@@ -48,20 +50,20 @@ exports.set = (expressApp) =>
             });
         });
 
-        
+
         /** redirect to host_game */
-        res.render("host_game_screen.ejs", {
+        res.render("host_dom6_screen.ejs", {
             userId,
             sessionId,
             guilds: guildData, 
             servers: availableServers,
-            nations: dom5Nations,
+            nations: dom6Nations,
             maps,
             mods
         });
     });
 
-    expressApp.post("/host_game", (req, res) =>
+    expressApp.post("/host_dom6", (req, res) =>
     {
         const values = req.body;
 
@@ -124,13 +126,15 @@ function _formatPostValues(values)
 function _createGame(userId, values)
 {
     var gameObject;
+    const gameName = values.name;
     const guild = guildStore.getGuildWrapperById(values.guild);
     const server = hostServerStore.getHostServerByName(values.server);
+    const type = config.dom6GameTypeName;
 
     if (server == null || server.isOnline() === false)
         return Promise.reject(new Error(`Selected server is offline; cannot host game.`));
 
-    gameObject = new Dominions5Game();
+    gameObject = new DominionsGame(type);
     gameObject.setGuild(guild);
     gameObject.setServer(server);
 
@@ -148,21 +152,25 @@ function _createGame(userId, values)
     .then(() => gameObject.createNewChannel())
     .then(() => gameObject.createNewRole())
     .then(() => gamesStore.addOngoingGame(gameObject))
-    .then(() => gameObject.pinSettingsToChannel())
+    .then(() => triggerOnGameCreatedEvent(gameObject))
     .then(() => gameObject.save())
     .then(() => gameObject.launch())
-    .then(() => log.general(log.getNormalLevel(), `Game ${gameObject.getName()} was created successfully.`))
+    .then(() => log.general(log.getNormalLevel(), `Game ${gameName} was created successfully.`))
     .then(() => Promise.resolve(gameObject))
     .catch((err) =>
     {
-        log.error(log.getLeanLevel(), `ERROR when creating ${gameObject.getName()} through web. Cleaning it up`, err);
-        
         if (gameObject == null)
             return Promise.reject(err);
 
         return gameObject.deleteGame()
         .then(() => gameObject.deleteRole())
         .then(() => gameObject.deleteChannel())
+        .catch((cleaningError) =>
+        {
+            // Log in case there was an error while cleaning the game
+            log.error(log.getLeanLevel(), `ERROR when cleaning ${gameName} after hosting error`, cleaningError);
+        })
+        // Reject with original hosting error, as this is the one that will be shown to user
         .then(() => Promise.reject(err));
     });
 }

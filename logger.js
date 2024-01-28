@@ -5,7 +5,7 @@ const stream = require("stream");
 const assert = require("./asserter.js");
 const config = require("./config/config.json");
 
-const BASE_LOG_PATH = path.resolve(config.dataPath, config.logsFolder);
+const BASE_LOG_PATH = path.resolve(config.dataPath, "logs");
 
 const LEAN_LEVEL = 0;
 const NORMAL_LEVEL = 1;
@@ -70,7 +70,7 @@ module.exports.command = (logLevel, commandContext) =>
 
     logStr += ` with args [${args.join(", ")}]`;
 
-    var logStr = _log(logLevel, logStr);
+    logStr = _log(logLevel, logStr);
     _logToFile(logStr, generalWriteStream);
 };
 

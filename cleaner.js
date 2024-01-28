@@ -6,13 +6,17 @@ const log = require("./logger.js");
 const rw = require("./reader_writer.js");
 const config = require("./config/config.json");
 const ongoingGamesStore = require("./games/ongoing_games_store.js");
+const { getDominionsMapsPath, getDominionsModsPath } = require("./helper_functions.js");
 
 const UTC_DAYS_TO_CLEAN = [3, 6];
 const UTC_HOUR_TO_CLEAN = 22;
 const ONE_HOUR = 3600000;
 
-const DOM5_MAP_PATH = path.resolve(config.pathToDom5Data, "maps");
-const DOM5_MOD_PATH = path.resolve(config.pathToDom5Data, "mods");
+const DOM5_MAP_PATH = path.resolve(getDominionsMapsPath(config.dom5GameTypeName));
+const DOM5_MOD_PATH = path.resolve(getDominionsModsPath(config.dom5GameTypeName));
+
+const DOM6_MAP_PATH = path.resolve(getDominionsMapsPath(config.dom6GameTypeName));
+const DOM6_MOD_PATH = path.resolve(getDominionsModsPath(config.dom6GameTypeName));
 
 var modsAndMapsCleaningInterval;
 var isCleaningEnabled = config.isCleaningEnabled;
@@ -56,15 +60,18 @@ module.exports.cleanUnusedMaps = async (force = false) =>
 {
     try
     {
-        const mapsInUse = _getListOfMapsInUse();
-        const results = await _cleanUnusedFiles(mapsInUse, DOM5_MAP_PATH, force);
-        log.general(log.getLeanLevel(), `Map cleaning finished. Cleaned ${results.length} map files.`);
-        return results;
+        const dom5MapsInUse = _getListOfMapsInUse(config.dom5GameTypeName);
+        const dom6MapsInUse = _getListOfMapsInUse(config.dom6GameTypeName);
+        const dom5Results = await _cleanUnusedFiles(dom5MapsInUse, DOM5_MAP_PATH, force);
+        const dom6Results = await _cleanUnusedFiles(dom6MapsInUse, DOM6_MAP_PATH, force);
+        log.general(log.getLeanLevel(), `Dom5 map cleaning finished. Cleaned ${dom5Results.length} map files.`);
+        log.general(log.getLeanLevel(), `Dom6 map cleaning finished. Cleaned ${dom6Results.length} map files.`);
+        return [...dom5Results, ...dom6Results];
     }
 
     catch(err)
     {
-        log.error(log.getLeanLevel(), `Map cleaning ERROR`, err)
+        log.error(log.getLeanLevel(), `Map cleaning ERROR`, err);
     }
 };
 
@@ -72,15 +79,18 @@ module.exports.cleanUnusedMods = async (force = false) =>
 {
     try
     {
-        const modsInUse = _getListOfModsInUse();
-        const results = await _cleanUnusedFiles(modsInUse, DOM5_MOD_PATH, force);
-        log.general(log.getLeanLevel(), `Mod cleaning finished. Cleaned ${results.length} mod files.`);
-        return results;
+        const dom5ModsInUse = _getListOfModsInUse(config.dom5GameTypeName);
+        const dom6ModsInUse = _getListOfModsInUse(config.dom6GameTypeName);
+        const dom5Results = await _cleanUnusedFiles(dom5ModsInUse, DOM5_MOD_PATH, force);
+        const dom6Results = await _cleanUnusedFiles(dom6ModsInUse, DOM6_MOD_PATH, force);
+        log.general(log.getLeanLevel(), `Dom5 mod cleaning finished. Cleaned ${dom5Results.length} mod files.`);
+        log.general(log.getLeanLevel(), `Dom6 mod cleaning finished. Cleaned ${dom6Results.length} mod files.`);
+        return [...dom5Results, ...dom6Results];
     }
 
     catch(err)
     {
-        log.error(log.getLeanLevel(), `Mod cleaning ERROR`, err)
+        log.error(log.getLeanLevel(), `Mod cleaning ERROR`, err);
     }
 };
 
@@ -110,37 +120,43 @@ async function _cleanUnusedFiles(filesInUse, dirPath, force = false)
     {
         log.general(log.getLeanLevel(), `Error occurred when deleting unused files in ${dirPath}`, err);
         return Promise.reject(err);
-    };
+    }
 }
 
-function _getListOfMapsInUse()
+function _getListOfMapsInUse(gameType)
 {
     const usedMaps = [];
     const games = ongoingGamesStore.getArrayOfGames();
 
     games.forEach((game) =>
     {
-        const settingsObject = game.getSettingsObject();
-        const mapSetting = settingsObject.getMapSetting();
-        usedMaps.push(mapSetting.getValue());
+        if (game.getType() === gameType) 
+        {
+            const settingsObject = game.getSettingsObject();
+            const mapSetting = settingsObject.getMapSetting();
+            usedMaps.push(mapSetting.getValue());
+        }
     });
 
     return usedMaps;
 }
 
-function _getListOfModsInUse()
+function _getListOfModsInUse(gameType)
 {
     const usedMods = [];
     const games = ongoingGamesStore.getArrayOfGames();
 
     games.forEach((game) =>
     {
-        const settingsObject = game.getSettingsObject();
-        const modSetting = settingsObject.getModsSetting();
-        const modsInUse = modSetting.getValue();
+        if (game.getType() === gameType) 
+        {
+            const settingsObject = game.getSettingsObject();
+            const modSetting = settingsObject.getModsSetting();
+            const modsInUse = modSetting.getValue();
 
-        if (Array.isArray(modsInUse) === true && modsInUse.length > 0)
-            usedMods.push(...modSetting.getValue());
+            if (Array.isArray(modsInUse) === true && modsInUse.length > 0)
+                usedMods.push(...modSetting.getValue());
+        }
     });
 
     return usedMods;
@@ -173,7 +189,7 @@ function _getListOfModsInUse()
 
             assetTagssMatch.forEach((assetTag) =>
             {
-                const relPath = assetTag.replace(/^\#\w+\s*("?.+"?)$/i, "$1").replace(/"/ig, "");
+                const relPath = assetTag.replace(/^#\w+\s*("?.+"?)$/i, "$1").replace(/"/ig, "");
                 const absolutePath = path.resolve(dirPath, relPath);
 
                 if (fs.existsSync(absolutePath) === true)

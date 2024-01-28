@@ -5,73 +5,74 @@ const gameStore = require("./ongoing_games_store.js");
 const MessagePayload = require("../discord/prototypes/message_payload.js");
 
 //Exact error: "Failed to create temp dir 'C:\Users\MistZ\AppData\Local\Temp/dom5_94132'"
-const failedToCreateTmpDirErrRegexp = new RegExp("Failed\\s*to\\s*\\create\\s*temp\\s*dir", "i");
+const failedToCreateTmpDirErrRegexp = /Failed\s*to\s*create\s*temp\s*dir/i;
 
 //Exact error: "send: Broken pipe"
-const brokenPipeErrRegexp = new RegExp("broken\\s*pipe", "i");
+const brokenPipeErrRegexp = /broken\s*pipe/i;
 
 //Exact error: "bind: Address already in use"
-const addressInUseErrRegexp = new RegExp("address\\s*already\\s*in\\s*use", "i");
+const addressInUseErrRegexp = /address\s*already\s*in\s*use/i;
 
 //Exact error: "Network Error"
-const networkErrorErrRegexp = new RegExp("Network\\s*Error", "i");
+const networkErrorErrRegexp = /Network\s*Error/i;
 
 //Exact error: "Terminated"
-const terminatedErrRegexp = new RegExp("terminated", "i");
+const terminatedErrRegexp = /terminated/i;
 
 //Exact error: "Map specified by --mapfile was not found" OR
 //"Cannot find file map file: 1water200.map\r"
-const mapNotFoundErrRegexp = new RegExp("(Map\\s*specified\\s*by\\s*--mapfile)|(Cannot find file map file)", "i");
+const mapNotFoundErrRegexp = /(Map\s*specified\s*by\s*--mapfile)|(Cannot find file map file)/i;
 
 //Exact error: "myloadmalloc: can't open [path].tga/rgb/png"
-const mapImgNotFoundErrRegexp = new RegExp("can\\'t\\s*open\\s*.+.(tga)|(.rgb)|(.rgb)|(.png)$", "i");
+const mapImgNotFoundErrRegexp = /can't\s*open\s*.+.(tga)|(.rgb)|(.rgb)|(.png)$/i;
 
 //Exact error: "Can't find mod: WH_6_25.dm"
-const modNotFoundRegexp = new RegExp("can\\'t\\s*find\\s*mod", "i");
+const modNotFoundRegexp = /can't\s*find\s*mod/i;
 
 //Exact error: "sound: sample '/home/steam/.dominions5/mods/./Dimensional FractureV3.0/tendrils/sounds/will_slosh1.wav' not found"
-const soundNotFoundRegexp = new RegExp("sound\\:.+not found", "i");
+const soundNotFoundRegexp = /sound:.+not found/i;
 
 //Exact error: "bc: king has throne in capital (p43 c385 h160 vp2) [new game created]"
-const throneInCapitalErrRegexp = new RegExp("king\\s*has\\s*throne\\s*in\\s*capital", "i");
+const throneInCapitalErrRegexp = /king\s*has\s*throne\s*in\s*capital/i;
 
 //Exact error: "bad ai player"
-const badAiPlayerErrRegexp = new RegExp("bad\\s*ai\\s*player", "i");
+const badAiPlayerErrRegexp = /bad\s*ai\s*player/i;
 
 //Exact error: "/home/steam/Steam/Dominions5/dom5.sh: line 20: 26467 Aborted                 (core dumped) "$BIN" "$@""
-const coreDumpedErrRegexp = new RegExp("\\(core\\s*dumped\\)", "i");
+const coreDumpedErrRegexp = /\(core\s*dumped\)/i;
 
 /* Exact error: "Dominions version is too old           *
 *                Get an update at www.illwinter.com     *
 *                myversionX fileversionY nationZ"       */
-const versionTooOldErrRegexp = new RegExp("version\\s*is\\s*too\\s*old", "i");
+const versionTooOldErrRegexp = /version\s*is\s*too\s*old/i;
 
 //Exact error: "Något gick fel!". Should come last in handling as some more
 //errors will also contain this bit into them
-const nagotGickFelErrRegexp = new RegExp("gick\\s*fel", "i");
+const nagotGickFelErrRegexp = /gick\s*fel/i;
 
 //Exact error: "h_mkitms"
 //johan has stated that this is an error about forging a bad magic item that shouldn't happen
-const itemForgingErrRegexp = new RegExp("h_mkitms", "i");
+const itemForgingErrRegexp = /h_mkitms/i;
 
 //Exact error: "Failed to create /[statuspage name]"
-const fileCreationErrRegexp = new RegExp("Failed\\s*to\\s*create", "i");
+const fileCreationErrRegexp = /Failed\s*to\s*create/i;
 
 //Exact error: "The game [game_name] reported the error: *** no site called [site_name] ([replaced_site_name])"
-const replacedThroneErrRegexp = new RegExp("no\\s*site\\s*called\\s*\\w+\\s*(\\w+)", "i");
+const replacedThroneErrRegexp = /no\s*site\s*called\s*\w+\s*(\w+)/i;
 
 // Exact message: "Setup port [port] (clients may start), open: 35, players 0, ais 0"; this happens very often
 // during game setup, and when game starts, doing the countdown each time
-const setupMessageRegexp = new RegExp("setup\\s*port\\s*\\d+", "i");
+const setupMessageRegexp = /setup\s*port\s*\d+/i;
 
 // Exact message: "[game name], Connections 1, No timer (quick host)"; this happens every second or so after game start
-const connectionsMessageRegexp = new RegExp("Connections\\s*\\d+", "i");
+const connectionsMessageRegexp = /Connections\s*\d+/i;
 
 // Exact message: "(Arc) (Ul) (Mav) (Sa) (Mac) (Ct) (Pa) (Ag) (Fom) Va+ Rus? *La-", depending on each nation name, normally preceded by the message above; also
 // happens every second after game start, as a way to keep the status
-const nationsTurnStatusMessageRegExp =  new RegExp("^(\\(?\\*?(\\w*|\\?)(\\)|\\?|\\-|\\+)?\\s*)+$", "i");
+const nationsTurnStatusMessageRegExp = /^(((\(?\w{2,3}\)?)|(\*?\w{2,3}\??-?\+?))\s?)+$/;
 
-const generatingNextTurnMessageRegExp = new RegExp("Generating next turn", "i");
+
+const generatingNextTurnMessageRegExp = /Generating next turn/i;
 
 const messageHistory = {};
 const DEBOUNCE_MS = 600000;
@@ -82,7 +83,7 @@ module.exports = function(gameName, message)
     const game = gameStore.getOngoingGameByName(gameName);
 
     if (game == null)
-        return log.error(log.getNormalLevel(), `GAME ${gameName} REPORTED AN ERROR; BUT COULD NOT FIND IT IN STORE`, message);
+        return;
 
     const dataArr = parseData(gameName, message);
 
@@ -98,14 +99,12 @@ function parseData(gameName, message)
 {
     if (message == null)
     {
-        log.error(log.getNormalLevel(), `GAME ${gameName} REPORTED A MESSAGE; BUT DID NOT SEND DATA.`);
         return [];
     }
 
     // Probably a buffer with data, ignore it too
     if (assert.isString(message) === false)
     {
-        log.general(log.getVerboseLevel(), `Ignoring ${gameName} data`, message);
         return [];
     }
 
@@ -301,7 +300,7 @@ function handleReplacedThroneErr(game, message)
     debounce(game, `A site was replaced in this mod but Dominions considers it an error. This has no impact in the game other than this warning message:\n\n${message}`);
 }
 
-function handleGeneratingNextTurn(game, message)
+function handleGeneratingNextTurn(game)
 {
     log.general(log.getNormalLevel(), `${game.getName()}\tGenerating new turn...`);
     game.sendMessageToChannel(`Generating new turn; this *can* take a while...`);

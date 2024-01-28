@@ -72,26 +72,28 @@ Deletes the last channel that was created via the createchannel command.
 
 **Arguments**: No arguments required.
 
-### dom5maps ###
+### maps ###
 
-!dom5maps
+!maps
 
-Prints a list of the Dominions 5 maps available on the given server.
+Prints a list of the Dominions 5 or 6 maps available on the given server.
 
 **Where can it be used?**: any channel
 
 **Arguments**: 
-1. TYPE: STRING - A server's name
+1. TYPE: STRING - Either dom5 or dom6.
 
-### dom5mods ###
+### mods ###
 
-!dom5mods
+!mods
 
-Prints a list of the Dominions 5 mods available on the given server.
+Prints a list of the Dominions 5 or 6 mods available on the given server.
 
 **Where can it be used?**: any channel
 
 **Arguments**:
+1. TYPE: STRING - Either dom5 or dom6.
+
 Below are the commands available. Each one contains information about what it does and the arguments (sometimes optional, sometimes required) that make them work:
 
 ### capacity ###
@@ -166,37 +168,38 @@ Deletes the last channel that was created via the createchannel command.
 
 **Arguments**: No arguments required.
 
-### dom5maps ###
+### maps ###
 
-!dom5maps
+!maps
 
-Prints a list of the Dominions 5 maps available on the given server.
+Prints a list of the Dominions 5 or 6 maps available on the given server.
 
 **Where can it be used?**: any channel
 
 **Arguments**: 
-1. TYPE: STRING - A server's name
+1. TYPE: STRING - Either dom5 or dom6.
 
-### dom5mods ###
+### mods ###
 
-!dom5mods
+!mods
 
-Prints a list of the Dominions 5 mods available on the given server.
+Prints a list of the Dominions 5 or 6 mods available on the given server.
 
 **Where can it be used?**: any channel
 
 **Arguments**:
-1. TYPE: STRING - A server's name
+1. TYPE: STRING - Either dom5 or dom6.
 
-### dom5nations ###
+### nations ###
 
-!dom5nations
+!nations
 
-Prints a list of all the Dominions 5's nations and their nation_numbers and filenames.
+Prints a list of all the Dominions 5 or 6 nations and their nation_numbers and filenames.
 
 **Where can it be used?**: any channel
 
-**Arguments**: No arguments required.
+**Arguments**:
+1. TYPE: STRING - Either dom5 or dom6.
 
 ### dtimer ###
 
@@ -243,12 +246,13 @@ Print a list of the available commands.
 
 !host
 
-Host a Dom5 game. You will be asked a series of settings by DM to configure it.
+Host a Dominions 5 or 6 game. You will be asked a series of settings by DM to configure it.
 
 **Where can it be used?**: guild channel
 
 **Arguments**: 
 1. TYPE: STRING - Server on which to host game. Check with /capacity
+2. TYPE: STRING - Either dom5 or dom6.
 
 ### info ###
 
@@ -287,15 +291,16 @@ Prints a list of hosted games in this guild, or all games if sent by DM, sorted 
 In a game channel, launches a game's process. Use if the bot mentions the game being offline.
 1. TYPE: STRING - A server's name
 
-### dom5nations ###
+### nations ###
 
-!dom5nations
+!nations
 
-Prints a list of all the Dominions 5's nations and their nation_numbers and filenames.
+Prints a list of all the Dominions 5 or 6 nations and their nation_numbers and filenames.
 
 **Where can it be used?**: any channel
 
-**Arguments**: No arguments required.
+**Arguments**:
+1. TYPE: STRING - Either dom5 or dom6.
 
 ### dtimer ###
 
@@ -342,7 +347,7 @@ Print a list of the available commands.
 
 !host
 
-Host a Dom5 game. You will be asked a series of settings by DM to configure it.
+Host a Dominions 5 or 6 game. You will be asked a series of settings by DM to configure it.
 
 **Where can it be used?**: guild channel
 

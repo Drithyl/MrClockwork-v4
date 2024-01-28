@@ -4,27 +4,34 @@ const log = require("../../logger.js");
 const assert = require("../../asserter.js");
 const config = require("../../config/config.json");
 const guildStore = require("../../discord/guild_store.js");
-const Dominions5Status = require("./dominions5_status.js");
+const DominionsStatus = require("./dominions_status.js");
 const ongoingGameStore = require("../ongoing_games_store.js");
 const Dominions5Settings = require("./dominions5_settings.js");
+const Dominions6Settings = require("./dominions6_settings.js");
 const playerFileStore = require("../../player_data/player_file_store.js");
-const Dominions5StatusEmbed = require("./dominions5_status_embed.js");
+const DominionsStatusEmbed = require("./dominions_status_embed.js");
 
-module.exports = Dominions5Game;
+module.exports = DominionsGame;
 
-function Dominions5Game()
+function DominionsGame(type)
 {
     const _gameObject = new Game();
     const _playerData = {};
-    const _status = new Dominions5Status();
+    const _status = new DominionsStatus();
 
     var _statusEmbed;
     var _isEnforcingTimer = true;
 
-    _gameObject.setSettingsObject(new Dominions5Settings(_gameObject));
+    _gameObject.setType(type);
 
+
+    if (type === config.dom5GameTypeName)
+        _gameObject.setSettingsObject(new Dominions5Settings(_gameObject));
+
+    else _gameObject.setSettingsObject(new Dominions6Settings(_gameObject));
+
+    
     _gameObject.getStatusEmbedId = () => (_statusEmbed != null) ? _statusEmbed.getMessageId() : null;
-    _gameObject.getGameType = () => config.dom5GameTypeName;
     _gameObject.getDataPackage = () => _createGameDataPackage();
 
     _gameObject.fetchSubmittedNations = async () =>
@@ -303,7 +310,7 @@ function Dominions5Game()
 
     _gameObject.getLastKnownStatus = () => _status;
 
-    _gameObject.updateStatus = (updatedSnapshot, dom5Events) => 
+    _gameObject.updateStatus = (updatedSnapshot) => 
     {
         _status.updateSnapshot(updatedSnapshot);
 
@@ -312,7 +319,7 @@ function Dominions5Game()
 
     _gameObject.sendStatusEmbed = () => 
     {
-        return Dominions5StatusEmbed.sendNew(_gameObject)
+        return DominionsStatusEmbed.sendNew(_gameObject)
         .then((statusEmbed) =>
         {
             _statusEmbed = statusEmbed;
@@ -380,14 +387,14 @@ function Dominions5Game()
             if (jsonData.statusEmbedId != null && _gameObject.getChannel() != null)
             {
                 log.general(log.getLeanLevel(), `${jsonData.name}: loading existing status embed...`);
-                _statusEmbed = await Dominions5StatusEmbed.loadExisting(_gameObject.getChannel(), jsonData.statusEmbedId);
+                _statusEmbed = await DominionsStatusEmbed.loadExisting(_gameObject.getChannel(), jsonData.statusEmbedId);
                 log.general(log.getLeanLevel(), `${jsonData.name}: loaded existing message wrapper`);
             }
         }
 
         catch(err)
         {
-            log.error(log.getLeanLevel(), `ERROR LOADING ${_gameObject.getName()}'S EMBED`, err)
+            log.error(log.getLeanLevel(), `ERROR LOADING ${_gameObject.getName()}'S EMBED`, err);
         }
 
         log.general(log.getLeanLevel(), `${jsonData.name}: finished loading all JSON data`);
@@ -423,8 +430,9 @@ function Dominions5Game()
          */
         const dataPackage = {
             name: _gameObject.getName(),
+            type: _gameObject.getType(),
             port: _gameObject.getPort(),
-            gameType: _gameObject.getGameType(),
+            gameType: _gameObject.getType(),
             args: settingsObject.getSettingFlags(),
             isCurrentTurnRollback: _status.isCurrentTurnRollback()
         };

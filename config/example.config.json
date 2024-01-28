@@ -57,6 +57,7 @@
   "loggingInterval": 60000,
 
   "dom5GameTypeName": "dom5",
+  "dom6GameTypeName": "dom6",
 
   "devIds": [
     "123456789876566666",

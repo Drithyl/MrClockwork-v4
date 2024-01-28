@@ -1,7 +1,7 @@
 
 const assert = require("../../asserter.js");
 const gamesStore = require("../../games/ongoing_games_store.js");
-const dom5NationStore = require("../../games/dominions5_nation_store.js");
+const domNationStore = require("../../games/dominions_nation_store.js");
 
 module.exports = PlayerGameData;
 
@@ -27,7 +27,7 @@ function PlayerGameData(playerId, gameName)
 
     this.removeControlOfNation = (nationFilename) =>
     {
-        const filenameWithoutExtension = dom5NationStore.trimFilenameExtension(nationFilename);
+        const filenameWithoutExtension = domNationStore.trimFilenameExtension(nationFilename);
         
         for (var i = _controlledNations.length - 1; i >= 0; i--)
             if (_controlledNations[i] == filenameWithoutExtension)
@@ -42,7 +42,7 @@ function PlayerGameData(playerId, gameName)
 
     this.isControllingNation = (nationFilename) => 
     {
-        const filenameWithoutExtension = dom5NationStore.trimFilenameExtension(nationFilename);
+        const filenameWithoutExtension = domNationStore.trimFilenameExtension(nationFilename);
         return _controlledNations.find((nation) => nation === filenameWithoutExtension) != null;
     };
 

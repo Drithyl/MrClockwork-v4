@@ -56,7 +56,7 @@ async function _initializeComponents()
     process.on("SIGINT", () =>
     {
         log.general(log.getLeanLevel(), `Gracefully shutting down...`);
-        process.exit("SIGINT");
+        process.exit(2);
     });
 
     try

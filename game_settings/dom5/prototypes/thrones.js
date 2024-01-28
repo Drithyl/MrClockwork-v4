@@ -1,5 +1,6 @@
 
 const GameSetting = require("../../prototypes/game_setting.js");
+const dom5SettingsData = require("../../../json/dom5_settings.json");
 const SemanticError = require("../../../errors/custom_errors.js").SemanticError;
 
 const key = "thrones";
@@ -86,5 +87,5 @@ function Thrones(parentGameObject)
 //constructor, with all its properties included. These will 
 //be shared across all instances of the Thrones constructor.
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf
-Thrones.prototype = new GameSetting(key);
+Thrones.prototype = new GameSetting(key, dom5SettingsData[key]);
 Thrones.prototype.constructor = Thrones;

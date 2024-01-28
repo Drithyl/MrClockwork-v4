@@ -1,15 +1,15 @@
 
 const log = require("../logger.js");
 const assert = require("../asserter.js");
-const parseDom5Update = require("./dominions5_update.js");
+const parseDomUpdate = require("./dominions_update.js");
 const handleGameEvents = require("./handle_game_events.js");
-const Dominions5Events = require("./prototypes/dominions5_events.js");
+const DominionsEvents = require("./prototypes/dominions_events.js");
 
 const monitoredGames = [];
 
 
 // Add a game to be monitored and updated
-exports.monitorDom5Game = (game) =>
+exports.monitorDomGame = (game) =>
 {
     if (monitoredGames.find((g) => g.getName() === game.getName()) != null)
         return log.general(log.getLeanLevel(), `${game.getName()} is already being monitored.`);
@@ -18,16 +18,16 @@ exports.monitorDom5Game = (game) =>
     log.general(log.getNormalLevel(), `${game.getName()} will be monitored for updates.`);
 };
 
-exports.monitorDom5Games = (games) =>
+exports.monitorDomGames = (games) =>
 {
     if (assert.isArray(games) === false)
-        exports.monitorDom5Game(games);
+        exports.monitorDomGame(games);
 
-    else games.forEach((game, i) => exports.monitorDom5Game(game, i * 500));
+    else games.forEach((game, i) => exports.monitorDomGame(game, i * 500));
 };
 
 // Remove a game from the monitoring list
-exports.stopMonitoringDom5Game = (game) =>
+exports.stopMonitoringDomGame = (game) =>
 {
     for (var i = 0; i < monitoredGames.length; i++)
     {
@@ -41,7 +41,7 @@ exports.stopMonitoringDom5Game = (game) =>
     log.general(log.getLeanLevel(), `${game.getName()} is not in the list of monitored games; no need to remove.`);
 };
 
-exports.updateDom5Game = (game, updateData) =>
+exports.updateDomGame = (game, updateData) =>
 {
     if (monitoredGames.find((g) => g.getName() === game.getName()) == null)
         return log.general(log.getNormalLevel(), `${game.getName()} is not being monitored.`);
@@ -64,7 +64,7 @@ function _updateGame(game, updateData)
     const gameStatus = game.getLastKnownStatus();
 
     // Fetch the most recent status of the game
-    const newStatusSnapshot = parseDom5Update(game, updateData);
+    const newStatusSnapshot = parseDomUpdate(game, updateData);
 
     // Get the new ms left that the game would be at presently, taking
     // things like pauses or offline game into account
@@ -75,12 +75,12 @@ function _updateGame(game, updateData)
     newStatusSnapshot.setMsLeft(newMsLeft);
 
     // Determine all events that occurred in the time elapsed
-    const dom5Events = new Dominions5Events(gameStatus, newStatusSnapshot);
+    const domEvents = new DominionsEvents(gameStatus, newStatusSnapshot);
 
     // Apply the elapsed timer to the actual game status now
     gameStatus.setMsLeft(newMsLeft);
 
-    // If Dom5 controls the timer, set pause as per the snapshot's status
+    // If Dom controls the timer, set pause as per the snapshot's status
     if (game.isEnforcingTimer() === false)
         gameStatus.setIsPaused(newStatusSnapshot.isPaused());
 
@@ -90,7 +90,7 @@ function _updateGame(game, updateData)
     gameStatus.setSuccessfulCheckTimestamp(newStatusSnapshot.getSuccessfulCheckTimestamp());
     
     // Handle the game events
-    handleGameEvents(game, dom5Events);
+    handleGameEvents(game, domEvents);
 
     // Set the new turn number on the game status
     gameStatus.setTurnNumber(newStatusSnapshot.getTurnNumber());
@@ -111,7 +111,7 @@ function _getUpdatedTimer(game, newStatusSnapshot)
     const gameStatus = game.getLastKnownStatus();
     const elapsedTimeSinceLastUpdate = newStatusSnapshot.getUptime();
 
-    // If Dom5 is enforcing the timer, then the newStatusSnapshot will have the current msLeft
+    // If Dominions is enforcing the timer, then the newStatusSnapshot will have the current msLeft
     if (game.isEnforcingTimer() === false)
         return newStatusSnapshot.getMsLeft();
 

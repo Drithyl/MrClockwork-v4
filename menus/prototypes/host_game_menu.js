@@ -6,6 +6,7 @@ const MenuStructure = require("./menu_structure.js");
 const activeMenuStore = require("../active_menu_store.js");
 const gamesStore = require("../../games/ongoing_games_store.js");
 const MessagePayload = require("../../discord/prototypes/message_payload.js");
+const triggerOnGameCreatedEvent = require("../../games/event_handlers/game_created.js");
 
 module.exports = HostMenu;
 
@@ -27,7 +28,7 @@ function HostMenu(gameObject, useDefaults = false)
         return gameObject.createNewChannel()
         .then(() => gameObject.createNewRole())
         .then(() => gamesStore.addOngoingGame(gameObject))
-        .then(() => gameObject.pinSettingsToChannel())
+        .then(() => triggerOnGameCreatedEvent(gameObject))
         .then(() => gameObject.save())
         .then(() => gameObject.launch())
         .then(() => log.general(log.getNormalLevel(), `Game ${gameObject.getName()} was created successfully.`))

@@ -1,6 +1,7 @@
 
 const GameSetting = require("../../prototypes/game_setting.js");
-const dom5NationStore = require("../../../games/dominions5_nation_store.js");
+const dom5SettingsData = require("../../../json/dom5_settings.json");
+const domNationStore = require("../../../games/dominions_nation_store.js");
 const dom5SettingFlags = require("../../../json/dominions5_setting_flags.json");
 const SemanticError = require("../../../errors/custom_errors.js").SemanticError;
 
@@ -12,6 +13,7 @@ function AiNations(parentGameObject)
 {
     var _value;
     const _parentGame = parentGameObject;
+    const _gameType = _parentGame.getType();
 
     this.getValue = () => _value;
     this.getReadableValue = () =>
@@ -25,7 +27,7 @@ function AiNations(parentGameObject)
         Object.keys(aiNations).forEach((nationNbr, i) =>
         {
             var difficulty = aiNations[nationNbr];
-            var nationObject = dom5NationStore.getNation(nationNbr);
+            var nationObject = domNationStore.getNation(nationNbr, _gameType);
 
             if (i > 0)
                 str += ", ";
@@ -117,7 +119,7 @@ function AiNations(parentGameObject)
             var nationNbr = +aiNationStr.replace(/\D*/ig, "");
             var nationDifficulty = aiNationStr.replace(/\d*/ig, "").trim().toLowerCase();
 
-            if (dom5NationStore.isValidNationIdentifierInEra(nationNbr, era) === false)
+            if (domNationStore.isValidNationIdentifierInEra(nationNbr, era, _gameType) === false)
                 throw new SemanticError(`Nation number ${nationNbr} does not exist in chosen era.`);
 
             aiNations[nationNbr] = nationDifficulty;
@@ -139,5 +141,5 @@ function AiNations(parentGameObject)
 //constructor, with all its properties included. These will 
 //be shared across all instances of the AiNations constructor.
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf
-AiNations.prototype = new GameSetting(key);
+AiNations.prototype = new GameSetting(key, dom5SettingsData[key]);
 AiNations.prototype.constructor = AiNations;

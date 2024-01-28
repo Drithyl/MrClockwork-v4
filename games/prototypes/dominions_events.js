@@ -2,9 +2,9 @@
 const assert = require("../../asserter.js");
 
 
-module.exports = Dominions5Events;
+module.exports = DominionsEvents;
 
-function Dominions5Events(lastKnownStatus, newStatusSnapshot)
+function DominionsEvents(lastKnownStatus, newStatusSnapshot)
 {
     const _lastTurnNumber = lastKnownStatus.getTurnNumber();
     const _lastHour = lastKnownStatus.getHour();
