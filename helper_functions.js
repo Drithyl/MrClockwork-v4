@@ -1,6 +1,51 @@
-/*************************
-*		AUXILIARY FUNCTIONS		*
-**************************/
+const path = require("path");
+const config = require("./config/config.json");
+
+
+module.exports.getDominionsDataPath = function(gameType) {
+    if (gameType === config.dom6GameTypeName)
+        return path.resolve(config.pathToDom6Data);
+    else if (gameType === config.dom5GameTypeName)
+        return path.resolve(config.pathToDom5Data);
+};
+
+module.exports.getDominionsExePath = function(gameType) {
+    if (gameType === config.dom6GameTypeName)
+        return path.resolve(config.pathToDom6Exe);
+    else if (gameType === config.dom5GameTypeName)
+        return path.resolve(config.pathToDom5Exe);
+};
+
+module.exports.getDominionsSavedgamesPath = function(gameType) {
+    return path.resolve(module.exports.getDominionsDataPath(gameType), 'savedgames');
+};
+
+module.exports.getDominionsModsPath = function(gameType) {
+    return path.resolve(module.exports.getDominionsDataPath(gameType), 'mods');
+};
+
+module.exports.getDominionsMapsPath = function(gameType) {
+    return path.resolve(module.exports.getDominionsDataPath(gameType), 'maps');
+};
+
+module.exports.getDominionsMapExtension = function(gameType) {
+    if (gameType === config.dom6GameTypeName)
+        return ".map";
+    else if (gameType === config.dom5GameTypeName)
+        return ".map";
+};
+
+module.exports.appendDominionsMapExtension = function(filename, gameType) {
+    const mapExtension = module.exports.getDominionsMapExtension(gameType);
+    const hasExtension = filename.lastIndexOf(mapExtension) === -1;
+
+    if (hasExtension === true)
+        return filename;
+
+    return filename + mapExtension;
+};
+
+
 
 module.exports.extendPrototypes = extendPrototypes;
 
@@ -94,7 +139,8 @@ function extendPrototypes()
 
             //Pass the item, the key to the item, and the object
             keyArray.forEach((key, index) => asyncFn(self[key], keyArray[index], self));
-        }
+        },
+        configurable: true
     });
 
     Object.defineProperty(Object.prototype, "forEachPromise",
@@ -121,7 +167,8 @@ function extendPrototypes()
                     });
                 })();
             });
-        }
+        },
+        configurable: true
     });
 
     Object.defineProperty(Object.prototype, "forAllPromises",
@@ -175,12 +222,13 @@ function extendPrototypes()
                     });
                 }
             });
-        }
+        },
+        configurable: true
     });
 
     Object.defineProperty(Object.prototype, "convertToArray",
     {
-        value: function(testFn)
+        value: function()
         {
             let arr = [];
 
@@ -190,7 +238,8 @@ function extendPrototypes()
             }
 
             return arr;
-        }
+        },
+        configurable: true
     });
 
     //Spaces out evenly an item. If the width is set to 50, the entire string

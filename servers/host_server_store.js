@@ -8,6 +8,7 @@ const HostServer = require("./prototypes/host_server.js");
 const { isInstanceOfPrototypeOrThrow } = require("../asserter.js");
 const parseProvinceCount = require("../games/parse_povince_count.js");
 const trustedServerData = require("../config/trusted_server_data.json");
+const { getDominionsMapsPath, getDominionsModsPath, getDominionsMapExtension } = require("../helper_functions.js");
 
 
 const _hostServersById = {};
@@ -114,26 +115,30 @@ exports.printListOfFreeSlots = () =>
     return stringList;
 };
 
-module.exports.getDom5Mods = async function()
+module.exports.getMods = async function(gameType)
 {
-    const modsDirPath = path.resolve(config.pathToDom5Data, "mods");
-
+    const modsDirPath = path.resolve(getDominionsModsPath(gameType));
 	const filenames = await rw.getDirFilenames(modsDirPath, ".dm");
     filenames.sort();
     return filenames;
 };
 
-exports.getDom5Maps = async () =>
+exports.getMaps = async (gameType) =>
 {
-    const mapsDirPath = path.resolve(config.pathToDom5Data, "maps");
     const mapsWithProvinceCount = [];
-    const filenames = await fsp.readdir(mapsDirPath);
-    const mapFilenames = filenames.filter((filename) => path.extname(filename) === ".map");
+    let mapFilepaths;
 
-    await mapFilenames.forAllPromises(async (filename) =>
+    if (gameType === config.dom5GameTypeName) {
+        mapFilepaths = await _getDom5Mapfiles();
+    }
+    else if (gameType === config.dom6GameTypeName) {
+        mapFilepaths = await _getDom6Mapfiles();
+    }
+
+    await mapFilepaths.forAllPromises(async (filepath) =>
     {
-        const filePath = path.resolve(mapsDirPath, filename);
-        const content = await fsp.readFile(filePath, "utf-8");
+        const filename = path.basename(filepath);
+        const content = await fsp.readFile(filepath, "utf-8");
         const provs = parseProvinceCount(content);
 
         if (provs != null)
@@ -144,6 +149,38 @@ exports.getDom5Maps = async () =>
     mapsWithProvinceCount.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
     return mapsWithProvinceCount;
 };
+
+async function _getDom5Mapfiles()
+{
+    const gameType = config.dom5GameTypeName;
+    const mapsDirPath = path.resolve(getDominionsMapsPath(gameType));
+    const filenames = await fsp.readdir(mapsDirPath);
+    const mapFilenames = filenames.filter((filename) => path.extname(filename) === getDominionsMapExtension(gameType));
+    const mapFilepaths = mapFilenames.map((filename) => path.resolve(mapsDirPath, filename));
+    return mapFilepaths;
+}
+
+async function _getDom6Mapfiles()
+{
+    const gameType = config.dom6GameTypeName;
+    const mapsDirPath = path.resolve(getDominionsMapsPath(gameType));
+    const subPaths = await fsp.readdir(mapsDirPath, { withFileTypes: true });
+    const mapFolders = subPaths.filter((dirent) => dirent.isFile() === false);
+    const mapFilepaths = [];
+
+    for (const mapFolder of mapFolders)
+    {
+        const mapFolderPath = path.resolve(mapFolder.path, mapFolder.name);
+        const filenames = await fsp.readdir(mapFolderPath);
+        const mapFilename = filenames.find((f) => path.extname(f) === getDominionsMapExtension(gameType));
+
+        if (mapFilename != null) {
+            mapFilepaths.push(path.resolve(mapFolderPath, mapFilename));
+        }
+    }
+
+    return mapFilepaths;
+}
 
 function _populateStore()
 {

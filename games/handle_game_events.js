@@ -12,42 +12,42 @@ const handleHourPassed = require("./event_handlers/hour_passed.js");
 const handleAllTurnsDone = require("./event_handlers/all_turns_done.js");
 
 
-module.exports = (game, dom5Events) =>
+module.exports = (game, domEvents) =>
 {
-    if (dom5Events.didServerGoOffline() === true)
+    if (domEvents.didServerGoOffline() === true)
         handleServerWentOffline(game);
 
-    else if (dom5Events.isServerBackOnline() === true)
+    else if (domEvents.isServerBackOnline() === true)
         handleServerBackOnline(game);
 
 
-    if (dom5Events.didGameGoOffline() === true)
+    if (domEvents.didGameGoOffline() === true)
         handleGameWentOffline(game);
     
-    else if (dom5Events.isGameBackOnline() === true)
+    else if (domEvents.isGameBackOnline() === true)
         handleGameBackOnline(game);
 
 
-    if (dom5Events.didGameStart() === true)
+    if (domEvents.didGameStart() === true)
         handleGameStarted(game);
 
-    else if (dom5Events.isNewTurn() === true)
-        handleNewTurn(game, dom5Events);
+    else if (domEvents.isNewTurn() === true)
+        handleNewTurn(game, domEvents);
 
-    else if (dom5Events.isTurnRollback() === true)
-        handleTurnRollback(game, dom5Events);
+    else if (domEvents.isTurnRollback() === true)
+        handleTurnRollback(game, domEvents);
 
     
-    if (dom5Events.didTimerRunOut() === true)
+    if (domEvents.didTimerRunOut() === true)
         handleTimerRanOut(game);
 
-    else if (dom5Events.isLastHourBeforeTurn() === true)
+    else if (domEvents.isLastHourBeforeTurn() === true)
         handleLastTurnHour(game);
 
-    else if (dom5Events.didHourPass() === true)
-        handleHourPassed(game, dom5Events);
+    else if (domEvents.didHourPass() === true)
+        handleHourPassed(game, domEvents);
 
     
-    if (dom5Events.areAllTurnsDone() === true)
+    if (domEvents.areAllTurnsDone() === true)
         handleAllTurnsDone(game);
 }

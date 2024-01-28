@@ -11,5 +11,5 @@ module.exports = (game) =>
     status.setMsToDefaultTimer(game);
 
     log.general(log.getNormalLevel(), `${game.getName()}: Turn started processing.`);
-    game.sendMessageToChannel(`New turn just started processing. It may take a long time if other turns are processing.`);
+    game.sendMessageToChannel(`New turn started processing. It may take a long time if other turns are processing.`);
 };

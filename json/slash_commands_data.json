@@ -179,47 +179,55 @@
         "description": "[Game-player-only] Requests the claimed nation's current turn file, which is then sent by DM."
     },
 
-    "GET_DOM5_MAPS_ON_SERVER":
+    "GET_MAPS_ON_SERVER":
     {
-        "name": "dom5maps",
+        "name": "maps",
         "isEnabled": true,
         "channelRequiredToInvoke": "any",
-        "description": "Prints a list of the Dominions 5 maps available on the given server.",
+        "description": "Prints a list of the Dominions maps available on the servers.",
         "options": [
             {
-                "name": "server_name",
+                "name": "game_type",
                 "type": "STRING",
-                "description": "A server's name",
+                "description": "The game for which to search; 'dom5' or 'dom6'",
                 "required": true
             }
         ]
     },
 
-    "GET_DOM5_MODS_ON_SERVER":
+    "GET_MODS_ON_SERVER":
     {
-        "name": "dom5mods",
+        "name": "mods",
         "isEnabled": true,
         "channelRequiredToInvoke": "any",
-        "description": "Prints a list of the Dominions 5 mods available on the given server.",
+        "description": "Prints a list of the Dominions 5 or 6 mods available on the servers.",
         "options": [
             {
-                "name": "server_name",
+                "name": "game_type",
                 "type": "STRING",
-                "description": "A server's name",
+                "description": "The game for which to search; 'dom5' or 'dom6'",
                 "required": true
             }
         ]
     },
 
-    "GET_DOM5_NATIONS":
+    "GET_NATIONS":
     {
-        "name": "dom5nations",
+        "name": "nations",
         "isEnabled": true,
         "channelRequiredToInvoke": "any",
-        "description": "Prints a list of all the Dominions 5's nations and their nation_numbers and filenames."
+        "description": "Prints a list of all the Dominions 5 or 6 nations and their numbers and filenames.",
+        "options": [
+            {
+                "name": "game_type",
+                "type": "STRING",
+                "description": "The game for which to search; 'dom5' or 'dom6'",
+                "required": true
+            }
+        ]
     },
 
-    "GET_DOM5_SCORES":
+    "GET_SCORES":
     {
         "name": "scores",
         "isEnabled": true,
@@ -316,23 +324,29 @@
         "description": "Print a list of the available commands."
     },
 
-    "HOST_DOM5_GAME":
+    "HOST_GAME":
     {
         "name": "host",
         "isEnabled": true,
         "channelRequiredToInvoke": "guild",
-        "description": "Host a Dom5 game. You will be asked a series of settings by DM to configure it.",
+        "description": "Host a Dom5/6 game. You will be asked a series of settings by DM to configure it.",
         "options": [
             {
                 "name": "server_name",
                 "type": "STRING",
                 "description": "Server on which to host game. Check with `/capacity`",
                 "required": true
+            },
+            {
+                "name": "game_type",
+                "type": "STRING",
+                "description": "The game for which to search; 'dom5' or 'dom6'",
+                "required": true
             }
         ]
     },
 
-    "HOST_DOM5_GAME_WEB":
+    "HOST_GAME_WEB":
     {
         "name": "host_web",
         "isEnabled": true,
@@ -665,9 +679,15 @@
         "name": "upload",
         "isEnabled": true,
         "channelRequiredToInvoke": "any",
-        "description": "Upload map or mod to the server through google drive.",
-        "longDescription": "Allows you to upload a map or a mod to the server through google drive. To use it, you must add the google drive file sharing link at the end of the command (which can be found when you right click a file on the drive website and click on Get Shareable Link). The package must be a .zip file containing the mod or map as is meant to be extracted into the mods or maps folder. If files with the same name exist in the server, they will not be overwritten.",
+        "description": "Upload dom5/dom6 map or mod to the server through google drive.",
+        "longDescription": "Allows you to upload a dom5 or dom6 map/mod to the server through google drive. To use it, first specify the game type (`dom5` or `dom6`), and then add the google drive file sharing link at the end of the command (which can be found when you right click a file on the drive website and click on Get Shareable Link). The package must be a .zip file containing the mod or map as is meant to be extracted into the mods or maps folder. If files with the same name exist in the server, they will not be overwritten.",
         "options": [
+            {
+                "name": "game_type",
+                "type": "STRING",
+                "description": "The game for which to upload; 'dom5' or 'dom6'",
+                "required": true
+            },
             {
                 "name": "link",
                 "type": "STRING",

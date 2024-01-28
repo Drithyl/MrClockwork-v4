@@ -75,7 +75,7 @@ function HostServer(id)
             if (game == null || data == null)
                 return log.error(log.getLeanLevel(), `Received update for game ${data.gameName} from server ${this.getName()} that is not in master store. Data:`, data);
 
-            gameMonitor.updateDom5Game(game, data);
+            gameMonitor.updateDomGame(game, data);
         });
 
         _socketWrapper.onClose((code, reason) =>
@@ -146,16 +146,16 @@ function HostServer(id)
         .catch((err) => Promise.reject(new Error(`Could not reserve a port on this server.`)));
     };
 
-    this.getDom5MapsOnServer = () =>
+    this.getMapsOnServer = (gameType) =>
     {
-        return this.emitPromise("GET_MAP_LIST", null, 300000)
+        return this.emitPromise("GET_MAP_LIST", gameType, 300000)
         .then((mapList) => Promise.resolve(mapList))
         .catch((err) => Promise.reject(new Error(`Could not retrieve the list of maps: ${err.message}`)));
     };
 
-    this.getDom5ModsOnServer = () =>
+    this.getModsOnServer = (gameType) =>
     {
-        return this.emitPromise("GET_MOD_LIST", null, 300000)
+        return this.emitPromise("GET_MOD_LIST", gameType, 300000)
         .then((mapList) => Promise.resolve(mapList))
         .catch((err) => Promise.reject(new Error(`Could not retrieve the list of mods: ${err.message}`)));
     };

@@ -1,6 +1,7 @@
 
 const assert = require("../../../asserter.js");
 const GameSetting = require("../../prototypes/game_setting.js");
+const dom5SettingsData = require("../../../json/dom5_settings.json");
 const dom5SettingFlags = require("../../../json/dominions5_setting_flags.json");
 const SemanticError = require("../../../errors/custom_errors.js").SemanticError;
 
@@ -71,5 +72,5 @@ function ResearchSpeed()
 //constructor, with all its properties included. These will 
 //be shared across all instances of the ResearchSpeed constructor.
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf
-ResearchSpeed.prototype = new GameSetting(key);
+ResearchSpeed.prototype = new GameSetting(key, dom5SettingsData[key]);
 ResearchSpeed.prototype.constructor = ResearchSpeed;

@@ -1,5 +1,7 @@
 
 const log = require("../../logger.js");
+const asserter = require("../../asserter.js");
+const config = require("../../config/config.json");
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
@@ -11,43 +13,46 @@ const hostServerStore = require("../../servers/host_server_store.js");
 const { SemanticError } = require("../../errors/custom_errors.js");
 
 
-const commandData = new CommandData("HOST_DOM5_GAME");
+const commandData = new CommandData("HOST_GAME");
 
 
-module.exports = HostDom5GameCommand;
+module.exports = HostGameCommand;
 
-function HostDom5GameCommand()
+function HostGameCommand()
 {
-    const hostDom5GameCommand = new Command(commandData);
+    const hostGameCommand = new Command(commandData);
 
-    hostDom5GameCommand.addBehaviour(_behaviour);
+    hostGameCommand.addBehaviour(_behaviour);
 
-    hostDom5GameCommand.addRequirements(
+    hostGameCommand.addRequirements(
         commandPermissions.assertMemberIsTrusted,
         _isThereHostingSpaceAvailableOrThrow
     );
 
-    return hostDom5GameCommand;
+    return hostGameCommand;
 }
 
 function _behaviour(commandContext)
 {
     const guildWrapper = commandContext.getGuildWrapper();
     const guildMemberWrapper = commandContext.getSenderGuildMemberWrapper();
-
     const commandArguments = commandContext.getCommandArgumentsArray();
     const selectedServerName = commandArguments[0];
-    const useDefaultsArgument = commandArguments[1];
-
+    const gameType = commandArguments[1];
+    const useDefaultsArgument = commandArguments[2];
     const selectedServer = hostServerStore.getHostServerByName(selectedServerName);
 
     if (selectedServer == null || selectedServer.isOnline() === false)
-    return commandContext.respondToCommand(new MessagePayload(`You must specify a server name from the ones available below:\n\n${hostServerStore.printListOfOnlineHostServers().toBox()}`));
+        return commandContext.respondToCommand(new MessagePayload(`You must specify a server name from the ones available below:\n\n${hostServerStore.printListOfOnlineHostServers().toBox()}`));
+
+    if (asserter.isValidGameType(gameType) === false)
+        return commandContext.respondToCommand(new MessagePayload(`You must specify the type of game you wish to host. Either ${config.dom5GameTypeName} or ${config.dom6GameTypeName}`));
+
 
     return selectedServer.reserveGameSlot()
     .then((reservedPort) =>
     {
-        var newGameObject = gameFactory.createDominions5Game(reservedPort, selectedServer, guildWrapper, guildMemberWrapper);
+        const newGameObject = gameFactory.createDominionsGame(reservedPort, selectedServer, guildWrapper, guildMemberWrapper, gameType);
 
         if (useDefaultsArgument != null && useDefaultsArgument === "default")
         {

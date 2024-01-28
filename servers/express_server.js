@@ -101,7 +101,7 @@ function _initializeHttpsServer()
     log.general(log.getNormalLevel(), "HTTPS server initialized.");
 }
 
-async function _handleSocketConnection(socketWrapper)
+function _handleSocketConnection(socketWrapper)
 {
     socketWrapper.onMessage("SERVER_DATA", (serverData) =>
     {
@@ -135,7 +135,7 @@ function _isTrustedSlave(slaveId, capacity)
 async function _initializeHostServer(socketWrapper, id, capacity)
 {
     log.general(log.getNormalLevel(), `Received recognized server's data. Instantiating HostServer object.`);
-    hostServer = _hostServerStore.getHostServerById(id);
+    const hostServer = _hostServerStore.getHostServerById(id);
     botClientWrapper.messageDev(new MessagePayload(`Server ${hostServer.getName()} (${hostServer.getIp()}) authenticated.`));
     
     hostServer.initializeConnection(socketWrapper, capacity);

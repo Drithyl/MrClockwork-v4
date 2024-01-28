@@ -2,7 +2,7 @@
 const fsp = require("fs").promises;
 const log = require("../logger.js");
 const guildStore = require("../discord/guild_store.js");
-const Dominions5Game = require("./prototypes/dominions5_game.js");
+const DominionsGame = require("./prototypes/dominions_game.js");
 
 exports.loadGame = (pathToJSONDataFile) =>
 {
@@ -20,7 +20,7 @@ exports.loadGame = (pathToJSONDataFile) =>
 
 
         log.general(log.getLeanLevel(), `${parsedData.name}: Creating game object...`);
-        loadedGame = new Dominions5Game();
+        loadedGame = new DominionsGame();
         log.general(log.getLeanLevel(), `${parsedData.name}: Loading JSON data...`);
         return loadedGame.loadJSONData(parsedData);
     })
@@ -28,12 +28,12 @@ exports.loadGame = (pathToJSONDataFile) =>
     {
         log.general(log.getNormalLevel(), `Game data loaded, returning!`);
         return Promise.resolve(loadedGame);
-    })
+    });
 };
 
-exports.createDominions5Game = (reservedPort, hostServer, guildWrapper, organizerWrapper) =>
+exports.createDominionsGame = (reservedPort, hostServer, guildWrapper, organizerWrapper, gameType) =>
 {
-    var newGameObject = new Dominions5Game();
+    var newGameObject = new DominionsGame(gameType);
     newGameObject.setPort(reservedPort);
     newGameObject.setServer(hostServer);
     newGameObject.setGuild(guildWrapper);

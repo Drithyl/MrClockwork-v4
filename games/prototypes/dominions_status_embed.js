@@ -1,5 +1,5 @@
 
-const asserter = require("../../asserter");
+const asserter = require("../../asserter.js");
 const MessageWrapper = require("../../discord/wrappers/message_wrapper.js");
 const MessagePayload = require("../../discord/prototypes/message_payload.js");
 const MessageEmbedBuilder = require("../../discord/wrappers/message_embed_builder.js");
@@ -12,10 +12,10 @@ const TIMER_HEADER = "Last known time left:";
 const UNDONE_TURNS_HEADER = "Last known undone turns:";
 
 
-module.exports = Dominions5StatusEmbed;
+module.exports = DominionsStatusEmbed;
 
 
-Dominions5StatusEmbed.sendNew = (game) =>
+DominionsStatusEmbed.sendNew = (game) =>
 {
     const gameName = game.getName();
     const channel = game.getChannel();
@@ -39,24 +39,24 @@ Dominions5StatusEmbed.sendNew = (game) =>
     .then((messageWrapper) => 
     {
         const embedWrapper = messageWrapper.getEmbedWrapper(0);
-        return Promise.resolve(new Dominions5StatusEmbed(embedWrapper));
+        return Promise.resolve(new DominionsStatusEmbed(embedWrapper));
     })
     .catch((err) => Promise.reject(err));
 };
 
-Dominions5StatusEmbed.loadExisting = (channel, messageId) => 
+DominionsStatusEmbed.loadExisting = (channel, messageId) => 
 {
     return MessageWrapper.fetchFromChannel(channel, messageId)
     .then((messageWrapper) => 
     {
         const embedWrapper = messageWrapper.getEmbedWrapper();
-        return Promise.resolve(new Dominions5StatusEmbed(embedWrapper));
+        return Promise.resolve(new DominionsStatusEmbed(embedWrapper));
     })
     .catch((err) => Promise.reject(new Error(`Could not load existing status message: ${err.message}`)));
 };
 
 
-function Dominions5StatusEmbed(embedWrapper)
+function DominionsStatusEmbed(embedWrapper)
 {
     asserter.isInstanceOfPrototypeOrThrow(embedWrapper, MessageEmbedWrapper);
 
@@ -64,7 +64,7 @@ function Dominions5StatusEmbed(embedWrapper)
 
     this.getMessageId = () => embedWrapper.getMessageId();
 
-    // updateData is an instance of Dominions5Status, enhanced with some new 
+    // updateData is an instance of DominionsStatus, enhanced with some new 
     // boolean event properties which stem from the game_monitor.js code
     this.update = (game, updateData, isBotEnforced = true) =>
     {

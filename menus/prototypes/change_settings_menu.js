@@ -44,7 +44,7 @@ function _createMenuScreens(menuStructure, gameObject)
                 
                 // Delete ftherlnd so that some settings that get
                 // encoded in it (like maps) are cleared properly
-                // Kill/launch is also needed so the dom5 instance
+                // Kill/launch is also needed so the dom instance
                 // doesn't retain the previous setting in memory
                 await gameObject.overwriteSettings();
                 await gameObject.kill();

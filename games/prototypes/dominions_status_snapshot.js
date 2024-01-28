@@ -1,10 +1,10 @@
 
 const assert = require("../../asserter.js");
 
-module.exports = Dominions5StatusSnapshot;
+module.exports = DominionsStatusSnapshot;
 
 
-function Dominions5StatusSnapshot(snapshotData)
+function DominionsStatusSnapshot(snapshotData)
 {
     // Ensure parameter is always a dictionary
     snapshotData = snapshotData ?? {};

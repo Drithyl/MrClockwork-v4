@@ -33,7 +33,7 @@
                     <% const serverName = organizedGames[gameName].serverName; %>
 
                     <div id="<%=gameName%>_container" name="game_container" <% if (i > 0) { %> style="display:none;" <% } %> >
-                        <form id="change_game_settings_form" action="/change_game_settings" method="POST" >
+                        <form id="change_game_settings_form" action="/change_dom6_settings" method="POST" >
             
                             <input type="hidden" name="sessionId" value="<%=(typeof sessionId === "string") ? sessionId : "none"%>"/>
                             <input type="hidden" name="name" value="<%=gameName%>"/>

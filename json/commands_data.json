@@ -3,7 +3,7 @@
     {
         "name": "timer [x]",
         "isEnabled": true,
-        "gameTypesSupported": ["dom5"],
+        "gameTypesSupported": ["dom5", "dom6"],
         "argumentsRequiredInfo": ["`3d20h30m`, with your own numbers, or a single integer for hours (`0` to pause). If you add a + sign in front of the new timer, the amount will get added to the timer, instead of replaced."],
         "optionalArguments": 1,
         "regexpRequiredToInvoke": "TIMER",
@@ -16,7 +16,7 @@
     {
         "name": "dtimer [x]",
         "isEnabled": true,
-        "gameTypesSupported": ["dom5"],
+        "gameTypesSupported": ["dom5", "dom6"],
         "argumentsRequiredInfo": ["`3d20h30m`, with your own numbers, or a single integer for hours (`0` to pause). If you add a + sign in front of the new timer, the amount will get added to the timer, instead of replaced."],
         "optionalArguments": 1,
         "regexpRequiredToInvoke": "DTIMER",
@@ -29,7 +29,7 @@
     {
         "name": "preferences",
         "isEnabled": true,
-        "gameTypesSupported": ["dom5"],
+        "gameTypesSupported": ["dom5", "dom6"],
         "argumentsRequiredInfo": [],
         "optionalArguments": 0,
         "regexpRequiredToInvoke": "PREFERENCES",
@@ -42,7 +42,7 @@
     {
         "name": "settings",
         "isEnabled": true,
-        "gameTypesSupported": ["dom5"],
+        "gameTypesSupported": ["dom5", "dom6"],
         "argumentsRequiredInfo": [],
         "optionalArguments": 0,
         "regexpRequiredToInvoke": "SETTINGS",
@@ -55,7 +55,7 @@
     {
         "name": "claim",
         "isEnabled": true,
-        "gameTypesSupported": ["dom5"],
+        "gameTypesSupported": ["dom5", "dom6"],
         "argumentsRequiredInfo": ["A number that matches the pretender's index displayed"],
         "optionalArguments": 0,
         "regexpRequiredToInvoke": "CLAIM",
@@ -69,7 +69,7 @@
         "name": "debug",
         "isEnabled": true,
         "isDevOnly": true,
-        "gameTypesSupported": ["dom5"],
+        "gameTypesSupported": ["dom5", "dom6"],
         "argumentsRequiredInfo": ["A game's name"],
         "optionalArguments": 0,
         "regexpRequiredToInvoke": "DEBUG$",
@@ -82,7 +82,7 @@
     {
         "name": "deletegamenotchannel",
         "isEnabled": true,
-        "gameTypesSupported": ["dom5"],
+        "gameTypesSupported": ["dom5", "dom6"],
         "argumentsRequiredInfo": [],
         "optionalArguments": 0,
         "regexpRequiredToInvoke": "DELETEGAMENOTCHANNEL$",
@@ -95,7 +95,7 @@
     {
         "name": "deletegameandchannel",
         "isEnabled": true,
-        "gameTypesSupported": ["dom5"],
+        "gameTypesSupported": ["dom5", "dom6"],
         "argumentsRequiredInfo": [],
         "optionalArguments": 0,
         "regexpRequiredToInvoke": "DELETE(THIS)?GAMEANDCHANNEL$",
@@ -109,7 +109,7 @@
         "name": "deletegamebydm",
         "isEnabled": true,
         "isDevOnly": true,
-        "gameTypesSupported": ["dom5"],
+        "gameTypesSupported": ["dom5", "dom6"],
         "argumentsRequiredInfo": ["A game's name"],
         "optionalArguments": 0,
         "regexpRequiredToInvoke": "DELETE$",
@@ -163,7 +163,7 @@
     {
         "name": "pretenders",
         "isEnabled": true,
-        "gameTypesSupported": ["dom5"],
+        "gameTypesSupported": ["dom5", "dom6"],
         "argumentsRequiredInfo": [],
         "optionalArguments": 0,
         "regexpRequiredToInvoke": "PRETENDERS",
@@ -176,7 +176,7 @@
     {
         "name": "forcehost",
         "isEnabled": true,
-        "gameTypesSupported": ["dom5"],
+        "gameTypesSupported": ["dom5", "dom6"],
         "argumentsRequiredInfo": [],
         "optionalArguments": 0,
         "regexpRequiredToInvoke": "FORCEHOST",
@@ -189,7 +189,7 @@
     {
         "name": "turnfile",
         "isEnabled": true,
-        "gameTypesSupported": ["dom5"],
+        "gameTypesSupported": ["dom5", "dom6"],
         "argumentsRequiredInfo": [],
         "optionalArguments": 0,
         "regexpRequiredToInvoke": "TURNFILE",
@@ -198,50 +198,50 @@
         "helpText": "Requests the claimed nation's current turn file."
     },
 
-    "GET_DOM5_MAPS_ON_SERVER":
+    "GET_MAPS_ON_SERVER":
     {
-        "name": "dom5maps",
+        "name": "maps",
         "isEnabled": true,
         "gameTypesSupported": [],
-        "argumentsRequiredInfo": ["`A server's name`"],
+        "argumentsRequiredInfo": ["`Either 'dom5' or 'dom6'`"],
         "optionalArguments": 0,
-        "regexpRequiredToInvoke": "DOM5MAPS",
-        "argumentRegexpArray": ["\\w+"],
+        "regexpRequiredToInvoke": "MAPS",
+        "argumentRegexpArray": ["dom5|dom6"],
         "channelRequiredToInvoke": "any",
-        "helpText": "Prints a list of the Dominions 5 maps available on the given server."
+        "helpText": "Prints a list of the Dominions maps available on the servers."
     },
 
-    "GET_DOM5_MODS_ON_SERVER":
+    "GET_MODS_ON_SERVER":
     {
-        "name": "dom5mods",
+        "name": "mods",
         "isEnabled": true,
         "gameTypesSupported": [],
-        "argumentsRequiredInfo": ["`A server's name`"],
+        "argumentsRequiredInfo": ["`Either 'dom5' or 'dom6'`"],
         "optionalArguments": 0,
-        "regexpRequiredToInvoke": "DOM5MODS",
-        "argumentRegexpArray": ["\\w+"],
+        "regexpRequiredToInvoke": "MODS",
+        "argumentRegexpArray": ["dom5|dom6"],
         "channelRequiredToInvoke": "any",
-        "helpText": "Prints a list of the Dominions 5 mods available on the given server."
+        "helpText": "Prints a list of the Dominions mods available on the servers."
     },
 
-    "GET_DOM5_NATIONS":
+    "GET_NATIONS":
     {
-        "name": "dom5nations",
+        "name": "nations",
         "isEnabled": true,
         "gameTypesSupported": [],
-        "argumentsRequiredInfo": [],
+        "argumentsRequiredInfo": ["`Either 'dom5' or 'dom6'`"],
         "optionalArguments": 0,
-        "regexpRequiredToInvoke": "DOM5NATIONS",
-        "argumentRegexpArray": [],
+        "regexpRequiredToInvoke": "NATIONS",
+        "argumentRegexpArray": ["dom5|dom6"],
         "channelRequiredToInvoke": "any",
-        "helpText": "Prints a list of all the Dominions 5's nations and their nation numbers and filenames."
+        "helpText": "Prints a list of all the Dominions 5 or 6's nations and their numbers and filenames."
     },
 
-    "GET_DOM5_SCORES":
+    "GET_SCORES":
     {
         "name": "scores",
         "isEnabled": true,
-        "gameTypesSupported": ["dom5"],
+        "gameTypesSupported": ["dom5", "dom6"],
         "argumentsRequiredInfo": [],
         "optionalArguments": 0,
         "regexpRequiredToInvoke": "SCORES",
@@ -254,7 +254,7 @@
     {
         "name": "info",
         "isEnabled": true,
-        "gameTypesSupported": ["dom5"],
+        "gameTypesSupported": ["dom5", "dom6"],
         "argumentsRequiredInfo": [],
         "optionalArguments": 0,
         "regexpRequiredToInvoke": "INFO",
@@ -306,7 +306,7 @@
     {
         "name": "undone",
         "isEnabled": true,
-        "gameTypesSupported": ["dom5"],
+        "gameTypesSupported": ["dom5", "dom6"],
         "argumentsRequiredInfo": [],
         "optionalArguments": 0,
         "regexpRequiredToInvoke": "UNDONE",
@@ -381,20 +381,20 @@
         "helpText": "Get a FAQ on the functionality of the bot."
     },
 
-    "HOST_DOM5_GAME":
+    "HOST_GAME":
     {
         "name": "host",
         "isEnabled": true,
         "gameTypesSupported": [],
-        "argumentsRequiredInfo": ["The name of the server to host the game on; use `!capacity` to see the available ones"],
+        "argumentsRequiredInfo": ["The name of the server to host the game on; use `!capacity` to see the available ones", "The type of game to host; either 'dom5' or 'dom6'"],
         "optionalArguments": 0,
         "regexpRequiredToInvoke": "HOST$",
-        "argumentRegexpArray": ["\\w+"],
+        "argumentRegexpArray": ["\\w+", "dom5|dom6"],
         "channelRequiredToInvoke": "guild",
-        "helpText": "Starts the process to host a Dominions 5 game. You will be asked a series of settings by DM to configure it."
+        "helpText": "Starts the process to host a Dominions 5 or 6 game. You will be asked a series of settings by DM to configure it."
     },
 
-    "HOST_DOM5_GAME_WEB":
+    "HOST_GAME_WEB":
     {
         "name": "host_web",
         "isEnabled": true,
@@ -404,7 +404,7 @@
         "regexpRequiredToInvoke": "HOST_WEB$",
         "argumentRegexpArray": [],
         "channelRequiredToInvoke": "guild",
-        "helpText": "Starts the process to host a Dominions 5 game using the website interface. You will be able to configure it through an HTML form."
+        "helpText": "Starts the process to host a Dominions 5 or 6 game using the website interface. You will be able to configure it through an HTML form."
     },
 
     "KILL_GAME_PROCESS":
@@ -492,7 +492,7 @@
     {
         "name": "remove",
         "isEnabled": true,
-        "gameTypesSupported": ["dom5"],
+        "gameTypesSupported": ["dom5", "dom6"],
         "argumentsRequiredInfo": ["A number that matches the pretender's index displayed"],
         "optionalArguments": 0,
         "regexpRequiredToInvoke": "REMOVE",
@@ -531,7 +531,7 @@
     {
         "name": "restablish",
         "isEnabled": true,
-        "gameTypesSupported": ["dom5"],
+        "gameTypesSupported": ["dom5", "dom6"],
         "argumentsRequiredInfo": ["A game's name"],
         "optionalArguments": 0,
         "regexpRequiredToInvoke": "RESTABLISH",
@@ -544,7 +544,7 @@
     {
         "name": "restartandgobacktolobby",
         "isEnabled": true,
-        "gameTypesSupported": ["dom5"],
+        "gameTypesSupported": ["dom5", "dom6"],
         "argumentsRequiredInfo": ["`True` if you want the previously submitted pretenders to be deleted"],
         "optionalArguments": 1,
         "regexpRequiredToInvoke": "RESTARTANDGOBACKTOLOBBY",
@@ -570,7 +570,7 @@
     {
         "name": "rollback",
         "isEnabled": true,
-        "gameTypesSupported": ["dom5"],
+        "gameTypesSupported": ["dom5", "dom6"],
         "argumentsRequiredInfo": [],
         "optionalArguments": 0,
         "regexpRequiredToInvoke": "ROLLBACK",
@@ -597,7 +597,7 @@
     {
         "name": "setorganizer",
         "isEnabled": true,
-        "gameTypesSupported": ["dom5"],
+        "gameTypesSupported": ["dom5", "dom6"],
         "argumentsRequiredInfo": ["`A mention to the new organizer (@Username#0000)`"],
         "optionalArguments": 0,
         "regexpRequiredToInvoke": "SETORGANIZER",
@@ -610,7 +610,7 @@
     {
         "name": "shuffle",
         "isEnabled": true,
-        "gameTypesSupported": ["dom5"],
+        "gameTypesSupported": ["dom5", "dom6"],
         "argumentsRequiredInfo": ["`A space-separated list of things, i.e mentions or numbers"],
         "optionalArguments": 0,
         "regexpRequiredToInvoke": "SHUFFLE",
@@ -623,7 +623,7 @@
     {
         "name": "start",
         "isEnabled": true,
-        "gameTypesSupported": ["dom5"],
+        "gameTypesSupported": ["dom5", "dom6"],
         "argumentsRequiredInfo": [],
         "optionalArguments": 0,
         "regexpRequiredToInvoke": "START",
@@ -636,7 +636,7 @@
     {
         "name": "subscribe",
         "isEnabled": true,
-        "gameTypesSupported": ["dom5"],
+        "gameTypesSupported": ["dom5", "dom6"],
         "argumentsRequiredInfo": [],
         "optionalArguments": 0,
         "regexpRequiredToInvoke": "SUBSCRIBE",
@@ -649,7 +649,7 @@
     {
         "name": "sub",
         "isEnabled": true,
-        "gameTypesSupported": ["dom5"],
+        "gameTypesSupported": ["dom5", "dom6"],
         "argumentsRequiredInfo": ["A number that matches the pretender's index displayed", "A mention to the player who will be taking over"],
         "optionalArguments": 0,
         "regexpRequiredToInvoke": "SUB$",
@@ -662,7 +662,7 @@
     {
         "name": "switchtimerenforcer",
         "isEnabled": true,
-        "gameTypesSupported": ["dom5"],
+        "gameTypesSupported": ["dom5", "dom6"],
         "argumentsRequiredInfo": [],
         "optionalArguments": 0,
         "regexpRequiredToInvoke": "SWITCHTIMERENFORCER$",
@@ -703,7 +703,7 @@
     {
         "name": "unclaim",
         "isEnabled": true,
-        "gameTypesSupported": ["dom5"],
+        "gameTypesSupported": ["dom5", "dom6"],
         "argumentsRequiredInfo": ["A number that matches the pretender's index displayed"],
         "optionalArguments": 0,
         "regexpRequiredToInvoke": "UNCLAIM",
@@ -729,7 +729,7 @@
     {
         "name": "unsubscribe",
         "isEnabled": true,
-        "gameTypesSupported": ["dom5"],
+        "gameTypesSupported": ["dom5", "dom6"],
         "argumentsRequiredInfo": [],
         "optionalArguments": 0,
         "regexpRequiredToInvoke": "UNSUBSCRIBE",
@@ -757,11 +757,11 @@
         "name": "upload",
         "isEnabled": true,
         "gameTypesSupported": [],
-        "argumentsRequiredInfo": ["a google drive file ID or link"],
+        "argumentsRequiredInfo": ["`Either 'dom5' or 'dom6'`", "a google drive file ID or link"],
         "optionalArguments": 0,
         "regexpRequiredToInvoke": "UPLOAD",
-        "argumentRegexpArray": ["(https?:\\/\\/)?(drive.google.com)?(/file/d/)?(/drive/folders/)?(/open\\?id=)?([a-z0-9\\-_]+)(\\/?\\??.+)?"],
+        "argumentRegexpArray": ["dom5|dom6", "(https?:\\/\\/)?(drive.google.com)?(/file/d/)?(/drive/folders/)?(/open\\?id=)?([a-z0-9\\-_]+)(\\/?\\??.+)?"],
         "channelRequiredToInvoke": "any",
-        "helpText": "Allows you to upload a map or a mod to the server through google drive. To use it, you must add the google drive file sharing link at the end of the command (which can be found when you right click a file on the drive website and click on Get Shareable Link). The package must be a .zip file containing the mod or map as is meant to be extracted into the mods or maps folder. If files with the same name exist in the server, they will not be overwritten."
+        "helpText": "Allows you to upload a dom5 or dom6 map/mod to the server through google drive. To use it, first specify the game type (`dom5` or `dom6`), and then add the google drive file sharing link at the end of the command (which can be found when you right click a file on the drive website and click on Get Shareable Link). The package must be a .zip file containing the mod or map as is meant to be extracted into the mods or maps folder. If files with the same name exist in the server, they will not be overwritten."
     }
 }

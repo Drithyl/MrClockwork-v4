@@ -1,5 +1,6 @@
 
 const fs = require("fs");
+const config = require("./config/config.json");
 const { TypeError, RangeError, LengthError, SemanticError, InstanceOfError, InvalidDiscordIdError, InvalidPathError, PermissionsError } = require("./errors/custom_errors.js");
 
 
@@ -21,7 +22,7 @@ exports.isInstanceOfPrototype = isInstanceOfPrototype;
 exports.isPermissionsError = isPermissionsError;
 exports.isSemanticError = isSemanticError;
 exports.doesStringEndIn = doesStringEndIn;
-exports.assertGameTypeIsValid = assertGameTypeIsValid;
+exports.isValidGameType = isValidGameType;
 exports.isValidPath = isValidPath;
 exports.isValidDiscordId = isValidDiscordId;
 
@@ -42,7 +43,7 @@ exports.isStringInArrayOrThrow = isStringInArrayOrThrow;
 exports.isInstanceOfPrototypeOrThrow = isInstanceOfPrototypeOrThrow;
 exports.isSemanticErrorOrThrow = isSemanticErrorOrThrow;
 exports.doesStringEndInOrThrow = doesStringEndInOrThrow;
-exports.assertGameTypeIsValidOrThrow = assertGameTypeIsValidOrThrow;
+exports.isValidGameTypeOrThrow = isValidGameTypeOrThrow;
 exports.isValidPathOrThrow = isValidPathOrThrow;
 exports.isValidDiscordIdOrThrow = isValidDiscordIdOrThrow;
 
@@ -147,11 +148,10 @@ function isValidDiscordId(id)
 	return isString(id) === true && /^\d+$/.test(id) === true;
 }
 
-function assertGameTypeIsValid(gameType)
+function isValidGameType(gameType)
 {
-  if (gameType.toLowerCase() === CONFIG.coe4GameTypeName.toLowerCase() ||
-      gameType.toLowerCase() === CONFIG.dom4GameTypeName.toLowerCase() ||
-      gameType.toLowerCase() === CONFIG.dom5GameTypeName.toLowerCase())
+  if (gameType.toLowerCase() === config.dom5GameTypeName.toLowerCase() ||
+      gameType.toLowerCase() === config.dom6GameTypeName.toLowerCase())
   {
     return true;
   }
@@ -270,9 +270,9 @@ function doesStringEndInOrThrow(str, ending)
     throw new SemanticError(`Expected string to end in <${ending}>, got <${str}>`);
 }
 
-function assertGameTypeIsValidOrThrow(gameType)
+function isValidGameTypeOrThrow(gameType)
 {
-  if (assertGameTypeIsValid(gameType) === false)
+  if (isValidGameType(gameType) === false)
     throw new SemanticError(`Value of gameType does not match any configured value, got: <${gameType}>`);
 }
 

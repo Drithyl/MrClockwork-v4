@@ -1,13 +1,13 @@
 
-const Dominions5StatusSnapshot = require("./prototypes/dominions5_status_snapshot");
+const DominionsStatusSnapshot = require("./prototypes/dominions_status_snapshot");
 
 
-module.exports = parseDom5Update;
+module.exports = parseDomUpdate;
 
-function parseDom5Update(gameObject, updateData)
+function parseDomUpdate(gameObject, updateData)
 {
     const statusdumpWrapper = updateData.statusdump;
-    const statusSnapshot = new Dominions5StatusSnapshot();
+    const statusSnapshot = new DominionsStatusSnapshot();
     statusSnapshot.setIsServerOnline(gameObject.isServerOnline());
 
     if (statusSnapshot.isServerOnline() === false)

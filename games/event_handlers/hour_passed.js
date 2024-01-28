@@ -4,12 +4,12 @@ const MessagePayload = require("../../discord/prototypes/message_payload.js");
 const botClientWrapper = require("../../discord/wrappers/bot_client_wrapper.js");
 
 
-module.exports = async (game, dom5Events) =>
+module.exports = async (game, domEvents) =>
 {
     const gameName = game.getName();
     const status = game.getLastKnownStatus();
     const allNationData = status.getPlayers();
-    const hourMarkPassed = dom5Events.getLastHour();
+    const hourMarkPassed = domEvents.getLastHour();
 
     
     try
@@ -31,7 +31,7 @@ module.exports = async (game, dom5Events) =>
 };
 
 
-async function _processNewHourReminders(game, allNationData, hourMarkPassed)
+function _processNewHourReminders(game, allNationData, hourMarkPassed)
 {
     const playerFiles = game.getPlayerFiles() ?? [];
 

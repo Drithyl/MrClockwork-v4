@@ -1,40 +1,46 @@
 
+const config = require("../../config/config.json");
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
 const MessagePayload = require("../prototypes/message_payload.js");
 const dom5SettingFlags = require("../../json/dominions5_setting_flags.json");
+const dom6SettingFlags = require("../../json/dominions6_setting_flags.json");
 
-const commandData = new CommandData("GET_DOM5_SCORES");
+const commandData = new CommandData("GET_SCORES");
 
-module.exports = GetDom5ScoresCommand;
+module.exports = GetScoresCommand;
 
-function GetDom5ScoresCommand()
+function GetScoresCommand()
 {
-    const getDom5ScoresCommand = new Command(commandData);
+    const getScoresCommand = new Command(commandData);
 
-    getDom5ScoresCommand.addBehaviour(_behaviour);
+    getScoresCommand.addBehaviour(_behaviour);
 
-    getDom5ScoresCommand.addRequirements(
+    getScoresCommand.addRequirements(
         commandPermissions.assertMemberIsTrusted,
         commandPermissions.assertCommandIsUsedInGameChannel,
         commandPermissions.assertServerIsOnline,
         commandPermissions.assertGameHasStarted
     );
 
-    return getDom5ScoresCommand;
+    return getScoresCommand;
 }
 
 function _behaviour(commandContext)
 {
     const gameObject = commandContext.getGameTargetedByCommand();
+    const gameType = gameObject.getType();
     const settings = gameObject.getSettingsObject();
     const scoregraphs = settings.getScoregraphsSetting();
     const scoregraphsValue = scoregraphs.getValue();
     const gameName = gameObject.getName();
     const messageString = `Attached is the scores file for ${gameName}.`;
+    const settingsFlags = (gameType === config.dom5GameTypeName) ?
+        dom5SettingFlags :
+        dom6SettingFlags;
 
-    if (+scoregraphsValue !== +dom5SettingFlags.VISIBLE_SCOREGRAPHS)
+    if (+scoregraphsValue !== +settingsFlags.VISIBLE_SCOREGRAPHS)
         return commandContext.respondToCommand(new MessagePayload(`You can only receive the scores file when the scoregraphs setting for this game is on.`));
     
     return gameObject.emitPromiseWithGameDataToServer("GET_SCORE_DUMP")

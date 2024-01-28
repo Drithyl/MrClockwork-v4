@@ -1,5 +1,6 @@
 
 const TimeLeft = require("../../../games/prototypes/time_left.js");
+const dom5SettingsData = require("../../../json/dom5_settings.json");
 const GameSetting = require("../../prototypes/game_setting.js");
 
 const key = "timer";
@@ -87,5 +88,5 @@ function TimerSetting()
 //constructor, with all its properties included. These will 
 //be shared across all instances of the TimerSetting constructor.
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf
-TimerSetting.prototype = new GameSetting(key);
+TimerSetting.prototype = new GameSetting(key, dom5SettingsData[key]);
 TimerSetting.prototype.constructor = TimerSetting;

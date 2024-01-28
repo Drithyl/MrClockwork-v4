@@ -1,8 +1,8 @@
 
 /**
- * This module is mutually exclusive with dominions5_statusdump.js
- * They are both methods to get the current status of a Dom5
- * game. This one launches a Dom5 instance with the --tcpquery
+ * This module is mutually exclusive with dominions_statusdump.js
+ * They are both methods to get the current status of a Dom
+ * game. This one launches a Dom instance with the --tcpquery
  * flag on, which returns a raw string through the stdout of
  * the spawned child process. This is then parsed into an
  * object. See bottom of the module for details on the format
@@ -14,20 +14,21 @@ const assert = require("../../asserter.js");
 const config = require("../../config/config.json");
 const TimeoutPromise = require("../../timeout_promise.js");
 const SpawnedProcess = require("../../spawned_process.js");
-const Dominions5StatusSnapshot = require("./dominions5_status_snapshot");
+const DominionsStatusSnapshot = require("./dominions_status_snapshot.js");
+const { getDominionsExePath } = require("../../helper_functions.js");
 
 const PROCESS_TIMEOUT_MS = config.queryProcessTimeout;
 
 const IN_LOBBY = "Game is being setup";
 const ACTIVE = "Game is active";
 
-module.exports.queryDom5Status = queryGame;
+module.exports.queryDomStatus = queryGame;
 
 
 async function queryGame(gameObject)
 {
     var isOnline;
-    const statusSnapshot = new Dominions5StatusSnapshot();
+    const statusSnapshot = new DominionsStatusSnapshot();
     statusSnapshot.setIsServerOnline(gameObject.isServerOnline());
 
     if (statusSnapshot.isServerOnline() === false)
@@ -47,7 +48,7 @@ async function queryGame(gameObject)
     return statusSnapshot;
 }
 
-async function _fetchTcpqueryData(gameObject)
+function _fetchTcpqueryData(gameObject)
 {
     const ip = gameObject.getIp();
     const port = gameObject.getPort();
@@ -59,14 +60,14 @@ async function _fetchTcpqueryData(gameObject)
         "--ipadr", ip,
         "--port", port
     ];
-
-    const _process = new SpawnedProcess(config.pathToDom5Exe, cmdFlags);
+    const pathToExe = getDominionsExePath(gameObject.getType());
+    const _process = new SpawnedProcess(pathToExe, cmdFlags);
 
     return TimeoutPromise(async (resolve, reject) =>
     {
         const stdoutData = await _process.readWholeStdoutData();
 
-        _process.onError(reject(error));
+        _process.onError((error) => reject(error));
 
         _process.onExited((code, signal) => {
             reject(new Error(`Process exited without generating stdout data. Code: ${code}, Signal: ${signal}`));
@@ -101,14 +102,6 @@ function _parseTcpQuery(tcpQueryResponse, statusSnapshot)
     statusSnapshot.setLastUpdateTimestamp(Date.now());
 
     return statusSnapshot;
-}
-
-
-function _parseGameName(tcpQueryResponse)
-{
-    let nameLine = tcpQueryResponse.match(/Gamename:.+/i);
-    let name = (nameLine != null) ? nameLine[0].replace(/Gamename:\s+/i, "").trim() : "Could not find name";
-    return name;
 }
 
 function _parseStatus(tcpQueryResponse)

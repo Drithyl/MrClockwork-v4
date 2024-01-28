@@ -1,5 +1,6 @@
 
 const log = require("../../logger.js");
+const config = require("../../config/config.json");
 const hostServerStore = require("../host_server_store.js");
 const dom5Nations = require("../../json/dom5_nations.json");
 const webSessionsStore = require("../web_sessions_store.js");
@@ -7,7 +8,7 @@ const gameStore = require("../../games/ongoing_games_store.js");
 
 exports.set = (expressApp) => 
 {
-    expressApp.get("/change_game_settings", (req, res) =>
+    expressApp.get("/change_dom5_settings", (req, res) =>
     {
         var ongoingGames;
         const organizedGames = {};
@@ -22,12 +23,15 @@ exports.set = (expressApp) =>
         const sessionId = session.getSessionId();
         ongoingGames = gameStore.getGamesWhereUserIsOrganizer(userId);
 
-        return ongoingGames.forAllPromises(async (game) =>
+        return ongoingGames.forAllPromises((game) =>
         {
             var hostServer;
             var gameSettings;
 
             hostServer = game.getServer();
+
+            if (game.getType() !== config.dom5GameTypeName)
+                return;
 
             if (hostServer.isOnline() === false)
                 return;
@@ -44,10 +48,10 @@ exports.set = (expressApp) =>
         })
         .then(async () =>
         {
-            const maps = await hostServerStore.getDom5Maps();
-            const mods = await hostServerStore.getDom5Mods();
+            const maps = await hostServerStore.getMaps(config.dom5GameTypeName);
+            const mods = await hostServerStore.getMods(config.dom5GameTypeName);
 
-            log.general(log.getVerboseLevel(), "Final organized games data rendered", organizedGames);
+            log.general(log.getVerboseLevel(), "Final organized dom5 games data rendered", organizedGames);
             res.render("change_game_settings_screen.ejs", Object.assign({ 
                 userId,
                 sessionId,
@@ -57,10 +61,10 @@ exports.set = (expressApp) =>
                 mods
             }));
         })
-        .catch((err) => res.render("results_screen.ejs", { result: `Error occurred while fetching game's data: ${err.message}` }));
+        .catch((err) => res.render("results_screen.ejs", { result: `Error occurred while fetching dom5 game's data: ${err.message}` }));
     });
 
-    expressApp.post("/change_game_settings", (req, res) =>
+    expressApp.post("/change_dom5_settings", (req, res) =>
     {
         var game;
         var settingsObject;
@@ -78,7 +82,7 @@ exports.set = (expressApp) =>
             return res.render("results_screen.ejs", { result: "Session does not exist." });
         }
 
-        game = gameStore.getOngoingGameByName(values.name);
+        game = gameStore.getOngoingGameByName(values.name, config.dom6GameTypeName);
         settingsObject = game.getSettingsObject();
         changeableSettingsArray = settingsObject.getChangeableSettings();
 
@@ -108,7 +112,7 @@ exports.set = (expressApp) =>
         .catch((err) =>
         {
             log.error(log.getLeanLevel(), `CHANGE GAME SETTINGS ERROR:`, err);
-            session.storeSessionData(`Error occurred while changing game settings: ${err.message}`);
+            session.storeSessionData(`Error occurred while changing dom5 game settings: ${err.message}`);
             session.redirectTo("result", res);
         });
     });

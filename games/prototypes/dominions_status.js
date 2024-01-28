@@ -1,15 +1,15 @@
 
 const assert = require("../../asserter.js");
 const TimeLeft = require("./time_left.js");
-const Dominions5StatusSnapshot = require("./dominions5_status_snapshot.js");
+const DominionsStatusSnapshot = require("./dominions_status_snapshot.js");
 
 
-module.exports = Dominions5Status;
+module.exports = DominionsStatus;
 
 
-function Dominions5Status()
+function DominionsStatus()
 {
-    const _statusSnapshot = new Dominions5StatusSnapshot();
+    const _statusSnapshot = new DominionsStatusSnapshot();
 
     var _lastTurnTimestamp;
     var _isTurnProcessing = false;
@@ -78,7 +78,7 @@ function Dominions5Status()
             return null;
 
         const uncheckedNations = players.filter((nationData) => {
-            return nationData.isHuman === true && nationData.wasTurnChecked === false
+            return nationData.isHuman === true && nationData.wasTurnChecked === false;
         });
 
         return uncheckedNations.map((nation) => nation.fullName);
@@ -93,7 +93,7 @@ function Dominions5Status()
             return null;
 
         const unfinishedNations = players.filter((nationData) => {
-            return nationData.isHuman === true && nationData.isTurnUnfinished === true && nationData.isTurnFinished === false
+            return nationData.isHuman === true && nationData.isTurnUnfinished === true && nationData.isTurnFinished === false;
         });
 
         return unfinishedNations.map((nation) => nation.fullName);
@@ -108,7 +108,7 @@ function Dominions5Status()
             return null;
 
         const undoneNations = players.filter((nationData) => {
-            return nationData.isHuman === true &&  nationData.isTurnFinished === false
+            return nationData.isHuman === true &&  nationData.isTurnFinished === false;
         });
 
         return undoneNations.map((nation) => nation.fullName);

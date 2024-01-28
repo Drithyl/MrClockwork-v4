@@ -1,16 +1,18 @@
 
 const log = require("../../logger.js");
 const assert = require("../../asserter.js");
+const config = require("../../config/config.json");
 const dom5SettingFlags = require("../../json/dominions5_setting_flags.json");
+const dom6SettingFlags = require("../../json/dominions6_setting_flags.json");
 const MessagePayload = require("../../discord/prototypes/message_payload.js");
 const botClientWrapper = require("../../discord/wrappers/bot_client_wrapper.js");
 
 
-module.exports = async (game, dom5Events) =>
+module.exports = async (game, domEvents) =>
 {
     const gameName = game.getName();
     const status = game.getLastKnownStatus();
-    const turnNumber = dom5Events.getTurnNumber();
+    const turnNumber = domEvents.getTurnNumber();
 
     var staleData;
     var staleMessage;
@@ -139,8 +141,12 @@ async function _sendFilesToUser(game, playerFile, fetchedTurnFiles)
 // respective nation turn files and the score files if needed
 function _buildMessagePayload(game, playerFile, fetchedTurnFiles)
 {
+    const gameType = game.getType();
     const status = game.getLastKnownStatus();
     const turnNumber = status.getTurnNumber();
+    const settingFlags = (gameType === config.dom6GameTypeName) ?
+        dom6SettingFlags :
+        dom5SettingFlags;
 
     const settings = game.getSettingsObject();
     const scoregraphs = settings.getScoregraphsSetting();
@@ -148,7 +154,6 @@ function _buildMessagePayload(game, playerFile, fetchedTurnFiles)
 
     const preferences = playerFile.getEffectiveGamePreferences(game.getName());
     const controlledNations = playerFile.getControlledNationFilenamesInGame(game.getName());
-
     
     const scoreFile = (fetchedTurnFiles != null) ? fetchedTurnFiles.scores : null;
     const nationTurnFiles = (fetchedTurnFiles != null) ? fetchedTurnFiles.turnFiles : {};
@@ -158,7 +163,7 @@ function _buildMessagePayload(game, playerFile, fetchedTurnFiles)
 
     if (scoreFile != null && 
         preferences.isReceivingScores() === true && 
-        +scoregraphsSettingValue === +dom5SettingFlags.VISIBLE_SCOREGRAPHS)
+        +scoregraphsSettingValue === +settingFlags.VISIBLE_SCOREGRAPHS)
     {
         payload.setAttachment(`scores.html`, scoreFile);
     }

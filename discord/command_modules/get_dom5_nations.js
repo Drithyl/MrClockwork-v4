@@ -1,38 +1,49 @@
 
+const asserter = require("../../asserter.js");
+const config = require("../../config/config.json");
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
-const commandPermissions = require("../command_permissions.js");
 const MessagePayload = require("../prototypes/message_payload.js");
 const dom5NationsByEraNumber = require("../../json/dom5_nations.json");
+const dom6NationsByEraNumber = require("../../json/dom6_nations.json");
 
-const commandData = new CommandData("GET_DOM5_NATIONS");
+const commandData = new CommandData("GET_NATIONS");
 
-module.exports = GetDom5NationsCommand;
+module.exports = GetNationsCommand;
 
-function GetDom5NationsCommand()
+function GetNationsCommand()
 {
-    const getDom5NationsCommand = new Command(commandData);
+    const getNationsCommand = new Command(commandData);
 
-    getDom5NationsCommand.addBehaviour(_behaviour);
+    getNationsCommand.addBehaviour(_behaviour);
 
-    return getDom5NationsCommand;
+    return getNationsCommand;
 }
 
 function _behaviour(commandContext)
 {
-    var introductionString = "Below is the list of nation numbers, names and filenames for your convenience:\n\n";
+    const commandArguments = commandContext.getCommandArgumentsArray();
+    const gameType = commandArguments[0];
+
+    if (asserter.isValidGameType(gameType) === false)
+        return commandContext.respondToCommand(new MessagePayload(`You must specify the game for which you want to get a list of nations. Either ${config.dom5GameTypeName} or ${config.dom6GameTypeName}`));
+
+    var introductionString = `Below is the list of ${gameType} nation numbers, names and filenames for your convenience:\n\n`;
     var nationListString = formatNationListString();
 
     return commandContext.respondToCommand(new MessagePayload(introductionString, nationListString.toBox(), true, "```"));
 }
 
-function formatNationListString()
+function formatNationListString(gameType)
 {
     var stringList = "";
+    let nationsByEraNumber = (gameType === config.dom5GameTypeName) ?
+        dom5NationsByEraNumber :
+        dom6NationsByEraNumber;
 
-    for (var eraNumber in dom5NationsByEraNumber)
+    for (var eraNumber in nationsByEraNumber)
     {
-        var arrayOfNationsInEra = dom5NationsByEraNumber[eraNumber];
+        var arrayOfNationsInEra = nationsByEraNumber[eraNumber];
         var eraName = translateEraNumberToName(eraNumber);
 
         stringList += `\n\n- ${eraName} NATIONS:\n\n`;

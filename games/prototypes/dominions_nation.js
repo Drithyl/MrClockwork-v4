@@ -1,9 +1,9 @@
 
 const assert = require("../../asserter.js");
 
-module.exports = Dominions5Nation;
+module.exports = DominionsNation;
 
-function Dominions5Nation(eraNumber, nationData)
+function DominionsNation(eraNumber, nationData)
 {
     assert.isIntegerOrThrow(eraNumber);
     assert.isObjectOrThrow(nationData);

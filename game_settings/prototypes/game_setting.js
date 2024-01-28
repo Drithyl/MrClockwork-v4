@@ -1,12 +1,11 @@
 
 const assert = require("../../asserter.js");
-const dom5SettingsData = require("../../json/dom5_settings.json");
 
 module.exports = GameSetting;
 
-function GameSetting(key)
+function GameSetting(key, settingData)
 {
-    const data = dom5SettingsData[key];
+    const data = settingData;
     assert.isObjectOrThrow(data);
         
     const _key = key;
@@ -21,7 +20,6 @@ function GameSetting(key)
     this.getName = () => _name;
     this.getDefault = () => _defaultValue;
     this.getDescription = () => _description;
-    this.getParseRegexp = () => _regexp;
     this.getPrompt = () => `**${this.getName()}:**\n\n${this.getDescription()}`;
 
     this.canBeChanged = () => _canBeChanged;
@@ -32,7 +30,7 @@ function GameSetting(key)
         if (assert.isString(inputStr) === false)
             return false;
 
-        else return _expectedInputFormatRegexp.test(inputStr)
+        else return _expectedInputFormatRegexp.test(inputStr);
     };
 }
 

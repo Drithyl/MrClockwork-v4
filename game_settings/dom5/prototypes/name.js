@@ -1,5 +1,6 @@
 
 const GameSetting = require("../../prototypes/game_setting.js");
+const dom5SettingsData = require("../../../json/dom5_settings.json");
 const ongoingGamesStore = require("../../../games/ongoing_games_store.js");
 const SemanticError = require("../../../errors/custom_errors.js").SemanticError;
 
@@ -74,5 +75,5 @@ function Name()
 //constructor, with all its properties included. These will 
 //be shared across all instances of the Name constructor.
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf
-Name.prototype = new GameSetting(key);
+Name.prototype = new GameSetting(key, dom5SettingsData[key]);
 Name.prototype.constructor = Name;
