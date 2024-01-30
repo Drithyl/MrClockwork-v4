@@ -50,4 +50,4 @@ module.exports = (game, domEvents) =>
     
     if (domEvents.areAllTurnsDone() === true)
         handleAllTurnsDone(game);
-}
+};

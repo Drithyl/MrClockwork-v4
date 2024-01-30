@@ -25,7 +25,7 @@ function parseDomUpdate(gameObject, updateData)
         return statusSnapshot;
 
 
-    statusSnapshot.setTurnNumber(statusdumpWrapper.turnNbr);
+    statusSnapshot.setTurnNumber(statusdumpWrapper.turnNumber);
     statusSnapshot.setPlayers(statusdumpWrapper.nationStatusArray);
     statusSnapshot.setSuccessfulCheckTimestamp(Date.now());
     statusSnapshot.setLastUpdateTimestamp(statusdumpWrapper.lastUpdateTimestamp);

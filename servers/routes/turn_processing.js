@@ -2,9 +2,10 @@
 const log = require("../../logger.js");
 const serverStore = require("../host_server_store.js");
 const gamesStore = require("../../games/ongoing_games_store.js");
-const turnStartedProcessing = require("../../games/event_handlers/turn_started_processing.js");
-const turnFinishedProcessing = require("../../games/event_handlers/turn_finished_processing.js");
-const backupFinished = require("../../games/event_handlers/backup_finished.js");
+const onTurnStartedProcessing = require("../../games/event_handlers/turn_started_processing.js");
+const onTurnFinishedProcessing = require("../../games/event_handlers/turn_finished_processing.js");
+const onPreTurnProcessingFinished = require("../../games/event_handlers/pre_turn_processing_finished.js");
+const onPostTurnProcessingFinished = require("../../games/event_handlers/post_turn_processing_finished.js");
 
 
 exports.set = (expressApp) => 
@@ -16,6 +17,7 @@ exports.set = (expressApp) =>
         const serverToken = values.serverToken;
         const status = values.status;
         const turnNumber = values.turnNumber;
+        const statusdump = values.statusdump;
         const error = values.error;
         const game = gamesStore.getOngoingGameByName(gameName);
 
@@ -32,22 +34,22 @@ exports.set = (expressApp) =>
         }
 
         if (status === 'preexec-start')
-            turnStartedProcessing(game);
+            onTurnStartedProcessing(game);
 
         else if (status === 'preexec-finish')
-            backupFinished(game, { preexec: true, turnNumber });
+            onPreTurnProcessingFinished(game, turnNumber);
 
         else if (status === 'preexec-error')
-            backupFinished(game, { preexec: true, error });
+            onPreTurnProcessingFinished(game, turnNumber, error);
 
         else if (status === 'postexec-start')
-            turnFinishedProcessing(game);
+            onTurnFinishedProcessing(game);
 
         else if (status === 'postexec-finish')
-            backupFinished(game, { postexec: true, turnNumber });
+            onPostTurnProcessingFinished(game, statusdump);
 
         else if (status === 'postexec-error')
-            backupFinished(game, { postexec: true, error });
+            onPostTurnProcessingFinished(game, statusdump, error);
 
 
         res.sendStatus(200);
