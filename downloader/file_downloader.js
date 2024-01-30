@@ -9,10 +9,10 @@ const googleDriveAPI = require("./google_drive_api/index.js");
 const { getDominionsMapsPath, getDominionsModsPath } = require("../helper_functions.js");
 
 //These are the extensions expected in the collection of map files
-const MAP_EXT_REGEXP = new RegExp("(\.map)|(\.rgb)|(\.tga)|(\.png)$", "i");
+const MAP_EXT_REGEXP = /(\.map)|(\.rgb)|(\.tga)|(\.png)|(\.d6m)$/i;
 
 //These are the extensions expected in the collection of mod files
-const MOD_EXT_REGEXP = new RegExp("(\.dm)|(\.rgb)|(\.tga)|(\.png)|(\.sw)|(\.wav)$", "i");
+const MOD_EXT_REGEXP = /(\.dm)|(\.rgb)|(\.tga)|(\.png)|(\.sw)|(\.wav)$/i;
 
 const ZIP_EXTENSION = "zip";
 const MAX_ZIP_SIZE = config.maxFileSizeInMB * 2000000;  //200MB in bytes
@@ -92,11 +92,10 @@ async function _extractFiles(zipfilePath, gameType)
 async function _autodetectPath(zipfilePath, gameType)
 {
     let targetPath = null;
-    let subMapFolderPath = null;
     let hasDirInBetweenFiles = false;
     let hasTooManyTopLevelFiles = false;
 
-    await unzip.walkZipfile(zipfilePath, (entry, i, closeFile) =>
+    await unzip.walkZipfile(zipfilePath, async (entry, i, closeFile) =>
     {
         let levelsDeep = (entry.fileName.match(/\//g) || []).length;
 
@@ -130,11 +129,15 @@ async function _autodetectPath(zipfilePath, gameType)
             //closeFile();
         }
 
-
         if (path.extname(entry.fileName) === ".map")
         {
-            targetPath = getDominionsMapsPath(gameType);
-            subMapFolderPath = path.resolve(targetPath, path.parse(entry.fileName).name);
+            targetPath = path.resolve(getDominionsMapsPath(gameType), path.parse(entry.fileName).name);
+
+            // Dom6 stores every map in their own map folder inside of the general maps folder.
+            // Check for this folder's existence with the same name as the .map file, and create it if it doesn't exist.
+            if (gameType === config.dom6GameTypeName && fs.existsSync(targetPath) === false)
+                await fsp.mkdir(targetPath);
+
             closeFile();
         }
 
@@ -151,11 +154,6 @@ async function _autodetectPath(zipfilePath, gameType)
         //if (i > TOP_LEVEL_MAX_FILES)
         //    closeFile();
     });
-
-    // Dom6 stores every map in their own map folder inside of the general maps folder.
-    // Check for this folder's existence with the same name as the .map file, and create it if it doesn't exist.
-    if (fs.existsSync(subMapFolderPath) === false)
-        await fsp.mkdir(subMapFolderPath);
    
     if (hasDirInBetweenFiles === true)
         throw new Error("Zipfile contains a folder in-between the .zip and the compressed files. Zip up the mod or map files directly, not a folder");
@@ -167,9 +165,6 @@ async function _autodetectPath(zipfilePath, gameType)
     if (targetPath == null)
         throw new Error(`Your zipfile must contain a .dm or .map file within the first ${TOP_LEVEL_MAX_FILES} entries to autodetect whether it is a mod or a map.`);
 
-    // Dom6 stores every map in their own map folder inside of the general maps folder
-    if (gameType === config.dom6GameTypeName)
-        return subMapFolderPath;
 
     return targetPath;
 }
@@ -182,10 +177,10 @@ function _filterEntry(entry, extensionFilter, targetPath)
 
     //.map files that begin with two underscores __ don't get found
     //properly by the --mapfile flag, so make sure to remove them here
-    if (/^\_+/g.test(entry.fileName) === true)
+    if (/^_+/g.test(entry.fileName) === true)
     {
         log.upload(log.getNormalLevel(), `Data file ${entry.fileName} contains underscores at the beginning of its name, removing them.`);
-        entry.fileName = entry.fileName.replace(/^\_+/g, "");
+        entry.fileName = entry.fileName.replace(/^_+/g, "");
     }
 
     if (fs.existsSync(`${targetPath}/${entry.fileName}`) === true)
