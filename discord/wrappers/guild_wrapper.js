@@ -3,6 +3,7 @@ const log = require("../../logger.js");
 const guildStore = require("../guild_store.js");
 const guildDataStore = require("../guild_data_store.js");
 const GuildMemberWrapper = require("./guild_member_wrapper.js");
+const { ChannelTypes } = require("discord.js").Constants;
 
 module.exports = GuildWrapper;
 
@@ -14,7 +15,7 @@ function GuildWrapper(discordJsGuildObject)
     this.getName = () => _discordJsGuildObject.name;
     this.getOwnerId = () => _discordJsGuildObject.ownerId;
     this.getMemberCount = () => _discordJsGuildObject.memberCount;
-    this.getDiscordJsBotMemberInGuild = () => _discordJsGuildObject.me;
+    this.getDiscordJsBotMemberInGuild = () => _discordJsGuildObject.members.me;
     this.isAvailable = () => _discordJsGuildObject.available;
     this.fetchOwner = async () => 
     {
@@ -174,15 +175,15 @@ function GuildWrapper(discordJsGuildObject)
 
     this.createCategory = (name, permissions) => 
     {
-        return _discordJsGuildObject.channels.create(name, {type: "category", permissionOverwrites: permissions});
+        return _discordJsGuildObject.channels.create(name, {type: ChannelTypes.GUILD_CATEGORY, permissionOverwrites: permissions});
     };
 
     this.createChannel = (name, permissionOverwrites = [], parent = null) => 
     {
         log.general(log.getVerboseLevel(), `Creating channel ${name}...`);
-        return _discordJsGuildObject.channels.create(name, 
+        return _discordJsGuildObject.channels.create(name,
         {
-            type: "text", 
+            type: ChannelTypes.GUILD_TEXT, 
             permissionOverwrites
         })
         .then((channel) =>
@@ -231,12 +232,12 @@ function GuildWrapper(discordJsGuildObject)
         .catch((err) => Promise.reject(err));
     };
 
-    this.checkIfMember = async (userId) => 
+    this.checkIfMember = (userId) => 
     {
         return this.fetchDiscordJsGuildMemberById(userId)
-        .then((member) => true)
-        .catch((err) => false);
-    }
+        .then((member) => member != null)
+        .catch(() => false);
+    };
 
     this.doesBotHavePermission = (permissionFlag) =>
     {
