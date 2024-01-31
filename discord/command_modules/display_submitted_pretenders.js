@@ -60,7 +60,7 @@ function _formatSubmittedPretenders(humanPretenderList)
         else if (pretender.isDead === true)
             deadNationsString += _formatSubmittedPretenderLine(pretender);
 
-        else if (pretender.justDied === true)
+        else if (pretender.hasJustDied === true)
             justDeadNationsString += _formatSubmittedPretenderLine(pretender);
     });
 
@@ -80,7 +80,7 @@ function _formatSubmittedPretenders(humanPretenderList)
 
 function _formatSubmittedPretenderLine(pretenderData)
 {
-    const indexString = `${pretenderData.nationNbr}. `.width(5);
+    const indexString = `${pretenderData.nationNumber}. `.width(5);
     var pretenderStr = pretenderData.fullName.width(40);
 
     // If .owner property is a string, just add it

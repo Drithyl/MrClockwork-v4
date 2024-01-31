@@ -47,7 +47,7 @@ async function _behaviour(commandContext)
         return commandContext.respondToCommand(new MessagePayload(`You must specify a nation identifier to unclaim.`));
 
         
-    nationData = nations.find((nation) => nation.nationNbr === nationNumberSent);
+    nationData = nations.find((nation) => nation.nationNumber === nationNumberSent);
     
 
     if (nationData == null)

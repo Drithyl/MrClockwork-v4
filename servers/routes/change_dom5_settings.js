@@ -52,7 +52,7 @@ exports.set = (expressApp) =>
             const mods = await hostServerStore.getMods(config.dom5GameTypeName);
 
             log.general(log.getVerboseLevel(), "Final organized dom5 games data rendered", organizedGames);
-            res.render("change_game_settings_screen.ejs", Object.assign({ 
+            res.render("change_dom5_settings_screen.ejs", Object.assign({ 
                 userId,
                 sessionId,
                 organizedGames: organizedGames, 
@@ -107,6 +107,7 @@ exports.set = (expressApp) =>
             // encoded in it (like maps) are cleared properly
             return game.overwriteSettings();
         })
+        .then(() => game.save())
         .then(() => game.kill())
         .then(() => game.launch())
         .catch((err) =>

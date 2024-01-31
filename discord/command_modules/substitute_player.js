@@ -33,7 +33,7 @@ async function _behaviour(commandContext)
     const nations = status.getPlayers();
     const commandArguments = commandContext.getCommandArgumentsArray();
     const nationNumberSent = +commandArguments[0];
-    const nationData = nations.find((nation) => nation.nationNbr === nationNumberSent);
+    const nationData = nations.find((nation) => nation.nationNumber === nationNumberSent);
     var subPlayerWrapper;
 
     

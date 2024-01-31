@@ -40,7 +40,7 @@ async function fetchStatus(gameObject)
 
     statusSnapshot.setUptime(statusdumpWrapper.uptime);
     statusSnapshot.setTurnNumber(statusdumpWrapper.turnNbr);
-    statusSnapshot.setPlayers(statusdumpWrapper.nationStatusArray);
+    statusSnapshot.setPlayers(statusdumpWrapper.nationStatuses);
     statusSnapshot.setSuccessfulCheckTimestamp(Date.now());
     statusSnapshot.setLastUpdateTimestamp(statusdumpWrapper.lastUpdateTimestamp);
     statusSnapshot.setHasStarted(statusdumpWrapper.hasStarted);

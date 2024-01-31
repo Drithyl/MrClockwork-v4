@@ -13,7 +13,7 @@ function DominionsStatusSnapshot(snapshotData)
     var _isServerOnline = snapshotData.isServerOnline ?? false;
 
     var _uptime = snapshotData.uptime;
-    var _players = snapshotData.nationStatusArray;
+    var _players = snapshotData.nationStatuses;
     var _successfulCheckTimestamp = snapshotData.successfulCheckTimestamp;
     var _lastUpdateTimestamp = snapshotData.lastUpdateTimestamp;
     var _hasStarted = snapshotData.hasStarted;
