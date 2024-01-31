@@ -71,6 +71,9 @@ const connectionsMessageRegexp = /Connections\s*\d+/i;
 // happens every second after game start, as a way to keep the status
 const nationsTurnStatusMessageRegExp = /^(((\(?\w{2,3}\)?)|(\*?\w{2,3}\??-?\+?))\s?)+$/;
 
+// Exact message: "newmon: too many sprites (124050)", seems to happen if a mod has too many sprites
+const tooManySprites = /newmon: too many sprites \((\d+)\)/;
+
 
 const generatingNextTurnMessageRegExp = /Generating next turn/i;
 
@@ -170,6 +173,9 @@ function handleData(game, message)
 
     else if (generatingNextTurnMessageRegExp.test(message) === true)
         handleGeneratingNextTurn(game, message);
+
+    else if (tooManySprites.test(message) === true)
+        handleTooManySpritesErr(game, message);
 
     else
     {
@@ -304,6 +310,14 @@ function handleGeneratingNextTurn(game)
 {
     log.general(log.getNormalLevel(), `${game.getName()}\tGenerating new turn...`);
     game.sendMessageToChannel(`Generating new turn; this *can* take a while...`);
+}
+
+function handleTooManySpritesErr(game, message)
+{
+    log.general(log.getVerboseLevel(), `Handling tooManySprites error ${message}`);
+
+    //this error string is pretty explicit and informative so send it as is
+    debounce(game, message);
 }
 
 
