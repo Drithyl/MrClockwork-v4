@@ -22,17 +22,6 @@
               </form>
               
             </div>
-        
-            <div class="btn-group me-2" role="group">
-            
-                <form id="change_dom6_settings_screen_form" action="/change_dom6_settings" method="GET">
-                    <input type="hidden" name="sessionId" value="<%=(typeof sessionData === "object") ? sessionData.sessionId : "none"%>"/>
-                    <button type="submit" class="btn btn-dark rounded-pill">
-                        <i class="bi bi-gear-fill"></i> Change Dom6 settings
-                    </button>
-                </form>
-            
-            </div>
 
             <div class="btn-group me-2" role="group">
                 
@@ -43,6 +32,17 @@
                   </button>
               </form>
               
+            </div>
+        
+            <div class="btn-group me-2" role="group">
+            
+                <form id="change_dom6_settings_screen_form" action="/change_dom6_settings" method="GET">
+                    <input type="hidden" name="sessionId" value="<%=(typeof sessionData === "object") ? sessionData.sessionId : "none"%>"/>
+                    <button type="submit" class="btn btn-dark rounded-pill">
+                        <i class="bi bi-gear-fill"></i> Change Dom6 settings
+                    </button>
+                </form>
+            
             </div>
         
             <div class="btn-group me-2" role="group">

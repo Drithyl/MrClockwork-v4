@@ -293,7 +293,7 @@ h5 {
 
 /* Footer headlines used as picture footers */
 h6 {
-    font-size: 10x;
+    font-size: 10px;
     color: white;
 }
 
@@ -310,6 +310,12 @@ p, span {
 
 .btn {
     border-radius: 50px;
+}
+
+.gameButtonBar {
+    .btn-dark {
+        font-size: 14px;
+    }
 }
 
 .card-bg {
