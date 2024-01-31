@@ -222,6 +222,7 @@ a[role=option] .text{
 
 .cwTableBody tr {
     border-style: none;
+    font-size: 14px;
 }
 
 .table > :not(:first-child) {
