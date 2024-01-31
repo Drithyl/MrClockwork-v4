@@ -116,8 +116,6 @@ function parseData(gameName, message)
 
 function handleData(game, message)
 {
-    const gameName = game.getName();
-    
     // Ignore all these messages, they don't need special handling
     if (isIgnorableMessage(message) === true)
         return;
@@ -179,8 +177,7 @@ function handleData(game, message)
 
     else
     {
-        // Don't send channel warnings if this is an unidentified message; could just clutter things up
-        log.general(log.getNormalLevel(), `Game ${gameName} reported an unknown message`, message);
+        handleUnknownMessage(game, message);
     }
 }
 
@@ -320,6 +317,13 @@ function handleTooManySpritesErr(game, message)
     debounce(game, message);
 }
 
+
+function handleUnknownMessage(game, message)
+{
+    // Don't send channel warnings if this is an unidentified message; could just clutter things up
+    log.general(log.getNormalLevel(), `Game ${game.getName()} reported an unknown message`, message);
+    debounce(game, `The game encountered an unknown error:\n\n    ${message}`);
+}
 
 function debounce(game, message)
 {
