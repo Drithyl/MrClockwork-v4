@@ -212,7 +212,12 @@ function GuildWrapper(discordJsGuildObject)
         });
     };
 
-    this.createGameChannel = (name) => this.createChannel(name, [], this.getRecruitingCategory());
+    this.createGameChannel = async (name, description = "") => {
+        const channel = await this.createChannel(name, [], this.getRecruitingCategory());
+        await channel.setTopic(description);
+        return channel;
+    };
+
     this.createGameRole = (name) => this.createRole(name, true);
 
     this.getRoleById = (roleId) => _discordJsGuildObject.roles.cache.get(roleId);

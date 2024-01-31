@@ -2,6 +2,13 @@ const path = require("path");
 const config = require("./config/config.json");
 
 
+module.exports.getDominionsTypeName = function(gameType) {
+    if (gameType === config.dom6GameTypeName)
+        return "Dominions 6: Rise of the Pantokrator";
+    else if (gameType === config.dom5GameTypeName)
+        return "Dominions 5: The Warriors of Faith";
+};
+
 module.exports.getDominionsDataPath = function(gameType) {
     if (gameType === config.dom6GameTypeName)
         return path.resolve(config.pathToDom6Data);

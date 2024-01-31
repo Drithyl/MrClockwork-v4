@@ -10,6 +10,7 @@ const ongoingGamesStore = require("../ongoing_games_store.js");
 const hostServerStore = require("../../servers/host_server_store.js");
 const SemanticError = require("../../errors/custom_errors.js").SemanticError;
 const MessagePayload = require("../../discord/prototypes/message_payload.js");
+const { getDominionsTypeName } = require("../../helper_functions.js");
 
 module.exports = Game;
 
@@ -91,33 +92,32 @@ function Game()
         return _discordJsChannel.delete();
     };
 
-    this.createNewChannel = () =>
+    this.createNewChannel = async () =>
     {
-        return _guildWrapper.createChannel(`${this.getName()}`, [
+        const guildId = _guildWrapper.getId();
+        const status = this.getLastKnownStatus();
+
+        const channel = await _guildWrapper.createChannel(`${this.getName()}`, [
             { 
                 id: this.getOrganizerId(), 
                 allow: [ "MANAGE_MESSAGES" ]
             }
-        ])
-        .then((channel) => 
-        {
-            const guildId = _guildWrapper.getId();
-            const status = this.getLastKnownStatus();
-            
-            this.setChannel(channel);
+        ]);
 
-            if (status != null && status.hasStarted() === true)
-            {
-                log.general(log.getVerboseLevel(), `Game already started; moving to started category ${guildStore.getGameCategoryId(guildId)}`);
-                return channel.setParent(guildStore.getGameCategoryId(guildId));
-            }
-            
-            else
-            {
-                log.general(log.getVerboseLevel(), `Game has not started; moving to open category ${guildStore.getRecruitingCategoryId(guildId)}`);
-                return channel.setParent(guildStore.getRecruitingCategoryId(guildId));
-            }
-        });
+        this.setChannel(channel);
+        channel.setTopic(getDominionsTypeName(this.getType()));
+
+        if (status != null && status.hasStarted() === true)
+        {
+            log.general(log.getVerboseLevel(), `Game already started; moving to started category ${guildStore.getGameCategoryId(guildId)}`);
+            return channel.setParent(guildStore.getGameCategoryId(guildId));
+        }
+        
+        else
+        {
+            log.general(log.getVerboseLevel(), `Game has not started; moving to open category ${guildStore.getRecruitingCategoryId(guildId)}`);
+            return channel.setParent(guildStore.getRecruitingCategoryId(guildId));
+        }
     };
 
     this.getRole = () => _discordJsRole;
@@ -227,10 +227,10 @@ function Game()
 
     this.pinSettingsToChannel = () =>
     {
-        var addressString = `IP: ${this.getIp()}:${this.getPort()}\nServer: ${this.getServer().getName()}\n\n`;
-        var settingsStringList = _settingsObject.getPublicSettingsStringList();
-        var channel = this.getChannel();
-        const payload = new MessagePayload((addressString + settingsStringList).toBox());
+        const channel = this.getChannel();
+        const gameHeaderString = `__**${getDominionsTypeName(this.getType())}**__\n\n**IP:** ${this.getIp()}\n**Port:** ${this.getPort()}\n**Server:** ${this.getServer().getName()}\n\n**Settings:**\n`;
+        const settingsStringList = _settingsObject.getPublicSettingsStringList();
+        const payload = new MessagePayload(gameHeaderString + settingsStringList.toBox());
 
         if (_discordJsChannel == null)
             return Promise.reject(new Error(`${this.getName()} does not have a channel assigned.`));
