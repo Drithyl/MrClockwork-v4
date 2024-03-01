@@ -15,7 +15,10 @@ module.exports = async (game, statusdump, error) =>
     status.setIsCurrentTurnRollback(false);
 
     announcementText += _processBackup(game, statusdump, error);
-    announcementText += "\n\n" + _processStaleData(statusdump);
+
+    if (error == null && statusdump != null) {
+        announcementText += "\n\n" + _processStaleData(statusdump);
+    }
 
     await game.sendMessageToChannel(announcementText);
 };
@@ -27,7 +30,7 @@ function _processBackup(game, statusdump, error)
     if (error)
     {
         log.error(log.getLeanLevel(), `${gameName}: Post-turn backup encountered error`, error);
-        return `Post-turn backup encountered the error below. If the next pre-turn backup fails, rollback to this turn might not be available.\n\n    ${error}`;
+        return `**__Post-turn backup encountered an error__**. If the next pre-turn backup fails, rollback to this turn might not be available. Stale data won't be available for this turn either.\n\n\`\`\`     ${error}\`\`\``;
     }
 
     log.general(log.getNormalLevel(), `${gameName}: Post-turn ${statusdump.turnNumber} backup finished!`);
