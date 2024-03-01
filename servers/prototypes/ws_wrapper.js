@@ -93,6 +93,12 @@ function ServerSocketWrapper(ws)
 
     _self.onMessage("STDIO_DATA", (data) => 
     {
+        const brokenPipeErrRegexp = /broken\s*pipe/i;
+
+        // If this is a broken pipe message just ignore it early
+        if (brokenPipeErrRegexp.test(data.data) === true)
+            return;
+
         console.log(`${data.name}: ${data.type} data received\n`, data.data);
         //log.general(log.getVerboseLevel(), `${data.name}: ${data.type} data received`, data.data);
         handleDomData(data.name, data.data);

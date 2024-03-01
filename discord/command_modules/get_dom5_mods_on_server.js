@@ -1,4 +1,4 @@
-
+const path = require("path");
 const asserter = require("../../asserter.js");
 const config = require("../../config/config.json");
 const Command = require("../prototypes/command.js");
@@ -29,11 +29,12 @@ async function _behaviour(commandContext)
 
     const payload = new MessagePayload(`Attached below is the list of ${gameType} mods available:\n\n`);
     const mods = await hostServerStore.getMods(gameType);
+    const modList = mods.map((mod) => mod.name);
 
-    if (mods.length <= 0)
+    if (modList.length <= 0)
         return commandContext.respondToCommand(new MessagePayload(`No ${gameType} mods are available. You'll have to upload some with the corresponding command.`));
 
-    payload.setAttachment("mods.txt", Buffer.from(mods.join("\n")));
+    payload.setAttachment("mods.txt", Buffer.from(modList.join("\n")));
 
     return commandContext.respondToCommand(payload);
 }

@@ -37,7 +37,7 @@ module.exports.getDominionsMapsPath = function(gameType) {
 
 module.exports.getDominionsMapExtension = function(gameType) {
     if (gameType === config.dom6GameTypeName)
-        return ".map";
+        return ".d6m";
     else if (gameType === config.dom5GameTypeName)
         return ".map";
 };

@@ -117,11 +117,52 @@ exports.printListOfFreeSlots = () =>
 
 module.exports.getMods = async function(gameType)
 {
-    const modsDirPath = path.resolve(getDominionsModsPath(gameType));
-	const filenames = await rw.getDirFilenames(modsDirPath, ".dm");
-    filenames.sort();
-    return filenames;
+    let mods = [];
+
+    if (gameType === config.dom5GameTypeName) {
+        mods = await _getDom5Modfiles();
+    }
+    else if (gameType === config.dom6GameTypeName) {
+        mods = await _getDom6Modfiles();
+    }
+
+    return mods;
 };
+
+async function _getDom5Modfiles()
+{
+    const gameType = config.dom5GameTypeName;
+    const modsDirPath = path.resolve(getDominionsModsPath(gameType));
+    const filenames = await fsp.readdir(modsDirPath);
+    const modFilenames = filenames.filter((filename) => path.extname(filename) === ".dm");
+    const modFilepaths = modFilenames.map((filename) => path.resolve(modsDirPath, filename));
+    return modFilepaths.map((modpath) => { 
+        return { name: path.basename(modpath), path: modpath };
+    });
+}
+
+async function _getDom6Modfiles()
+{
+    const gameType = config.dom6GameTypeName;
+    const modsDirPath = path.resolve(getDominionsModsPath(gameType));
+    const subPaths = await fsp.readdir(modsDirPath, { withFileTypes: true });
+    const modFolders = subPaths.filter((dirent) => dirent.isFile() === false);
+    const modFilepaths = [];
+
+    for (const modFolder of modFolders)
+    {
+        const modFolderPath = path.resolve(modFolder.path, modFolder.name);
+        const filenames = await fsp.readdir(modFolderPath);
+        const modFilename = filenames.find((f) => path.extname(f) === ".dm");
+        const modpath = path.resolve(modFolderPath, modFilename);
+
+        if (modFilename != null) {
+            modFilepaths.push({ name: modFilename, path: modpath });
+        }
+    }
+
+    return modFilepaths;
+}
 
 exports.getMaps = async (gameType) =>
 {
@@ -172,7 +213,7 @@ async function _getDom6Mapfiles()
     {
         const mapFolderPath = path.resolve(mapFolder.path, mapFolder.name);
         const filenames = await fsp.readdir(mapFolderPath);
-        const mapFilename = filenames.find((f) => path.extname(f) === getDominionsMapExtension(gameType));
+        const mapFilename = filenames.find((f) => path.extname(f) === ".map" || path.extname(f) === ".d6m");
 
         if (mapFilename != null) {
             mapFilepaths.push(path.resolve(mapFolderPath, mapFilename));

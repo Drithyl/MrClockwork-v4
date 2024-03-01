@@ -129,14 +129,20 @@ async function _autodetectPath(zipfilePath, gameType)
             //closeFile();
         }
 
-        if (path.extname(entry.fileName) === ".map")
+        if (path.extname(entry.fileName) === ".map" || path.extname(entry.fileName) === ".d6m")
         {
-            targetPath = path.resolve(getDominionsMapsPath(gameType), path.parse(entry.fileName).name);
+            if (gameType === config.dom5GameTypeName && path.extname(entry.fileName) === ".map") {
+                targetPath = getDominionsMapsPath(gameType);
+            }
 
             // Dom6 stores every map in their own map folder inside of the general maps folder.
-            // Check for this folder's existence with the same name as the .map file, and create it if it doesn't exist.
-            if (gameType === config.dom6GameTypeName && fs.existsSync(targetPath) === false)
-                await fsp.mkdir(targetPath);
+            // Check for this folder's existence with the same name as the .d6m file, and create it if it doesn't exist.
+            else if (gameType === config.dom6GameTypeName) {
+                targetPath = path.resolve(getDominionsMapsPath(gameType), path.parse(entry.fileName).name);
+
+                if (fs.existsSync(targetPath) === false)
+                    await fsp.mkdir(targetPath);
+            }
 
             closeFile();
         }
@@ -144,6 +150,16 @@ async function _autodetectPath(zipfilePath, gameType)
         else if (path.extname(entry.fileName) === ".dm")
         {
             targetPath = getDominionsModsPath(gameType);
+
+            // Dom6 stores every mod in their own mod folder inside of the general mods folder.
+            // Check for this folder's existence with the same name as the .dm file, and create it if it doesn't exist.
+            if (gameType === config.dom6GameTypeName) {
+                targetPath = path.resolve(targetPath, path.parse(entry.fileName).name);
+
+                if (fs.existsSync(targetPath) === false)
+                    await fsp.mkdir(targetPath);
+            }
+
             closeFile();
         }
 
