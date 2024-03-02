@@ -1,8 +1,10 @@
 
 const log = require("../logger.js");
 const assert = require("../asserter.js");
+const config = require("../config/config.json");
 const gameStore = require("./ongoing_games_store.js");
 const MessagePayload = require("../discord/prototypes/message_payload.js");
+const { getNation } = require("./dominions_nation_store.js");
 
 //Exact error: "Failed to create temp dir 'C:\Users\MistZ\AppData\Local\Temp/dom5_94132'"
 const failedToCreateTmpDirErrRegexp = /Failed\s*to\s*create\s*temp\s*dir/i;
@@ -29,6 +31,9 @@ const mapImgNotFoundErrRegexp = /can't\s*open\s*.+.(tga)|(.rgb)|(.rgb)|(.png)$/i
 //Exact error: "Can't find mod: WH_6_25.dm"
 const modNotFoundRegexp = /can't\s*find\s*mod/i;
 
+//Exact error: "Mod not installed"
+const modNotInstalledRegexp = /Mod not installed/i;
+
 //Exact error: "sound: sample '/home/steam/.dominions5/mods/./Dimensional FractureV3.0/tendrils/sounds/will_slosh1.wav' not found"
 const soundNotFoundRegexp = /sound:.+not found/i;
 
@@ -45,6 +50,14 @@ const coreDumpedErrRegexp = /\(core\s*dumped\)/i;
 *                Get an update at www.illwinter.com     *
 *                myversionX fileversionY nationZ"       */
 const versionTooOldErrRegexp = /version\s*is\s*too\s*old/i;
+
+// Related to the above, when the file version starts with a 6, e.g. 618, this refers to a
+// Dominions 6 pretender that was submitted to the game. Useful to check if a dom6 pretender
+// was submitted to a Dominions 5 game.
+const dom6PretenderRegexp = /fileversion6\d* nation\d+/i;
+
+// For the above error, useful to isolate the nation number and convert it to a nation name
+const nationNumberGroup = /fileversion6\d* nation(\d+)/i;
 
 //Exact error: "Något gick fel!". Should come last in handling as some more
 //errors will also contain this bit into them
@@ -88,30 +101,20 @@ module.exports = function(gameName, message)
     if (game == null)
         return;
 
-    const dataArr = parseData(gameName, message);
-
-    dataArr.forEach((line) => 
-    {
-        if (/\S+/.test(line) === true)
-            handleData(game, line);
-    });
+    const parsedMessage = parseData(message);
+    handleData(game, parsedMessage);
 };
 
 
-function parseData(gameName, message)
+function parseData(message)
 {
-    if (message == null)
-    {
-        return [];
-    }
-
     // Probably a buffer with data, ignore it too
     if (assert.isString(message) === false)
     {
-        return [];
+        return "";
     }
 
-    return message.split("\n").filter((str) => /\S+/i.test(str) === true);
+    return message;
 }
 
 function handleData(game, message)
@@ -120,6 +123,7 @@ function handleData(game, message)
     if (isIgnorableMessage(message) === true)
         return;
 
+    const gameType = game.getType();
 
     if (failedToCreateTmpDirErrRegexp.test(message) === true)
         handleFailedToCreateTmpDir(game, message);
@@ -142,6 +146,9 @@ function handleData(game, message)
     else if (modNotFoundRegexp.test(message) === true)
         handleModNotFound(game, message);
 
+    else if (modNotInstalledRegexp.test(message) === true)
+        handleModNotInstalled(game, message);
+
     else if (soundNotFoundRegexp.test(message) === true)
         handleSoundNotFound(game, message);
 
@@ -154,8 +161,12 @@ function handleData(game, message)
     else if (coreDumpedErrRegexp.test(message) === true)
         handleCoreDumped(game, message);
 
-    else if (versionTooOldErrRegexp.test(message) === true)
-        handleVersionTooOld(game, message);
+    else if (versionTooOldErrRegexp.test(message) === true) {
+        if (gameType === config.dom5GameTypeName && dom6PretenderRegexp.test(message) === true)
+            handleDom6PretenderSubmittedToDom5Game(game, message);
+
+        else handleVersionTooOld(game, message);
+    }
 
     else if (itemForgingErrRegexp.test(message) === true)
         handleItemForgingErr(game, message);
@@ -254,6 +265,14 @@ function handleModNotFound(game, message)
     debounce(sendWarning(game, message));
 }
 
+function handleModNotInstalled(game, message)
+{
+    log.general(log.getVerboseLevel(), `Handling modNotInstalled error ${message}`);
+
+    //this error string is pretty explicit and informative so send it as is
+    debounce(sendWarning(game, "One of the mods chosen is not installed on the server. Did it get deleted after the game was hosted?"));
+}
+
 function handleSoundNotFound(game, message)
 {
     log.general(log.getVerboseLevel(), `Handling soundNotFound error ${message}`);
@@ -278,6 +297,15 @@ function handleCoreDumped(game, message)
 {
     log.general(log.getVerboseLevel(), `Ignoring codeDumped error ${message}`);
     //don't send error here as this comes coupled with other more explicit errors
+}
+
+function handleDom6PretenderSubmittedToDom5Game(game, message)
+{
+    const offendingNationNumber = +message.match(nationNumberGroup)[0].replace(nationNumberGroup, "$1");
+    const offendingNation = getNation(offendingNationNumber, config.dom6GameTypeName);
+
+    log.general(log.getVerboseLevel(), `Handling dom6PretenderSubmittedToDom5Game error ${message}`);
+    sendWarning(game, `This is a Dominions 5 game, but someone submitted a Dominions 6 pretender (**${offendingNation.getFullName()}**), which is making it crash. Remove this pretender to fix it.`);
 }
 
 function handleVersionTooOld(game, message)
