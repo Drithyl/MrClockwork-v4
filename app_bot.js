@@ -76,9 +76,6 @@ async function _initializeComponents()
         await gamesStore.loadAll();
         log.general(log.getLeanLevel(), "Finished initialization of games.");
 
-        await fileDownloader.initialize();
-        log.general(log.getLeanLevel(), "Initialized file downloader.");
-
     
         if (expressServer.isHttpsAvailable() === true)
             expressServer.startListeningSsl(config.hostServerSslConnectionPort);

@@ -29,32 +29,15 @@ async function _behaviour(commandContext)
     const commandArgumentsArray = commandContext.getCommandArgumentsArray();
     const gameType = commandArgumentsArray[0];
     const googleDriveLink = commandArgumentsArray[1];
-    const googleDriveId = _extractGoogleDriveFileId(googleDriveLink);
 
     if (asserter.isValidGameType(gameType) === false)
         return commandContext.respondToCommand(new MessagePayload(`You must specify the game for which you want to get upload a file. Either ${config.dom5GameTypeName} or ${config.dom6GameTypeName}`));
 
-    if (googleDriveId == null)
+    if (googleDriveLink == null)
         return commandContext.respondToCommand(new MessagePayload("You must provide a shareable google drive link as the 2nd argument."));
 
 
     await commandContext.respondToCommand(new MessagePayload(`Sending request to server...`));
-    await fileDownloader.downloadFileFromDrive(googleDriveId, gameType);
+    await fileDownloader.downloadFileFromDrive(googleDriveLink, gameType);
     await commandContext.respondToCommand(new MessagePayload(`Upload completed successfuly! Keep in mind that files that already existed on the server will **not** have been overwritten.`));
-}
-
-
-function _extractGoogleDriveFileId(id)
-{
-    const linkRegExp = new RegExp("^(https?:\\/\\/)?(drive.google.com)?(/file/d/)?(/drive/folders/)?(/open\\?id=)?([a-z0-9\\-_]+)(\\/?\\??.+)?", "i");
-
-    if (asserter.isString(id) === false)
-        return null;
-
-    id = id.trim();
-
-    if (linkRegExp.test(id) === true)
-        return id.replace(linkRegExp, "$6");
-
-    else return null;
 }

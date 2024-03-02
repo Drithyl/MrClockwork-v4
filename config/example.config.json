@@ -56,6 +56,9 @@
   "maxParallelGameUpdates": 5,
   "loggingInterval": 60000,
 
+  "maxZipfileSizeInMB": 200,
+  "maxZipfileEntries": 10000,
+
   "dom5GameTypeName": "dom5",
   "dom6GameTypeName": "dom6",
 
