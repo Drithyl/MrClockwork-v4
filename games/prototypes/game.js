@@ -96,13 +96,20 @@ function Game()
     {
         const guildId = _guildWrapper.getId();
         const status = this.getLastKnownStatus();
+        const organizerId = this.getOrganizerId();
+        const guildOwnerId = this.getGuild().getOwnerId();
+        const permissionOverwrites = [];
 
-        const channel = await _guildWrapper.createChannel(`${this.getName()}`, [
-            { 
-                id: this.getOrganizerId(), 
-                allow: [ "MANAGE_MESSAGES" ]
-            }
-        ]);
+        // Organizer might have left guild when we're trying to restore a game channel
+        if (organizerId == null) {
+            permissionOverwrites.push({ id: guildOwnerId, allow: [ "MANAGE_MESSAGES" ]});
+        }
+        
+        else {
+            permissionOverwrites.push({ id: organizerId, allow: [ "MANAGE_MESSAGES" ]});
+        }
+
+        const channel = await _guildWrapper.createChannel(`${this.getName()}`, permissionOverwrites);
 
         this.setChannel(channel);
         channel.setTopic(getDominionsTypeName(this.getType()));
