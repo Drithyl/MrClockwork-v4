@@ -150,7 +150,7 @@ async function _getDom6Modfiles()
 
     for (const modFolder of modFolders)
     {
-        const modFolderPath = path.resolve(modFolder.path, modFolder.name);
+        const modFolderPath = path.resolve(modFolder.path ?? modFolder.parentPath, modFolder.name);
         const filenames = await fsp.readdir(modFolderPath);
         const modFilename = filenames.find((f) => path.extname(f) === ".dm");
 
