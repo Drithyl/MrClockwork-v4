@@ -2,7 +2,6 @@
 const path = require("path");
 const fsp = require("fs").promises;
 const log = require("../logger.js");
-const rw = require("../reader_writer.js");
 const config = require("../config/config.json");
 const HostServer = require("./prototypes/host_server.js");
 const { isInstanceOfPrototypeOrThrow } = require("../asserter.js");
@@ -154,9 +153,9 @@ async function _getDom6Modfiles()
         const modFolderPath = path.resolve(modFolder.path, modFolder.name);
         const filenames = await fsp.readdir(modFolderPath);
         const modFilename = filenames.find((f) => path.extname(f) === ".dm");
-        const modpath = path.resolve(modFolderPath, modFilename);
 
         if (modFilename != null) {
+            const modpath = path.resolve(modFolderPath, modFilename);
             modFilepaths.push({ name: modFilename, path: modpath });
         }
     }
