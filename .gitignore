@@ -15,6 +15,9 @@ node_modules/
 #app data
 data/
 
+# test scripts
+tests/
+
 downloader/google_drive_api/*.json
 
 
