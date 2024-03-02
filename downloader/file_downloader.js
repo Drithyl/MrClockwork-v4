@@ -47,9 +47,10 @@ module.exports.downloadFileFromDrive = async (driveLink, gameType) => {
     await googleDriveFile.fetchMetadata();
 
     log.upload(log.getNormalLevel(), `Downloading and fetching zipfile ${googleDriveId}...`);
-    await googleDriveFile.downloadFile("./tests/tmp/testzip.zip");
+    const downloadPath = `${TMP_PATH}/${googleDriveFile.metadata.name}`;
+    await googleDriveFile.downloadFile(downloadPath);
 
-    const zipfile = new Zipfile("./tests/tmp/testzip.zip");
+    const zipfile = new Zipfile(downloadPath);
     zipfile.setMaxEntries(MAX_ENTRIES);
 
     log.upload(log.getNormalLevel(), `Exploring zip file...`);
