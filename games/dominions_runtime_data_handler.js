@@ -5,6 +5,7 @@ const config = require("../config/config.json");
 const gameStore = require("./ongoing_games_store.js");
 const MessagePayload = require("../discord/prototypes/message_payload.js");
 const { getNation } = require("./dominions_nation_store.js");
+const { fetchLastNMessages } = require("../discord/discord.js");
 
 //Exact error: "Failed to create temp dir 'C:\Users\MistZ\AppData\Local\Temp/dom5_94132'"
 const failedToCreateTmpDirErrRegexp = /Failed\s*to\s*create\s*temp\s*dir/i;
@@ -92,6 +93,7 @@ const generatingNextTurnMessageRegExp = /Generating next turn/i;
 
 const messageHistory = {};
 const DEBOUNCE_MS = 600000;
+const SILENT_LAUNCH_ARGV = "silent";
 
 
 module.exports = function(gameName, message)
@@ -100,6 +102,10 @@ module.exports = function(gameName, message)
 
     if (game == null)
         return;
+
+    if (isRunningInSilentLaunchMode() === true && wasFirstMessageSinceSilentLaunchIgnored(gameName) === false) {
+        return;
+    }
 
     const parsedMessage = parseData(message);
     handleData(game, parsedMessage);
@@ -217,19 +223,19 @@ function isIgnorableMessage(message)
 function handleFailedToCreateTmpDir(game, message)
 {
     log.general(log.getVerboseLevel(), `Handling failedToCreateTmpDir error ${message}`);
-    sendWarning(game, `Dominions reported an error: the game instance could not be started because it failed to create a temp dir. Try killing it and launching it again.`);
+    debounce(game, `Dominions reported an error: the game instance could not be started because it failed to create a temp dir. Try killing it and launching it again.`);
 }
 
 function handleAddressInUse(game, message)
 {
     log.general(log.getVerboseLevel(), `Handling addressInUse error ${message}`);
-    sendWarning(game, `The game's port busy. Most likely the game failed to shut down properly, so killing it and relaunching it should work.`);
+    debounce(game, `The game's port busy. Most likely the game failed to shut down properly, so killing it and relaunching it should work.`);
 }
 
 function handleNetworkError(game, message)
 {
     log.general(log.getVerboseLevel(), `Handling networkError error ${message}`);
-    sendWarning(game, `The game reported a network error.`);
+    debounce(game, `The game reported a network error.`);
 }
 
 function handleTerminated(game, message)
@@ -240,7 +246,7 @@ function handleTerminated(game, message)
 function handleNagotGickFel(game, message)
 {
     log.general(log.getVerboseLevel(), `Handling nagotGickFel error ${message}`);
-    sendWarning(game, `Dominions crashed due to an error: ${message}`);
+    debounce(game, `Dominions crashed due to an error: ${message}`);
 }
 
 function handleMapNotFound(game, message)
@@ -284,13 +290,13 @@ function handleSoundNotFound(game, message)
 function handleThroneInCapital(game, message)
 {
     log.general(log.getVerboseLevel(), `Handling throneInCapital error ${message}`);
-    sendWarning(game, `Dominions reported an error: A throne was probably forced to start on a player's capital. Check the pre-set starts and thrones in the .map file (original error is: bc: king has throne in capital (p43 c385 h160 vp2) [new game created])`);
+    debounce(game, `Dominions reported an error: A throne was probably forced to start on a player's capital. Check the pre-set starts and thrones in the .map file (original error is: bc: king has throne in capital (p43 c385 h160 vp2) [new game created])`);
 }
 
 function handleBadAiPlayer(game, message)
 {
     log.general(log.getVerboseLevel(), `Handling badAiPlayer error ${message}`);
-    sendWarning(game, `Dominions reported an error: one of the AI players has an invalid nation number.`);
+    debounce(game, `Dominions reported an error: one of the AI players has an invalid nation number.`);
 }
 
 function handleCoreDumped(game, message)
@@ -305,19 +311,19 @@ function handleDom6PretenderSubmittedToDom5Game(game, message)
     const offendingNation = getNation(offendingNationNumber, config.dom6GameTypeName);
 
     log.general(log.getVerboseLevel(), `Handling dom6PretenderSubmittedToDom5Game error ${message}`);
-    sendWarning(game, `This is a Dominions 5 game, but someone submitted a Dominions 6 pretender (**${offendingNation.getFullName()}**), which is making it crash. Remove this pretender to fix it.`);
+    debounce(game, `This is a Dominions 5 game, but someone submitted a Dominions 6 pretender (**${offendingNation.getFullName()}**), which is making it crash. Remove this pretender to fix it.`);
 }
 
 function handleVersionTooOld(game, message)
 {
     log.general(log.getVerboseLevel(), `Handling versionTooOld error ${message}`);
-    sendWarning(game, `The game has crashed because a new Dominions version is available. Please be patient while the admins update the servers :)`);
+    debounce(game, `The game has crashed because a new Dominions version is available. Please be patient while the admins update the servers :)`);
 }
 
 function handleItemForgingErr(game, message)
 {
     log.general(log.getVerboseLevel(), `Handling itemForging error ${message}`);
-    sendWarning(game, `The game has crashed on turn generation due to an error caused by forging a bad item. This should theoretically not happen.`);
+    debounce(game, `The game has crashed on turn generation due to an error caused by forging a bad item. This should theoretically not happen.`);
 }
 
 function handleFileCreationErr(game, message)
@@ -360,6 +366,22 @@ function debounce(game, message)
 
     addToHistory(game.getName(), message);
     sendWarning(game, message);
+}
+
+function isRunningInSilentLaunchMode() {
+    return process.argv.some((arg) => arg.toLowerCase() === SILENT_LAUNCH_ARGV) === true;
+}
+
+function wasFirstMessageSinceSilentLaunchIgnored(gameName) {
+    if (messageHistory[gameName] != null && messageHistory[gameName].alreadyIgnoredFirstMessage === true) {
+        return true;
+    }
+
+    if (messageHistory[gameName] == null)
+        messageHistory[gameName] = {};
+    
+    messageHistory[gameName].alreadyIgnoredFirstMessage = true;
+    return false;
 }
 
 function addToHistory(gameName, message)
