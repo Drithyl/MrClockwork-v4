@@ -671,19 +671,6 @@
         "helpText": "Transfers the claim on a pretender to another player."
     },
 
-    "SWITCH_TIMER_ENFORCER":
-    {
-        "name": "switchtimerenforcer",
-        "isEnabled": true,
-        "gameTypesSupported": ["dom5", "dom6"],
-        "argumentsRequiredInfo": [],
-        "optionalArguments": 0,
-        "regexpRequiredToInvoke": "SWITCHTIMERENFORCER$",
-        "argumentRegexpArray": [],
-        "channelRequiredToInvoke": "game",
-        "helpText": "Switches from bot-enforced timer to game-enforced timer, and vice versa. The former means the bot will control the game timer and force host the game when the timer reaches zero. In this mode, the in-game Dominions timer won't be visible, but it should be more robust and reliable. The latter delegates the timer to Dominions and simply reads the current timer information off of the game's output, thus showing an ingame timer as well."
-    },
-
     "TOGGLE_CLEANER":
     {
         "name": "togglecleaner",

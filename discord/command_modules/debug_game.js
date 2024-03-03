@@ -51,7 +51,6 @@ async function _behaviour(commandContext)
         status: {
             isServerOnline: game.isServerOnline(),
             isOnline: status.isOnline(),
-            isEnforcingTimer: game.isEnforcingTimer(),
             hasStarted: status.hasStarted(),
             isCurrentTurnRollback: status.isCurrentTurnRollback(),
             isTurnProcessing: status.isTurnProcessing(),

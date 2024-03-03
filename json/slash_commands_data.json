@@ -609,14 +609,6 @@
         ]
     },
 
-    "SWITCH_TIMER_ENFORCER":
-    {
-        "name": "switchtimerenforcer",
-        "isEnabled": true,
-        "channelRequiredToInvoke": "game",
-        "description": "[Game-organizer-only] Switches from bot-enforced timer to game-enforced timer, and vice versa."
-    },
-
     "TOGGLE_CLEANER":
     {
         "name": "togglecleaner",

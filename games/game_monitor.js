@@ -80,10 +80,6 @@ function _updateGame(game, updateData)
     // Apply the elapsed timer to the actual game status now
     gameStatus.setMsLeft(newMsLeft);
 
-    // If Dom controls the timer, set pause as per the snapshot's status
-    if (game.isEnforcingTimer() === false)
-        gameStatus.setIsPaused(newStatusSnapshot.isPaused());
-
     // Update other properties of the status now that we have determined the events
     gameStatus.setPlayers(newStatusSnapshot.getPlayers());
     gameStatus.setLastUpdateTimestamp(newStatusSnapshot.getLastUpdateTimestamp());
@@ -110,10 +106,6 @@ function _getUpdatedTimer(game, newStatusSnapshot)
     // Get our game's last recorded status
     const gameStatus = game.getLastKnownStatus();
     const elapsedTimeSinceLastUpdate = newStatusSnapshot.getUptime();
-
-    // If Dominions is enforcing the timer, then the newStatusSnapshot will have the current msLeft
-    if (game.isEnforcingTimer() === false)
-        return newStatusSnapshot.getMsLeft();
 
 
     if (newStatusSnapshot.isServerOnline() === false)

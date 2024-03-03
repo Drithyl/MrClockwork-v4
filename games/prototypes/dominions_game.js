@@ -20,7 +20,6 @@ function DominionsGame(type)
     const _status = new DominionsStatus();
 
     var _statusEmbed;
-    var _isEnforcingTimer = true;
 
     _gameObject.setType(type);
 
@@ -233,49 +232,27 @@ function DominionsGame(type)
         if (isNaN(defaultMs) === true)
             return Promise.reject(new Error(`Default timers must be expressed in ms; got ${defaultMs}.`));
 
-        if (_gameObject.isEnforcingTimer() === true)
-        {
-            timerSetting.fromJSON(defaultMs);
+        timerSetting.fromJSON(defaultMs);
 
-            // If current timer is null or NaN (for example, when game hasn't started),
-            // Don't change anything
-            if (isNaN(currentMs) === true)
-                return Promise.resolve();
-
-            if (currentMs > 0)
-            {
-                _status.setIsPaused(false);
-                _status.setMsLeft(currentMs);
-            }
-
-            else _status.setIsPaused(true);
-
+        // If current timer is null or NaN (for example, when game hasn't started),
+        // Don't change anything
+        if (isNaN(currentMs) === true)
             return Promise.resolve();
+
+        if (currentMs > 0)
+        {
+            _status.setIsPaused(false);
+            _status.setMsLeft(currentMs);
         }
 
-        else return _gameObject.emitPromiseWithGameDataToServer("CHANGE_TIMER", {
-            timer: defaultMs,
-            currentTimer: currentMs
-        });
+        else _status.setIsPaused(true);
+
+        return Promise.resolve();
     };
 
     _gameObject.forceHost = () => 
     {
         return _gameObject.emitPromiseWithGameDataToServer("FORCE_HOST");
-    };
-
-    _gameObject.isEnforcingTimer = () => _isEnforcingTimer;
-    _gameObject.switchTimerEnforcer = () => 
-    {
-        if (_gameObject.isEnforcingTimer() === true)
-        {
-            _isEnforcingTimer = false;
-            return _gameObject.changeTimer(_status.getMsLeft())
-            .then(() => Promise.resolve(_isEnforcingTimer));
-        }
-
-        _isEnforcingTimer = true;
-        return Promise.resolve(_isEnforcingTimer);
     };
 
     _gameObject.launch = () => _gameObject.emitPromiseWithGameDataToServer("LAUNCH_GAME");
@@ -330,7 +307,7 @@ function DominionsGame(type)
     _gameObject.updateStatusEmbed = (updatedStatus) => 
     {
         if (_statusEmbed != null)
-            _statusEmbed.update(_gameObject, updatedStatus, _isEnforcingTimer)
+            _statusEmbed.update(_gameObject, updatedStatus)
             .catch((err) => log.error(log.getVerboseLevel(), `ERROR UPDATING ${_gameObject.getName()}'S EMBED`, err));
 
         else if (_gameObject.getChannel() != null)
@@ -354,10 +331,6 @@ function DominionsGame(type)
 
         if (assert.isObject(jsonData.status) === true)
             _status.fromJSON(jsonData.status);
-
-        if (assert.isBoolean(jsonData.isEnforcingTimer) === true)
-            _isEnforcingTimer = jsonData.isEnforcingTimer;
-
 
         if (Array.isArray(jsonData.playerData) === true)
         {
@@ -410,8 +383,6 @@ function DominionsGame(type)
 
         if (_statusEmbed != null)
             jsonData.statusEmbedId = _statusEmbed.getMessageId();
-            
-        jsonData.isEnforcingTimer = _isEnforcingTimer;
 
         jsonData.playerData = [];
         _playerData.forEachItem((playerData, id) => jsonData.playerData.push({ id, username: playerData.username }));
@@ -422,8 +393,6 @@ function DominionsGame(type)
     function _createGameDataPackage()
     {
         const settingsObject = _gameObject.getSettingsObject();
-        const timerSetting = settingsObject.getTimerSetting();
-        const defaultTime = timerSetting.getValue();
         
         /** Include timer data as it is required for multiple server-side actions
          *  like launching a game task, changing the timer, etc.
@@ -436,12 +405,6 @@ function DominionsGame(type)
             args: settingsObject.getSettingFlags(),
             isCurrentTurnRollback: _status.isCurrentTurnRollback()
         };
-
-        if (_gameObject.isEnforcingTimer() === false)
-        {
-            dataPackage.timer = defaultTime.getMsLeft();
-            dataPackage.currentTimer = _status.getMsLeft();
-        }
 
         return dataPackage;
     }
