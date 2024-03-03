@@ -459,6 +459,19 @@
         "helpText": "Pauses all games."
     },
 
+    "PIN_SETTINGS":
+    {
+        "name": "pinsettings",
+        "isEnabled": true,
+        "gameTypesSupported": [],
+        "argumentsRequiredInfo": [],
+        "optionalArguments": 0,
+        "regexpRequiredToInvoke": "PINSETTINGS",
+        "argumentRegexpArray": [],
+        "channelRequiredToInvoke": "game",
+        "helpText": "Sends and pins the current game settings to the channel."
+    },
+
     "POST_NEWS":
     {
         "name": "post",

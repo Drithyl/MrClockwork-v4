@@ -386,6 +386,14 @@
         "description": "[Dev-only] Pauses all games."
     },
 
+    "PIN_SETTINGS":
+    {
+        "name": "pinsettings",
+        "isEnabled": true,
+        "channelRequiredToInvoke": "game",
+        "description": "Sends and pins the current game settings to the channel."
+    },
+
     "POST_NEWS":
     {
         "name": "post",
