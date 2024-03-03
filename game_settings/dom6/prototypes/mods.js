@@ -1,4 +1,4 @@
-
+const path = require("path");
 const config = require("../../../config/config.json");
 const GameSetting = require("../../prototypes/game_setting.js");
 const dom6SettingsData = require("../../../json/dom6_settings.json");
@@ -19,7 +19,7 @@ function Mods(parentGameObject)
         if (Array.isArray(_value) === false)
             return "None";
 
-        return _value.join(", ");
+        return _value.map((modFilepath) => path.basename(modFilepath)).join(", ");
     };
 
     this.setValue = (input) =>
@@ -56,9 +56,9 @@ function Mods(parentGameObject)
         if (modArray == null)
             return [];
     
-        modArray.forEach((modFilename) =>
+        modArray.forEach((modFilepath) =>
         {
-            flagArr.push(`--enablemod`, modFilename);
+            flagArr.push(`--enablemod`, path.basename(modFilepath));
         });
     
         return flagArr;
