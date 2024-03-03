@@ -1,7 +1,7 @@
 
 const log = require("../logger.js");
 
-module.exports = function(mapData)
+module.exports = function(mapData, filename)
 {
 	var provLines;
 	var terrainMask;
@@ -9,30 +9,30 @@ module.exports = function(mapData)
 
 	if (mapData == null)
 	{
-		log.error(log.getNormalLevel(), "mapData PROVIDED IS NULL");
+		log.error(log.getNormalLevel(), `DATA FOR MAP ${filename} IS NULL`);
 		return null;
 	}
 
 	if (/\w+/.test(mapData) == false)
 	{
-		log.error(log.getNormalLevel(), "mapData CONTAINS NO WORDS");
+		log.error(log.getNormalLevel(), `DATA FOR MAP ${filename} CONTAINS NO WORD CHARACTERS`);
 		return null;
 	}
 
-	if (/\#terrain\s+\d+\s+\d+/ig.test(mapData) === false)
+	if (/#terrain\s+\d+\s+\d+/ig.test(mapData) === false)
 	{
-		log.error(log.getNormalLevel(), "mapData CONTAINS NO #terrain TAGS");
+		log.error(log.getNormalLevel(), `DATA FOR MAP ${filename} CONTAINS NO #terrain TAGS`);
 		return null;
 	}
 
-	provLines = mapData.match(/\#terrain\s+\d+\s+\d+/g);
+	provLines = mapData.match(/#terrain\s+\d+\s+\d+/g);
 
 	for (var i = 0; i < provLines.length; i++)
 	{
 		terrainMask = +provLines[i].slice(provLines[i].indexOf(" ", provLines[i].indexOf(" ") + 1) + 1).replace(/\D/g, "");
 
 		//4 is the sea code and 2052 is the deep sea code in the .map files
-		if ((terrainMask 			  % 4 == 0 &&    terrainMask 			% 8 != 0) ||
+		if ((terrainMask 		% 4 == 0 &&  terrainMask 		% 8 != 0) ||
 		    ((terrainMask - 1) 	% 4 == 0 && (terrainMask - 1) 	% 8 != 0) ||
 			((terrainMask - 2) 	% 4 == 0 && (terrainMask - 2) 	% 8 != 0))
 		{

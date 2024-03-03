@@ -5,7 +5,7 @@ const log = require("../logger.js");
 const config = require("../config/config.json");
 const HostServer = require("./prototypes/host_server.js");
 const { isInstanceOfPrototypeOrThrow } = require("../asserter.js");
-const parseProvinceCount = require("../games/parse_povince_count.js");
+const parseProvinceCount = require("../games/parse_province_count.js");
 const trustedServerData = require("../config/trusted_server_data.json");
 const { getDominionsMapsPath, getDominionsModsPath, getDominionsMapExtension } = require("../helper_functions.js");
 
@@ -179,7 +179,7 @@ exports.getMaps = async (gameType) =>
     {
         const filename = path.basename(filepath);
         const content = await fsp.readFile(filepath, "utf-8");
-        const provs = parseProvinceCount(content);
+        const provs = parseProvinceCount(content, filename);
 
         if (provs != null)
             mapsWithProvinceCount.push({name: filename, ...provs});
