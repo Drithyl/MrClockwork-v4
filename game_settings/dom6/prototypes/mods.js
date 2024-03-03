@@ -56,9 +56,9 @@ function Mods(parentGameObject)
         if (modArray == null)
             return [];
     
-        modArray.forEach((modFilepath) =>
+        modArray.forEach((relativeModPath) =>
         {
-            flagArr.push(`--enablemod`, path.basename(modFilepath));
+            flagArr.push(`--enablemod`, relativeModPath);
         });
     
         return flagArr;

@@ -156,7 +156,12 @@ async function _getDom6Modfiles()
 
         if (modFilename != null) {
             const modpath = path.resolve(modFolderPath, modFilename);
-            modFilepaths.push({ name: modFilename, path: modpath });
+
+            // The folder right above the mod's .dm file, which should be a wrapping subdir below "mods"
+            const modWrappingFolder = path.basename(path.dirname(modpath));
+
+            // relativePath is the last two elements in the path chain - the folder containing the mod, and its filename
+            modFilepaths.push({ name: modFilename, path: modpath, relativePath: path.join(modWrappingFolder, modFilename) });
         }
     }
 
