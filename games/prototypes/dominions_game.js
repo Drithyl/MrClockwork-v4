@@ -2,7 +2,6 @@
 const Game = require("./game.js");
 const log = require("../../logger.js");
 const assert = require("../../asserter.js");
-const config = require("../../config/config.json");
 const guildStore = require("../../discord/guild_store.js");
 const DominionsStatus = require("./dominions_status.js");
 const ongoingGameStore = require("../ongoing_games_store.js");
@@ -24,7 +23,7 @@ function DominionsGame(type)
     _gameObject.setType(type);
 
 
-    if (type === config.dom5GameTypeName)
+    if (assert.isDom5GameType(type) === true)
         _gameObject.setSettingsObject(new Dominions5Settings(_gameObject));
 
     else _gameObject.setSettingsObject(new Dominions6Settings(_gameObject));

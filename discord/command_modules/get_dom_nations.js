@@ -37,7 +37,7 @@ function _behaviour(commandContext)
 function formatNationListString(gameType)
 {
     var stringList = "";
-    let nationsByEraNumber = (gameType === config.dom5GameTypeName) ?
+    let nationsByEraNumber = (asserter.isDom5GameType(gameType) === true) ?
         dom5NationsByEraNumber :
         dom6NationsByEraNumber;
 

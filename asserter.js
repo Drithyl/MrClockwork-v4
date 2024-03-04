@@ -23,6 +23,8 @@ exports.isPermissionsError = isPermissionsError;
 exports.isSemanticError = isSemanticError;
 exports.doesStringEndIn = doesStringEndIn;
 exports.isValidGameType = isValidGameType;
+exports.isDom5GameType = isDom5GameType;
+exports.isDom6GameType = isDom6GameType;
 exports.isValidPath = isValidPath;
 exports.isValidDiscordId = isValidDiscordId;
 
@@ -150,6 +152,9 @@ function isValidDiscordId(id)
 
 function isValidGameType(gameType)
 {
+  if (isString(gameType) === false)
+    return false;
+
   if (gameType.toLowerCase() === config.dom5GameTypeName.toLowerCase() ||
       gameType.toLowerCase() === config.dom6GameTypeName.toLowerCase())
   {
@@ -157,6 +162,22 @@ function isValidGameType(gameType)
   }
 
   else return false;
+}
+
+function isDom5GameType(gameType)
+{
+  if (isValidGameType(gameType) === false)
+    return false;
+
+  return gameType.toLowerCase() === config.dom5GameTypeName.toLowerCase();
+}
+
+function isDom6GameType(gameType)
+{
+  if (isValidGameType(gameType) === false)
+    return false;
+
+  return gameType.toLowerCase() === config.dom6GameTypeName.toLowerCase();
 }
 
 function isArrayOrThrow(arr)

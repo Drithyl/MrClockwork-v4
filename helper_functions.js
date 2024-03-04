@@ -1,25 +1,26 @@
 const path = require("path");
+const asserter = require("./asserter");
 const config = require("./config/config.json");
 
 
 module.exports.getDominionsTypeName = function(gameType) {
-    if (gameType === config.dom6GameTypeName)
+    if (asserter.isDom6GameType(gameType) === true)
         return "Dominions 6: Rise of the Pantokrator";
-    else if (gameType === config.dom5GameTypeName)
+    else if (asserter.isDom5GameType(gameType) === true)
         return "Dominions 5: The Warriors of Faith";
 };
 
 module.exports.getDominionsDataPath = function(gameType) {
-    if (gameType === config.dom6GameTypeName)
+    if (asserter.isDom6GameType(gameType) === true)
         return path.resolve(config.pathToDom6Data);
-    else if (gameType === config.dom5GameTypeName)
+    else if (asserter.isDom5GameType(gameType) === true)
         return path.resolve(config.pathToDom5Data);
 };
 
 module.exports.getDominionsExePath = function(gameType) {
-    if (gameType === config.dom6GameTypeName)
+    if (asserter.isDom6GameType(gameType) === true)
         return path.resolve(config.pathToDom6Exe);
-    else if (gameType === config.dom5GameTypeName)
+    else if (asserter.isDom5GameType(gameType) === true)
         return path.resolve(config.pathToDom5Exe);
 };
 
@@ -36,9 +37,9 @@ module.exports.getDominionsMapsPath = function(gameType) {
 };
 
 module.exports.getDominionsMapExtension = function(gameType) {
-    if (gameType === config.dom6GameTypeName)
+    if (asserter.isDom6GameType(gameType) === true)
         return ".d6m";
-    else if (gameType === config.dom5GameTypeName)
+    else if (asserter.isDom5GameType(gameType) === true)
         return ".map";
 };
 

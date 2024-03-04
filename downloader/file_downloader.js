@@ -75,17 +75,17 @@ async function _generateExtractPath(zipfile, gameType) {
 
     if (zipfile.containsMap === true)
     {
-        if (gameType === config.dom5GameTypeName && zipfile.containsDom6Map === true) {
+        if (asserter.isDom5GameType(gameType) === true && zipfile.containsDom6Map === true) {
             throw new Dom6MapButDom5UploadError();
         }
 
-        if (gameType === config.dom5GameTypeName) {
+        if (asserter.isDom5GameType(gameType) === true) {
             extractPath = getDominionsMapsPath(gameType);
         }
 
         // Dom6 stores every map in their own map folder inside of the general maps folder.
         // Check for this folder's existence with the same name as the .d6m file, and create it if it doesn't exist.
-        else if (gameType === config.dom6GameTypeName) {
+        else if (asserter.isDom6GameType(gameType) === true) {
             extractPath = path.resolve(getDominionsMapsPath(gameType), path.parse(zipfile.keyFileName).name);
 
             if (fs.existsSync(extractPath) === false)
@@ -99,7 +99,7 @@ async function _generateExtractPath(zipfile, gameType) {
 
         // Dom6 stores every mod in their own mod folder inside of the general mods folder.
         // Check for this folder's existence with the same name as the .dm file, and create it if it doesn't exist.
-        if (gameType === config.dom6GameTypeName) {
+        if (asserter.isDom6GameType(gameType) === true) {
             extractPath = path.resolve(extractPath, path.parse(zipfile.keyFileName).name);
 
             if (fs.existsSync(extractPath) === false)

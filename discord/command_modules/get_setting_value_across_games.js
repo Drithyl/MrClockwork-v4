@@ -35,7 +35,7 @@ function _behaviour(commandContext)
     const settingKeyArgument = arrayOfCommandArguments[0].toLowerCase();
     const gameType = arrayOfCommandArguments[1];
     const introductionString = `Below is the list of values for the setting ${settingKeyArgument}:\n\n`;
-    const settingsData = (gameType === config.dom5GameTypeName) ?
+    const settingsData = (asserter.isDom5GameType(gameType) === true) ?
         dom5SettingsData :
         dom6SettingsData;
 

@@ -1,5 +1,5 @@
 
-const config = require("../../config/config.json");
+const asserter = require("../../asserter");
 const Command = require("../prototypes/command.js");
 const CommandData = require("../prototypes/command_data.js");
 const commandPermissions = require("../command_permissions.js");
@@ -36,7 +36,7 @@ function _behaviour(commandContext)
     const scoregraphsValue = scoregraphs.getValue();
     const gameName = gameObject.getName();
     const messageString = `Attached is the scores file for ${gameName}.`;
-    const settingsFlags = (gameType === config.dom5GameTypeName) ?
+    const settingsFlags = (asserter.isDom5GameType(gameType) === true) ?
         dom5SettingFlags :
         dom6SettingFlags;
 

@@ -2,6 +2,7 @@
 const path = require("path");
 const fsp = require("fs").promises;
 const log = require("../logger.js");
+const asserter = require("../asserter.js");
 const config = require("../config/config.json");
 const HostServer = require("./prototypes/host_server.js");
 const { isInstanceOfPrototypeOrThrow } = require("../asserter.js");
@@ -118,10 +119,10 @@ module.exports.getMods = async function(gameType)
 {
     let mods = [];
 
-    if (gameType === config.dom5GameTypeName) {
+    if (asserter.isDom5GameType(gameType) === true) {
         mods = await _getDom5Modfiles();
     }
-    else if (gameType === config.dom6GameTypeName) {
+    else if (asserter.isDom6GameType(gameType) === true) {
         mods = await _getDom6Modfiles();
     }
 
@@ -173,10 +174,10 @@ exports.getMaps = async (gameType) =>
     const mapsWithProvinceCount = [];
     let mapFilepaths;
 
-    if (gameType === config.dom5GameTypeName) {
+    if (asserter.isDom5GameType(gameType) === true) {
         mapFilepaths = await _getDom5Mapfiles();
     }
-    else if (gameType === config.dom6GameTypeName) {
+    else if (asserter.isDom6GameType(gameType) === true) {
         mapFilepaths = await _getDom6Mapfiles();
     }
 

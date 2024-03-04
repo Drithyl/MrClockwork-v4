@@ -1,5 +1,6 @@
 
 const log = require("../../logger.js");
+const asserter = require("../../asserter.js");
 const config = require("../../config/config.json");
 const hostServerStore = require("../host_server_store.js");
 const dom5Nations = require("../../json/dom5_nations.json");
@@ -30,7 +31,7 @@ exports.set = (expressApp) =>
 
             hostServer = game.getServer();
 
-            if (game.getType() !== config.dom5GameTypeName)
+            if (asserter.isDom6GameType(game.getType()) === true)
                 return;
 
             if (hostServer.isOnline() === false)

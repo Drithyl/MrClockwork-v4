@@ -1,7 +1,6 @@
 
 const log = require("../../logger.js");
 const assert = require("../../asserter.js");
-const config = require("../../config/config.json");
 const dom5SettingFlags = require("../../json/dominions5_setting_flags.json");
 const dom6SettingFlags = require("../../json/dominions6_setting_flags.json");
 const MessagePayload = require("../../discord/prototypes/message_payload.js");
@@ -133,7 +132,7 @@ function _buildMessagePayload(game, playerFile, fetchedTurnFiles)
     const gameType = game.getType();
     const status = game.getLastKnownStatus();
     const turnNumber = status.getTurnNumber();
-    const settingFlags = (gameType === config.dom6GameTypeName) ?
+    const settingFlags = (assert.isDom6GameType(gameType) === true) ?
         dom6SettingFlags :
         dom5SettingFlags;
 

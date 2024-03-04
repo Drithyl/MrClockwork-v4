@@ -1,11 +1,10 @@
 
 const log = require("../logger.js");
-const assert = require("../asserter.js");
+const asserter = require("../asserter.js");
 const config = require("../config/config.json");
 const gameStore = require("./ongoing_games_store.js");
 const MessagePayload = require("../discord/prototypes/message_payload.js");
 const { getNation } = require("./dominions_nation_store.js");
-const { fetchLastNMessages } = require("../discord/discord.js");
 
 //Exact error: "Failed to create temp dir 'C:\Users\MistZ\AppData\Local\Temp/dom5_94132'"
 const failedToCreateTmpDirErrRegexp = /Failed\s*to\s*create\s*temp\s*dir/i;
@@ -115,7 +114,7 @@ module.exports = function(gameName, message)
 function parseData(message)
 {
     // Probably a buffer with data, ignore it too
-    if (assert.isString(message) === false)
+    if (asserter.isString(message) === false)
     {
         return "";
     }
@@ -168,7 +167,7 @@ function handleData(game, message)
         handleCoreDumped(game, message);
 
     else if (versionTooOldErrRegexp.test(message) === true) {
-        if (gameType === config.dom5GameTypeName && dom6PretenderRegexp.test(message) === true)
+        if (asserter.isDom5GameType(gameType) === true && dom6PretenderRegexp.test(message) === true)
             handleDom6PretenderSubmittedToDom5Game(game, message);
 
         else handleVersionTooOld(game, message);

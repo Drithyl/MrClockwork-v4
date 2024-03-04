@@ -1,5 +1,5 @@
 
-const config = require("../config/config.json");
+const asserter = require("../asserter");
 const dominions5NationData = require("../json/dom5_nations.json");
 const dominions6NationData = require("../json/dom6_nations.json");
 const DominionsNation = require("./prototypes/dominions_nation.js");
@@ -74,7 +74,7 @@ function _generateNationObjects(nationData)
 }
 
 function _getNationObjects(gameType) {
-    if (gameType === config.dom5GameTypeName)
+    if (asserter.isDom5GameType(gameType) === true)
         return dom5NationObjects;
 
     return dom6NationObjects;
