@@ -26,6 +26,9 @@ function _behaviour(commandContext)
     if (args.length <= 0)
         return commandContext.respondToCommand(new MessagePayload(`You must include a space-separated list of things to shuffle. These can be mentions to members in your game for a draft order.`));
 
+    if (commandContext.isCommandInteraction() === true)
+        elementsToShuffle = args[0].split(" ");
+
     return commandContext.getMentionedMembers()
     .then((members) =>
     {
@@ -40,16 +43,18 @@ function _behaviour(commandContext)
 
 function _shuffle(array)
 {
+    // Length is out of bounds but it's being compounded with
+    // Math.floor(Math.random() * i), so it gets floored to last element
     var currentIndex = array.length;
 
     // While there remain elements to shuffle...
     while (currentIndex !== 0) {
 
         // Pick a remaining element...
-        randomIndex = Math.floor(Math.random() * currentIndex);
+        const  randomIndex = Math.floor(Math.random() * currentIndex);
         currentIndex--;
 
-        // And swap it with the current element.
+        // ...and swap it with the current element.
         [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
     }
 

@@ -14,6 +14,8 @@ function CommandContext(messageWrapper)
     const _commandArgumentsArray = _extractCommandArgumentsAsArray(_messageContent);
     const _gameTargetedByCommand = ongoingGamesStore.getOngoingGameByChannel(_targetChannelObject.id);
     
+
+    this.isCommandInteraction = () => false;
     this.isGameCommand = () => _gameTargetedByCommand != null;
 
     this.wasSentByDm = () => _messageWrapper.isDirectMessage();
