@@ -69,7 +69,7 @@ function Mods(parentGameObject)
         var modFilenames = [];
 
         if (Mods.prototype.isExpectedFormat(input) === false)
-            Promise.reject(new SemanticError(`Invalid value format for the mods.`));
+            return Promise.reject(new SemanticError(`Invalid value format for the mods.`));
 
         if (input.toLowerCase() === "none")
             return Promise.resolve(modFilenames);

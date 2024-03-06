@@ -136,8 +136,8 @@ async function _getDom5Modfiles()
     const filenames = await fsp.readdir(modsDirPath);
     const modFilenames = filenames.filter((filename) => path.extname(filename) === ".dm");
     const modFilepaths = modFilenames.map((filename) => path.resolve(modsDirPath, filename));
-    return modFilepaths.map((modpath) => { 
-        return { name: path.basename(modpath), path: modpath };
+    return modFilepaths.map((modpath) => {
+        return { name: path.basename(modpath), path: modpath, relativePath: path.basename(modpath) };
     });
 }
 
