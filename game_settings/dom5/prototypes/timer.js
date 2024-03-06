@@ -45,11 +45,12 @@ function TimerSetting()
     this.translateValueToCmdFlag = () =>
     {
         const timeLeft = this.getValue();
-        const hoursLeft = timeLeft.getDaysLeft() * 24 + timeLeft.getHoursLeft();
-        const minutesLeft = timeLeft.getMinutesLeft();
     
         if (timeLeft == null || timeLeft == 0)
             return [];
+
+        const hoursLeft = timeLeft.getDaysLeft() * 24 + timeLeft.getHoursLeft();
+        const minutesLeft = timeLeft.getMinutesLeft();
     
         if (hoursLeft + minutesLeft <= 0)
             return [];

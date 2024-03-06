@@ -99,10 +99,13 @@ function GameSettings(parentGame)
         this.forEachSetting((settingObject) =>
         {
             const key = settingObject.getKey();
-            const flag = settingObject.translateValueToCmdFlag();
 
-            if (key !== "name" && key !== "timer")
+            // These two are not needed for cmd flags, since the game name is passed
+            // separately and the timer is controlled by the bot, not Dominions.
+            if (key !== "name" && key !== "timer") {
+                const flag = settingObject.translateValueToCmdFlag();
                 flags = flags.concat(flag);
+            }
         });
 
         // Add name at the very start of the flags

@@ -142,7 +142,7 @@ function _msToDays(ms)
 
 function _isStringInRightFormat(timeLeftAsString)
 {
-    return daysLeftRegExp.test(timeLeftAsString) || hoursLeftRegExp.test(timeLeftAsString) || minutesLeftRegExp.test(timeLeftAsString) || secondsLeftRegExp(timeLeftAsString);
+    return daysLeftRegExp.test(timeLeftAsString) || hoursLeftRegExp.test(timeLeftAsString) || minutesLeftRegExp.test(timeLeftAsString) || secondsLeftRegExp.test(timeLeftAsString);
 }
 
 function _extractNumberFromMatch(stringMatchResult)
