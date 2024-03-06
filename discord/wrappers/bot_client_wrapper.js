@@ -14,7 +14,8 @@ const myIntents = new Intents().add(
     "GUILD_MESSAGES",
     "DIRECT_MESSAGES",
     "GUILD_MESSAGE_REACTIONS",
-    "DIRECT_MESSAGE_REACTIONS"
+    "DIRECT_MESSAGE_REACTIONS",
+    "MESSAGE_CONTENT"
 );
 
 const _discordJsBotClient = new Client({
@@ -45,7 +46,7 @@ exports.loginToDiscord = async () =>
     return _discordJsBotClient.guilds.cache;
 };
 
-exports.messageDev = async (payload) => _devUserWrapper.sendMessage(payload);
+exports.messageDev = (payload) => _devUserWrapper.sendMessage(payload);
 
 //wrappers for discord events caught by the bot client in the DiscordJs library
 exports.addOnLoggedInHandler = (handler) => _discordJsBotClient.on("ready", () => handler());

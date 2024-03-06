@@ -30,7 +30,7 @@ async function _onMessageReceived(discordJsMessage)
         try
         {
             log.command(log.getNormalLevel(), context);
-            await command.invoke(context)
+            await command.invoke(context);
         }
 
         catch(err)
