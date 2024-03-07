@@ -2,12 +2,13 @@
 const path = require("path");
 const fsp = require("fs").promises;
 const log = require("../logger.js");
-const rw = require("../reader_writer.js");
+const asserter = require("../asserter.js");
 const config = require("../config/config.json");
 const HostServer = require("./prototypes/host_server.js");
 const { isInstanceOfPrototypeOrThrow } = require("../asserter.js");
-const parseProvinceCount = require("../games/parse_povince_count.js");
+const parseProvinceCount = require("../games/parse_province_count.js");
 const trustedServerData = require("../config/trusted_server_data.json");
+const { getDominionsMapsPath, getDominionsModsPath, getDominionsMapExtension } = require("../helper_functions.js");
 
 
 const _hostServersById = {};
@@ -114,27 +115,77 @@ exports.printListOfFreeSlots = () =>
     return stringList;
 };
 
-module.exports.getDom5Mods = async function()
+module.exports.getMods = async function(gameType)
 {
-    const modsDirPath = path.resolve(config.pathToDom5Data, "mods");
+    let mods = [];
 
-	const filenames = await rw.getDirFilenames(modsDirPath, ".dm");
-    filenames.sort();
-    return filenames;
+    if (asserter.isDom5GameType(gameType) === true) {
+        mods = await _getDom5Modfiles();
+    }
+    else if (asserter.isDom6GameType(gameType) === true) {
+        mods = await _getDom6Modfiles();
+    }
+
+    return mods;
 };
 
-exports.getDom5Maps = async () =>
+async function _getDom5Modfiles()
 {
-    const mapsDirPath = path.resolve(config.pathToDom5Data, "maps");
-    const mapsWithProvinceCount = [];
-    const filenames = await fsp.readdir(mapsDirPath);
-    const mapFilenames = filenames.filter((filename) => path.extname(filename) === ".map");
+    const gameType = config.dom5GameTypeName;
+    const modsDirPath = path.resolve(getDominionsModsPath(gameType));
+    const filenames = await fsp.readdir(modsDirPath);
+    const modFilenames = filenames.filter((filename) => path.extname(filename) === ".dm");
+    const modFilepaths = modFilenames.map((filename) => path.resolve(modsDirPath, filename));
+    return modFilepaths.map((modpath) => {
+        return { name: path.basename(modpath), path: modpath, relativePath: path.basename(modpath) };
+    });
+}
 
-    await mapFilenames.forAllPromises(async (filename) =>
+async function _getDom6Modfiles()
+{
+    const gameType = config.dom6GameTypeName;
+    const modsDirPath = path.resolve(getDominionsModsPath(gameType));
+    const subPaths = await fsp.readdir(modsDirPath, { withFileTypes: true });
+    const modFolders = subPaths.filter((dirent) => dirent.isFile() === false);
+    const modFilepaths = [];
+
+    for (const modFolder of modFolders)
     {
-        const filePath = path.resolve(mapsDirPath, filename);
-        const content = await fsp.readFile(filePath, "utf-8");
-        const provs = parseProvinceCount(content);
+        const modFolderPath = path.resolve(modFolder.path ?? modFolder.parentPath, modFolder.name);
+        const filenames = await fsp.readdir(modFolderPath);
+        const modFilename = filenames.find((f) => path.extname(f) === ".dm");
+
+        if (modFilename != null) {
+            const modpath = path.resolve(modFolderPath, modFilename);
+
+            // The folder right above the mod's .dm file, which should be a wrapping subdir below "mods"
+            const modWrappingFolder = path.basename(path.dirname(modpath));
+
+            // relativePath is the last two elements in the path chain - the folder containing the mod, and its filename
+            modFilepaths.push({ name: modFilename, path: modpath, relativePath: path.join(modWrappingFolder, modFilename) });
+        }
+    }
+
+    return modFilepaths;
+}
+
+exports.getMaps = async (gameType) =>
+{
+    const mapsWithProvinceCount = [];
+    let mapFilepaths;
+
+    if (asserter.isDom5GameType(gameType) === true) {
+        mapFilepaths = await _getDom5Mapfiles();
+    }
+    else if (asserter.isDom6GameType(gameType) === true) {
+        mapFilepaths = await _getDom6Mapfiles();
+    }
+
+    await mapFilepaths.forAllPromises(async (filepath) =>
+    {
+        const filename = path.basename(filepath);
+        const content = await fsp.readFile(filepath, "utf-8");
+        const provs = parseProvinceCount(content, filename);
 
         if (provs != null)
             mapsWithProvinceCount.push({name: filename, ...provs});
@@ -144,6 +195,38 @@ exports.getDom5Maps = async () =>
     mapsWithProvinceCount.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
     return mapsWithProvinceCount;
 };
+
+async function _getDom5Mapfiles()
+{
+    const gameType = config.dom5GameTypeName;
+    const mapsDirPath = path.resolve(getDominionsMapsPath(gameType));
+    const filenames = await fsp.readdir(mapsDirPath);
+    const mapFilenames = filenames.filter((filename) => path.extname(filename) === getDominionsMapExtension(gameType));
+    const mapFilepaths = mapFilenames.map((filename) => path.resolve(mapsDirPath, filename));
+    return mapFilepaths;
+}
+
+async function _getDom6Mapfiles()
+{
+    const gameType = config.dom6GameTypeName;
+    const mapsDirPath = path.resolve(getDominionsMapsPath(gameType));
+    const subPaths = await fsp.readdir(mapsDirPath, { withFileTypes: true });
+    const mapFolders = subPaths.filter((dirent) => dirent.isFile() === false);
+    const mapFilepaths = [];
+
+    for (const mapFolder of mapFolders)
+    {
+        const mapFolderPath = path.resolve(mapFolder.path, mapFolder.name);
+        const filenames = await fsp.readdir(mapFolderPath);
+        const mapFilename = filenames.find((f) => path.extname(f) === ".map" || path.extname(f) === ".d6m");
+
+        if (mapFilename != null) {
+            mapFilepaths.push(path.resolve(mapFolderPath, mapFilename));
+        }
+    }
+
+    return mapFilepaths;
+}
 
 function _populateStore()
 {

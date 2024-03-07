@@ -2,18 +2,16 @@
 const log = require("../../logger.js");
 const assert = require("../../asserter.js");
 const dom5SettingFlags = require("../../json/dominions5_setting_flags.json");
+const dom6SettingFlags = require("../../json/dominions6_setting_flags.json");
 const MessagePayload = require("../../discord/prototypes/message_payload.js");
 
 
-module.exports = async (game, dom5Events) =>
+module.exports = (game, domEvents) =>
 {
     const gameName = game.getName();
     const status = game.getLastKnownStatus();
-    const turnNumber = dom5Events.getTurnNumber();
-
-    let staleData;
-    let staleMessage;
-    let announcement;
+    const turnNumber = domEvents.getTurnNumber();
+    const announcement = `**Turn ${turnNumber}** has arrived. The new timer is set to: ${status.printTimeLeft()}.`;
     
     try
     {
@@ -24,19 +22,11 @@ module.exports = async (game, dom5Events) =>
         status.setIsTurnProcessing(false);
         status.setIsCurrentTurnRollback(false);
 
-        announcement = `**Turn ${turnNumber}** has arrived. The new timer is set to: ${status.printTimeLeft()}.`;
-        staleData = await _fetchStales(game);
-        staleMessage = _formatStales(staleData);
-
-
-        if (/\S+/i.test(staleMessage) === true)
-            announcement += ` Below are the nations that staled this turn: ${staleMessage}`;
-
-        
-        // Perform the necessary activities as a result of the new turn
+        // Announce the new turn in the game's channel
         game.sendGameAnnouncement(announcement);
-        _processNewTurnPreferences(game);
 
+        // Process players' preferences on new turns
+        _processNewTurnPreferences(game);
 
         // Log the new turn
         log.general(log.getNormalLevel(), `${gameName}\t_isCurrentRollback set to ${status.isCurrentTurnRollback()}`);
@@ -140,8 +130,12 @@ async function _sendFilesToUser(game, playerFile, fetchedTurnFiles)
 // respective nation turn files and the score files if needed
 function _buildMessagePayload(game, playerFile, fetchedTurnFiles)
 {
+    const gameType = game.getType();
     const status = game.getLastKnownStatus();
     const turnNumber = status.getTurnNumber();
+    const settingFlags = (assert.isDom6GameType(gameType) === true) ?
+        dom6SettingFlags :
+        dom5SettingFlags;
 
     const settings = game.getSettingsObject();
     const scoregraphs = settings.getScoregraphsSetting();
@@ -149,7 +143,6 @@ function _buildMessagePayload(game, playerFile, fetchedTurnFiles)
 
     const preferences = playerFile.getEffectiveGamePreferences(game.getName());
     const controlledNations = playerFile.getControlledNationFilenamesInGame(game.getName());
-
     
     const scoreFile = (fetchedTurnFiles != null) ? fetchedTurnFiles.scores : null;
     const nationTurnFiles = (fetchedTurnFiles != null) ? fetchedTurnFiles.turnFiles : {};
@@ -159,7 +152,7 @@ function _buildMessagePayload(game, playerFile, fetchedTurnFiles)
 
     if (scoreFile != null && 
         preferences.isReceivingScores() === true && 
-        +scoregraphsSettingValue === +dom5SettingFlags.VISIBLE_SCOREGRAPHS)
+        +scoregraphsSettingValue === +settingFlags.VISIBLE_SCOREGRAPHS)
     {
         payload.setAttachment(`scores.html`, scoreFile);
     }
@@ -176,43 +169,4 @@ function _buildMessagePayload(game, playerFile, fetchedTurnFiles)
 
 
     return payload;
-}
-
-
-async function _fetchStales(game)
-{
-    try
-    {
-        const staleData = await game.emitPromiseWithGameDataToServer("GET_STALES");
-        return staleData;
-    }
-        
-    catch(err)
-    {
-        log.error(log.getLeanLevel(), `${game.getName()}\tError fetching stales`, err.stack);
-        game.sendMessageToOrganizer(`Error when fetching stale data: ${err.message}`);
-    }
-}
-
-function _formatStales(staleData)
-{
-    let staleMessage = "";
-    
-    if (staleData == null)
-        return "No stale data was available for this turn.";
-
-    else if (staleData.wentAi.length <= 0 && staleData.stales.length <= 0)
-        return staleMessage;
-
-
-    if (staleData.wentAi.length > 0)
-        staleMessage += `\n\nNations that **went AI**:\n\n${staleData.wentAi.join("\n").toBox()}`;
-    
-    if (staleData.stales.length > 0)
-        staleMessage += `\n\nNations that **staled**:\n\n${staleData.stales.join("\n").toBox()}`;
-
-    else staleMessage += `\n\nNo stales happened`;
-
-
-    return staleMessage;
 }

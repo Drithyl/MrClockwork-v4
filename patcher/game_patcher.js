@@ -93,7 +93,6 @@ async function _patchV3Game(jsonData)
         _assertAndAssign(v4Data, "guildId", jsonData.guild, assert.isStringOrThrow);
         _assertAndAssign(v4Data, "channelId", jsonData.channel);
         _assertAndAssign(v4Data, "roleId", jsonData.role);
-        _assertAndAssign(v4Data, "isEnforcingTimer", true);
         _assertAndAssign(v4Data, "isCurrentTurnRollback", true);
         _assertAndAssign(v4Data, "playerData", []);
 

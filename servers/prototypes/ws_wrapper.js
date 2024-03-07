@@ -1,6 +1,6 @@
 
 const log = require("../../logger.js");
-const handleDom5Data = require("../../games/dominions5_runtime_data_handler.js");
+const handleDomData = require("../../games/dominions_runtime_data_handler.js");
 const { TimeoutError, SocketResponseError } = require("../../errors/custom_errors");
 
 
@@ -93,26 +93,32 @@ function ServerSocketWrapper(ws)
 
     _self.onMessage("STDIO_DATA", (data) => 
     {
-        console.log(`${data.name}: ${data.type} data received`, data.data);
+        const brokenPipeErrRegexp = /broken\s*pipe/i;
+
+        // If this is a broken pipe message just ignore it early
+        if (brokenPipeErrRegexp.test(data.data) === true)
+            return;
+
+        console.log(`${data.name}: ${data.type} data received\n`, data.data);
         //log.general(log.getVerboseLevel(), `${data.name}: ${data.type} data received`, data.data);
-        //handleDom5Data(data.name, data.data);
+        handleDomData(data.name, data.data);
     });
 
     _self.onMessage("GAME_ERROR", (data) => 
     {
-        console.log(`${data.name} REPORTED GAME ERROR`, data.error);
+        console.log(`${data.name} REPORTED GAME ERROR\n`, data.error);
         //log.error(log.getLeanLevel(), `${data.name} REPORTED GAME ERROR`, data.error);
-        //handleDom5Data(data.name, data.error);
+        handleDomData(data.name, data.error);
     });
 
 
     _self.onClose = (handler) => {
-        (typeof handler === "function")
+        if (typeof handler === "function")
             _onCloseHandlers.push(handler);
     };
 
     _self.onError = (handler) => {
-        (typeof handler === "function")
+        if (typeof handler === "function")
             _onErrorHandlers.push(handler);
     };
 
@@ -185,7 +191,7 @@ function _wrapHandler(handler, trigger)
             if (expectsResponse === true)
                 module.exports.emit(trigger, null, err);
         }
-    }
+    };
 }
 
 
@@ -246,7 +252,7 @@ function _stringify(data, spacing = 0)
 		{
 			// value already found before, discard it
 			if (cache.indexOf(value) !== -1)
-			    return;
+                return;
 
 			// not found before, store this value for reference
 			cache.push(value);

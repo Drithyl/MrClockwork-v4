@@ -1,7 +1,4 @@
 
-const fs = require("fs");
-const assert = require("../../asserter.js");
-
 const GameSettings = require("./game_settings.js");
 
 const AiNations = require("../../game_settings/dom5/prototypes/ai_nations.js");

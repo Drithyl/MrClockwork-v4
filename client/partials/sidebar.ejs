@@ -19,18 +19,32 @@
           </li>
           
           <% if (typeof sessionId === "string") { %>
-
-            <li class="nav-item">
-              <a class='<%=(typeof page === "string" && page === "host") ? "nav-link active" : "nav-link"%>'  href="/host_game">
-                <i class="bi bi-hdd-network-fill"></i> 
-                Host Game
-              </a>
-            </li>
             
             <li class="nav-item">
-              <a class='<%=(typeof page === "string" && page === "settings") ? "nav-link active" : "nav-link"%>'  href="/change_game_settings"">
+              <a class='<%=(typeof page === "string" && page === "host_dom6") ? "nav-link active" : "nav-link"%>'  href="/host_dom6">
+                <i class="bi bi-hdd-network-fill"></i> 
+                Host Dominions 6
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a class='<%=(typeof page === "string" && page === "host_dom5") ? "nav-link active" : "nav-link"%>'  href="/host_dom5">
+                <i class="bi bi-hdd-network-fill"></i> 
+                Host Dominions 5
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a class='<%=(typeof page === "string" && page === "settings_dom6") ? "nav-link active" : "nav-link"%>'  href="/change_dom6_settings">
                 <i class="bi bi-gear-fill"></i>
-                Change Settings
+                Change Dominions 6 Settings
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a class='<%=(typeof page === "string" && page === "settings_dom5") ? "nav-link active" : "nav-link"%>'  href="/change_dom5_settings">
+                <i class="bi bi-gear-fill"></i>
+                Change Dominions 5 Settings
               </a>
             </li>
             

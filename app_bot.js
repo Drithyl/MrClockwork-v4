@@ -56,7 +56,7 @@ async function _initializeComponents()
     process.on("SIGINT", () =>
     {
         log.general(log.getLeanLevel(), `Gracefully shutting down...`);
-        process.exit("SIGINT");
+        process.exit(2);
     });
 
     try
@@ -75,9 +75,6 @@ async function _initializeComponents()
     
         await gamesStore.loadAll();
         log.general(log.getLeanLevel(), "Finished initialization of games.");
-
-        await fileDownloader.initialize();
-        log.general(log.getLeanLevel(), "Initialized file downloader.");
 
     
         if (expressServer.isHttpsAvailable() === true)

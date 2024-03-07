@@ -41,7 +41,7 @@ exports.loadAll = function()
     .then(() => 
     {
         log.general(log.getLeanLevel(), `All games loaded, starting monitoring...`);
-        gameMonitor.monitorDom5Games(initializedGames);
+        gameMonitor.monitorDomGames(initializedGames);
         log.general(log.getLeanLevel(), `Monitoring started!`);
         return Promise.resolve();
     });
@@ -85,7 +85,7 @@ exports.addOngoingGame = function(game)
 {
     assert.isInstanceOfPrototypeOrThrow(game, Game);
     _ongoingGamesByName[game.getName()] = game;
-    gameMonitor.monitorDom5Game(game);
+    gameMonitor.monitorDomGame(game);
 };
 
 exports.deleteGame = function(gameName)
@@ -97,7 +97,7 @@ exports.deleteGame = function(gameName)
     // which might result in the game data not actually being deleted, as a save triggers
     // right after being deleted and recreates the files
     if (game != null)
-        gameMonitor.stopMonitoringDom5Game(game);
+        gameMonitor.stopMonitoringDomGame(game);
 
     return rw.deleteDir(pathToBotData)
     .then(() =>

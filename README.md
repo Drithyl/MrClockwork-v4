@@ -1,5 +1,5 @@
 # MrClockwork-v4
-Discord Bot built to host Dominions 5 games on demand through a few chat commands (or now with a web interface at https://www.mrclockwork.net/).
+Discord Bot built to host Dominions 5 or 6 games on demand through a few chat commands (or now with a web interface at https://www.mrclockwork.net/).
 
 Changes from the last v3 include a completely refactored, rewritten code from scratch for ease of maintenace and robustness, a web interface for some of the previous
 command menus (host game, change settings, set player preferences), game-specific player preferences, bot-enforced game timers, improved game status feedback

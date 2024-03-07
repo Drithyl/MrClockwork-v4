@@ -10,22 +10,23 @@ const ongoingGamesStore = require("../ongoing_games_store.js");
 const hostServerStore = require("../../servers/host_server_store.js");
 const SemanticError = require("../../errors/custom_errors.js").SemanticError;
 const MessagePayload = require("../../discord/prototypes/message_payload.js");
-const GuildSetup = require("../../discord/guild_setup.js");
+const { getDominionsTypeName } = require("../../helper_functions.js");
 
 module.exports = Game;
 
 function Game()
 {
-    let _hostServer;
-    let _port;
-    let _guildWrapper;
-    let _organizerWrapper;
-    let _settingsObject;
-    let _discordJsChannel;
-    let _discordJsRole;
-    let _roleId;
-    let _guildId;
-    let _channelId;
+    var _type = config.dom5GameTypeName;
+    var _hostServer;
+    var _port;
+    var _guildWrapper;
+    var _organizerWrapper;
+    var _settingsObject;
+    var _discordJsChannel;
+    var _discordJsRole;
+    var _roleId;
+    var _guildId;
+    var _channelId;
 
     this.getName = () => 
     {
@@ -41,6 +42,22 @@ function Game()
         const nameSetting = settings.getNameSetting();
 
         return nameSetting.setValue(name);
+    };
+
+    this.getType = () => 
+    {
+        return _type;
+    };
+
+    this.setType = (type) =>
+    {
+        if (assert.isString(type) === false)
+            return;
+
+        if (assert.isValidGameType(type) === false)
+            return;
+        
+        _type = type;
     };
 
     this.getGuild = () => _guildWrapper;
@@ -210,10 +227,10 @@ function Game()
 
     this.pinSettingsToChannel = () =>
     {
-        let addressString = `IP: ${this.getIp()}:${this.getPort()}\nServer: ${this.getServer().getName()}\n\n`;
-        let settingsStringList = _settingsObject.getPublicSettingsStringList();
-        let channel = this.getChannel();
-        const payload = new MessagePayload((addressString + settingsStringList).toBox());
+        const channel = this.getChannel();
+        const gameHeaderString = `__**${getDominionsTypeName(this.getType())}**__\n\n**IP:** ${this.getIp()}\n**Port:** ${this.getPort()}\n**Server:** ${this.getServer().getName()}\n\n**Settings:**\n`;
+        const settingsStringList = _settingsObject.getPublicSettingsStringList();
+        const payload = new MessagePayload(gameHeaderString + settingsStringList.toBox());
 
         if (_discordJsChannel == null)
             return Promise.reject(new Error(`${this.getName()} does not have a channel assigned.`));
@@ -290,6 +307,7 @@ function Game()
         this.setGuild(guild);
         this.setServer(server);
         this.setName(jsonData.name);
+        this.setType(jsonData.type);
         this.setPort(jsonData.port);
 
         try
@@ -345,6 +363,7 @@ function Game()
     {
         let jsonObject = {};
         jsonObject.name = this.getName();
+        jsonObject.type = _type;
         jsonObject.port = _port;
         jsonObject.serverId = _hostServer.getId();
         jsonObject.settings = _settingsObject.toJSON();

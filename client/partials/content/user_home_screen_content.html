@@ -14,10 +14,21 @@
 
             <div class="btn-group me-2" role="group">
                 
-              <form id="host_game_screen_form" action="/host_game" method="GET">
+              <form id="host_dom6_screen_form" action="/host_dom6" method="GET">
                   <input type="hidden" name="sessionId" value="<%=(typeof sessionData === "object") ? sessionData.sessionId : "none"%>"/>
                   <button type="submit" class="btn btn-dark rounded-pill">
-                    <i class="bi bi-hdd-network-fill"></i> Host a new game
+                    <i class="bi bi-hdd-network-fill"></i> Host Dom6
+                  </button>
+              </form>
+              
+            </div>
+
+            <div class="btn-group me-2" role="group">
+                
+              <form id="host_dom5_screen_form" action="/host_dom5" method="GET">
+                  <input type="hidden" name="sessionId" value="<%=(typeof sessionData === "object") ? sessionData.sessionId : "none"%>"/>
+                  <button type="submit" class="btn btn-dark rounded-pill">
+                    <i class="bi bi-hdd-network-fill"></i> Host Dom5
                   </button>
               </form>
               
@@ -25,10 +36,21 @@
         
             <div class="btn-group me-2" role="group">
             
-                <form id="change_settings_screen_form" action="/change_game_settings" method="GET">
+                <form id="change_dom6_settings_screen_form" action="/change_dom6_settings" method="GET">
                     <input type="hidden" name="sessionId" value="<%=(typeof sessionData === "object") ? sessionData.sessionId : "none"%>"/>
                     <button type="submit" class="btn btn-dark rounded-pill">
-                        <i class="bi bi-gear-fill"></i> Change game settings
+                        <i class="bi bi-gear-fill"></i> Change Dom6 settings
+                    </button>
+                </form>
+            
+            </div>
+        
+            <div class="btn-group me-2" role="group">
+            
+                <form id="change_dom5_settings_screen_form" action="/change_dom5_settings" method="GET">
+                    <input type="hidden" name="sessionId" value="<%=(typeof sessionData === "object") ? sessionData.sessionId : "none"%>"/>
+                    <button type="submit" class="btn btn-dark rounded-pill">
+                        <i class="bi bi-gear-fill"></i> Change Dom5 settings
                     </button>
                 </form>
             

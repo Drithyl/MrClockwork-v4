@@ -3,12 +3,12 @@ const log = require("../../logger.js");
 const MessagePayload = require("../../discord/prototypes/message_payload.js");
 
 
-module.exports = async (game, dom5Events) =>
+module.exports = async (game, domEvents) =>
 {
     const gameName = game.getName();
     const status = game.getLastKnownStatus();
     const allNationData = status.getPlayers();
-    const hourMarkPassed = dom5Events.getLastHour();
+    const hourMarkPassed = domEvents.getLastHour();
 
     
     try

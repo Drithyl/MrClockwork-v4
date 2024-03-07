@@ -31,6 +31,9 @@
   "pathToDom5Exe": "C:/SteamLibrary/steamapps/common/Dominions5/Dominions5.exe",
   "pathToDom5Data": "C:/Users/MyUsername/AppData/Roaming/Dominions5",
 
+  "pathToDom6Exe": "C:/SteamLibrary/steamapps/common/Dominions6/Dominions6.exe",
+  "pathToDom6Data": "C:/Users/MyUsername/AppData/Roaming/Dominions6",
+
   "gameMasterRoleName": "GameMaster",
   "blitzerRoleName": "Blitzer",
   "trustedRoleName": "Trusted",
@@ -53,7 +56,11 @@
   "maxParallelGameUpdates": 5,
   "loggingInterval": 60000,
 
+  "maxZipfileSizeInMB": 200,
+  "maxZipfileEntries": 10000,
+
   "dom5GameTypeName": "dom5",
+  "dom6GameTypeName": "dom6",
 
   "devIds": [
     "123456789876566666",

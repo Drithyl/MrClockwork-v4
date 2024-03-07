@@ -1,14 +1,14 @@
 
 const fs = require("fs");
 const path = require("path");
-const log = require("./logger.js");
 const readline = require("readline");
-const config = require("./config/config.json");
 const exampleConfig = require("./config/example.config.json");
 
 
 exports.buildDataPath = () =>
 {
+    const config = require("./config/config.json");
+
     if (config.dataPath.startsWith(".") === true)
         config.dataPath = path.resolve(__dirname, config.dataPath);
 
@@ -19,7 +19,7 @@ exports.hasConfig = () => fs.existsSync("./config/config.json");
 
 exports.askConfigQuestions = () =>
 {
-    let config = Object.assign({}, exampleConfig);
+    const config = Object.assign({}, exampleConfig);
 
     return _promisifiedQuestion("Input bot's login token: ", (answer) =>
     {
@@ -42,6 +42,13 @@ exports.askConfigQuestions = () =>
 
         config.pathToDom5Exe = answer;
     }))
+    .then(() => _promisifiedQuestion("Input Dom6 exe path: ", (answer) =>
+    {
+        if (fs.existsSync(answer) === false)
+            return Promise.reject("Path does not exist.");
+
+        config.pathToDom6Exe = answer;
+    }))
     .then(() => fs.writeFileSync("./config/config.json", JSON.stringify(config, null, 2)));
 };
 
@@ -62,6 +69,7 @@ function _promisifiedQuestion(question, onAnswerHandler)
                 .then(() => resolve())
                 .catch((err) => 
                 {
+                    const log = require("./logger.js");
                     log.error(log.getLeanLevel(), `CONFIG QUESTION ERROR`, err);
                     _askQuestion();
                 });

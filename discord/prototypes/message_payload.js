@@ -55,7 +55,7 @@ function MessagePayload(header, content = "", splitContent = true, splitWrapper 
     this.setAttachments = (filenames, buffers) =>
     {
         filenames.forEach((filename, i) => this.setAttachment(filename, buffers[i]));
-    }
+    };
 
     this.send = async (target, options = {}) =>
     {
@@ -68,7 +68,7 @@ function MessagePayload(header, content = "", splitContent = true, splitWrapper 
             if (options.ephemeral === true)
                 payload.ephemeral = true;
 
-            // Only one single message can be senta as a reply to a command interaction;
+            // Only one single message can be sent as a reply to a command interaction;
             // after that it will be resolved and further messages will have to be sent normally
             // fetchReply option is needed to receive the bot's sent message as a return value
             if (target.isCommandInteraction === true)

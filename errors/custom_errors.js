@@ -1,6 +1,13 @@
 
 // See https://javascript.info/custom-errors and https://medium.com/p/aa891b173f87/responses/show
 
+exports.CustomError = class CustomError extends Error {
+	constructor(message) {
+		super(message);
+		this.name = this.constructor.name;
+	}
+};
+
 exports.InstanceOfError = class InstanceOfError extends Error
 {
   constructor(message)

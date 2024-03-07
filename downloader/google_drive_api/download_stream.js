@@ -62,7 +62,7 @@ function DownloadStream(oAuth2Object, downloadPath)
             
             //make sure the dest Writable is safe to write (i.e. no error occurred)
             if (writeStream.writable === false)
-                return onWriteError(new Error(`Write stream is not in a writable state.`));
+                return this.onWriteError(new Error(`Write stream is not in a writable state.`));
 
 
             log.upload(log.getVerboseLevel(), "WriteStream is writable. Piping ReadStream into it.");

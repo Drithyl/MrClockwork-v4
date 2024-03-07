@@ -12,10 +12,12 @@ const mapsRoute = require("./routes/maps.js");
 const modsRoute = require("./routes/mods.js");
 const nationsRoute = require("./routes/nations.js");
 const serversRoute = require("./routes/servers.js");
-const hostGameRoute = require("./routes/host_game.js");
+const hostDom5Route = require("./routes/host_dom5.js");
+const hostDom6Route = require("./routes/host_dom6.js");
 const updatePartialsRoute = require("./routes/update_partials.js");
 const editPreferencesRoute = require("./routes/edit_preferences.js");
-const changeGameSettingsRoute = require("./routes/change_game_settings.js");
+const changeDom5SettingsRoute = require("./routes/change_dom5_settings.js");
+const changeDom6SettingsRoute = require("./routes/change_dom6_settings.js");
 const turnProcessingRoute = require("./routes/turn_processing.js");
 
 // new content routes
@@ -52,10 +54,12 @@ exports.setRoutes = (expressApp) =>
     modsRoute.set(expressApp);
     nationsRoute.set(expressApp);
     serversRoute.set(expressApp);
-    hostGameRoute.set(expressApp);
+    hostDom5Route.set(expressApp);
+    hostDom6Route.set(expressApp);
     updatePartialsRoute.set(expressApp);
     editPreferencesRoute.set(expressApp);
-    changeGameSettingsRoute.set(expressApp);
+    changeDom5SettingsRoute.set(expressApp);
+    changeDom6SettingsRoute.set(expressApp);
     aboutRoute.set(expressApp);
     botCommandsRoute.set(expressApp);
     donateRoute.set(expressApp);

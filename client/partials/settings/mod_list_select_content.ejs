@@ -1,9 +1,14 @@
 <!-- Must use typeof to check if variable exists at all, since it might be undefined -->
 <% if (typeof mods === "object" && Array.isArray(mods) === true) { %>
-    <% mods.forEach((modName) => {%>
-        <option value="<%=modName %>" 
-            <% if (typeof gameSettings === "object" && typeof gameSettings.mods === "object" && Array.isArray(gameSettings.mods) === true && gameSettings.mods.includes(modName) === true) { %> selected <% } %> 
-        ><%=modName %></option>
+    <!-- Used to check if a mod with a specific .dm name was already added to the list 
+        In Dominions 6, mods are contained in folders, which means multiple mods with
+        the same .dm name might exist.
+    -->
+    <% const modsAlreadyIncluded = []; %>
+    <% mods.forEach((mod) => {%>
+        <option value="<%=mod.relativePath %>" 
+            <% if (typeof gameSettings === "object" && typeof gameSettings.mods === "object" && Array.isArray(gameSettings.mods) === true && gameSettings.mods.includes(mod.name) === true && modsAlreadyIncluded.includes(mod.name) === false) { modsAlreadyIncluded.push(mod.name); %> selected <% } %> 
+        ><%=mod.name %></option>
     <% }); %>
 <% } else { %>
     <p>No mods available</p>

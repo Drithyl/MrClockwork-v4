@@ -1,6 +1,7 @@
 
 const assert = require("../../../asserter.js");
 const GameSetting = require("../../prototypes/game_setting.js");
+const dom5SettingsData = require("../../../json/dom5_settings.json");
 const SemanticError = require("../../../errors/custom_errors.js").SemanticError;
 
 const key = "ascensionPoints";
@@ -61,5 +62,5 @@ function AscensionPoints(parentGameObject)
 //constructor, with all its properties included. These will 
 //be shared across all instances of the AscensionPoints constructor.
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf
-AscensionPoints.prototype = new GameSetting(key);
+AscensionPoints.prototype = new GameSetting(key, dom5SettingsData[key]);
 AscensionPoints.prototype.constructor = AscensionPoints;

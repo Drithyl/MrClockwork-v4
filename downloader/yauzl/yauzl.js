@@ -9,16 +9,35 @@ const rw = require("../../reader_writer.js");
 const safePath = require("../safe_path.js");
 
 
-exports.walkZipfile = async (zipfilePath, onFileFn) =>
+exports.openZipfile = function(filePath)
 {
-    let i = 0;
-    zipfile = await _openZipfile(zipfilePath);
+    return new Promise((resolve, reject) =>
+    {
+        /** refer to https://github.com/thejoshwolfe/yauzl for docs on lazyEntries and autoClose behaviour */
+        yauzl.open(filePath, { lazyEntries: true, autoClose: false }, function(err, zipfile)
+        {
+            if (err)
+            {
+                log.error(log.getLeanLevel(), `ERROR WHEN OPENING "${filePath}"`, err);
+                return reject(err);
+            }
+
+            resolve(zipfile);
+        });
+    });
+};
+
+exports.walkZipfile = (zipfile, onFileFn) =>
+{
+    var i = 0;
 
     //emits "entry" event once it's done reading an entry
     zipfile.readEntry();
 
     return new Promise((resolve, reject) =>
     {
+        let userEndedLoop = false;
+
         zipfile.on("error", (err) =>
         {
             log.error(log.getNormalLevel(), `readEntry() ERROR`, err);
@@ -34,7 +53,7 @@ exports.walkZipfile = async (zipfilePath, onFileFn) =>
                 entry.extractTo = (path) => _writeEntryTo(entry, zipfile, path);
                 await onFileFn(entry, i, _break);
 
-                if (zipfile.isOpen === true)
+                if (zipfile.isOpen === true && userEndedLoop === false)
                 {
                     zipfile.readEntry();
                     i++;
@@ -57,7 +76,7 @@ exports.walkZipfile = async (zipfilePath, onFileFn) =>
 
         function _break()
         {
-            zipfile.close();
+            userEndedLoop = true;
             resolve();
         }
     });
@@ -66,28 +85,10 @@ exports.walkZipfile = async (zipfilePath, onFileFn) =>
 
 exports.extractTo = async (zipfilePath, targetPath, filterFn = null) =>
 {
-    zipfile = await _openZipfile(zipfilePath);
+    const zipfile = await exports.openZipfile(zipfilePath);
     await _writeEntriesTo(zipfile, targetPath, filterFn);
 };
 
-
-function _openZipfile(filePath)
-{
-    return new Promise((resolve, reject) =>
-    {
-        /** refer to https://github.com/thejoshwolfe/yauzl for docs on lazyEntries and autoClose behaviour */
-        yauzl.open(filePath, { lazyEntries: true, autoClose: false }, function(err, zipfile)
-        {
-            if (err)
-            {
-                log.error(log.getLeanLevel(), `ERROR WHEN OPENING ${fileId}`, err);
-                return reject(err);
-            }
-
-            resolve(zipfile);
-        });
-    });
-}
 
 function _writeEntriesTo(zipfile, targetPath, filterFn = null)
 {
@@ -126,7 +127,7 @@ function _writeEntriesTo(zipfile, targetPath, filterFn = null)
             {
                 zipfile.close();
                 reject(err);
-            };
+            }
         });
 
         //last entry was read, we can resolve now

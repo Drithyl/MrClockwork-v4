@@ -48,7 +48,7 @@ function _formatSubmittedPretenders(humanPretenderList)
         else if (pretender.isDead === true)
             deadNationsString += _formatSubmittedPretenderLine(pretender);
 
-        else if (pretender.justDied === true)
+        else if (pretender.hasJustDied === true)
             justDeadNationsString += _formatSubmittedPretenderLine(pretender);
     });
 

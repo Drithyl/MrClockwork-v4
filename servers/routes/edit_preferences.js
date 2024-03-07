@@ -120,6 +120,9 @@ exports.set = (expressApp) =>
         else if (/^on$/i.test(value) === true)
             value = true;
 
+        else if (/^off$/i.test(value) === true)
+            value = false;
+
         else if (assert.isArray(value) === true)
             value = value.map((reminderValue) => +reminderValue);
 
