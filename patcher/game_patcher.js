@@ -29,8 +29,8 @@ module.exports = async () =>
     
     await filePaths.forEachPromise(async (dataPath, i, nextPromise) =>
     {
-        var jsonData;
-        var patchedJson;
+        let jsonData;
+        let patchedJson;
 
         log.general(log.getLeanLevel(), `Checking possible game file to patch at ${dataPath}...`);
         const stat = await fsp.stat(dataPath);
@@ -202,7 +202,7 @@ function _buildNewPlayerData(oldPlayerData, playerId)
 
 function _getExistingv4PlayerData(playerId, gameName)
 {
-    var prefsJsonData;
+    let prefsJsonData;
     const prefsPath = `${PLAYER_DATA_DIR}/${playerId}.json`;
     
     if (fs.existsSync(prefsPath) === true)

@@ -13,10 +13,10 @@ function ServerSocketWrapper(ws)
     const _awaitingResponse = [];
     const _handlers = [];
 
-    var _id;
-    var _isAlive = true;
-    var _onCloseHandlers = [];
-    var _onErrorHandlers = [];
+    let _id;
+    let _isAlive = true;
+    let _onCloseHandlers = [];
+    let _onErrorHandlers = [];
 
     _initialize();
 
@@ -197,8 +197,8 @@ function _wrapHandler(handler, trigger)
 
 function _parse(data)
 {
-    var formattedData = {};
-    var parsedData;
+    let formattedData = {};
+    let parsedData;
 
     if (Buffer.isBuffer(data) === true)
         parsedData = _jsonParseWithBufferRevival(data.toString());
@@ -243,10 +243,10 @@ function _isSerializedBuffer(value)
 // Stringify that prevents circular references taken from https://antony.fyi/pretty-printing-javascript-objects-as-json/
 function _stringify(data, spacing = 0)
 {
-	var cache = [];
+	let cache = [];
 
 	// custom replacer function gets around the circular reference errors by discarding them
-	var str = JSON.stringify(data, function(key, value)
+	let str = JSON.stringify(data, function(key, value)
 	{
 		if (typeof value === "object" && value != null)
 		{

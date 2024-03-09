@@ -42,7 +42,7 @@ function PlayerFile(playerId)
     this.getAllGamePreferences = () => 
     {
         // Fill up empty game preferences in games where the player controls nations
-        for (var gameName in _gameDataByGameName)
+        for (let gameName in _gameDataByGameName)
         {
             if (this.hasGamePreferences(gameName) === false)
             {

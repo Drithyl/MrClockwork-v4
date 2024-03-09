@@ -6,7 +6,7 @@ exports.set = (expressApp) =>
 {
     expressApp.get("/servers", (req, res) =>
     {
-        var availableServers = hostServerStore.getAvailableServersClientData();
+        let availableServers = hostServerStore.getAvailableServersClientData();
         res.send(availableServers);
     });
 };

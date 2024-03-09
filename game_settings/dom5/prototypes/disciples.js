@@ -9,12 +9,12 @@ module.exports = Disciples;
 
 function Disciples()
 {
-    var _value;
+    let _value;
 
     this.getValue = () => _value;
     this.getReadableValue = () =>
     {
-        var value = this.getValue();
+        let value = this.getValue();
 
         if (value == 0)
             return "false";
@@ -45,7 +45,7 @@ function Disciples()
 
     this.translateValueToCmdFlag = () =>
     {
-        var value = this.getValue();
+        let value = this.getValue();
     
         if (value == 1)
             return ["--teamgame"];

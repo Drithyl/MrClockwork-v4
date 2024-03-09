@@ -4,7 +4,6 @@ const assert = require("../../asserter.js");
 const dom5SettingFlags = require("../../json/dominions5_setting_flags.json");
 const dom6SettingFlags = require("../../json/dominions6_setting_flags.json");
 const MessagePayload = require("../../discord/prototypes/message_payload.js");
-const botClientWrapper = require("../../discord/wrappers/bot_client_wrapper.js");
 
 
 module.exports = (game, domEvents) =>
@@ -51,7 +50,7 @@ module.exports = (game, domEvents) =>
 
 async function _processNewTurnPreferences(game)
 {
-    var fetchedTurnFiles;
+    let fetchedTurnFiles;
 
     // Nation filenames and playerfiles that need backups will be stored here
     const nationFilesToFetch = [];
@@ -109,14 +108,16 @@ function _sendNewTurnFiles(game, playerFiles, fetchedTurnFiles)
 // Build and send the files to the user that owns this player file
 async function _sendFilesToUser(game, playerFile, fetchedTurnFiles)
 {
-    var payload;
-    var userWrapper;
+    const guild = game.getGuild();
+    
+    let payload;
+    let memberWrapper;
 
     try
     {
-        userWrapper = await botClientWrapper.fetchUser(playerFile.getId());
+        memberWrapper = await guild.fetchGuildMemberWrapperById(playerFile.getId());
         payload = _buildMessagePayload(game, playerFile, fetchedTurnFiles);
-        userWrapper.sendMessage(payload);
+        memberWrapper.sendMessage(payload);
     }
 
     catch(err)

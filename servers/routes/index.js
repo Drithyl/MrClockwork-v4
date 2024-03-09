@@ -11,8 +11,8 @@ exports.set = (expressApp) =>
         if (req.secure === false && expressServer.isHttpsAvailable() === true)
             return res.redirect(config.fullSecureUrl);
 
-        var guildCount = 0;
-        var memberCount = 0;
+        let guildCount = 0;
+        let memberCount = 0;
 
         guildStore.forEachGuild((guildWrapper) =>
         {

@@ -20,7 +20,7 @@ module.exports = async (game, domEvents) =>
 
         // Log and announce the turn rollback
         log.general(log.getNormalLevel(), `${gameName}\trollbacked to turn ${turnNumber}.`);
-        await game.sendGameAnnouncement(`The game has been **rollbacked to turn ${turnNumber}**. This turn will not process automatically; instead, it must be force-hosted using \`!forcehost\` once everyone is ready.`);
+        await game.sendGameAnnouncement(`The game has been **rollbacked to turn ${turnNumber}**. This turn will not process automatically; instead, it must be force-hosted using \`/forcehost\` once everyone is ready.`);
     }
 
     catch(err)

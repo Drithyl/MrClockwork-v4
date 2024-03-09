@@ -29,7 +29,7 @@ exports.monitorDomGames = (games) =>
 // Remove a game from the monitoring list
 exports.stopMonitoringDomGame = (game) =>
 {
-    for (var i = 0; i < monitoredGames.length; i++)
+    for (let i = 0; i < monitoredGames.length; i++)
     {
         if (monitoredGames[i].getName() === game.getName())
         {

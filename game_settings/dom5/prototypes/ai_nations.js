@@ -11,23 +11,23 @@ module.exports = AiNations;
 
 function AiNations(parentGameObject)
 {
-    var _value;
+    let _value;
     const _parentGame = parentGameObject;
     const _gameType = _parentGame.getType();
 
     this.getValue = () => _value;
     this.getReadableValue = () =>
     {
-        var str = "";
-        var aiNations = this.getValue();
+        let str = "";
+        let aiNations = this.getValue();
 
         if (aiNations == null)
             return "None";
 
-        Object.keys(aiNations).forEach((nationNbr, i) =>
+        Object.keys(aiNations).forEach((nationNumber, i) =>
         {
-            var difficulty = aiNations[nationNbr];
-            var nationObject = domNationStore.getNation(nationNbr, _gameType);
+            let difficulty = aiNations[nationNumber];
+            let nationObject = dom5NationStore.getNation(nationNumber);
 
             if (i > 0)
                 str += ", ";
@@ -56,12 +56,12 @@ function AiNations(parentGameObject)
         if (typeof value !== "object")
             throw new Error(`Expected object; got ${value}`);
 
-        for (var nationNbr in value)
+        for (let nationNumber in value)
         {
-            var nationDifficulty = value[nationNbr];
+            let nationDifficulty = value[nationNumber];
 
-            if (Number.isInteger(+nationNbr) === false)
-                throw new Error(`Expected string resolvable to integer; got ${nationNbr}`);
+            if (Number.isInteger(+nationNumber) === false)
+                throw new Error(`Expected string resolvable to integer; got ${nationNumber}`);
 
             if (typeof nationDifficulty !== "string")
                 throw new Error(`Expected string; got ${nationDifficulty}`);
@@ -72,33 +72,33 @@ function AiNations(parentGameObject)
 
     this.translateValueToCmdFlag = () =>
     {
-        var flags = [];
-        var aiNations = this.getValue();
+        let flags = [];
+        let aiNations = this.getValue();
     
         if (aiNations == null || Object.keys(aiNations).length <= 0)
             return flags;
     
-        for (var nationNbr in aiNations)
+        for (let nationNumber in aiNations)
         {
-            var difficulty = aiNations[nationNbr];
+            let difficulty = aiNations[nationNumber];
     
             if (difficulty === dom5SettingFlags.EASY_AI)
-                flags.push(`--easyai`, nationNbr);
+                flags.push(`--easyai`, nationNumber);
     
             else if (difficulty === dom5SettingFlags.NORMAL_AI)
-                flags.push(`--normai`, nationNbr);
+                flags.push(`--normai`, nationNumber);
     
             else if (difficulty === dom5SettingFlags.DIFFICULT_AI)
-                flags.push(`--diffai`, nationNbr);
+                flags.push(`--diffai`, nationNumber);
     
             else if (difficulty === dom5SettingFlags.MIGHTY_AI)
-                flags.push(`--mightyai`, nationNbr);
+                flags.push(`--mightyai`, nationNumber);
     
             else if (difficulty === dom5SettingFlags.MASTER_AI)
-                flags.push(`--masterai`, nationNbr);
+                flags.push(`--masterai`, nationNumber);
     
             else if (difficulty === dom5SettingFlags.IMPOSSIBLE_AI)
-                flags.push(`--impai`, nationNbr);
+                flags.push(`--impai`, nationNumber);
         }
     
         return flags;
@@ -106,7 +106,7 @@ function AiNations(parentGameObject)
 
     function _validateInputFormatOrThrow(input, era)
     {
-        var aiNations = {};
+        let aiNations = {};
 
         if (AiNations.prototype.isExpectedFormat(input) === false)
             throw new SemanticError(`Invalid value format for AI nations.`);
@@ -116,13 +116,13 @@ function AiNations(parentGameObject)
 
         input.split(",").forEach((aiNationStr) =>
         {
-            var nationNbr = +aiNationStr.replace(/\D*/ig, "");
-            var nationDifficulty = aiNationStr.replace(/\d*/ig, "").trim().toLowerCase();
+            let nationNumber = +aiNationStr.replace(/\D*/ig, "");
+            let nationDifficulty = aiNationStr.replace(/\d*/ig, "").trim().toLowerCase();
 
-            if (domNationStore.isValidNationIdentifierInEra(nationNbr, era, _gameType) === false)
-                throw new SemanticError(`Nation number ${nationNbr} does not exist in chosen era.`);
+            if (domNationStore.isValidNationIdentifierInEra(nationNumber, era, _gameType) === false)
+                throw new SemanticError(`Nation number ${nationNumber} does not exist in chosen era.`);
 
-            aiNations[nationNbr] = nationDifficulty;
+            aiNations[nationNumber] = nationDifficulty;
         });
 
         return aiNations;

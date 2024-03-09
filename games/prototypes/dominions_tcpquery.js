@@ -147,8 +147,8 @@ function _parsePlayers(tcpQueryResponse)
         {
             const name = playerString.replace(/^(.+)\s\(.+$/ig, "$1");
             const turnStatus = playerString.replace(/^.+\s\((.+)\)$/ig, "$1");
-            var isTurnFinished = false;
-            var isAi = false;
+            let isTurnFinished = false;
+            let isAi = false;
 
             if (turnStatus === "played")
                 isTurnFinished = true;

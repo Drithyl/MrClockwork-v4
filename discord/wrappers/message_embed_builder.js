@@ -19,11 +19,11 @@ function MessageEmbedBuilder()
 {
     const _timestamp = new Date();
 
-    var _title = "";
-    var _description = "";
-    var _color = 0;
-    var _fields = [];
-    var _embedLength = 0;
+    let _title = "";
+    let _description = "";
+    let _color = 0;
+    let _fields = [];
+    let _embedLength = 0;
 
     this.setTitle = (title) =>
     {
@@ -102,9 +102,9 @@ function MessageEmbedBuilder()
 
     this.canAddToLastFieldValue = (additionalFieldValue) =>
     {
-        var fieldIndex = (this.getNbrOfFields() > 0) ? this.getNbrOfFields() - 1 : 0;
-        var fieldName = this.getFieldName(fieldIndex);
-        var lastFieldValue = this.getFieldValue(fieldIndex);
+        let fieldIndex = (this.getNbrOfFields() > 0) ? this.getNbrOfFields() - 1 : 0;
+        let fieldName = this.getFieldName(fieldIndex);
+        let lastFieldValue = this.getFieldValue(fieldIndex);
 
         if (asserter.isString(additionalFieldValue) === false)
             throw new Error(`Expected field value string, got ${typeof additionalFieldValue} instead.`);
@@ -125,9 +125,9 @@ function MessageEmbedBuilder()
 
     this.addToLastFieldValue = (additionalFieldValue) =>
     {
-        var fieldIndex = (this.getNbrOfFields() > 0) ? this.getNbrOfFields() - 1 : 0;
-        var fieldName = this.getFieldName(fieldIndex);
-        var lastFieldValue = this.getFieldValue(fieldIndex);
+        let fieldIndex = (this.getNbrOfFields() > 0) ? this.getNbrOfFields() - 1 : 0;
+        let fieldName = this.getFieldName(fieldIndex);
+        let lastFieldValue = this.getFieldValue(fieldIndex);
 
         if (asserter.isString(additionalFieldValue) === false)
             throw new Error(`Expected field value string, got ${typeof additionalFieldValue} instead.`);

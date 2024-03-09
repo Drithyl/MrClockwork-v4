@@ -3,19 +3,19 @@ const _express = require("express");
 const log = require("../logger.js");
 const assert = require("../asserter.js");
 const config = require("../config/config.json");
-const botClientWrapper = require("../discord/wrappers/bot_client_wrapper.js");
+const client = require("../discord/client.js");
 
 const _expressApp = _express();
-var _expressAppHttps;
+let _expressAppHttps;
 
 const _expressHttpServer = require('http').Server(_expressApp);
-var _expressHttpsServer;
+let _expressHttpsServer;
 
 const SocketServerWrapper = require('./prototypes/ws_server_wrapper.js')
 
 // Raise pingTimeout and pingInterval since slaves have a lot of overhead on their first connection
 // and won't make the default timeout of 20 seconds, thus creating constant connections and disconnections
-var _socketServer;
+let _socketServer;
 const _router = require("./web_router.js");
 const _hostServerStore = require("./host_server_store.js");
 const MessagePayload = require("../discord/prototypes/message_payload.js");
@@ -33,7 +33,7 @@ exports.startListening = (port) =>
     {
         log.general(log.getNormalLevel(), `Connection attempt by socket ${socketWrapper.getId()}`);
         _handleSocketConnection(socketWrapper);
-        await botClientWrapper.messageDev(new MessagePayload(`Connection attempt by socket ${socketWrapper.getId()}`));
+        await client.messageDev(new MessagePayload(`Connection attempt by socket ${socketWrapper.getId()}`));
     });
 
     _socketServer.onServerError((err) => 
@@ -110,7 +110,7 @@ function _handleSocketConnection(socketWrapper)
         if (_isTrustedSlave(id, capacity) !== true)
         {
             log.general(log.getNormalLevel(), `Socket ${socketWrapper.getId()} failed to authenticate`);
-            botClientWrapper.messageDev(new MessagePayload(`Socket ${socketWrapper.getId()} failed to authenticate.`));
+            client.messageDev(new MessagePayload(`Socket ${socketWrapper.getId()} failed to authenticate.`));
             return socketWrapper.terminate();
         }
 
@@ -136,7 +136,7 @@ async function _initializeHostServer(socketWrapper, id, capacity)
 {
     log.general(log.getNormalLevel(), `Received recognized server's data. Instantiating HostServer object.`);
     const hostServer = _hostServerStore.getHostServerById(id);
-    botClientWrapper.messageDev(new MessagePayload(`Server ${hostServer.getName()} (${hostServer.getIp()}) authenticated.`));
+    client.messageDev(new MessagePayload(`Server ${hostServer.getName()} (${hostServer.getIp()}) authenticated.`));
     
     hostServer.initializeConnection(socketWrapper, capacity);
     

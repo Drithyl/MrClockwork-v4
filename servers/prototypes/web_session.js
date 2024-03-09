@@ -8,7 +8,7 @@ function WebSession(userId)
 {
     const _userId = userId;
     const _sessionId = uuidv4();
-    var _sessionData = {};
+    let _sessionData = {};
 
 
     this.getUserId = () => _userId;

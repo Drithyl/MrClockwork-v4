@@ -16,10 +16,10 @@ function WebSocketServerWrapper(port)
     const _wss = new WebSocketServer({ noServer: true });
     const _pingIntervalId = setInterval(_pingClients.bind(null, _connectedSockets), 30000);
 
-    var _onListeningHandler;
-    var _onServerClosedHandler;
-    var _onSocketConnectionHandler;
-    var _onServerErrorHandler;
+    let _onListeningHandler;
+    let _onServerClosedHandler;
+    let _onSocketConnectionHandler;
+    let _onServerErrorHandler;
 
 
     // First comes an upgrade request to the HTTP server to move to WebSockets
@@ -144,7 +144,7 @@ function _authenticate(req)
 {
     const connectingIp = req.socket.remoteAddress;
 
-    for (var id in trustedServers)
+    for (let id in trustedServers)
     {
         const serverData = trustedServers[id];
         const isAuthorizedIp = connectingIp.includes(serverData.ip);

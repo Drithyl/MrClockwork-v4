@@ -11,10 +11,10 @@ function DominionsStatus()
 {
     const _statusSnapshot = new DominionsStatusSnapshot();
 
-    var _lastTurnTimestamp;
-    var _isTurnProcessing = false;
-    var _isCurrentTurnRollback = false;
-    var _turnStartProcessingTimestamp;
+    let _lastTurnTimestamp;
+    let _isTurnProcessing = false;
+    let _isCurrentTurnRollback = false;
+    let _turnStartProcessingTimestamp;
 
 
     _statusSnapshot.getLastTurnTimestamp = () => _lastTurnTimestamp; 
@@ -128,7 +128,7 @@ function DominionsStatus()
     {
         const msLeft = _statusSnapshot.getMsLeft();
         const timeLeft = new TimeLeft(msLeft);
-        var offlineStr = "";
+        let offlineStr = "";
 
         if (_statusSnapshot.isOnline() === false)
             offlineStr = " **(game is offline)**";

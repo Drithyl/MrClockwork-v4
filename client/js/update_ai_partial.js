@@ -35,6 +35,6 @@ function updateNations()
 
 function forEachEra(fn)
 {
-    for (var i = 1; i <= 3; i++)
+    for (let i = 1; i <= 3; i++)
         fn(i);
 }

@@ -10,12 +10,12 @@ module.exports = RecruitmentModifier;
 
 function RecruitmentModifier()
 {
-    var _value;
+    let _value;
 
     this.getValue = () => _value;
     this.getReadableValue = () =>
     {
-        var value = this.getValue();
+        let value = this.getValue();
 
         return `${value}%`;
     };
@@ -37,7 +37,7 @@ function RecruitmentModifier()
 
     this.translateValueToCmdFlag = () =>
     {
-        var value = this.getValue();
+        let value = this.getValue();
     
         return [`--recruitment`, value];
     };

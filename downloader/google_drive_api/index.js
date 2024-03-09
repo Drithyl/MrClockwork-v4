@@ -101,8 +101,8 @@ const SCOPES = ['https://www.googleapis.com/auth/drive.readonly',
 //and is then passed into many of the functions to be able to interact with google drive files.
 //We will store it here when the callback from authorize happens, so the other functions
 //can have access to it rather than having to authorize for each operation
-var oAuth2Object;
-var wasInitialized = false;
+let oAuth2Object;
+let wasInitialized = false;
 
 // Load client secrets from a local file.
 // This is the initialization process.

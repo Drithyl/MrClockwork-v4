@@ -60,9 +60,9 @@ function _addGuildData(v3GuildData)
         log.general(log.getLeanLevel(), `Imported game recruiting category.`);
     }
 
-    if (assert.isValidDiscordId(v3GuildData.gameCategoryID) === true)
+    if (assert.isValidDiscordId(v3GuildData.ongoingCategoryID) === true)
     {
-        patchedData.gameCategoryId = v3GuildData.gameCategoryID;
+        patchedData.ongoingCategoryId = v3GuildData.ongoingCategoryID;
         log.general(log.getLeanLevel(), `Imported game category.`);
     }
 

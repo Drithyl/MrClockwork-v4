@@ -27,7 +27,7 @@ function HelpMenu(userWrapper)
 
     this.handleReaction = (emoji, reactedMessageWrapper) =>
     {
-        var reactedEntry = helpMenuEntries.find((entry) => entry.EMOJI == emoji.name);
+        let reactedEntry = helpMenuEntries.find((entry) => entry.EMOJI == emoji.name);
 
         if (typeof reactedEntry === "object")
             return reactedMessageWrapper.respond(new MessagePayload(`*\n*\n*\n**__${reactedEntry.ENTRY}__**\n\n${reactedEntry.INFO}`));
@@ -41,7 +41,7 @@ function HelpMenu(userWrapper)
 
 function _composeHelpIntro()
 {
-    var intro = "";
+    let intro = "";
 
     helpMenuEntries.forEach((entry) =>
     {

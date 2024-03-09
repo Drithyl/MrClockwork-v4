@@ -11,7 +11,7 @@ exports.set = (expressApp) =>
 {
     expressApp.get("/change_dom5_settings", (req, res) =>
     {
-        var ongoingGames;
+        let ongoingGames;
         const organizedGames = {};
 
         // Fetch session from either the URL params or the cookies, wherever we can find the sessionId
@@ -26,8 +26,8 @@ exports.set = (expressApp) =>
 
         return ongoingGames.forAllPromises((game) =>
         {
-            var hostServer;
-            var gameSettings;
+            let hostServer;
+            let gameSettings;
 
             hostServer = game.getServer();
 
@@ -67,9 +67,9 @@ exports.set = (expressApp) =>
 
     expressApp.post("/change_dom5_settings", (req, res) =>
     {
-        var game;
-        var settingsObject;
-        var changeableSettingsArray;
+        let game;
+        let settingsObject;
+        let changeableSettingsArray;
         const values = req.body;
 
         // Fetch session from either the URL params or the cookies, wherever we can find the sessionId
@@ -91,8 +91,8 @@ exports.set = (expressApp) =>
 
         return changeableSettingsArray.forAllPromises((setting) =>
         {
-            var key = setting.getKey();
-            var loadedValue = values[key];
+            let key = setting.getKey();
+            let loadedValue = values[key];
 
             if (loadedValue == undefined)
                 return log.error(log.getLeanLevel(), `Change settings: Expected value for setting ${key} is undefined.`);

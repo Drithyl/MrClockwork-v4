@@ -9,17 +9,17 @@ function DominionsStatusSnapshot(snapshotData)
     // Ensure parameter is always a dictionary
     snapshotData = snapshotData ?? {};
 
-    var _isOnline = snapshotData.isOnline ?? false;
-    var _isServerOnline = snapshotData.isServerOnline ?? false;
+    let _isOnline = snapshotData.isOnline ?? false;
+    let _isServerOnline = snapshotData.isServerOnline ?? false;
 
-    var _uptime = snapshotData.uptime;
-    var _players = snapshotData.nationStatuses;
-    var _successfulCheckTimestamp = snapshotData.successfulCheckTimestamp;
-    var _lastUpdateTimestamp = snapshotData.lastUpdateTimestamp;
-    var _hasStarted = snapshotData.hasStarted;
-    var _turnNumber = snapshotData.turnNbr;
-    var _isPaused = snapshotData.isPaused;
-    var _msLeft = snapshotData.msLeft;
+    let _uptime = snapshotData.uptime;
+    let _players = snapshotData.nationStatuses;
+    let _successfulCheckTimestamp = snapshotData.successfulCheckTimestamp;
+    let _lastUpdateTimestamp = snapshotData.lastUpdateTimestamp;
+    let _hasStarted = snapshotData.hasStarted;
+    let _turnNumber = snapshotData.turnNbr;
+    let _isPaused = snapshotData.isPaused;
+    let _msLeft = snapshotData.msLeft;
 
 
     this.isOnline = () => _isOnline;

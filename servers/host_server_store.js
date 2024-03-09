@@ -23,11 +23,11 @@ exports.removeHostServerByName = (...args) => _removeHostServerByName(...args);
 exports.isThereHostingSpaceAvailable = (...args) => _isThereHostingSpaceAvailable(...args);
 exports.hasServersOnline = () => 
 {
-    var nbr = 0;
+    let nbr = 0;
 
-    for (var id in _hostServersById)
+    for (let id in _hostServersById)
     {
-        var server = _hostServersById[id];
+        let server = _hostServersById[id];
 
         if (server.isOnline() === true)
             nbr++;
@@ -45,11 +45,11 @@ exports.hasHostServerByName = (...args) => _findServerByName(...args) != null;
 
 exports.getOnlineServers = () =>
 {
-    var servers = [];
+    let servers = [];
 
-    for (var id in _hostServersById)
+    for (let id in _hostServersById)
     {
-        var hostServerObject = _hostServersById[id];
+        let hostServerObject = _hostServersById[id];
 
         if (hostServerObject.isOnline() === true)
             servers.push(hostServerObject);
@@ -60,17 +60,17 @@ exports.getOnlineServers = () =>
 
 exports.forEachServer = (fnToCall) =>
 {
-    for (var id in _hostServersById)
+    for (let id in _hostServersById)
         fnToCall(_hostServersById[id]);
 };
 
 exports.getAvailableServersClientData = () =>
 {
-    var servers = [];
+    let servers = [];
 
-    for (var id in _hostServersById)
+    for (let id in _hostServersById)
     {
-        var hostServerObject = _hostServersById[id];
+        let hostServerObject = _hostServersById[id];
 
         if (hostServerObject.isOnline() === true && hostServerObject.hasAvailableSlots() === true)
         {
@@ -83,11 +83,11 @@ exports.getAvailableServersClientData = () =>
 
 exports.printListOfOnlineHostServers = () =>
 {
-    var str = "";
+    let str = "";
 
-    for (var id in _hostServersById)
+    for (let id in _hostServersById)
     {
-        var hostServerObject = _hostServersById[id];
+        let hostServerObject = _hostServersById[id];
         
         if (hostServerObject.isOnline() === false)
             continue;
@@ -100,11 +100,11 @@ exports.printListOfOnlineHostServers = () =>
 
 exports.printListOfFreeSlots = () =>
 {
-    var stringList = "";
+    let stringList = "";
 
-    for (var id in _hostServersById)
+    for (let id in _hostServersById)
     {
-        var hostServerObject = _hostServersById[id];
+        let hostServerObject = _hostServersById[id];
         
         if (hostServerObject.isOnline() === false)
             continue;
@@ -232,9 +232,9 @@ function _populateStore()
 {
     log.general(log.getNormalLevel(), "Populating host server store...");
 
-    for (var serverId in trustedServerData)
+    for (let serverId in trustedServerData)
     {
-        var hostServer = new HostServer(serverId);
+        let hostServer = new HostServer(serverId);
         _addHostServer(hostServer);
     }
 }
@@ -248,7 +248,7 @@ function _addHostServer(hostServerObject)
 
 function _removeHostServerById(idToFind) 
 {
-    var server = _findServerById(idToFind);
+    let server = _findServerById(idToFind);
 
     if (server != null)
         delete _hostServersById[idToFind];
@@ -256,7 +256,7 @@ function _removeHostServerById(idToFind)
 
 function _removeHostServerByName(nameToFind) 
 {
-    var server = _findServerByName(nameToFind);
+    let server = _findServerByName(nameToFind);
 
     if (server != null)
         delete _hostServersById[server.getId()];
@@ -264,9 +264,9 @@ function _removeHostServerByName(nameToFind)
 
 function _isThereHostingSpaceAvailable()
 {
-    var hostingSpaceAvailable = 0;
+    let hostingSpaceAvailable = 0;
 
-    for (var id in _hostServersById)
+    for (let id in _hostServersById)
     {
         let server = _hostServersById[id];
 
@@ -284,7 +284,7 @@ function _findServerById(idToFind)
     if (idToFind == null)
         return null;
 
-    for (var id in _hostServersById)
+    for (let id in _hostServersById)
     {
         if (id.toLowerCase() === idToFind.toLowerCase())
             return _hostServersById[id];
@@ -296,7 +296,7 @@ function _findServerBySocketId(idToFind)
     if (idToFind == null)
         return null;
 
-    for (var id in _hostServersById)
+    for (let id in _hostServersById)
     {
         const server = _hostServersById[id];
 
@@ -310,7 +310,7 @@ function _findServerByName(nameToFind)
     if (nameToFind == null)
         return null;
 
-    for (var id in _hostServersById)
+    for (let id in _hostServersById)
     {
         let server = _hostServersById[id];
 

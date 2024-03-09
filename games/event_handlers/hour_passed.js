@@ -1,7 +1,6 @@
 
 const log = require("../../logger.js");
 const MessagePayload = require("../../discord/prototypes/message_payload.js");
-const botClientWrapper = require("../../discord/wrappers/bot_client_wrapper.js");
 
 
 module.exports = async (game, domEvents) =>
@@ -54,7 +53,7 @@ async function _processPlayerReminders(game, playerFile, allNationData, hourMark
     const gameName = game.getName();
     const preferences = playerFile.getEffectiveGamePreferences(gameName);
     const controlledNationFilenames = playerFile.getControlledNationFilenamesInGame(gameName);
-    var controlledNationData;
+    let controlledNationData;
 
 
     if (preferences.hasReminderAtHourMark(hourMarkPassed) === false)
@@ -75,9 +74,11 @@ async function _processPlayerReminders(game, playerFile, allNationData, hourMark
 async function _sendPlayerReminders(game, controlledNationData, preferences, hourMarkPassed)
 {
     const gameName = game.getName();
-    const userWrapper = await botClientWrapper.fetchUser(preferences.getPlayerId());
-    var reminderMsg = `**${gameName} ${hourMarkPassed}-hour reminder**. Current turn status:\n\n`;
-    var turnListMsg = "";
+    const guild = game.getGuild();
+    const memberWrapper = await guild.fetchGuildMemberWrapperById(preferences.getPlayerId());
+
+    let reminderMsg = `**${gameName} ${hourMarkPassed}-hour reminder**. Current turn status:\n\n`;
+    let turnListMsg = "";
 
 
     for (let nationData of controlledNationData)
@@ -94,7 +95,7 @@ async function _sendPlayerReminders(game, controlledNationData, preferences, hou
         turnListMsg += `${nationData.fullName}: ${_turnStatusToString(nationData)}\n`;
     }
 
-    await userWrapper.sendMessage(new MessagePayload(reminderMsg + turnListMsg.toBox()));
+    await memberWrapper.sendMessage(new MessagePayload(reminderMsg + turnListMsg.toBox()));
 }
 
 function _turnStatusToString(turnData)

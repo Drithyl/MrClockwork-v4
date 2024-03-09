@@ -6,8 +6,8 @@ const DominionsGame = require("./prototypes/dominions_game.js");
 
 exports.loadGame = (pathToJSONDataFile) =>
 {
-    var loadedGame;
-    var parsedData;
+    let loadedGame;
+    let parsedData;
 
     return fsp.readFile(pathToJSONDataFile)
     .then((jsonStringData) => 

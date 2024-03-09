@@ -61,10 +61,10 @@ function extendPrototypes()
 {
     Array.prototype.forEachPromise = function(asyncFn)
     {
-        var index = 0;
+        let index = 0;
 
         //the context of 'this' will change in the loop
-        var array = this;
+        let array = this;
 
         return new Promise((resolve, reject) =>
         {
@@ -85,20 +85,20 @@ function extendPrototypes()
 
     Array.prototype.forAllPromises = function(asyncFn, breakOnError = true)
     {
-        var self = this;
-        var results = [];
-        var left = self.length;
+        let self = this;
+        let results = [];
+        let left = self.length;
 
         if (left <= 0)
             return Promise.resolve([]);
 
         return new Promise((resolve, reject) =>
         {
-            var errorOccurred = false;
+            let errorOccurred = false;
 
-            for (var i = 0; i < left; i++)
+            for (let i = 0; i < left; i++)
             {
-                var item = self[i];
+                let item = self[i];
 
                 Promise.resolve(asyncFn(item, i, self))
                 .then((result) =>
@@ -142,8 +142,8 @@ function extendPrototypes()
     {
         value: function(asyncFn)
         {
-            var self = this;
-            var keyArray = Object.keys(self);
+            let self = this;
+            let keyArray = Object.keys(self);
 
             //Pass the item, the key to the item, and the object
             keyArray.forEach((key, index) => asyncFn(self[key], keyArray[index], self));
@@ -155,9 +155,9 @@ function extendPrototypes()
     {
         value: function(asyncFn)
         {
-            var index = 0;
-            var self = this;
-            var keyArray = Object.keys(self);
+            let index = 0;
+            let self = this;
+            let keyArray = Object.keys(self);
 
             return new Promise((resolve, reject) =>
             {
@@ -183,21 +183,21 @@ function extendPrototypes()
     {
         value: function(asyncFn, breakOnError = true)
         {
-            var self = this;
-            var results = [];
-            var keyArray = Object.keys(self);
-            var left = keyArray.length;
-            var errorOccurred = false;
+            let self = this;
+            let results = [];
+            let keyArray = Object.keys(self);
+            let left = keyArray.length;
+            let errorOccurred = false;
 
             if (left <= 0)
                 return Promise.resolve([]);
 
             return new Promise((resolve, reject) =>
             {
-                for (var i = 0; i < left; i++)
+                for (let i = 0; i < left; i++)
                 {
-                    var key = keyArray[i];
-                    var item = self[key];
+                    let key = keyArray[i];
+                    let item = self[key];
 
                     Promise.resolve(asyncFn(item, key, self))
                     .then((result) =>
@@ -240,7 +240,7 @@ function extendPrototypes()
         {
             let arr = [];
 
-            for (var key in this)
+            for (let key in this)
             {
                 arr.push(this[key]);
             }
@@ -254,7 +254,7 @@ function extendPrototypes()
     //will have 50 characters, as long as the item is less than 50.
     String.prototype.width = function (space, spaceFirst = false, spacingChar = " ")
     {
-        var arrL = space - this.length + 1;
+        let arrL = space - this.length + 1;
 
         if (arrL < 1)
             arrL = 1;

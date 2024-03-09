@@ -68,7 +68,7 @@ function GameSettings(parentGame)
         log.general(log.getNormalLevel(), "Loading JSON data...", jsonData);
         this.forEachSetting((settingObject, settingKey) =>
         {
-            var loadedValue = jsonData[settingKey];
+            let loadedValue = jsonData[settingKey];
 
             log.general(log.getNormalLevel(), `Loading ${settingKey}`);
 
@@ -81,7 +81,7 @@ function GameSettings(parentGame)
 
     this.getSettingByKey = (keyToMatch) =>
     {
-        var setting;
+        let setting;
 
         this.forEachSetting((settingObject, settingKey) =>
         {
@@ -94,7 +94,7 @@ function GameSettings(parentGame)
 
     this.getSettingFlags = () =>
     {
-        var flags = ["--tcpserver", "--port", _parentGame.getPort(), "--scoredump", "--renaming", "--noclientstart"];
+        let flags = ["--tcpserver", "--port", _parentGame.getPort(), "--scoredump", "--renaming", "--noclientstart"];
 
         this.forEachSetting((settingObject) =>
         {
@@ -116,12 +116,12 @@ function GameSettings(parentGame)
 
     this.getSettingsStringList = () =>
     {
-        var stringList = "";
+        let stringList = "";
 
         this.forEachSetting((settingObject, settingKey) =>
         {
-            var name = settingObject.getName();
-            var readableValue = settingObject.getReadableValue();
+            let name = settingObject.getName();
+            let readableValue = settingObject.getReadableValue();
             stringList += `${name}: ${readableValue}\n`;
         });
 
@@ -130,12 +130,12 @@ function GameSettings(parentGame)
 
     this.getPublicSettingsStringList = () =>
     {
-        var stringList = "";
+        let stringList = "";
 
         this.forEachPublicSetting((settingObject, settingKey) =>
         {
-            var name = settingObject.getName();
-            var readableValue = settingObject.getReadableValue();
+            let name = settingObject.getName();
+            let readableValue = settingObject.getReadableValue();
             stringList += `${name}: ${readableValue}\n`;
         });
 
@@ -144,7 +144,7 @@ function GameSettings(parentGame)
 
     this.toJSON = () =>
     {
-        var jsonData = {};
+        let jsonData = {};
 
         this.forEachSetting((settingObject, settingKey) =>
         {

@@ -5,6 +5,7 @@ const log = require("../../logger.js");
 const assert = require("../../asserter.js");
 const config = require("../../config/config.json");
 const GameSettings = require("./game_settings.js");
+const GuildSetup = require("../../discord/guild_setup.js");
 const guildStore = require("../../discord/guild_store.js");
 const ongoingGamesStore = require("../ongoing_games_store.js");
 const hostServerStore = require("../../servers/host_server_store.js");
@@ -92,32 +93,32 @@ function Game()
         return _discordJsChannel.delete();
     };
 
-    this.createNewChannel = async () =>
+    this.createChannel = async () =>
     {
         const guildId = _guildWrapper.getId();
         const status = this.getLastKnownStatus();
         const organizerId = this.getOrganizerId();
         const guildOwnerId = this.getGuild().getOwnerId();
-        const permissionOverwrites = [];
+        let channelOwnerId = organizerId;
 
         // Organizer might have left guild when we're trying to restore a game channel
         if (organizerId == null) {
-            permissionOverwrites.push({ id: guildOwnerId, allow: [ "MANAGE_MESSAGES" ]});
-        }
-        
-        else {
-            permissionOverwrites.push({ id: organizerId, allow: [ "MANAGE_MESSAGES" ]});
+            channelOwnerId = guildOwnerId;
         }
 
-        const channel = await _guildWrapper.createChannel(`${this.getName()}`, permissionOverwrites);
+        const channel = await _guildWrapper.createChannel(
+            GuildSetup.gameChannelOptions(
+                this.getName(),
+                channelOwnerId
+            )
+        );
 
         this.setChannel(channel);
-        channel.setTopic(getDominionsTypeName(this.getType()));
 
         if (status != null && status.hasStarted() === true)
         {
-            log.general(log.getVerboseLevel(), `Game already started; moving to started category ${guildStore.getGameCategoryId(guildId)}`);
-            return channel.setParent(guildStore.getGameCategoryId(guildId));
+            log.general(log.getVerboseLevel(), `Game already started; moving to started category ${guildStore.getOngoingCategoryId(guildId)}`);
+            return channel.setParent(guildStore.getOngoingCategoryId(guildId));
         }
         
         else
@@ -148,10 +149,12 @@ function Game()
         return _discordJsRole.delete();
     };
 
-    this.createNewRole = () =>
+    this.createRole = async () =>
     {
-        return _guildWrapper.createGameRole(`${this.getName()} Player`)
-        .then((role) => this.setRole(role));
+        const role = await _guildWrapper.createRole(
+            GuildSetup.playerRoleOptions(`${this.getName()} Player`)
+        );
+        this.setRole(role);
     };
 
     this.getOrganizer = () => _organizerWrapper;
@@ -281,7 +284,7 @@ function Game()
 
         return settingsObject.forEachSettingPromise((settingObject, settingKey) =>
         {
-            var loadedValue = inputValues[settingKey];
+            let loadedValue = inputValues[settingKey];
 
             if (loadedValue == undefined)
                 return Promise.reject(new SemanticError(`Expected value for setting ${settingKey} is undefined.`));
@@ -303,8 +306,8 @@ function Game()
 
         log.general(log.getLeanLevel(), `${jsonData.name}: getting guild and server...`);
 
-        var guild = guildStore.getGuildWrapperById(jsonData.guildId);
-        var server = hostServerStore.getHostServerById(jsonData.serverId);
+        let guild = guildStore.getGuildWrapperById(jsonData.guildId);
+        let server = hostServerStore.getHostServerById(jsonData.serverId);
 
         if (guild == null)
             throw new Error(`Guild with id ${jsonData.guildId} cannot be found; skipping game ${jsonData.name}`);
@@ -368,7 +371,7 @@ function Game()
 
     this.toJSONSuper = () =>
     {
-        var jsonObject = {};
+        let jsonObject = {};
         jsonObject.name = this.getName();
         jsonObject.type = _type;
         jsonObject.port = _port;

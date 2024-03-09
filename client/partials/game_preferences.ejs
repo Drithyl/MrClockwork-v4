@@ -43,7 +43,7 @@
                     <legend class="col-form-label mt-2">Send reminder when how many hours are left?</legend>
                     <select id="<%=preferences.name%>_input_reminders" name="<%=preferences.name%>.reminders" class="form-control selectpicker clockworkSelectPicker mt-1" multiple>
                 
-                        <% for (var i = 2; i < 25; i++) {%>
+                        <% for (let i = 2; i < 25; i++) {%>
                             <% if (preferences.reminders.includes(i) === true) { %>
                                 <option name="<%=preferences.name%>.reminders" value="<%=i%>" selected><%=i%> hours</option>
                             <% } else { %>

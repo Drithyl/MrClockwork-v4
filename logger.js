@@ -11,13 +11,13 @@ const LEAN_LEVEL = 0;
 const NORMAL_LEVEL = 1;
 const VERBOSE_LEVEL = 2;
 
-var currentLogLevel = config.defaultLogLevel;
-var isLoggingToFile = true;
+let currentLogLevel = config.defaultLogLevel;
+let isLoggingToFile = true;
 
-var dayOfMonth = new Date().getDate();
-var generalWriteStream;
-var errorWriteStream;
-var uploadWriteStream;
+let dayOfMonth = new Date().getDate();
+let generalWriteStream;
+let errorWriteStream;
+let uploadWriteStream;
 
 _updateStreamPaths();
 
@@ -47,7 +47,7 @@ module.exports.toggleLogToFile = () =>
 
 module.exports.general = (logLevel, header, ...data) =>
 {
-    var logStr = _log(logLevel, header, ...data);
+    let logStr = _log(logLevel, header, ...data);
     _logToFile(logStr, generalWriteStream);
 };
 
@@ -56,12 +56,12 @@ module.exports.command = (logLevel, commandContext) =>
     if (logLevel > currentLogLevel)
         return;
 
-    const username = commandContext.getCommandSenderUsername();
-    const command = commandContext.getCommandString();
-    const channel = commandContext.getDestinationChannel();
-    const args = commandContext.getCommandArgumentsArray();
-    const guild = (commandContext.wasSentByDm() === false) ? commandContext.getGuildWrapper() : null;
-    var logStr = `${username} invoked <${command}> `;
+    const username = commandContext.userWrapper.getUsername();
+    const command = commandContext.name;
+    const channel = commandContext.channel;
+    const args = commandContext.optionsArray;
+    const guild = (commandContext.isDm === false) ? commandContext.guildWrapper : null;
+    let logStr = `${username} invoked <${command}> `;
 
     if (guild != null)
         logStr += `in channel ${channel.name} from guild "${guild.getName()}"`;
@@ -76,13 +76,13 @@ module.exports.command = (logLevel, commandContext) =>
 
 module.exports.error = (logLevel, header, ...data) =>
 {
-    var logStr = _log(logLevel, header, ...data);
+    let logStr = _log(logLevel, header, ...data);
     _logToFile(logStr, errorWriteStream);
 };
 
 module.exports.upload = (logLevel, header, ...data) =>
 {
-    var logStr = _log(logLevel, header, ...data);
+    let logStr = _log(logLevel, header, ...data);
     _logToFile(logStr, uploadWriteStream);
 };
 
@@ -112,7 +112,7 @@ module.exports.timeEnd = (tag, logLevel) =>
 
 function _log(logLevel, header, ...data)
 {
-    var logStr = `${_getTimestamp()}\t${header}\n`;
+    let logStr = `${_getTimestamp()}\t${header}\n`;
 
     data.forEach((line) =>
     {

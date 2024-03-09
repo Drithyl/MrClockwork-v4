@@ -10,9 +10,9 @@ function DominionsPreferences(playerId)
     const _playerId = playerId;
     const _reminders = [];
     
-    var _receiveScores = false;
-    var _receiveBackups = false;
-    var _receiveReminderWhenTurnIsDone = false;
+    let _receiveScores = false;
+    let _receiveBackups = false;
+    let _receiveReminderWhenTurnIsDone = false;
 
     this.getPlayerId = () => _playerId;
     this.getReminders = () => [..._reminders];
@@ -27,7 +27,7 @@ function DominionsPreferences(playerId)
 
     this.removeReminderAtHourMark = (hourMark) =>
     {
-        for (var i = _reminders.length - 1; i >= 0; i--)
+        for (let i = _reminders.length - 1; i >= 0; i--)
             if (_reminders[i] == hourMark)
                 _reminders.splice(i, 1);
     };

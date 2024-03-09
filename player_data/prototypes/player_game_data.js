@@ -29,7 +29,7 @@ function PlayerGameData(playerId, gameName)
     {
         const filenameWithoutExtension = domNationStore.trimFilenameExtension(nationFilename);
         
-        for (var i = _controlledNations.length - 1; i >= 0; i--)
+        for (let i = _controlledNations.length - 1; i >= 0; i--)
             if (_controlledNations[i] == filenameWithoutExtension)
                 _controlledNations.splice(i, 1);
     };

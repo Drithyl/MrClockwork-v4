@@ -9,12 +9,12 @@ module.exports = StartingResearch;
 
 function StartingResearch()
 {
-    var _value;
+    let _value;
 
     this.getValue = () => _value;
     this.getReadableValue = () =>
     {
-        var value = this.getValue();
+        let value = this.getValue();
 
         if (value == true)
             return "Evenly spread";
@@ -42,7 +42,7 @@ function StartingResearch()
 
     this.translateValueToCmdFlag = () =>
     {
-        var value = this.getValue();
+        let value = this.getValue();
     
         if (value == true)
             return [`--norandres`];

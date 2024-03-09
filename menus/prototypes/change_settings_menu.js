@@ -93,8 +93,8 @@ function _createMainScreen(menuStructure, settingsObject)
 
 function _updateMainScreenDisplay(mainScreenObject, settingsObject)
 {
-    var i = 1;
-    var mainScreenDisplay = "";
+    let i = 1;
+    let mainScreenDisplay = "";
 
     settingsObject.forEachChangeableSetting((setting, key) => 
     {

@@ -1,5 +1,5 @@
 
-var lastSelectedGameName;
+let lastSelectedGameName;
 
 /** See docs @ https://developer.snapappointments.com/bootstrap-select/options/#events */
 /** Triggers when another game is selected and displays the current preferences

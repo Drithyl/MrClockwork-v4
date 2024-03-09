@@ -17,16 +17,18 @@ function HostMenu(gameObject, useDefaults = false)
 
     const _menuStructure = new MenuStructure(_guildMemberWrapper);
 
-    var reservedName;
+    let reservedName;
 
     _menuStructure.addIntroductionMessage(`Welcome to the Assisted Hosting System! I will be asking you for a number of settings to host your game. You can also use the website interface instead of this menu by accessing the following link: ${config.fullSecureUrl}`);
     _menuStructure.addScreens(..._screens);
-    _menuStructure.addBehaviourOnInputValidated((currentScreenIndex) => _menuStructure.goToNextScreen());
+    _menuStructure.addBehaviourOnInputValidated((currentScreenIndex) => 
+        _menuStructure.goToNextScreen()
+    );
     _menuStructure.addBehaviourOnFinishedMenu(() => 
     {
         activeMenuStore.removeActiveInstance(_guildMemberWrapper.getId());
-        return gameObject.createNewChannel()
-        .then(() => gameObject.createNewRole())
+        return gameObject.createChannel()
+        .then(() => gameObject.createRole())
         .then(() => gamesStore.addOngoingGame(gameObject))
         .then(() => triggerOnGameCreatedEvent(gameObject))
         .then(() => gameObject.save())
@@ -65,13 +67,13 @@ function HostMenu(gameObject, useDefaults = false)
 
 function _loadSettingsScreensInOrder(gameObject, useDefaults = false)
 {
-    var menuScreens = [];
-    var settingsObject = gameObject.getSettingsObject();
+    let menuScreens = [];
+    let settingsObject = gameObject.getSettingsObject();
 
     settingsObject.forEachSetting((setting) => 
     {
-        var display = setting.getPrompt();
-        var behaviour = setting.setValue;
+        let display = setting.getPrompt();
+        let behaviour = setting.setValue;
 
         if (useDefaults === true)
         {

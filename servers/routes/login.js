@@ -15,7 +15,7 @@ exports.set = (expressApp) =>
         if (session != null)
             return session.redirectTo("user_home_screen", res);
 
-        var oAuth2Url = `https://discord.com/api/oauth2/authorize?client_id=${config.discordClientId}&redirect_uri=${config.discordRedirectUri}&response_type=code&scope=identify&prompt=none`
+        let oAuth2Url = `https://discord.com/api/oauth2/authorize?client_id=${config.discordClientId}&redirect_uri=${config.discordRedirectUri}&response_type=code&scope=identify&prompt=none`
         res.redirect(oAuth2Url);
     });
 

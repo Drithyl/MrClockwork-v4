@@ -18,8 +18,8 @@ const DOM5_MOD_PATH = path.resolve(getDominionsModsPath(config.dom5GameTypeName)
 const DOM6_MAP_PATH = path.resolve(getDominionsMapsPath(config.dom6GameTypeName));
 const DOM6_MOD_PATH = path.resolve(getDominionsModsPath(config.dom6GameTypeName));
 
-var modsAndMapsCleaningInterval;
-var isCleaningEnabled = config.isCleaningEnabled;
+let modsAndMapsCleaningInterval;
+let isCleaningEnabled = config.isCleaningEnabled;
 
 
 
@@ -97,7 +97,7 @@ module.exports.cleanUnusedMods = async (force = false) =>
 
 async function _cleanUnusedFiles(filesInUse, dirPath, force = false)
 {
-    var finalFilesInUse = [];
+    let finalFilesInUse = [];
     
     if (Array.isArray(filesInUse) === false)
         return Promise.reject(new Error(`Expected filesInUse to be an array, got ${typeof filesInUse} instead.`), []);
@@ -167,11 +167,11 @@ function _getListOfModsInUse(gameType)
  */
  function _getListOfRelatedFilesInUse(filesInUse, dirPath)
  {
-    var list = [];
+    let list = [];
 
     return filesInUse.forAllPromises((filename) =>
     {
-        var assetTagssMatch;
+        let assetTagssMatch;
         const filePath = path.resolve(dirPath, filename);
 
         if (fs.existsSync(filePath) === false)
@@ -207,7 +207,7 @@ function _getListOfModsInUse(gameType)
  
  function _deleteUnusedFiles(filePaths, filesInUse, force)
  {
-     var deletedFiles = [];
+     let deletedFiles = [];
      log.general(log.getLeanLevel(), "Total related files to check for cleaning", filePaths.length);
  
      if (filePaths.length <= 0)

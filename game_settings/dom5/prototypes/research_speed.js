@@ -11,12 +11,12 @@ module.exports = ResearchSpeed;
 
 function ResearchSpeed()
 {
-    var _value;
+    let _value;
 
     this.getValue = () => _value;
     this.getReadableValue = () =>
     {
-        var value = this.getValue();
+        let value = this.getValue();
 
         if (value == dom5SettingFlags.VERY_EASY_RESEARCH_SPEED)
             return "Very Easy";
@@ -51,7 +51,7 @@ function ResearchSpeed()
 
     this.translateValueToCmdFlag = () =>
     {
-        var value = this.getValue();
+        let value = this.getValue();
     
         return [`--research`, value];
     };

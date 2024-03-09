@@ -4,6 +4,7 @@
   "defaultLogLevel": 1,
   "isCleaningEnabled": false,
   
+  "applicationId": "5643246545346",
   "loginToken": "afhjsakbgasEGsdsrh4NzM3.XuVwAg._tAjRa_t3t3wet_A_Aggdsd54",
 
   "commandPrefix": "!",
@@ -42,7 +43,7 @@
   "helpChannelName": "clockwork_help",
   "blitzGeneralChannelName": "bot_blitz_general",
   "recruitingCategoryName": "Bot Open Games",
-  "gameCategoryName": "Bot Ongoing Games",
+  "ongoingCategoryName": "Bot Ongoing Games",
   "blitzRecruitingCategoryName": "Bot Open Blitzes",
   "blitzCategoryName": "Bot Ongoing Blitzes",
 

@@ -9,7 +9,7 @@ module.exports = ArtifactForging;
 
 function ArtifactForging()
 {
-    var _value;
+    let _value;
 
     this.getValue = () => _value;
     this.getReadableValue = () => 
@@ -40,7 +40,7 @@ function ArtifactForging()
 
     this.translateValueToCmdFlag = () =>
     {
-        var value = this.getValue();
+        let value = this.getValue();
     
         if (value === true)
             return ["--noartrest"];

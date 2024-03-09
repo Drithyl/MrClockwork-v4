@@ -1,34 +1,29 @@
 
 const log = require("../logger.js");
-const config = require("../config/config.json");
 const guildDataStore = require("./guild_data_store.js");
 const guildWrapperFactory = require("./guild_wrapper_factory.js");
-const botClientWrapper = require("./wrappers/bot_client_wrapper.js");
+const GuildSetup = require("./guild_setup.js");
 
 const guildWrappers = {};
 
-module.exports.populateStore = function(discordJsGuildCollection)
+module.exports.populateStore = async function(discordJsGuildCollection)
 {
-    return guildDataStore.populateGuildDataStore()
-    .then(() => 
+    await guildDataStore.populateGuildDataStore();
+
+    const guildArray = [...discordJsGuildCollection.values()];
+    const promises = guildArray.map(async (discordJsGuild) =>
     {
-        var guildArray = [...discordJsGuildCollection.values()];
+        log.general(log.getNormalLevel(), `Fetching guild...`);
+        const fetchedDiscordJsGuild = await discordJsGuild.fetch();
 
-        log.general(log.getNormalLevel(), "Finished loading guild data.");
-        log.general(log.getNormalLevel(), "Populating guild store...");
-
-        return guildArray.forAllPromises((discordJsGuild) =>
-        {
-            log.general(log.getNormalLevel(), `Fetching guild...`);
-            return discordJsGuild.fetch()
-            .then((fetchedDiscordJsGuild) =>
-            {
-                module.exports.addGuild(fetchedDiscordJsGuild);
-                log.general(log.getNormalLevel(), `${discordJsGuild.name} added.`);
-                return Promise.resolve();
-            });
-        });
+        module.exports.addGuild(fetchedDiscordJsGuild);
+        log.general(log.getNormalLevel(), `${discordJsGuild.name} added.`);
     });
+
+    log.general(log.getNormalLevel(), "Finished loading guild data.");
+    log.general(log.getNormalLevel(), "Populating guild store...");
+
+    await Promise.allSettled(promises);
 };
 
 module.exports.getGuildWrapperById = (guildId) =>
@@ -40,7 +35,7 @@ module.exports.getGuildsWhereUserIsMember = async (userId) =>
 {
     const guildsWhereUserIsMember = [];
 
-    for (var id in guildWrappers)
+    for (let id in guildWrappers)
     {
         const guild = guildWrappers[id];
         const isMember = await guild.checkIfMember(userId);
@@ -56,14 +51,14 @@ module.exports.getGuildsWhereUserIsTrusted = async (userId) =>
 {
     const guildsWhereUserIsTrusted = [];
 
-    for (var id in guildWrappers)
+    for (let id in guildWrappers)
     {
         const guild = guildWrappers[id];
 
         try
         {
             const guildMemberWrapper = await guild.fetchGuildMemberWrapperById(userId);
-            const isTrusted = await guild.checkMemberHasTrustedRoleOrHigher(guildMemberWrapper);
+            const isTrusted = await guild.checkMemberIsTrusted(guildMemberWrapper);
     
             if (isTrusted === true)
                 guildsWhereUserIsTrusted.push(guild);
@@ -82,28 +77,29 @@ module.exports.getGuildsWhereUserIsTrusted = async (userId) =>
     return guildsWhereUserIsTrusted;
 };
 
-module.exports.fetchGuildClientData = (userId) =>
+module.exports.fetchGuildClientData = async (userId) =>
 {
     const guildData = [];
-
-    return guildWrappers.forAllPromises((guild) =>
+    const promises = guildWrappers.map(async (guild) =>
     {
         const id = guild.getId();
         const name = guild.getName();
 
-        return guild.fetchGuildMemberWrapperById(userId)
-        .then((member) =>
-        {
-            if (guild.memberHasTrustedRole(member) === true || guild.memberHasGameMasterRole(member) === true || guild.memberIsOwner(userId) === true)
-                guildData.push({ id, name });
-        });
-    })
-    .then(() => Promise.resolve(guildData));
+        const member = await guild.fetchGuildMemberWrapperById(userId);
+
+        if (guild.memberHasTrustedRole(member) === true || 
+            guild.memberHasGameMasterRole(member) === true || 
+            guild.memberIsOwner(userId) === true)
+            guildData.push({ id, name });
+    });
+
+    await Promise.allSettled(promises);
+    return guildData;
 };
 
 module.exports.getRecruitingCategoryId = (guildId) => guildDataStore.getRecruitingCategoryId(guildId);
 module.exports.getBlitzRecruitingCategoryId = (guildId) => guildDataStore.getBlitzRecruitingCategoryId(guildId);
-module.exports.getGameCategoryId = (guildId) => guildDataStore.getGameCategoryId(guildId);
+module.exports.getOngoingCategoryId = (guildId) => guildDataStore.getOngoingCategoryId(guildId);
 module.exports.getBlitzCategoryId = (guildId) => guildDataStore.getBlitzCategoryId(guildId);
 
 module.exports.hasGuildWrapper = (guildId) =>
@@ -113,7 +109,7 @@ module.exports.hasGuildWrapper = (guildId) =>
 
 module.exports.forEachGuild = (fnToCall) =>
 {
-    for (var id in guildWrappers)
+    for (let id in guildWrappers)
     {
         fnToCall(guildWrappers[id]);
     }
@@ -129,8 +125,8 @@ module.exports.forAllGuilds = (promiseToCall) =>
 
 module.exports.addGuild = (discordJsGuild) =>
 {
-    var guildWrapper = guildWrapperFactory.wrapDiscordJsGuild(discordJsGuild);
-    var guildId = guildWrapper.getId();
+    let guildWrapper = guildWrapperFactory.wrapDiscordJsGuild(discordJsGuild);
+    let guildId = guildWrapper.getId();
 
     guildWrappers[guildId] = guildWrapper;
     return guildWrapper;
@@ -143,193 +139,147 @@ module.exports.removeGuild = (discordJsGuild) =>
     return guildDataStore.removeGuildData(guildId);
 };
 
-exports.deployBotOnGuild = (guildId) =>
+exports.deployBotOnGuild = async (client, guildId) =>
 {
-    var botId = botClientWrapper.getId();
-    var guildWrapper = this.getGuildWrapperById(guildId);
+    let guildWrapper = this.getGuildWrapperById(guildId);
 
-    var gameMasterRoleId = guildDataStore.getGameMasterRoleId(guildId);
-    var trustedRoleId = guildDataStore.getTrustedRoleId(guildId);
-    var blitzerRoleId = guildDataStore.getBlitzerRoleId(guildId);
+    let gameMasterRoleId = guildDataStore.getGameMasterRoleId(guildId);
+    let trustedRoleId = guildDataStore.getTrustedRoleId(guildId);
+    let blitzerRoleId = guildDataStore.getBlitzerRoleId(guildId);
 
-    var newsChannelId = guildDataStore.getNewsChannelId(guildId);
-    var helpChannelId = guildDataStore.getHelpChannelId(guildId);
+    let newsChannelId = guildDataStore.getNewsChannelId(guildId);
+    let helpChannelId = guildDataStore.getHelpChannelId(guildId);
 
-    var recruitingCategoryId = guildDataStore.getRecruitingCategoryId(guildId);
-    var blitzRecruitingCategoryId = guildDataStore.getBlitzRecruitingCategoryId(guildId);
-    var gameCategoryId = guildDataStore.getGameCategoryId(guildId);
-    var blitzCategoryId = guildDataStore.getBlitzCategoryId(guildId);
+    let recruitingCategoryId = guildDataStore.getRecruitingCategoryId(guildId);
+    let ongoingCategoryId = guildDataStore.getOngoingCategoryId(guildId);
 
 
-    return guildWrapper.findOrCreateRole(gameMasterRoleId, config.gameMasterRoleName, true, guildDataStore.getGameMasterRolePermissionOverwrites())
-    .then((role) => guildDataStore.setGameMasterRoleId(guildId, role.id))
-
-    .then(() => guildWrapper.findOrCreateRole(trustedRoleId, config.trustedRoleName, false, guildDataStore.getTrustedRolePermissionOverwrites()))
-    .then((role) => guildDataStore.setTrustedRoleId(guildId, role.id))
-    
-    .then(() => guildWrapper.findOrCreateRole(blitzerRoleId, config.blitzerRoleName, true, guildDataStore.getBlitzerRolePermissionOverwrites()))
-    .then((role) => guildDataStore.setBlitzerRoleId(guildId, role.id))
+    const gameMasterRole = await guildWrapper.findOrCreateRole(
+        gameMasterRoleId, 
+        GuildSetup.gameMasterRoleOptions()
+    );
+    guildDataStore.setGameMasterRoleId(guildId, gameMasterRole.id);
     
 
-    .then(() => guildWrapper.findOrCreateChannel(
-        newsChannelId, 
-        config.newsChannelName, 
-        [
-            { 
-                id: guildId, 
-                deny: guildDataStore.getNewsChannelMemberPermissionOverwrites("deny"),
-                allow: guildDataStore.getNewsChannelMemberPermissionOverwrites("allow") 
-            },
-            { 
-                id: botId, 
-                deny: guildDataStore.getNewsChannelBotPermissionOverwrites("deny"),
-                allow: guildDataStore.getNewsChannelBotPermissionOverwrites("allow") 
-            }
-        ]
-    ))
-    .then((channel) => guildDataStore.setNewsChannelId(guildId, channel.id))
+    const trustedRole = await guildWrapper.findOrCreateRole(
+        trustedRoleId, 
+        GuildSetup.trustedRoleOptions()
+    );
+    guildDataStore.setTrustedRoleId(guildId, trustedRole.id);
+    
 
-    .then(() => guildWrapper.findOrCreateChannel(
-        helpChannelId, 
-        config.helpChannelName, 
-        [
-            { 
-                id: guildId, 
-                deny: guildDataStore.getHelpChannelMemberPermissionOverwrites("deny"),
-                allow: guildDataStore.getHelpChannelMemberPermissionOverwrites("allow") 
-            },
-            { 
-                id: botId, 
-                deny: guildDataStore.getHelpChannelBotPermissionOverwrites("deny"),
-                allow: guildDataStore.getHelpChannelBotPermissionOverwrites("allow") 
-            }
-        ]
-    ))
-    .then((channel) => guildDataStore.setHelpChannelId(guildId, channel.id))
-
-
-    .then(() => guildWrapper.findOrCreateCategory(
-        recruitingCategoryId, 
-        config.recruitingCategoryName, 
-        [
-            { 
-                id: guildId, 
-                deny: guildDataStore.getRecruitingCategoryMemberPermissionOverwrites("deny"),
-                allow: guildDataStore.getRecruitingCategoryMemberPermissionOverwrites("allow") 
-            },
-            { 
-                id: botId, 
-                deny: guildDataStore.getRecruitingCategoryBotPermissionOverwrites("deny"),
-                allow: guildDataStore.getRecruitingCategoryBotPermissionOverwrites("allow") 
-            }
-        ]
-    ))
-    .then((category) => guildDataStore.setRecruitingCategoryId(guildId, category.id))
-
-    .then(() => guildWrapper.findOrCreateCategory(
-        blitzRecruitingCategoryId, 
-        config.blitzRecruitingCategoryName, 
-        [
-            { 
-                id: guildId, 
-                deny: guildDataStore.getBlitzRecruitingCategoryMemberPermissionOverwrites("deny"),
-                allow: guildDataStore.getBlitzRecruitingCategoryMemberPermissionOverwrites("allow") 
-            },
-            { 
-                id: botId, 
-                deny: guildDataStore.getBlitzRecruitingCategoryBotPermissionOverwrites("deny"),
-                allow: guildDataStore.getBlitzRecruitingCategoryBotPermissionOverwrites("allow") 
-            }
-        ]
-    ))
-    .then((category) => guildDataStore.setBlitzRecruitingCategoryId(guildId, category.id))
-
-    .then(() => guildWrapper.findOrCreateCategory(
-        gameCategoryId, 
-        config.gameCategoryName, 
-        [
-            { 
-                id: guildId, 
-                deny: guildDataStore.getGameCategoryMemberPermissionOverwrites("deny"),
-                allow: guildDataStore.getGameCategoryMemberPermissionOverwrites("allow") 
-            },
-            { 
-                id: botId, 
-                deny: guildDataStore.getGameCategoryBotPermissionOverwrites("deny"),
-                allow: guildDataStore.getGameCategoryBotPermissionOverwrites("allow") 
-            }
-        ]
-    ))
-    .then((category) => guildDataStore.setGameCategoryId(guildId, category.id))
-
-    .then(() => guildWrapper.findOrCreateCategory(
-        blitzCategoryId, 
-        config.blitzCategoryName, 
-        [
-            { 
-                id: guildId, 
-                deny: guildDataStore.getBlitzCategoryMemberPermissionOverwrites("deny"),
-                allow: guildDataStore.getBlitzCategoryMemberPermissionOverwrites("allow") 
-            },
-            { 
-                id: botId, 
-                deny: guildDataStore.getBlitzCategoryBotPermissionOverwrites("deny"),
-                allow: guildDataStore.getBlitzCategoryBotPermissionOverwrites("allow") 
-            }
-        ]
-    ))
-    .then((category) => guildDataStore.setBlitzCategoryId(guildId, category.id));
+    const blizerRole = await guildWrapper.findOrCreateRole(
+        blitzerRoleId, 
+        GuildSetup.blitzerRoleOptions()
+    );
+    guildDataStore.setBlitzerRoleId(guildId, blizerRole.id);
+    
+    
+    const newsChannel = await guildWrapper.findOrCreateChannel(
+        newsChannelId,
+        GuildSetup.newsChannelOptions(guildId)
+    );
+    guildDataStore.setNewsChannelId(guildId, newsChannel.id);
+    
+    
+    const helpChannel = await guildWrapper.findOrCreateChannel(
+        helpChannelId,
+        GuildSetup.helpChannelOptions(guildId)
+    );
+    guildDataStore.setHelpChannelId(guildId, helpChannel.id);
+    
+    
+    const recruitingCategory = await guildWrapper.findOrCreateChannel(
+        recruitingCategoryId,
+        GuildSetup.recruitingCategoryOptions(guildId)
+    );
+    guildDataStore.setRecruitingCategoryId(guildId, recruitingCategory.id);
+    
+    
+    const ongoingCategory = await guildWrapper.findOrCreateChannel(
+        ongoingCategoryId,
+        GuildSetup.ongoingCategoryOptions(guildId)
+    );
+    guildDataStore.setOngoingCategoryId(guildId, ongoingCategory.id);
 };
 
 exports.undeployBotOnGuild = (guildId) =>
 {
-    var guildWrapper = this.getGuildWrapperById(guildId);
+    let guildWrapper = this.getGuildWrapperById(guildId);
 
     const newsChannel = guildWrapper.getNewsChannel();
     const helpChannel = guildWrapper.getHelpChannel();
 
     const recruitingCategory = guildWrapper.getRecruitingCategory();
     const blitzRecruitingCategory = guildWrapper.getBlitzRecruitingCategory();
-    const gameCategory = guildWrapper.getGameCategory();
+    const ongoingCategory = guildWrapper.getOngoingCategory();
     const blitzCategory = guildWrapper.getBlitzCategory();
 
     const gameMasterRole = guildWrapper.getGameMasterRole();
     const trustedRole = guildWrapper.getTrustedRole();
     const blitzerRole = guildWrapper.getBlitzerRole();
 
-    newsChannel.delete()
-    .catch((err) => log.error(log.getLeanLevel(), "COULD NOT DELETE NEWS CHANNEL", err));
 
-    helpChannel.delete()
-    .catch((err) => log.error(log.getLeanLevel(), "COULD NOT DELETE HELP CHANNEL", err));
+    if (newsChannel != null)
+    {
+        newsChannel.delete()
+        .catch((err) => log.error(log.getLeanLevel(), "COULD NOT DELETE NEWS CHANNEL", err));
+    }
 
-    recruitingCategory.delete()
-    .catch((err) => log.error(log.getLeanLevel(), "COULD NOT DELETE RECRUITING CATEGORY", err));
+    if (helpChannel != null)
+    {
+        helpChannel.delete()
+        .catch((err) => log.error(log.getLeanLevel(), "COULD NOT DELETE HELP CHANNEL", err));
+    }
 
-    blitzRecruitingCategory.delete()
-    .catch((err) => log.error(log.getLeanLevel(), "COULD NOT DELETE BLITZ RECRUITING CATEGORY", err));
+    if (recruitingCategory != null)
+    {
+        recruitingCategory.delete()
+        .catch((err) => log.error(log.getLeanLevel(), "COULD NOT DELETE RECRUITING CATEGORY", err));
+    }
 
-    gameCategory.delete()
-    .catch((err) => log.error(log.getLeanLevel(), "COULD NOT DELETE GAME CATEGORY", err));
+    if (blitzRecruitingCategory != null)
+    {
+        blitzRecruitingCategory.delete()
+        .catch((err) => log.error(log.getLeanLevel(), "COULD NOT DELETE BLITZ RECRUITING CATEGORY", err));
+    }
 
-    blitzCategory.delete()
-    .catch((err) => log.error(log.getLeanLevel(), "COULD NOT DELETE BLITZ CATEGORY", err));
+    if (ongoingCategory != null)
+    {
+        ongoingCategory.delete()
+        .catch((err) => log.error(log.getLeanLevel(), "COULD NOT DELETE GAME CATEGORY", err));
+    }
 
-    gameMasterRole.delete()
-    .catch((err) => log.error(log.getLeanLevel(), "COULD NOT DELETE GAME MASTER ROLE", err));
+    if (blitzCategory != null)
+    {
+        blitzCategory.delete()
+        .catch((err) => log.error(log.getLeanLevel(), "COULD NOT DELETE BLITZ CATEGORY", err));
+    }
 
-    trustedRole.delete()
-    .catch((err) => log.error(log.getLeanLevel(), "COULD NOT DELETE TRUSTED ROLE", err));
+    if (gameMasterRole != null)
+    {
+        gameMasterRole.delete()
+        .catch((err) => log.error(log.getLeanLevel(), "COULD NOT DELETE GAME MASTER ROLE", err));
+    }
 
-    blitzerRole.delete()
-    .catch((err) => log.error(log.getLeanLevel(), "COULD NOT DELETE BLITZER ROLE", err));
+    if (trustedRole != null)
+    {
+        trustedRole.delete()
+        .catch((err) => log.error(log.getLeanLevel(), "COULD NOT DELETE TRUSTED ROLE", err));
+    }
+
+    if (blitzerRole != null)
+    {
+        blitzerRole.delete()
+        .catch((err) => log.error(log.getLeanLevel(), "COULD NOT DELETE BLITZER ROLE", err));
+    }
 
     return Promise.resolve();
 };
 
 exports.updateHelpChannels = (payload, idOfGuildToUpdate = "") =>
 {
-    var guildToUpdate = this.getGuildWrapperById(idOfGuildToUpdate);
+    let guildToUpdate = this.getGuildWrapperById(idOfGuildToUpdate);
 
     if (guildToUpdate != null)
         return guildToUpdate.updateHelpChannel(payload);

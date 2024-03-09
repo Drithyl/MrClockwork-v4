@@ -6,6 +6,7 @@ const GuildMemberWrapper = require("./guild_member_wrapper.js");
 const MessageEmbedWrapper = require("./message_embed_wrapper.js");
 
 const { commandPrefix } = require("../../config/config.json");
+const { ChannelType } = require("discord.js");
 
 module.exports = MessageWrapper;
 
@@ -14,8 +15,8 @@ function MessageWrapper(discordJsMessageObject)
     const _discordJsMessageObject = discordJsMessageObject;
 
     const _userWrapper = new UserWrapper(_discordJsMessageObject.author);
-    var _guildWrapper;
-    var _guildMemberWrapper;
+    let _guildWrapper;
+    let _guildMemberWrapper;
 
     this.getId = () => _discordJsMessageObject.id;
     this.getSenderUserWrapper = () => _userWrapper;
@@ -60,9 +61,9 @@ function MessageWrapper(discordJsMessageObject)
     this.getSenderGuildMemberWrapper = () => _guildMemberWrapper;
     /*****************************************************************************/
 
-    this.wasSentByBot = () => _discordJsMessageObject.content.bot;
+    this.wasSentByBot = () => _discordJsMessageObject.author.bot;
     this.editMessageContent = (newContent) => _discordJsMessageObject.edit(newContent);
-    this.isDirectMessage = () => /^DM$/i.test(this.getDestinationChannelType());
+    this.isDirectMessage = () => this.getDestinationChannelType() === ChannelType.DM;
     this.startsWithCommandPrefix = () => _startsWithCommandPrefix(this.getMessageContent());
 
     this.respond = (messagePayload) => messagePayload.send(this.getDestinationChannel());

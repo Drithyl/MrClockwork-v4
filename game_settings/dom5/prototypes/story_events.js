@@ -11,12 +11,12 @@ module.exports = StoryEvents;
 
 function StoryEvents()
 {
-    var _value;
+    let _value;
 
     this.getValue = () => _value;
     this.getReadableValue = () =>
     {
-        var value = this.getValue();
+        let value = this.getValue();
 
         if (value == dom5SettingFlags.NO_STORY_EVENTS)
             return "Disabled";
@@ -47,7 +47,7 @@ function StoryEvents()
 
     this.translateValueToCmdFlag = () =>
     {
-        var value = this.getValue();
+        let value = this.getValue();
     
         if (value ===  dom5SettingFlags.NO_STORY_EVENTS)
             return ["--nostoryevents"];

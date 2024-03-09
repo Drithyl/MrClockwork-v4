@@ -13,11 +13,11 @@ function MenuStructure(guildMemberWrapper, contextData)
     const _screens = [];
     const _screenHistoryIndex = [];
     
-    var _introductionMessage = null;
+    let _introductionMessage = null;
 
-    var _onFinishedMenu = null;
-    var _onInputValidated = null;
-    var _currentScreenIndex = 0;
+    let _onFinishedMenu = null;
+    let _onInputValidated = null;
+    let _currentScreenIndex = 0;
 
     this.getId = () => _guildMemberWrapper.getId();
 
@@ -66,7 +66,7 @@ function MenuStructure(guildMemberWrapper, contextData)
         if (input === "?TEST")
             return require("./tester.js").testHost(this);
 
-        var currentScreen = _getCurrentScreen();
+        let currentScreen = _getCurrentScreen();
 
         return Promise.resolve(currentScreen.invokeBehaviour(input))
         .then((response) => 
@@ -121,8 +121,8 @@ function MenuStructure(guildMemberWrapper, contextData)
 
     function _sendCurrentScreenDisplay()
     {
-        var currentScreenObject = _getCurrentScreen();
-        var currentScreenDisplayText = currentScreenObject.getDisplayText();
+        let currentScreenObject = _getCurrentScreen();
+        let currentScreenDisplayText = currentScreenObject.getDisplayText();
 
         _guildMemberWrapper.sendMessage(new MessagePayload(currentScreenDisplayText));
     }

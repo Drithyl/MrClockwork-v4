@@ -10,7 +10,7 @@ module.exports = Mods;
 
 function Mods(parentGameObject)
 {
-    var _value;
+    let _value;
     const _parentGame = parentGameObject;
 
     this.getValue = () => _value;
@@ -50,8 +50,8 @@ function Mods(parentGameObject)
 
     this.translateValueToCmdFlag = () =>
     {
-        var modArray = this.getValue();
-        var flagArr = [];
+        let modArray = this.getValue();
+        let flagArr = [];
     
         if (modArray == null)
             return [];
@@ -66,7 +66,7 @@ function Mods(parentGameObject)
 
     function _validateInputFormatOrThrow(input)
     {
-        var modFilenames = [];
+        let modFilenames = [];
 
         if (Mods.prototype.isExpectedFormat(input) === false)
             return Promise.reject(new SemanticError(`Invalid value format for the mods.`));

@@ -18,8 +18,8 @@ exports.set = (expressApp) =>
     //since they will also be extracted in the client
     expressApp.get("/host_dom5", async (req, res) =>
     {
-        var availableServers;
-        var guildsWhereUserIsTrusted;
+        let availableServers;
+        let guildsWhereUserIsTrusted;
 
         const guildData = [];
 
@@ -125,7 +125,7 @@ function _formatPostValues(values)
 
 function _createGame(userId, values)
 {
-    var gameObject;
+    let gameObject;
     const guild = guildStore.getGuildWrapperById(values.guild);
     const server = hostServerStore.getHostServerByName(values.server);
     const type = config.dom5GameTypeName;
@@ -148,8 +148,8 @@ function _createGame(userId, values)
         gameObject.setPort(port);
         return gameObject.loadSettingsFromInput(values);
     })
-    .then(() => gameObject.createNewChannel())
-    .then(() => gameObject.createNewRole())
+    .then(() => gameObject.createChannel())
+    .then(() => gameObject.createRole())
     .then(() => gamesStore.addOngoingGame(gameObject))
     .then(() => triggerOnGameCreatedEvent(gameObject))
     .then(() => gameObject.save())

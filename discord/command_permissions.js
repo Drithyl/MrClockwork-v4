@@ -1,187 +1,131 @@
-
 const { SemanticError, PermissionsError } = require("../errors/custom_errors.js");
 
-
-exports.assertCommandIsUsedInGameChannel = (...args) => _assertCommandIsUsedInGameChannel(...args);
-exports.assertServerIsOnline = (...args) => _assertServerIsOnline(...args);
-exports.assertGameIsOnline = (...args) => _assertGameIsOnline(...args);
-exports.assertGameIsOffline = (...args) => _assertGameIsOffline(...args);
-exports.assertGameHasStarted = (...args) => _assertGameHasStarted(...args);
-exports.assertGameHasNotStarted = (...args) => _assertGameHasNotStarted(...args);
-exports.assertGameIsBlitz = (...args) => _assertGameIsBlitz(...args);
-exports.assertGameIsNotBlitz = (...args) => _assertGameIsNotBlitz(...args);
-exports.assertMemberIsTrusted = (...args) => _assertMemberIsTrusted(...args);
-exports.assertMemberIsGameMaster = (...args) => _assertMemberIsGameMaster(...args);
-exports.assertMemberIsGuildOwner = (...args) => _assertMemberIsGuildOwner(...args);
-exports.assertMemberIsOrganizer = (...args) => _assertMemberIsOrganizer(...args);
-exports.assertMemberIsPlayer = (...args) => _assertMemberIsPlayer(...args);
-exports.assertMemberIsDev = (...args) => _assertMemberIsDev(...args);
-exports.assertBotHasPermissionToManageRoles = (...args) => _assertBotHasPermissionToManageRoles(...args);
-exports.assertBotHasPermissionToManageChannels = (...args) => _assertBotHasPermissionToManageChannels(...args);
-
 //TODO: revise all functions, many were written with an older version of the commandContext
-function _assertCommandIsUsedInGameChannel(commandContext)
+exports.assertCommandIsUsedInGameChannel = (commandContext) =>
 {
-    if (commandContext.isGameCommand() === false)
-        throw new SemanticError(`This command must be used in the channel of an ongoing game.`);
-}
+    if (commandContext.isGameInteraction === false)
+        throw new SemanticError(`You must use this command inside a game's channel.`);
+};
 
 //TODO: Specify type of Error thrown
-function _assertServerIsOnline(commandContext)
+exports.assertServerIsOnline = (commandContext) =>
 {
-    const game = commandContext.getGameTargetedByCommand();
+    const game = commandContext.targetedGame;
 
     if (game.isServerOnline() === false)
-        throw new Error(`The server on which this game is hosted is offline.`);
-}
+        throw new Error(`Cannot use this command while this game's server is offline. Try again later.`);
+};
 
 //TODO: Specify type of Error thrown
-function _assertGameIsOnline(commandContext)
+exports.assertGameIsOnline = async (commandContext) =>
 {
-    const game = commandContext.getGameTargetedByCommand();
+    const game = commandContext.targetedGame;
+    const isOnline = await game.isOnlineCheck();
 
-    return game.isOnlineCheck()
-    .then((isOnline) =>
-    {
-        if (isOnline === true)
-            return Promise.resolve();
-        
-        else return Promise.reject(new Error(`This game's instance is offline.`));
-    })
-    .catch((err) => Promise.reject(err));
-}
+    if (isOnline === false)
+        throw new Error(`Cannot use this command while the game is offline. Launch it first.`);
+};
 
 //TODO: Specify type of Error thrown
-function _assertGameIsOffline(commandContext)
+exports.assertGameIsOffline = async (commandContext) =>
 {
-    const game = commandContext.getGameTargetedByCommand();
+    const game = commandContext.targetedGame;
+    const isOnline = await game.isOnlineCheck();
 
-    return game.isOnlineCheck()
-    .then((isOnline) =>
-    {
-        if (isOnline === false)
-            return Promise.resolve();
-        
-        else return Promise.reject(new Error(`This game's instance is already online.`));
-    })
-    .catch((err) => Promise.reject(err));
-}
+    if (isOnline === true)
+        throw new Error(`Cannot use this command while the game is online.`);
+};
 
-function _assertGameHasStarted(commandContext)
+exports.assertGameHasStarted = async (commandContext) =>
 {
-    const game = commandContext.getGameTargetedByCommand();
+    const game = commandContext.targetedGame;
+    const hasStarted = await game.hasGameStarted();
 
-    if (game.hasGameStarted() === false)
-        return Promise.reject(new SemanticError(`This game has not started yet.`));
+    if (hasStarted === false)
+        throw new Error(`Cannot use this command before the game starts.`);
+};
 
-    else return Promise.resolve();
-}
-
-function _assertGameHasNotStarted(commandContext)
+exports.assertGameHasNotStarted = async (commandContext) =>
 {
-    const game = commandContext.getGameTargetedByCommand();
+    const game = commandContext.targetedGame;
+    const hasStarted = await game.hasGameStarted();
 
-    if (game.hasGameStarted() === true)
-        return Promise.reject(new SemanticError(`This game has already started.`));
+    if (hasStarted === true)
+        throw new Error(`Cannot use this command after the game has started.`);
+};
 
-    else return Promise.resolve();
-}
-
-function _assertGameIsBlitz(commandContext)
+exports.assertMemberIsTrusted = async (commandContext) =>
 {
-    const game = commandContext.getGameTargetedByCommand();
+    if (commandContext.isMemberDev === true)
+        return true;
 
-    if (game.assertGameIsBlitz() === false)
-        throw new SemanticError(`This command can only be used in a blitz game.`);
-}
+    const isDev = commandContext.isDev;
+    const memberWrapper = commandContext.memberWrapper;
+    const guild = commandContext.guildWrapper;
+    const trustedRole = await guild.fetchTrustedRole();
+    const isTrustedOrAbove = await guild.checkMemberHasRoleOrAbove(memberWrapper, trustedRole);
 
-function _assertGameIsNotBlitz(commandContext)
+    if (isDev == false && isTrustedOrAbove === false)
+        throw new Error(`You must have this community's Trusted role to use this command.`);
+};
+
+exports.assertMemberIsGameMaster = async (commandContext) =>
 {
-    const game = commandContext.getGameTargetedByCommand();
+    const isDev = commandContext.isDev;
+    const memberWrapper = commandContext.memberWrapper;
+    const guild = commandContext.guildWrapper;
+    const gameMasterRole = await guild.fetchGameMasterRole();
+    const isGameMasterOrAbove = await guild.checkMemberHasRoleOrAbove(memberWrapper, gameMasterRole);
 
-    if (game.assertGameIsBlitz() === true)
-        throw new SemanticError(`This command cannot be used in a blitz game.`);
-}
+    if (isDev === false && isGameMasterOrAbove === false)
+        throw new Error(`You must be a Game Master or higher to use this command.`);
+};
 
-function _assertMemberIsTrusted(commandContext)
+exports.assertMemberIsGuildOwner = (commandContext) =>
 {
-    if (commandContext.isSenderDev() === true)
-        return Promise.resolve();
-
-    return commandContext.checkSenderIsTrusted()
-    .then((isTrusted) =>
-    {
-        if (isTrusted === true)
-            return Promise.resolve();
-
-        else return Promise.reject(new SemanticError(`You must be a trusted member before you can use this command.`));
-    });
-}
-
-function _assertMemberIsGameMaster(commandContext)
-{
-    if (commandContext.isSenderDev() === true)
-        return Promise.resolve();
-
-    return commandContext.checkSenderIsGameMasterOrHigher()
-    .then((isGmOrHigher) =>
-    {
-        if (isGmOrHigher === true)
-            return Promise.resolve();
-
-        else return Promise.reject(new SemanticError(`You must be a Game Master or higher to use this command.`));
-    });
-}
-
-function _assertMemberIsGuildOwner(commandContext)
-{
-    if (commandContext.isSenderGuildOwner() === false)
+    if (commandContext.isMemberGuildOwner === false)
         throw new PermissionsError(`Only the owner of this guild can use this command.`);
-}
+};
 
-function _assertMemberIsOrganizer(commandContext)
+exports.assertMemberIsOrganizer = async (commandContext) =>
 {
-    if (commandContext.isSenderGameOrganizer() === true)
-        return Promise.resolve();
+    const isDev = commandContext.isDev;
+    const isOrganizer = commandContext.isMemberOrganizer;
+    const memberWrapper = commandContext.memberWrapper;
+    const guild = commandContext.guildWrapper;
+    const gameMasterRole = await guild.fetchGameMasterRole();
+    const isGameMasterOrAbove = await guild.checkMemberHasRoleOrAbove(memberWrapper, gameMasterRole);
 
-    return commandContext.checkSenderIsGameMasterOrHigher()
-    .then((isGmOrHigher) =>
-    {
-        if (isGmOrHigher === true)
-            return Promise.resolve();
+    if (isDev === false && isOrganizer === false && isGameMasterOrAbove === false)
+        throw new Error(`You must be the game's organizer or a Game Master to use this command.`);
+};
 
-        else return Promise.reject(new SemanticError(`You must be the organizer of this game.`));
-    });
-}
-
-function _assertMemberIsPlayer(commandContext)
+exports.assertMemberIsPlayer = (commandContext) =>
 {
-    if (commandContext.isSenderGamePlayer() === false)
-        throw new PermissionsError(`Only players registered in this game can use this command.`);
-}
+    if (commandContext.isMemberPlayer === false)
+        throw new PermissionsError(`You must have a pretender claimed in this game to use this command.`);
+};
 
-function _assertMemberIsDev(commandContext)
+exports.assertMemberIsDev = (commandContext) =>
 {
-    if (commandContext.isSenderDev() === false)
+    if (commandContext.isMemberDev === false)
         throw new PermissionsError(`This command can only be used by the bot devs.`);
-}
+};
 
-function _assertBotHasPermissionToManageRoles(commandContext)
+exports.assertBotHasPermissionToManageRoles = (commandContext) =>
 {
-    const guildWrapper = getGuildWrapper(commandContext);
-    return guildWrapper.doesBotHavePermission("MANAGE_ROLES");
-}
+    const guildWrapper = commandContext.guildWrapper;
+    const hasPermissions = guildWrapper.doesBotHavePermission("MANAGE_ROLES");
 
-function _assertBotHasPermissionToManageChannels(commandContext)
+    if (hasPermissions === false)
+        throw new Error(`The Bot must have the Manage Roles permission to do this.`);
+};
+
+exports.assertBotHasPermissionToManageChannels = (commandContext) =>
 {
-    const guildWrapper = getGuildWrapper(commandContext);
-    return guildWrapper.doesBotHavePermission("MANAGE_CHANNELS");
-}
+    const guildWrapper = commandContext.guildWrapper;
+    const hasPermissions = guildWrapper.doesBotHavePermission("MANAGE_CHANNELS");
 
-function getGuildWrapper(commandContext)
-{
-    if (commandContext.wasSentByDm() === true)
-        throw new SemanticError(`This command must be used inside a guild channel.`);
-
-    return commandContext.getGuildWrapper();
-}
+    if (hasPermissions === false)
+        throw new Error(`The Bot must have the Manage Channels permission to do this.`);
+};
