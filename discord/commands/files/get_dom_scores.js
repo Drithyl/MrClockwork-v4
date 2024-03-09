@@ -1,8 +1,11 @@
 
+const asserter = require("../../../asserter.js");
 const { SlashCommandBuilder } = require("discord.js");
 const commandPermissions = require("../../command_permissions.js");
 const MessagePayload = require("../../prototypes/message_payload.js");
 const dom5SettingFlags = require("../../../json/dominions5_setting_flags.json");
+const dom6SettingFlags = require("../../../json/dominions6_setting_flags.json");
+
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -20,13 +23,17 @@ async function behaviour(commandContext)
     await commandPermissions.assertGameHasStarted(commandContext);
 
     const gameObject = commandContext.targetedGame;
+    const gameType = gameObject.getType();
     const settings = gameObject.getSettingsObject();
     const scoregraphs = settings.getScoregraphsSetting();
     const scoregraphsValue = scoregraphs.getValue();
     const gameName = gameObject.getName();
     const messageString = `Attached is the scores file for ${gameName}.`;
+    const settingsFlags = (asserter.isDom5GameType(gameType) === true) ?
+        dom5SettingFlags :
+        dom6SettingFlags;
 
-    if (+scoregraphsValue !== +dom5SettingFlags.VISIBLE_SCOREGRAPHS)
+    if (+scoregraphsValue !== +settingsFlags.VISIBLE_SCOREGRAPHS)
         return commandContext.respondToCommand(new MessagePayload(`You can only receive the scores file when the scoregraphs setting for this game is on.`));
     
     const scoresFile = await gameObject.emitPromiseWithGameDataToServer("GET_SCORE_DUMP");

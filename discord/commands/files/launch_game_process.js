@@ -16,13 +16,12 @@ async function behaviour(commandContext)
 {
     await commandPermissions.assertCommandIsUsedInGameChannel(commandContext);
     await commandPermissions.assertServerIsOnline(commandContext);
-    await commandPermissions.assertGameIsOffline(commandContext);
     await commandPermissions.assertMemberIsTrusted(commandContext);
     await commandPermissions.assertMemberIsOrganizer(commandContext);
 
     const targetedGame = commandContext.targetedGame;
 
     await commandContext.respondToCommand(new MessagePayload(`Launching process...`));
-    await targetedGame.launch()
+    await targetedGame.launch();
     return commandContext.respondToCommand(new MessagePayload(`The process has been launched. It might take a couple of minutes to load the game.`));
 }

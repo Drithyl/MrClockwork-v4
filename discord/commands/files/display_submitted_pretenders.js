@@ -68,7 +68,7 @@ function _formatSubmittedPretenders(humanPretenderList)
 
 function _formatSubmittedPretenderLine(pretenderData)
 {
-    const indexString = `${pretenderData.nationNbr}. `.width(5);
+    const indexString = `${pretenderData.nationNumber}. `;
     let pretenderStr = pretenderData.fullName.width(40);
 
     // If .owner property is a string, just add it
@@ -77,7 +77,7 @@ function _formatSubmittedPretenderLine(pretenderData)
 
     // If owner property would be a GuildMemberWrapper, use getUsername()
     else if (pretenderData.owner != null)
-        pretenderStr += `${pretenderData.fullName.width(40)} ${pretenderData.owner.getUsername()}`;
+        pretenderStr = `${pretenderData.fullName.width(40)} ${pretenderData.owner.getUsername()}`;
 
-    return indexString + pretenderStr + "\n";
+    return indexString.width(5) + pretenderStr + "\n";
 }

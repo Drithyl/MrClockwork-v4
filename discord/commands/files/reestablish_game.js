@@ -38,7 +38,7 @@ async function behaviour(commandContext)
 
     
     if (guildWrapper.findChannel(gameObject.getChannelId()) == null)
-        await gameObject.createNewChannel();
+        await gameObject.createChannel();
 
     if (guildWrapper.findRole(gameObject.getRoleId()) == null)
         await gameObject.createRole();
@@ -49,14 +49,14 @@ async function behaviour(commandContext)
     ));
 }
 
-async function autocompleteGameNames(commandContext)
+async function autocompleteGameNames(autocompleteContext)
 {
     // Returns the value of the option currently
     // being focused by the user. "true" makes it
     // return the whole focused object instead of
     // its string value. This way we can access the
     // name of the focused value as well.
-    const focusedOption = commandContext.options.getFocused(true);
+    const focusedOption = autocompleteContext.options.getFocused(true);
     const games = ongoingGamesStore.getArrayOfGames();
 
     let choices = [];
@@ -69,12 +69,12 @@ async function autocompleteGameNames(commandContext)
 
     // Filter choices based on our focused value
     const filtered = choices.filter(choice =>
-        choice.startsWith(focusedOption.value)
+        choice.toLowerCase().includes(focusedOption.value)
     );
 
     // Respond with the list of choices that match
     // the focused value, like an autocomplete
-    await commandContext.respond(
+    await autocompleteContext.respond(
         filtered.map(choice => ({ name: choice, value: choice })),
     );
 }

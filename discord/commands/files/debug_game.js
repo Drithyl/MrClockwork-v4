@@ -1,17 +1,17 @@
 const { SlashCommandBuilder } = require("discord.js");
 const commandPermissions = require("../../command_permissions.js");
-const ongoingGamesStore = require("../../../games/ongoing_games_store.js");
 const MessagePayload = require("../../prototypes/message_payload.js");
+const ongoingGamesStore = require("../../../games/ongoing_games_store.js");
 
-const GAME_OPTION_NAME = "game_name";
+const GAME_NAME_OPTION = "game_name";
 
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName("debug")
-		.setDescription("[Game-organizer-only] Change game settings, provided the game hasn't started yet.")
+		.setDescription("[Dev-only] Show current game's state")
         .addStringOption(option =>
-            option.setName(GAME_OPTION_NAME)
-            .setDescription("[Dev-only] Show current game's state.")
+            option.setName(GAME_NAME_OPTION)
+            .setDescription("The name of the game on which to show debug info.")
             .setRequired(true)
             .setAutocomplete(true)
         ),
@@ -24,7 +24,7 @@ async function behaviour(commandContext)
 {
     await commandPermissions.assertMemberIsDev(commandContext);(commandContext);
 
-    const gameName = commandContext.options.getString(GAME_OPTION_NAME);
+    const gameName = commandContext.options.getString(GAME_NAME_OPTION);
     const payload = new MessagePayload("Below is the game's state:");
 
     let game;
@@ -39,6 +39,9 @@ async function behaviour(commandContext)
 
     game = ongoingGamesStore.getOngoingGameByName(gameName);
     status = game.getLastKnownStatus();
+
+    await commandContext.respondToCommand(new MessagePayload(`Getting info...`));
+
     nations = await game.fetchSubmittedNations();
 
     debugInfo = {
@@ -52,7 +55,6 @@ async function behaviour(commandContext)
         status: {
             isServerOnline: game.isServerOnline(),
             isOnline: status.isOnline(),
-            isEnforcingTimer: game.isEnforcingTimer(),
             hasStarted: status.hasStarted(),
             isCurrentTurnRollback: status.isCurrentTurnRollback(),
             isTurnProcessing: status.isTurnProcessing(),
@@ -71,24 +73,22 @@ async function behaviour(commandContext)
     };
 
     payload.setAttachment("state.json", Buffer.from(JSON.stringify(debugInfo, null, 2)));
-
-    await commandContext.respondByDm(new MessagePayload(`Getting info...`));
     await commandContext.respondByDm(payload);
 }
 
-async function autocompleteGameNames(commandContext)
+async function autocompleteGameNames(autocompleteContext)
 {
     // Returns the value of the option currently
     // being focused by the user. "true" makes it
     // return the whole focused object instead of
     // its string value. This way we can access the
     // name of the focused value as well.
-    const focusedOption = commandContext.options.getFocused(true);
+    const focusedOption = autocompleteContext.options.getFocused(true);
     const games = ongoingGamesStore.getArrayOfGames();
 
     let choices = [];
 
-    if (focusedOption.name === GAME_OPTION_NAME)
+    if (focusedOption.name === GAME_NAME_OPTION)
     {
         // Array of choices that are available to select
         choices = games.map((game) => game.getName());
@@ -96,12 +96,12 @@ async function autocompleteGameNames(commandContext)
 
     // Filter choices based on our focused value
     const filtered = choices.filter(choice =>
-        choice.startsWith(focusedOption.value)
+        choice.toLowerCase().includes(focusedOption.value)
     );
 
     // Respond with the list of choices that match
     // the focused value, like an autocomplete
-    await commandContext.respond(
+    await autocompleteContext.respond(
         filtered.map(choice => ({ name: choice, value: choice })),
     );
 }

@@ -3,7 +3,7 @@ const { SemanticError, PermissionsError } = require("../errors/custom_errors.js"
 //TODO: revise all functions, many were written with an older version of the commandContext
 exports.assertCommandIsUsedInGameChannel = (commandContext) =>
 {
-    if (commandContext.isGameCommand === false)
+    if (commandContext.isGameInteraction === false)
         throw new SemanticError(`You must use this command inside a game's channel.`);
 };
 
@@ -24,6 +24,16 @@ exports.assertGameIsOnline = async (commandContext) =>
 
     if (isOnline === false)
         throw new Error(`Cannot use this command while the game is offline. Launch it first.`);
+};
+
+//TODO: Specify type of Error thrown
+exports.assertGameIsOffline = async (commandContext) =>
+{
+    const game = commandContext.targetedGame;
+    const isOnline = await game.isOnlineCheck();
+
+    if (isOnline === true)
+        throw new Error(`Cannot use this command while the game is online.`);
 };
 
 exports.assertGameHasStarted = async (commandContext) =>

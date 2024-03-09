@@ -4,7 +4,7 @@ const MessagePayload = require("../../prototypes/message_payload.js");
 const { SemanticError } = require("../../../errors/custom_errors.js");
 
 
-const NATION_OPTION_NAME = "nation_number";
+const NATION_OPTION_NAME = "nation";
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -14,9 +14,11 @@ module.exports = {
             option.setName(NATION_OPTION_NAME)
             .setDescription("A number that matches the pretender's index displayed by the `pretenders` command.")
             .setRequired(true)
+            .setAutocomplete(true)
         ),
 
-	execute: behaviour
+	execute: behaviour,
+    autocomplete: autocompletePretenders
 };
 
 async function behaviour(commandContext)
@@ -40,7 +42,7 @@ async function behaviour(commandContext)
         return commandContext.respondToCommand(new MessagePayload(`You must specify a nation identifier to unclaim.`));
 
         
-    nationData = nations.find((nation) => nation.nationNbr === nationNumber);
+    nationData = nations.find((nation) => nation.nationNumber === nationNumber);
     
 
     if (nationData == null)
@@ -59,4 +61,52 @@ async function behaviour(commandContext)
             `Pretender for nation \`${nationData.fullName}\` was claimed.`
         )
     );
+}
+
+async function autocompletePretenders(autocompleteContext)
+{
+    // Returns the value of the option currently
+    // being focused by the user. "true" makes it
+    // return the whole focused object instead of
+    // its string value. This way we can access the
+    // name of the focused value as well.
+    const focusedOption = autocompleteContext.options.getFocused(true);
+    const gameObject = autocompleteContext.targetedGame;
+    let choices = [];
+
+    try {
+        const nations = await gameObject.fetchSubmittedNations();
+        const humanPretenders = nations.filter((pretender) => {
+            return pretender.isSubmitted === true;
+        });
+    
+        // Array of choices that are available to select. Cut off
+        // nation's full name if it exceeds 25 characters (max
+        // length of an autocomplete option's name)
+        choices = humanPretenders.map((n) => {
+            let name = n.fullName;
+
+            if (name > 25) {
+                name = name.slice(0, 22) + "...";
+            }
+
+            return { name, value: n.nationNumber };
+        });
+    
+        // Filter choices based on our focused value
+        const filtered = choices.filter(choice =>
+            choice.name.toLowerCase().includes(focusedOption.value)
+        );
+    
+        // Respond with the list of choices that match
+        // the focused value, like an autocomplete
+        await autocompleteContext.respond(
+            filtered.map(choice => ({ name: choice.name, value: choice.value })),
+        );
+    }
+
+    // Probably would error out if game's server is offline and can't fetch pretenders
+    catch(error) {
+        await autocompleteContext.respond([]);
+    }
 }

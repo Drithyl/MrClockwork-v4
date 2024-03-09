@@ -57,7 +57,7 @@ function GuildWrapper(discordJsGuildObject)
         return _memberHasRoleOrHigher(guildMemberWrapper, trustedRole);
     };
 
-    this.checkMemberHasRoleOrHigher = (guildMemberWrapper, role) =>
+    this.checkMemberHasRoleOrAbove = (guildMemberWrapper, role) =>
     {
         if (this.memberIsOwner(guildMemberWrapper.getId()) === true)
             return true;

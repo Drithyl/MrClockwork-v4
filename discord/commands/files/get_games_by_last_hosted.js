@@ -20,7 +20,7 @@ function behaviour(commandContext)
     let sortedGuildGamesEmbeds;
 
     if (commandContext.isDm === true)
-        return commandContext.respondToCommand(new MessagePayload(stringList, _printAllSortedGames(sortedGames).toBox(), true, "```"));
+        return commandContext.respondToCommand(new MessagePayload(stringList, _printAllSortedGames(sortedGames), true, "```"));
         
     sortedGuildGamesEmbeds = _embedSortedGuildGames(sortedGames, guild);
     
@@ -139,7 +139,7 @@ function _getGameEntry(game)
     const serverName = server.getName();
     const lastKnownStatus = game.getLastKnownStatus();
 
-    let fieldValue = `\n${channel}\`${serverName} ${ip}`;
+    let fieldValue = `\n${channel} \`${serverName} ${ip}`;
 
     if (lastKnownStatus.hasStarted() === false)
         fieldValue += " (not started)`";

@@ -5,6 +5,7 @@ const log = require("../../logger.js");
 const assert = require("../../asserter.js");
 const config = require("../../config/config.json");
 const GameSettings = require("./game_settings.js");
+const GuildSetup = require("../../discord/guild_setup.js");
 const guildStore = require("../../discord/guild_store.js");
 const ongoingGamesStore = require("../ongoing_games_store.js");
 const hostServerStore = require("../../servers/host_server_store.js");
@@ -92,14 +93,23 @@ function Game()
         return _discordJsChannel.delete();
     };
 
-    this.createNewChannel = async () =>
+    this.createChannel = async () =>
     {
         const guildId = _guildWrapper.getId();
         const status = this.getLastKnownStatus();
+        const organizerId = this.getOrganizerId();
+        const guildOwnerId = this.getGuild().getOwnerId();
+        let channelOwnerId = organizerId;
+
+        // Organizer might have left guild when we're trying to restore a game channel
+        if (organizerId == null) {
+            channelOwnerId = guildOwnerId;
+        }
+
         const channel = await _guildWrapper.createChannel(
             GuildSetup.gameChannelOptions(
                 this.getName(),
-                this.getOrganizerId()
+                channelOwnerId
             )
         );
 

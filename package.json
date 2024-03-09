@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint .",
-    "start": "node app_bot.js"
+    "start": "node app_bot.js",
+    "deploy-global-commands": "node scripts/deploy_commands_globally.js",
+    "deploy-guild-commands": "node scripts/deploy_commands_to_guild.js"
   },
   "repository": {
     "type": "git",
@@ -29,7 +31,7 @@
   "homepage": "https://github.com/Drithyl/MrClockwork-v4#readme",
   "dependencies": {
     "cookie-parser": "^1.4.5",
-    "discord.js": "^14.7.1",
+    "discord.js": "^14.14.1",
     "dotenv": "^10.0.0",
     "ejs": "^3.0.2",
     "express": "^4.17.1",

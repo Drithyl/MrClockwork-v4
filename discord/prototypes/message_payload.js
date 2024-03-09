@@ -27,16 +27,16 @@ function MessagePayload(header, content = "", splitContent = true, splitWrapper 
         if (assert.isString(content) === true)
         {
             _content += content;
-            _splitContent();
+            _ensureContentIsUnderMaxLimit();
         }
     };
 
     this.setEmbed = (embed) =>
     {
         if (assert.isInstanceOfPrototype(embed, MessageEmbedBuilder) === true)
-            _payloadObject.embeds = [ embed.toEmbedStruct() ]
+            _payloadObject.embeds = [ embed.toEmbedStruct() ];
 
-        else if (embedStruct != null)
+        else if (embed != null)
             _payloadObject.embeds = [ embed ];
 
         return this;
@@ -117,15 +117,19 @@ function MessagePayload(header, content = "", splitContent = true, splitWrapper 
 
         // If the total length of the header and content is less than the max allowed,
         // then add them together to be sent in a single message
-        if (_header.length + _content.length < MAX_MESSAGE_CHARACTERS)
-            _contentArray.push(_header + _content);
+        if (_header.length + _content.length < MAX_MESSAGE_CHARACTERS) {
+            if (_content == null || _content.length === 0) {
+                _contentArray.push(splitWrapper + _header + splitWrapper);
+            }
+            else _contentArray.push(_header + splitWrapper + _content + splitWrapper);
+        }
 
-        // If the length is more than allowed and split content is true,
-        // we will split the content payload into several substrings
+        // If split content is true, we will split the content payload into several substrings
         else if (_splitContent === true)
         {
             // Split by newlines first so we don't cut off sentences in the middle
             const lines = _content.split(/\n/g);
+            const headerLines = [];
 
             // Account for the wrap characters' length
             const maxCombinedLength = MAX_MESSAGE_CHARACTERS - (splitWrapper.length*2);
@@ -133,9 +137,9 @@ function MessagePayload(header, content = "", splitContent = true, splitWrapper 
             // Add the header to the start of our lines, splitting it as well
             // if it turns out to be larger than the max characters by itself
             if (_header.length >= maxCombinedLength)
-                lines.unshift(..._header.split(/\n/g));
+                headerLines.push(..._header.split(/\n/g));
 
-            else lines.unshift(_header);
+            else headerLines.push(_header);
 
             // If the content is one single big line of over the allowed length, 
             // then split it by chunks of at most the allowed length
@@ -159,12 +163,13 @@ function MessagePayload(header, content = "", splitContent = true, splitWrapper 
             });
 
             // Add the wrapping characters in-between each submessage
-            _contentArray = _contentArray.map((contentChunk, i, arr) =>
+            _contentArray = _contentArray.map((contentChunk) =>
             {
-                if (i > 0) contentChunk = `${splitWrapper}${contentChunk}`;
-                if (i < arr.length - 1) contentChunk = `${contentChunk}${splitWrapper}`;
-                return contentChunk;
+                return `${splitWrapper}${contentChunk}${splitWrapper}`;
             });
+
+            // Add header to content after having split the content itself
+            _contentArray.unshift(...headerLines);
         }
 
         // If the length is more than allowed but splitContent is false,
@@ -176,8 +181,6 @@ function MessagePayload(header, content = "", splitContent = true, splitWrapper 
         }
     }
 }
-
-
 
 function _areAttachmentsTooLarge(files)
 {

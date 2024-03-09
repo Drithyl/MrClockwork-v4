@@ -56,11 +56,11 @@ module.exports.command = (logLevel, commandContext) =>
     if (logLevel > currentLogLevel)
         return;
 
-    const username = commandContext.getCommandSenderUsername();
-    const command = commandContext.getCommandString();
-    const channel = commandContext.getDestinationChannel();
-    const args = commandContext.getCommandArgumentsArray();
-    const guild = (commandContext.wasSentByDm() === false) ? commandContext.getGuildWrapper() : null;
+    const username = commandContext.userWrapper.getUsername();
+    const command = commandContext.name;
+    const channel = commandContext.channel;
+    const args = commandContext.optionsArray;
+    const guild = (commandContext.isDm === false) ? commandContext.guildWrapper : null;
     let logStr = `${username} invoked <${command}> `;
 
     if (guild != null)

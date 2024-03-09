@@ -7,7 +7,7 @@ const LIST_OPTION_NAME = "list_to_shuffle";
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName("shuffle")
-		.setDescription("Shuffles a list of space-separated elements, i.e. mentions to members to create a draft order.")
+		.setDescription("Shuffles a list of space-separated elements, i.e. player names to create a draft order.")
         .addStringOption(option =>
             option.setName(LIST_OPTION_NAME)
             .setDescription("A space-separated list of things, i.e mentions or numbers")
@@ -18,17 +18,11 @@ module.exports = {
 };
 
 
-async function behaviour(commandContext)
+function behaviour(commandContext)
 {
-    const members = await commandContext.getMentionedMembers();
     const input = commandContext.options.getString(LIST_OPTION_NAME);
-    let elementsToShuffle = input;
-
-    if (members != null && members.length > 0)
-        elementsToShuffle = members.map((memberWrapper) => memberWrapper.getNameInGuild());
-    
-    elementsToShuffle = _shuffle(elementsToShuffle);
-    return commandContext.respondToCommand(new MessagePayload(_list(elementsToShuffle).toBox(), "", true, "```"));
+    const shuffledList = _shuffle(input.split(" "));
+    return commandContext.respondToCommand(new MessagePayload(_list(shuffledList), "", true, "```"));
 }
 
 

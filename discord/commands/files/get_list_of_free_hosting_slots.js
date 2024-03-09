@@ -18,5 +18,5 @@ function behaviour(commandContext)
     if (hostServerStore.hasServersOnline() === false)
         return commandContext.respondToCommand(new MessagePayload(`There are no servers online.`));
 
-    return commandContext.respondToCommand(new MessagePayload(introductionString, stringListOfFreeSlots.toBox())); 
+    return commandContext.respondToCommand(new MessagePayload(introductionString, stringListOfFreeSlots, true, "```")); 
 }

@@ -35,18 +35,15 @@ async function behaviour(commandContext)
     await gameObject.deleteGame();
     log.general(log.getLeanLevel(), `${gameObject.getName()} and its role were deleted successfully.`);
 
-    if (shouldDeleteChannel !== true)
-    {
+    if (shouldDeleteChannel === true) {
         await gameObject.deleteChannel();
         log.general(log.getLeanLevel(), `${gameObject.getName()}'s channel was deleted successfully.`);
+        return commandContext.respondByDm(new MessagePayload(
+            `${gameObject.getName()} was deleted successfully.`
+        ));
     }
-    
-    return commandContext.respondByDm(new MessagePayload(
-        `${gameObject.getName()} was deleted successfully.`
-    ));
+
+    else {
+        await commandContext.respondToCommand(new MessagePayload(`The game has been deleted successfully.`));
+    }
 }
-
-
-
-
-

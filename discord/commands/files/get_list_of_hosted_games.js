@@ -16,7 +16,13 @@ async function behaviour(commandContext)
     const stringIntroduction = "Find the list of games below:\n\n";
     const promises = arrayOfOngoingGames.map(printGameStatus);
     const statusList = await Promise.allSettled(promises);
-    return commandContext.respondToCommand(new MessagePayload(stringIntroduction, statusList.join().toBox(), true, "```"));
+    const gameStringList = statusList.map((p) => {
+        if (p.status === "fulfilled") {
+            return p.value;
+        }
+    });
+
+    return commandContext.respondToCommand(new MessagePayload(stringIntroduction, gameStringList.join("\n"), true, "```"));
 }
 
 async function printGameStatus(gameObject)

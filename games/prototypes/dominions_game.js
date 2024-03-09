@@ -65,6 +65,7 @@ function DominionsGame(type)
             }
 
             nation.owner = data.username;
+            nation.ownerId = ownerId;
             return nextPromise();
         });
 

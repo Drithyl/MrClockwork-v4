@@ -24,10 +24,10 @@ function AiNations(parentGameObject)
         if (aiNations == null)
             return "None";
 
-        Object.keys(aiNations).forEach((nationNbr, i) =>
+        Object.keys(aiNations).forEach((nationNumber, i) =>
         {
-            let difficulty = aiNations[nationNbr];
-            let nationObject = dom5NationStore.getNation(nationNbr);
+            let difficulty = aiNations[nationNumber];
+            let nationObject = dom5NationStore.getNation(nationNumber);
 
             if (i > 0)
                 str += ", ";
@@ -56,12 +56,12 @@ function AiNations(parentGameObject)
         if (typeof value !== "object")
             throw new Error(`Expected object; got ${value}`);
 
-        for (let nationNbr in value)
+        for (let nationNumber in value)
         {
-            let nationDifficulty = value[nationNbr];
+            let nationDifficulty = value[nationNumber];
 
-            if (Number.isInteger(+nationNbr) === false)
-                throw new Error(`Expected string resolvable to integer; got ${nationNbr}`);
+            if (Number.isInteger(+nationNumber) === false)
+                throw new Error(`Expected string resolvable to integer; got ${nationNumber}`);
 
             if (typeof nationDifficulty !== "string")
                 throw new Error(`Expected string; got ${nationDifficulty}`);
@@ -78,27 +78,27 @@ function AiNations(parentGameObject)
         if (aiNations == null || Object.keys(aiNations).length <= 0)
             return flags;
     
-        for (let nationNbr in aiNations)
+        for (let nationNumber in aiNations)
         {
-            let difficulty = aiNations[nationNbr];
+            let difficulty = aiNations[nationNumber];
     
             if (difficulty === dom5SettingFlags.EASY_AI)
-                flags.push(`--easyai`, nationNbr);
+                flags.push(`--easyai`, nationNumber);
     
             else if (difficulty === dom5SettingFlags.NORMAL_AI)
-                flags.push(`--normai`, nationNbr);
+                flags.push(`--normai`, nationNumber);
     
             else if (difficulty === dom5SettingFlags.DIFFICULT_AI)
-                flags.push(`--diffai`, nationNbr);
+                flags.push(`--diffai`, nationNumber);
     
             else if (difficulty === dom5SettingFlags.MIGHTY_AI)
-                flags.push(`--mightyai`, nationNbr);
+                flags.push(`--mightyai`, nationNumber);
     
             else if (difficulty === dom5SettingFlags.MASTER_AI)
-                flags.push(`--masterai`, nationNbr);
+                flags.push(`--masterai`, nationNumber);
     
             else if (difficulty === dom5SettingFlags.IMPOSSIBLE_AI)
-                flags.push(`--impai`, nationNbr);
+                flags.push(`--impai`, nationNumber);
         }
     
         return flags;
@@ -116,13 +116,13 @@ function AiNations(parentGameObject)
 
         input.split(",").forEach((aiNationStr) =>
         {
-            let nationNbr = +aiNationStr.replace(/\D*/ig, "");
+            let nationNumber = +aiNationStr.replace(/\D*/ig, "");
             let nationDifficulty = aiNationStr.replace(/\d*/ig, "").trim().toLowerCase();
 
-            if (domNationStore.isValidNationIdentifierInEra(nationNbr, era, _gameType) === false)
-                throw new SemanticError(`Nation number ${nationNbr} does not exist in chosen era.`);
+            if (domNationStore.isValidNationIdentifierInEra(nationNumber, era, _gameType) === false)
+                throw new SemanticError(`Nation number ${nationNumber} does not exist in chosen era.`);
 
-            aiNations[nationNbr] = nationDifficulty;
+            aiNations[nationNumber] = nationDifficulty;
         });
 
         return aiNations;

@@ -15,8 +15,8 @@ let activeMenus = {};
 
 module.exports.startHelpMenu = function(commandContext)
 {
-    const memberId = commandContext.getCommandSenderId();
-    const userWrapper = commandContext.getSenderUserWrapper();
+    const memberId = commandContext.userId;
+    const userWrapper = commandContext.userWrapper;
     const helpMenuInstance = new HelpMenu(userWrapper);
 
     //finish any previous instances of a menu
@@ -40,9 +40,9 @@ module.exports.startHostGameMenu = function(newGameObject, useDefaults)
 
 module.exports.startChangeSettingsMenu = function(commandContext)
 {
-    const memberWrapper = commandContext.getSenderGuildMemberWrapper();
+    const memberWrapper = commandContext.memberWrapper;
     const memberId = memberWrapper.getId();
-    const gameObject = commandContext.getGameTargetedByCommand();
+    const gameObject = commandContext.targetedGame;
     const changeSettingsMenuInstance = new ChangeSettingsMenu(gameObject, memberWrapper);
 
     //finish any previous instances of a menu
@@ -54,7 +54,7 @@ module.exports.startChangeSettingsMenu = function(commandContext)
 
 module.exports.startChangePlayerPreferencesMenu = function(commandContext)
 {
-    const memberId = commandContext.getCommandSenderId();
+    const memberId = commandContext.userId;
     const changePlayerPreferencesMenuInstance = new ChangePlayerPreferencesMenu(commandContext);
 
     //finish any previous instances of a menu
@@ -73,7 +73,7 @@ module.exports.finish = function(userId)
 {
     log.general(log.getVerboseLevel(), `Finishing menu for user ${userId}...`);
     return activeMenus[userId].instance.sendMessage(new MessagePayload(`You have closed this instance.`))
-    .then(() => Promise.resolve(deleteInstance(userId)));
+    .then(() => Promise.resolve(_deleteInstance(userId)));
 };
 
 module.exports.isReservedCommand = function(command)

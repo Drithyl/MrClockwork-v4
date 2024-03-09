@@ -1,35 +1,35 @@
 
-const asserter = require("../../asserter.js");
-const config = require("../../config/config.json");
-const Command = require("../prototypes/command.js");
-const CommandData = require("../prototypes/command_data.js");
-const hostServerStore = require("../../servers/host_server_store.js");
-const MessagePayload = require("../prototypes/message_payload.js");
+const config = require("../../../config/config.json");
+const { SlashCommandBuilder } = require("discord.js");
+const hostServerStore = require("../../../servers/host_server_store.js");
+const MessagePayload = require("../../prototypes/message_payload.js");
 
-const commandData = new CommandData("GET_MAPS_ON_SERVER");
 
-module.exports = GetMapsOnServerCommand;
+const GAME_TYPE_OPTION = "game_type";
 
-function GetMapsOnServerCommand()
+module.exports = {
+	data: new SlashCommandBuilder()
+		.setName("maps")
+		.setDescription("Prints a list of the Dominions 5 or 6 maps available to host.")
+        .addStringOption(option =>
+            option.setName(GAME_TYPE_OPTION)
+            .setDescription("Whether to fetch Dominions 5 or Dominions 6 maps")
+            .addChoices(
+                { name: "Dominions 6", value: config.dom6GameTypeName },
+                { name: "Dominions 5", value: config.dom5GameTypeName }
+            )
+			.setRequired(true)
+        ),
+
+	execute: behaviour
+};
+
+async function behaviour(commandContext)
 {
-    const getMapsOnServerCommand = new Command(commandData);
-
-    getMapsOnServerCommand.addBehaviour(_behaviour);
-
-    return getMapsOnServerCommand;
-}
-
-async function _behaviour(commandContext)
-{
-    const commandArguments = commandContext.getCommandArgumentsArray();
-    const gameType = commandArguments[0];
-
-    if (asserter.isValidGameType(gameType) === false)
-        return commandContext.respondToCommand(new MessagePayload(`You must specify the game for which you want to get a list of maps. Either ${config.dom5GameTypeName} or ${config.dom6GameTypeName}`));
-
+    const gameType = commandContext.options.getString(GAME_TYPE_OPTION);
     const payload = new MessagePayload(`Attached below is the list of ${gameType} maps available:\n\n`);
     const maps = await hostServerStore.getMaps(gameType);
-    var stringList = "";
+    let stringList = "";
 
 
     if (maps.length <= 0)

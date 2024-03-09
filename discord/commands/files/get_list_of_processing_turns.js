@@ -34,7 +34,7 @@ function behaviour(commandContext)
         stringListOfTurns += `\n${name.width(33)} ` + timeStr.width(24) + " " + hostServerName.width(20) + `${ip}:${port.toString()}`.width(33);
     });
 
-    return commandContext.respondToCommand(new MessagePayload(stringIntroduction, stringListOfTurns.toBox(), true, "```"));
+    return commandContext.respondToCommand(new MessagePayload(stringIntroduction, stringListOfTurns, true, "```"));
 }
 
 function _sortByProcessingTimestamp(games)

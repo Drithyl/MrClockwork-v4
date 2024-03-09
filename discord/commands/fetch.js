@@ -16,6 +16,14 @@ function fetchCommands()
 		const filePath = path.join(commandsPath, file);
 		const command = require(filePath);
 
+		if (command.data == null) {
+			throw new Error(`Command does not contain data!\n\n${command}`);
+		}
+
+		if (command.data.name == null) {
+			throw new Error(`Command does not have a name:\n\n${command.data}`);
+		}
+
 		// Set a new item in the Collection
 		// With the key as the command name and the value as the exported module
 		commands.set(command.data.name, command);

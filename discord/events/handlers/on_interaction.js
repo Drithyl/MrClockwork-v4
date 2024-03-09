@@ -40,11 +40,12 @@ module.exports =
 async function onCommandHandler(interaction, client)
 {
     const command = client.commands.get(interaction.commandName);
-	const CommandContext = require("../../wrappers/command_context");
-	const commandContext = await CommandContext.create(interaction);
 
     if (command == null)
         return;
+
+	const CommandContext = require("../../wrappers/CommandContext");
+	const commandContext = await CommandContext.create(interaction);
 
     try
     {
@@ -73,9 +74,12 @@ async function onAutocompleteInteractionHandler(interaction, client)
     if (command == null)
         return;
 
+	const AutocompleteContext = require("../../wrappers/AutocompleteContext");
+	const commandContext = await AutocompleteContext.create(interaction);
+
     try
     {
-        await command.autocomplete(interaction);
+        await command.autocomplete(commandContext);
     }
 
     catch (error)

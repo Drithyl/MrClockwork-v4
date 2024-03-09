@@ -1,60 +1,73 @@
 
-const asserter = require("../../asserter.js");
-const config = require("../../config/config.json");
-const Command = require("../prototypes/command.js");
-const CommandData = require("../prototypes/command_data.js");
-const MessagePayload = require("../prototypes/message_payload.js");
-const dom5NationsByEraNumber = require("../../json/dom5_nations.json");
-const dom6NationsByEraNumber = require("../../json/dom6_nations.json");
+const asserter = require("../../../asserter.js");
+const config = require("../../../config/config.json");
+const { SlashCommandBuilder } = require("discord.js");
+const MessagePayload = require("../../prototypes/message_payload.js");
+const dom5NationsByEraNumber = require("../../../json/dom5_nations.json");
+const dom6NationsByEraNumber = require("../../../json/dom6_nations.json");
 
-const commandData = new CommandData("GET_NATIONS");
 
-module.exports = GetNationsCommand;
+const GAME_TYPE_OPTION = "game_type";
+const ERA_OPTION = "era";
 
-function GetNationsCommand()
+module.exports = {
+	data: new SlashCommandBuilder()
+		.setName("nations")
+		.setDescription("Prints a list of all the Dominions 5 or 6 nations and their nation numbers and filenames.")
+        .addStringOption(option =>
+            option.setName(GAME_TYPE_OPTION)
+            .setDescription("Whether to fetch Dominions 5 or Dominions 6 nations")
+            .addChoices(
+                { name: "Dominions 6", value: config.dom6GameTypeName },
+                { name: "Dominions 5", value: config.dom5GameTypeName }
+            )
+			.setRequired(true)
+        )
+        .addStringOption(option =>
+            option.setName(ERA_OPTION)
+            .setDescription("An era if you wish to only check those specific nations.")
+            .addChoices(...getEraStringOptionChoices())
+        ),
+
+	execute: behaviour
+};
+
+function behaviour(commandContext)
 {
-    const getNationsCommand = new Command(commandData);
+    const gameType = commandContext.options.getString(GAME_TYPE_OPTION);
+    const eraOption = commandContext.options.getString(ERA_OPTION);
+    const introductionString = `Below is the list of ${gameType} nation numbers, names and filenames for your convenience:\n\n`;
+    const nationListString = formatNationListString(eraOption);
 
-    getNationsCommand.addBehaviour(_behaviour);
-
-    return getNationsCommand;
+    return commandContext.respondToCommand(new MessagePayload(introductionString, nationListString, true, "```"));
 }
 
-function _behaviour(commandContext)
+function formatNationListString(gameType, eraNumber = null)
 {
-    const commandArguments = commandContext.getCommandArgumentsArray();
-    const gameType = commandArguments[0];
-
-    if (asserter.isValidGameType(gameType) === false)
-        return commandContext.respondToCommand(new MessagePayload(`You must specify the game for which you want to get a list of nations. Either ${config.dom5GameTypeName} or ${config.dom6GameTypeName}`));
-
-    var introductionString = `Below is the list of ${gameType} nation numbers, names and filenames for your convenience:\n\n`;
-    var nationListString = formatNationListString();
-
-    return commandContext.respondToCommand(new MessagePayload(introductionString, nationListString.toBox(), true, "```"));
-}
-
-function formatNationListString(gameType)
-{
-    var stringList = "";
-    let nationsByEraNumber = (asserter.isDom5GameType(gameType) === true) ?
+    let stringList = "";
+	let erasToList = [1, 2, 3];
+    const nationsByEraNumber = (asserter.isDom5GameType(gameType) === true) ?
         dom5NationsByEraNumber :
         dom6NationsByEraNumber;
 
-    for (var eraNumber in nationsByEraNumber)
-    {
-        var arrayOfNationsInEra = nationsByEraNumber[eraNumber];
-        var eraName = translateEraNumberToName(eraNumber);
+	if (eraNumber != null)
+		erasToList = [ +eraNumber ];
 
-        stringList += `\n\n- ${eraName} NATIONS:\n\n`;
+		
+	erasToList.forEach((eraNumber) =>
+	{
+		const arrayOfNationsInEra = nationsByEraNumber[eraNumber];
+		const eraName = translateEraNumberToName(eraNumber);
 
-        arrayOfNationsInEra.forEach((nationData) =>
-        {
-            stringList += `${nationData.number.toString().width(4)} ${nationData.name.width(12)} ${nationData.filename}\n`;
-        });
-    }
+		stringList += `\n\n- ${eraName} NATIONS:\n\n`;
 
-    return stringList;
+		arrayOfNationsInEra.forEach((nationData) =>
+		{
+			stringList += `${nationData.number.toString().width(4)} ${nationData.name.width(12)} ${nationData.filename}\n`;
+		});
+	});
+
+	return stringList;
 }
 
 function translateEraNumberToName(eraNumber)
@@ -69,4 +82,14 @@ function translateEraNumberToName(eraNumber)
         return "LATE AGE";
 
     else return eraNumber;
+}
+
+
+function getEraStringOptionChoices()
+{
+    return [
+        { name: "Early Age", value: "1" },
+        { name: "Middle Age", value: "2" },
+        { name: "Late Age", value: "3" }
+    ];
 }

@@ -25,7 +25,7 @@ async function behaviour(commandContext)
     const status = gameObject.getLastKnownStatus();
     const messageString = `${gameName}'s turn ${status.getTurnNumber()}:`;
 
-    const playerId = commandContext.getCommandSenderId();
+    const playerId = commandContext.userId;
     const playerFile = playerFileStore.getPlayerFile(playerId);
     const playerGameData = playerFile.getGameData(gameName);
     const controlledNationFilenames = playerGameData.getNationFilenamesControlledByPlayer();

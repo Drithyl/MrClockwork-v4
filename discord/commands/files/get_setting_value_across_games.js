@@ -3,6 +3,8 @@ const MessagePayload = require("../../prototypes/message_payload.js");
 const commandPermissions = require("../../command_permissions.js");
 const ongoingGamesStore = require("../../../games/ongoing_games_store.js");
 const dom5SettingsData = require("../../../json/dom5_settings.json");
+const dom6SettingsData = require("../../../json/dom6_settings.json");
+
 
 const KEY_OPTION_NAME = "setting_key";
 
@@ -30,7 +32,7 @@ async function behaviour(commandContext)
     const settingKey = commandContext.options.getString(KEY_OPTION_NAME).toLowerCase();
     const introductionString = `Below is the list of values for the setting ${settingKey}:\n\n`;
 
-    if (dom5SettingsData[settingKey] == null)
+    if (dom5SettingsData[settingKey] == null && dom6SettingsData[settingKey] == null)
         return commandContext.respondToCommand(new MessagePayload(`Invalid setting key.`));
 
     orderedvalueNamePairs = _getOrderedValueNamePairsArray(settingKey);
