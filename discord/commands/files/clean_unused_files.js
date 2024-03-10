@@ -31,7 +31,10 @@ module.exports = {
             )
         ),
 
-	execute: behaviour
+	execute: behaviour,
+
+    // This command will never be deployed globally; only to a private dev guild
+    isDev: true
 };
 
 

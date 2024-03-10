@@ -10,6 +10,7 @@ module.exports =
         const guildWrapper = guildStore.getGuildWrapperById(oldMember.guild.id);
         const oldGuildMemberWrapper = await guildWrapper.fetchGuildMemberWrapperById(oldMember.id);
         const newGuildMemberWrapper = await guildWrapper.fetchGuildMemberWrapperById(newMember.id);
+
         log.general(log.getLeanLevel(), `GuildMember ${oldGuildMemberWrapper.getNameInGuild()} changed their guild nickname to ${newGuildMemberWrapper.getNameInGuild()}; updating game data...`);
 
         const playerGames = gameStore.getGamesWhereUserIsPlayer(newGuildMemberWrapper.getId());

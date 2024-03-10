@@ -24,7 +24,10 @@ module.exports = {
             .setDescription("Do you want to keep the game's channel intact (if it still exists)?")
         ),
 
-	execute: behaviour
+	execute: behaviour,
+
+    // This command will never be deployed globally; only to a private dev guild
+    isDev: true
 };
 
 

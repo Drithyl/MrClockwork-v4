@@ -17,7 +17,10 @@ module.exports = {
         ),
 
 	execute: behaviour,
-    autocomplete: autocompleteGameNames
+    autocomplete: autocompleteGameNames,
+
+    // This command will never be deployed globally; only to a private dev guild
+    isDev: true
 };
 
 async function behaviour(commandContext)

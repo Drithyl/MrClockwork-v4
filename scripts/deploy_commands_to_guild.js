@@ -1,9 +1,12 @@
 const deploy = require("../discord/commands/deploy");
+const commands = require("../discord/commands/index.js");
+const { devGuildId } = require("../config/config.json");
 
 async function deployToGuild(guildId)
 {
 	try {
-		const result = await deploy(guildId);
+		const commandFiles = commands.fetch();
+		const result = await deploy(commandFiles, guildId);
 		console.log(`Successfully reloaded ${result.length} slash commands for guild ${guildId}.`);
 	}
 	catch(error) {
@@ -12,5 +15,4 @@ async function deployToGuild(guildId)
 	}
 }
 
-const GUILD_ID_TO_DEPLOY = "724340426248683570";
-deployToGuild(GUILD_ID_TO_DEPLOY);
+deployToGuild(devGuildId);

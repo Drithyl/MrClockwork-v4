@@ -15,7 +15,10 @@ module.exports = {
             .setDescription("A guild ID, if only one channel requires updating.")
         ),
 
-	execute: behaviour
+	execute: behaviour,
+
+    // This command will never be deployed globally; only to a private dev guild
+    isDev: true
 };
 
 
@@ -53,11 +56,5 @@ function describeCommand(command)
 {
     const name = command.data.name;
     const description = command.data.description;
-    const channelRequired = command.data.channelRequired;
     return `-------------------\n\n**/${name}**\n\n${description}\n\n`;
-
-    // let formatedHelp = `-------------------\n\n**/${name}**\n\n${description}\n\n`;
-    // formatedHelp += `\`Where can it be used?:\` ${channelRequired} channel\n\n`;
-
-    // return formatedHelp;
 }

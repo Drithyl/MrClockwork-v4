@@ -6,7 +6,8 @@ const commandPermissions = require("../../command_permissions.js");
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName("unsubscribe")
-		.setDescription("Removes the role of a game from yourself. Unclaiming/removing pretender already does this."),
+		.setDescription("Removes the role of a game from yourself. Unclaiming/removing pretender already does this.")
+        .setDMPermission(false),
 
 	execute: behaviour
 };

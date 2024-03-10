@@ -9,7 +9,10 @@ module.exports = {
 		.setName("pause_all")
 		.setDescription("[Dev-only] Pauses all games."),
 
-	execute: behaviour
+	execute: behaviour,
+
+    // This command will never be deployed globally; only to a private dev guild
+    isDev: true
 };
 
 

@@ -6,7 +6,8 @@ const commandPermissions = require("../../command_permissions.js");
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName("launch")
-		.setDescription("In a game channel, launches a game's process. Use if the bot mentions the **game** being offline."),
+		.setDescription("In a game channel, launches a game's process. Use if the bot mentions the **game** being offline.")
+        .setDMPermission(false),
 
 	execute: behaviour
 };

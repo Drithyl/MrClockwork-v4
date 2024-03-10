@@ -6,7 +6,8 @@ const MessagePayload = require("../../prototypes/message_payload.js");
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName("force_host")
-		.setDescription("[Game-organizer-only] In a game channel, forces a turn to roll immediately."),
+		.setDescription("[Game-organizer-only] In a game channel, forces a turn to roll immediately.")
+        .setDMPermission(false),
 
 	execute: behaviour
 };

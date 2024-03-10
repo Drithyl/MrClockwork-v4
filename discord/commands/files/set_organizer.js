@@ -14,7 +14,8 @@ module.exports = {
             option.setName(ORGANIZER_OPTION_NAME)
             .setDescription("A mention to the new organizer (i.e. @Username#0000).")
             .setRequired(true)
-        ),
+        )
+        .setDMPermission(false),
 
 	execute: behaviour
 };

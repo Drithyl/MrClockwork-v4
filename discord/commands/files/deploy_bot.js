@@ -5,7 +5,8 @@ const MessagePayload = require("../../prototypes/message_payload.js");
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName("deploy")
-		.setDescription("[Guild-owner-only] Deploy bot channels and roles. Can be used to restore categories and roles."),
+		.setDescription("[Guild-owner-only] Deploy bot channels and roles. Can be used to restore categories and roles.")
+        .setDMPermission(false),
 
 	execute: behaviour
 };

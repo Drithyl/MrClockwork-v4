@@ -7,7 +7,8 @@ const assert = require("../../../asserter.js");
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName("rollback_turn")
-		.setDescription("[Game-organizer-only] Rollbacks to the previous turn. Only keeps backups of a few turns back."),
+		.setDescription("[Game-organizer-only] Rollbacks to the previous turn. Only keeps backups of a few turns back.")
+        .setDMPermission(false),
 
 	execute: behaviour
 };

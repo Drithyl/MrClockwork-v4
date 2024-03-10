@@ -6,7 +6,8 @@ const MessagePayload = require("../../prototypes/message_payload.js");
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName("pretenders")
-		.setDescription("Displays a list of submitted pretenders. Use their numbers for other pretender commands."),
+		.setDescription("Displays a list of submitted pretenders. Use their numbers for other pretender commands.")
+        .setDMPermission(false),
 
 	execute: behaviour
 };

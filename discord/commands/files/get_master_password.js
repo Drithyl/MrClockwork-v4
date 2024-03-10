@@ -5,7 +5,8 @@ const commandPermissions = require("../../command_permissions.js");
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName("password")
-		.setDescription("[Organizer-only] Sends the game's master password by DM."),
+		.setDescription("[Organizer-only] Sends the game's master password by DM.")
+        .setDMPermission(false),
 
 	execute: behaviour
 };

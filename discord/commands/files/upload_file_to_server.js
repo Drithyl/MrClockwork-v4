@@ -26,7 +26,8 @@ module.exports = {
         .addStringOption(option =>
             option.setName(LINK_OPTION_NAME)
             .setDescription("A google drive file ID or link, which must be shareable.")
-        ),
+        )
+        .setDMPermission(false),
 
 	execute: behaviour
 };

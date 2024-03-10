@@ -9,7 +9,10 @@ module.exports = {
 		.setName("prune_data")
 		.setDescription("[Dev-only] Prunes obsolete player data, like leftover game data or preferences from games."),
 
-	execute: behaviour
+	execute: behaviour,
+
+    // This command will never be deployed globally; only to a private dev guild
+    isDev: true
 };
 
 

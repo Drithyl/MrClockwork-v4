@@ -31,7 +31,8 @@ module.exports = {
             .setRequired(true)
             .addChoices(...getServerStringOptionChoices())
             .setRequired(true)
-        ),
+        )
+        .setDMPermission(false),
 
 	execute: behaviour
 };

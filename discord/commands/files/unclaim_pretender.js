@@ -16,7 +16,8 @@ module.exports = {
             .setMinValue(0)
             .setRequired(true)
             .setAutocomplete(true)
-        ),
+        )
+        .setDMPermission(false),
 
 	execute: behaviour,
     autocomplete: autocompletePretenders

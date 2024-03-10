@@ -7,7 +7,8 @@ const MessagePayload = require("../../prototypes/message_payload.js");
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName("pin_settings")
-		.setDescription("Send and pin the game's settings to the game's channel."),
+		.setDescription("Send and pin the game's settings to the game's channel.")
+        .setDMPermission(false),
 
 	execute: behaviour
 };

@@ -6,7 +6,8 @@ const commandPermissions = require("../../command_permissions.js");
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName("pause")
-		.setDescription("In a game channel, pauses or unpauses a game."),
+		.setDescription("In a game channel, pauses or unpauses a game.")
+        .setDMPermission(false),
 
 	execute: behaviour
 };

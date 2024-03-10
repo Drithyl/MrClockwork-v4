@@ -10,7 +10,8 @@ const dom6SettingFlags = require("../../../json/dominions6_setting_flags.json");
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName("scores")
-		.setDescription("Get current turn's scores file. Only available if visible scoregraphs, or games which have ended."),
+		.setDescription("Get current turn's scores file. Only available if visible scoregraphs, or games which have ended.")
+        .setDMPermission(false),
 
 	execute: behaviour
 };

@@ -15,7 +15,8 @@ module.exports = {
             .setDescription("A number that matches the pretender's index displayed by the `pretenders` command.")
             .setRequired(true)
             .setAutocomplete(true)
-        ),
+        )
+        .setDMPermission(false),
 
 	execute: behaviour,
     autocomplete: autocompletePretenders

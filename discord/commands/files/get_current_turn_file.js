@@ -7,7 +7,8 @@ const playerFileStore = require("../../../player_data/player_file_store.js");
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName("turn_file")
-		.setDescription("[Game-player-only] Requests the claimed nation's current turn file, which is then sent by DM."),
+		.setDescription("[Game-player-only] Requests the claimed nation's current turn file, which is then sent by DM.")
+        .setDMPermission(false),
 
 	execute: behaviour
 };

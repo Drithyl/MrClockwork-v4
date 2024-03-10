@@ -6,7 +6,8 @@ const commandPermissions = require("../../command_permissions.js");
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName("remove_bot_from_guild")
-		.setDescription("[Guild-owner-only] CAREFUL. Will attempt to delete ALL deployment from bot."),
+		.setDescription("[Guild-owner-only] CAREFUL. Will attempt to delete ALL deployment from bot.")
+        .setDMPermission(false),
 
 	execute: behaviour
 };

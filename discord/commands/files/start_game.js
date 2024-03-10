@@ -6,7 +6,8 @@ const commandPermissions = require("../../command_permissions.js");
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName("start_game")
-		.setDescription("[Game-organizer-only] Starts the game. Can take long depending on size (even > 20 minutes)."),
+		.setDescription("[Game-organizer-only] Starts the game. Can take long depending on size (even > 20 minutes).")
+        .setDMPermission(false),
 
 	execute: behaviour
 };

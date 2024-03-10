@@ -9,7 +9,10 @@ module.exports = {
 		.setName("toggle_cleaner")
 		.setDescription("[Dev-only] Sets whether the bot will regularly clean unused map and mod files."),
 
-	execute: behaviour
+	execute: behaviour,
+
+    // This command will never be deployed globally; only to a private dev guild
+    isDev: true
 };
 
 

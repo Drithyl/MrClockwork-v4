@@ -19,7 +19,8 @@ module.exports = {
             option.setName(NEW_ROLE_OPTION_NAME)
             .setDescription("The new role's id to take its place.")
             .setRequired(true)
-        ),
+        )
+        .setDMPermission(false),
 
 	execute: behaviour
 };

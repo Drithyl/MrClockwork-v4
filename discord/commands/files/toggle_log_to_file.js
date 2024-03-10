@@ -9,7 +9,10 @@ module.exports = {
 		.setName("toggle_log_to_file")
 		.setDescription("[Dev-only] Sets whether the bot will log its prints to files."),
 
-	execute: behaviour
+	execute: behaviour,
+
+    // This command will never be deployed globally; only to a private dev guild
+    isDev: true
 };
 
 

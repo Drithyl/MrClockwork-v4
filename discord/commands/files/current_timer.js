@@ -39,7 +39,8 @@ module.exports = {
                     .setMinValue(1)
                     .setRequired(true)
                 )
-        ),
+        )
+        .setDMPermission(false),
 
 	execute: behaviour
 };

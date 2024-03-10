@@ -6,7 +6,8 @@ const commandPermissions = require("../../command_permissions.js");
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName("kill")
-		.setDescription("Shuts down the game's process. Useful to relaunch it to fix common errors. Doesn't delete anything."),
+		.setDescription("Shuts down the game's process. Useful to relaunch it to fix common errors. Doesn't delete anything.")
+        .setDMPermission(false),
 
 	execute: behaviour
 };

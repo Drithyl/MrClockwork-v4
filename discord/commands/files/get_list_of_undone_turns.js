@@ -6,7 +6,8 @@ const assert = require("../../../asserter.js");
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName("undone")
-		.setDescription("In a game channel, prints a list nations whose turns' are undone or unfinished."),
+		.setDescription("In a game channel, prints a list nations whose turns' are undone or unfinished.")
+        .setDMPermission(false),
 
 	execute: behaviour
 };

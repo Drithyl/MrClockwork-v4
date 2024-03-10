@@ -12,7 +12,8 @@ module.exports = {
         .addBooleanOption(option =>
             option.setName(DELETE_PRETENDERS_OPTION_NAME)
             .setDescription("Should pretenders be deleted? If not, only pretenders of blank turns will be preserved.")
-        ),
+        )
+        .setDMPermission(false),
 
 	execute: behaviour
 };

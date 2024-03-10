@@ -6,7 +6,8 @@ const commandPermissions = require("../../command_permissions.js");
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName("subscribe")
-		.setDescription("Assigns yourself the role of the game. Claiming a pretender assigns it automatically."),
+		.setDescription("Assigns yourself the role of the game. Claiming a pretender assigns it automatically.")
+        .setDMPermission(false),
 
 	execute: behaviour
 };

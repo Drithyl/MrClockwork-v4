@@ -7,7 +7,8 @@ const gamesStore = require("../../../games/ongoing_games_store.js");
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName("reset_port")
-		.setDescription("[Organizer-only] Assigns a new port to the game (or the same one if it's found to be free)."),
+		.setDescription("[Organizer-only] Assigns a new port to the game (or the same one if it's found to be free).")
+        .setDMPermission(false),
 
 	execute: behaviour
 };

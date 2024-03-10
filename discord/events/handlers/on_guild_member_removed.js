@@ -7,9 +7,10 @@ module.exports =
     name: "guildMemberRemove",
     execute: async (member) =>
     {
-        log.general(log.getLeanLevel(), `GuildMember ${guildMemberWrapper.getNameInGuild()} left ${guildMemberWrapper.getGuildWrapper()?.getName()}; updating game data...`);
         const guildWrapper = guildStore.getGuildWrapperById(member.guild.id);
         const guildMemberWrapper = await guildWrapper.fetchGuildMemberWrapperById(member.id);
+
+        log.general(log.getLeanLevel(), `GuildMember ${guildMemberWrapper.getNameInGuild()} left ${guildMemberWrapper.getGuildWrapper()?.getName()}; updating game data...`);
 
         const playerGames = gameStore.getGamesWhereUserIsPlayer(guildMemberWrapper.getId());
         const gamesToUpdate = playerGames.filter((game) => game.getGuildId() === guildMemberWrapper.getGuildId());

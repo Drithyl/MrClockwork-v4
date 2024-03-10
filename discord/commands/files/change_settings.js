@@ -7,7 +7,8 @@ const MessagePayload = require("../../prototypes/message_payload.js");
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName("settings")
-		.setDescription("[Game-organizer-only] Change game settings, provided the game hasn't started yet."),
+		.setDescription("[Game-organizer-only] Change game settings, provided the game hasn't started yet.")
+        .setDMPermission(false),
 
 	execute: behaviour
 };

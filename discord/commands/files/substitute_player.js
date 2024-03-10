@@ -22,7 +22,8 @@ module.exports = {
             option.setName(PLAYER_OPTION_NAME)
             .setDescription("A mention to the player who will be taking over (@Username#0000).")
             .setRequired(true)
-        ),
+        )
+        .setDMPermission(false),
 
 	execute: behaviour,
     autocomplete: autocompletePretenders
