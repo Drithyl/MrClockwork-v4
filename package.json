@@ -7,6 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint .",
     "start": "node app_bot.js",
+    "delete-global-commands": "node scripts/delete_global_commands.js",
+    "delete-guild-commands": "node scripts/delete_guild_commands.js",
     "deploy-global-commands": "node scripts/deploy_commands_globally.js",
     "deploy-guild-commands": "node scripts/deploy_commands_to_guild.js"
   },
