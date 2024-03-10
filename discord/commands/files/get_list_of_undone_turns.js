@@ -53,7 +53,7 @@ async function behaviour(commandContext)
         listString += "```\n";
     }
 
-    return commandContext.respondToCommand(new MessagePayload(messageString, listString, true, "```"));
+    return commandContext.respondToCommand(new MessagePayload(messageString, listString, false));
 }
 
 function _getLatestUpdateTimestamp(lastKnownStatus)
