@@ -9,7 +9,7 @@ const PLAYER_OPTION_NAME = "player_to_sub";
 
 module.exports = {
 	data: new SlashCommandBuilder()
-		.setName("sub")
+		.setName("substitute")
 		.setDescription("[Game-organizer-only] Transfers the claim on a pretender to another player.")
         .addIntegerOption(option =>
             option.setName(NATION_OPTION_NAME)

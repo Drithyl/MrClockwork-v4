@@ -5,8 +5,8 @@ const commandPermissions = require("../../command_permissions.js");
 
 module.exports = {
 	data: new SlashCommandBuilder()
-		.setName("unsubscribe")
-		.setDescription("Removes the role of a game from yourself. Unclaiming/removing pretender already does this.")
+		.setName("subscribe")
+		.setDescription("Assigns yourself the role of the game. Claiming a pretender assigns it automatically.")
         .setDMPermission(false),
 
 	execute: behaviour
@@ -21,8 +21,9 @@ async function behaviour(commandContext)
     const gameRole = gameObject.getRole();
     const guildMemberWrapper = commandContext.memberWrapper;
 
-    await guildMemberWrapper.removeRole(gameRole);
-    return commandContext.respondToCommand(new MessagePayload(
-        `The game's role has been removed from you.`)
-    );
+    if (gameRole == null)
+        return commandContext.respondToCommand(new MessagePayload(`This game's role does not exist; cannot assign it.`));
+
+    await guildMemberWrapper.addRole(gameRole);
+    return commandContext.respondToCommand(new MessagePayload(`The game's role has been assigned to you.`));
 }

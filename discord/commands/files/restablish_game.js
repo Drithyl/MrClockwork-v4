@@ -7,7 +7,7 @@ const GAME_OPTION_NAME = "game_name";
 
 module.exports = {
 	data: new SlashCommandBuilder()
-		.setName("reestablish_game")
+		.setName("restablish_game")
 		.setDescription("Reestablishes a game's deleted channel and/or role by creating new ones if none are found.")
         .addStringOption(option =>
             option.setName(GAME_OPTION_NAME)

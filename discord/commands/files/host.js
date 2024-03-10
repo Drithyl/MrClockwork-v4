@@ -28,7 +28,6 @@ module.exports = {
         .addStringOption(option =>
             option.setName(SERVER_OPTION_NAME)
             .setDescription("The name of the server on which to host the game.")
-            .setRequired(true)
             .addChoices(...getServerStringOptionChoices())
             .setRequired(true)
         )

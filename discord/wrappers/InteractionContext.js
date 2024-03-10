@@ -9,6 +9,7 @@ class InteractionContext
     {
         this.interactionBase = interactionBase;
 
+        this.client = interactionBase.client;
         this.guild = this.interactionBase.guild;
         this.guildId = this.interactionBase.guildId;
         this.guildWrapper = guildStore.getGuildWrapperById(this.guildId);

@@ -11,20 +11,20 @@ const HOURS_OPTION = "hours";
 
 module.exports = {
 	data: new SlashCommandBuilder()
-		.setName("dtimer")
-		.setDescription("Check or change the default turn timer.")
+		.setName("timer")
+		.setDescription("Check or change the timer of the current turn.")
         .addSubcommand(subcommand =>
             subcommand
                 .setName(CHECK_SUBCOMMAND_NAME)
-                .setDescription("Check the game's default timer")
+                .setDescription("Check the game's current timer")
         )
         .addSubcommand(subcommand =>
             subcommand
                 .setName(ADD_SUBCOMMAND_NAME)
-                .setDescription("Add time to the game's default timer.")
+                .setDescription("Add time to the game's current timer.")
                 .addIntegerOption(option =>
                     option.setName(HOURS_OPTION)
-                    .setDescription("Hours to add to the default turn timer.")
+                    .setDescription("Hours to add to the current turn timer.")
                     .setMinValue(1)
                     .setRequired(true)
                 )
@@ -32,7 +32,7 @@ module.exports = {
         .addSubcommand(subcommand =>
             subcommand
                 .setName(SET_SUBCOMMAND_NAME)
-                .setDescription("Set the game's default timer.")
+                .setDescription("Set the game's current timer.")
                 .addIntegerOption(option =>
                     option.setName(HOURS_OPTION)
                     .setDescription("Hours for a new turn to roll.")
@@ -47,15 +47,15 @@ module.exports = {
 
 async function behaviour(commandContext)
 {
-    await commandPermissions.assertGameHasStarted(commandContext);
-    await commandPermissions.assertCommandIsUsedInGameChannel(commandContext);
+    await commandPermissions.assertGameHasStarted(commandContext);(commandContext);
+    await commandPermissions.assertCommandIsUsedInGameChannel(commandContext);(commandContext);
 
     
     if (commandContext.options.getSubcommand() === CHECK_SUBCOMMAND_NAME)
         return onCheckSubcommand(commandContext);
 
 
-    await commandPermissions.assertMemberIsOrganizer(commandContext);
+    await commandPermissions.assertMemberIsOrganizer(commandContext);(commandContext);
     
 
     if (commandContext.options.getSubcommand() === SET_SUBCOMMAND_NAME)
@@ -68,53 +68,36 @@ async function behaviour(commandContext)
 function onCheckSubcommand(commandContext)
 {
     const gameObject = commandContext.targetedGame;
-    const gameSettings = gameObject.getSettingsObject();
-    const timerSetting = gameSettings.getTimerSetting();
-    const defaultTimeLeftObject = timerSetting.getValue();
-    
+    const lastKnownStatus = gameObject.getLastKnownStatus();
 
-    if (defaultTimeLeftObject.getMsLeft() === 0)
-        return commandContext.respondToCommand(new MessagePayload(`Default timer: **paused**.`));
-
-    return commandContext.respondToCommand(new MessagePayload(
-        `Default timer: ${defaultTimeLeftObject.printTimeLeft()}.`
-    ));
+    return commandContext.respondToCommand(
+        new MessagePayload(`Current time left: ${lastKnownStatus.printTimeLeft()}.`)
+    );
 }
 
 async function onSetSubcommand(commandContext)
 {
     const gameObject = commandContext.targetedGame;
-    const settingsObject = gameObject.getSettingsObject();
-    const timerSetting = settingsObject.getTimerSetting();
+    const lastKnownStatus = gameObject.getLastKnownStatus();
     const hours = commandContext.options.getInteger(HOURS_OPTION);
     const msToSet = TimeLeft.hoursToMs(hours);
 
-    await gameObject.changeTimer(msToSet, msToSet);
-
-    if (hours == 0)
-        return commandContext.respondToCommand(new MessagePayload(`The time per turn has been paused. It may take a minute to update.`));
-
-    else return commandContext.respondToCommand(new MessagePayload(
-            `The time per turn was changed. New turns will now have ${timerSetting.getValue().printTimeLeft()}.`
-    ));
+    await gameObject.changeTimer(msToSet);
+    return commandContext.respondToCommand(
+        new MessagePayload(`The timer was changed. New timer: ${lastKnownStatus.printTimeLeft()}.`)
+    );
 }
 
 async function onAddSubcommand(commandContext)
 {
     const gameObject = commandContext.targetedGame;
-    const settingsObject = gameObject.getSettingsObject();
-    const timerSetting = settingsObject.getTimerSetting();
-    const defaultMsLeft = timerSetting.getValue().getMsLeft();
+    const lastKnownStatus = gameObject.getLastKnownStatus();
+    const msLeft = lastKnownStatus.getMsLeft();
     const hours = commandContext.options.getInteger(HOURS_OPTION);
     const msToAdd = TimeLeft.hoursToMs(hours);
-    const finalMsToSet = defaultMsLeft + msToAdd;
 
-    await gameObject.changeTimer(finalMsToSet, finalMsToSet);
-
-    if (hours == 0)
-        return commandContext.respondToCommand(new MessagePayload(`The time per turn has been paused. It may take a minute to update.`));
-
-    else return commandContext.respondToCommand(new MessagePayload(
-            `The time per turn was changed. New turns will now have ${timerSetting.getValue().printTimeLeft()}.`
-    ));
+    await gameObject.changeTimer(msLeft + msToAdd);
+    return commandContext.respondToCommand(
+        new MessagePayload(`The time was added. New timer: ${lastKnownStatus.printTimeLeft()}.`)
+    );
 }

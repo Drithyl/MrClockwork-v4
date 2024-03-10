@@ -7,7 +7,7 @@ const DELETE_PRETENDERS_OPTION_NAME = "delete_pretenders";
 
 module.exports = {
 	data: new SlashCommandBuilder()
-		.setName("restart_game_to_lobby")
+		.setName("restart_game")
 		.setDescription("[Game-organizer-only] Restarts the game back to the pretender lobby; players must resubmit.")
         .addBooleanOption(option =>
             option.setName(DELETE_PRETENDERS_OPTION_NAME)

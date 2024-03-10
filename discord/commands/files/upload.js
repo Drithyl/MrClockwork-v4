@@ -1,5 +1,4 @@
 
-const asserter = require("../../../asserter.js");
 const { SlashCommandBuilder } = require("discord.js");
 const config = require("../../../config/config.json");
 const commandPermissions = require("../../command_permissions.js");
