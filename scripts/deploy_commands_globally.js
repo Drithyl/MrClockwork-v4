@@ -12,7 +12,7 @@ async function deployGlobally()
 		let result = await deploy(devCommands, devGuildId);
 		console.log(`Successfully reloaded ${result.length} dev slash commands.`);
 
-		result = await deploy(nonDevCommands, devGuildId);
+		result = await deploy(nonDevCommands);
 		console.log(`Successfully reloaded ${result.length} non-dev slash commands globally.`);
 	}
 	catch(error) {
