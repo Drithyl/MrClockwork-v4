@@ -11,10 +11,10 @@ async function deploy(commands, guildId = null)
 	let deployRoute;
 
 	if (guildId != null) {
-		deployRoute = Routes.applicationCommands(applicationId);
+		deployRoute = Routes.applicationGuildCommands(applicationId, guildId);
 	}
 	else {
-		deployRoute = Routes.applicationGuildCommands(applicationId, guildId);
+		deployRoute = Routes.applicationCommands(applicationId);
 	}
 
 	console.log(`Started refreshing ${commandsJson.length} slash commands.`);
