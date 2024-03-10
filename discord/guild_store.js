@@ -3,6 +3,7 @@ const log = require("../logger.js");
 const guildDataStore = require("./guild_data_store.js");
 const guildWrapperFactory = require("./guild_wrapper_factory.js");
 const GuildSetup = require("./guild_setup.js");
+const { RESTJSONErrorCodes } = require('discord.js');
 
 const guildWrappers = {};
 
@@ -66,11 +67,13 @@ module.exports.getGuildsWhereUserIsTrusted = async (userId) =>
 
         catch(err)
         {
-            // If member can't be found or guild doesn't have trusted role, it's not an error
-            if (err.name === "DiscordAPIError")
-                continue;
+            const ignorableErrorCodes = [
+                RESTJSONErrorCodes.UnknownMember
+            ];
 
-            log.error(log.getLeanLevel(), `Guild ${guild.getName()} (${id}) error checking trusted role`, err.stack);
+            if (ignorableErrorCodes.includes(err.code) === false) {
+                log.error(log.getLeanLevel(), `Guild ${guild.getName()} (${id}) error checking trusted role`, err.stack);
+            }
         }
     }
 
