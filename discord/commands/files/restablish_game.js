@@ -3,14 +3,14 @@ const commandPermissions = require("../../command_permissions.js");
 const ongoingGamesStore = require("../../../games/ongoing_games_store.js");
 const MessagePayload = require("../../prototypes/message_payload.js");
 
-const GAME_OPTION_NAME = "game_name";
+const GAME_NAME_OPTION = "game_name";
 
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName("restablish_game")
 		.setDescription("Reestablishes a game's deleted channel and/or role by creating new ones if none are found.")
         .addStringOption(option =>
-            option.setName(GAME_OPTION_NAME)
+            option.setName(GAME_NAME_OPTION)
             .setDescription("The name of the game that needs reestablished.")
             .setRequired(true)
             .setAutocomplete(true)
@@ -27,7 +27,7 @@ async function behaviour(commandContext)
     await commandPermissions.assertMemberIsGameMaster(commandContext);
 
     const guildWrapper = commandContext.guildWrapper;
-    const gameName = commandContext.options.getString(GAME_OPTION_NAME);
+    const gameName = commandContext.options.getString(GAME_NAME_OPTION);
     let gameObject;
     
 
@@ -61,10 +61,18 @@ async function autocompleteGameNames(autocompleteContext)
 
     let choices = [];
 
-    if (focusedOption.name === GAME_OPTION_NAME)
+    if (focusedOption.name === GAME_NAME_OPTION)
     {
         // Array of choices that are available to select
-        choices = games.map((game) => game.getName());
+        choices = games.map((game) => {
+            let name = game.getName();
+
+            if (name.length > 25) {
+                name = name.slice(0, 22) + "...";
+            }
+
+            return name;
+        });
     }
 
     // Filter choices based on our focused value

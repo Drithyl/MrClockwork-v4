@@ -75,7 +75,7 @@ async function autocompletePretenders(autocompleteContext)
         choices = humanPretenders.map((n) => {
             let name = n.fullName;
 
-            if (name > 25) {
+            if (name.length > 25) {
                 name = name.slice(0, 22) + "...";
             }
 

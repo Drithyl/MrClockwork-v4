@@ -55,7 +55,15 @@ async function autocompleteGameNames(autocompleteContext)
     if (focusedOption.name === GAME_NAME_OPTION)
     {
         // Array of choices that are available to select
-        choices = games.map((game) => game.getName());
+        choices = games.map((game) => {
+            let name = game.getName();
+
+            if (name.length > 25) {
+                name = name.slice(0, 22) + "...";
+            }
+
+            return name;
+        });
     }
 
     // Filter choices based on our focused value

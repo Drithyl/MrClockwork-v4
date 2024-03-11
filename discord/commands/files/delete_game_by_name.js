@@ -18,6 +18,7 @@ module.exports = {
             option.setName(GAME_NAME_OPTION)
             .setDescription("The name of the game to delete")
             .setRequired(true)
+            .setAutocomplete(true)
         )
         .addBooleanOption(option =>
             option.setName(DELETE_CHANNEL_OPTION)
@@ -25,6 +26,7 @@ module.exports = {
         ),
 
 	execute: behaviour,
+    autocomplete: autocompleteGameNames,
 
     // This command will never be deployed globally; only to a private dev guild
     isDev: true
@@ -71,4 +73,42 @@ async function behaviour(commandContext)
     return commandContext.respondByDm(new MessagePayload(
         `${gameObject.getName()} was deleted successfully.`
     ));
+}
+
+async function autocompleteGameNames(autocompleteContext)
+{
+    // Returns the value of the option currently
+    // being focused by the user. "true" makes it
+    // return the whole focused object instead of
+    // its string value. This way we can access the
+    // name of the focused value as well.
+    const focusedOption = autocompleteContext.options.getFocused(true);
+    const games = ongoingGamesStore.getArrayOfGames();
+
+    let choices = [];
+
+    if (focusedOption.name === GAME_NAME_OPTION)
+    {
+        // Array of choices that are available to select
+        choices = games.map((game) => {
+            let name = game.getName();
+
+            if (name.length > 25) {
+                name = name.slice(0, 22) + "...";
+            }
+
+            return name;
+        });
+    }
+
+    // Filter choices based on our focused value
+    const filtered = choices.filter(choice =>
+        choice.toLowerCase().includes(focusedOption.value)
+    );
+
+    // Respond with the list of choices that match
+    // the focused value, like an autocomplete
+    await autocompleteContext.respond(
+        filtered.map(choice => ({ name: choice, value: choice })),
+    );
 }
