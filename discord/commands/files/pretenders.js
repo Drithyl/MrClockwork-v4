@@ -26,7 +26,7 @@ async function behaviour(commandContext)
     if (humanPretenders.length <= 0)
         return commandContext.respondToCommand(new MessagePayload(`There are no submitted pretenders.`));
 
-    return commandContext.respondToCommand(new MessagePayload(formattedString, "", true, "```"));
+    return commandContext.respondToCommand(new MessagePayload(formattedString));
 }
 
 function _formatSubmittedPretenders(humanPretenderList)
