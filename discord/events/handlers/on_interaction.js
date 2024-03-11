@@ -85,6 +85,7 @@ async function onAutocompleteInteractionHandler(interaction, client)
     catch (error)
     {
         console.error(error);
+		await commandContext.respond([]);
     }
 }
 
