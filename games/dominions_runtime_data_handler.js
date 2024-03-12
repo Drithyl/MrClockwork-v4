@@ -59,19 +59,21 @@ const dom6PretenderRegexp = /fileversion6\d* nation\d+/i;
 // For the above error, useful to isolate the nation number and convert it to a nation name
 const nationNumberGroup = /fileversion6\d* nation(\d+)/i;
 
-//Exact error: "Något gick fel!". Should come last in handling as some more
-//errors will also contain this bit into them
+// Exact error: "Något gick fel!"
+// Should come last in handling as some more errors will also contain this bit into them
 const nagotGickFelErrRegexp = /gick\s*fel/i;
 
-//Exact error: "h_mkitms"
-//johan has stated that this is an error about forging a bad magic item that shouldn't happen
+// Exact error: "h_mkitms"
+// Johan has stated that this is an error about forging a bad magic item that shouldn't happen
 const itemForgingErrRegexp = /h_mkitms/i;
 
-//Exact error: "Failed to create /[statuspage name]"
+// Exact error: "Failed to create /[statuspage name]"
 const fileCreationErrRegexp = /Failed\s*to\s*create/i;
 
-//Exact error: "The game [game_name] reported the error: *** no site called [site_name] ([replaced_site_name])"
-const replacedThroneErrRegexp = /no\s*site\s*called\s*\w+\s*(\w+)/i;
+// Exact error: "The game [game_name] reported the error: *** no site called [site_name] ([modded event #msg])"
+// This seems to trigger when a modded event uses #removesite for a site that does not exist, i.e. if the event
+// triggers more than once, and the site gets removed the first time, and does not exist the subsequent times
+const removeSiteErrRegexp = /no\s*site\s*called\s*(\w+)\s*\(\w+\)/i;
 
 // Exact message: "Setup port [port] (clients may start), open: 35, players 0, ais 0"; this happens very often
 // during game setup, and when game starts, doing the countdown each time
@@ -182,8 +184,8 @@ function handleData(game, message)
     else if (nagotGickFelErrRegexp.test(message) === true)
         handleNagotGickFel(game, message);
 
-    else if (replacedThroneErrRegexp.test(message) === true)
-        handleReplacedThroneErr(game, message);
+    else if (removeSiteErrRegexp.test(message) === true)
+        handleRemoveSiteErr(game, message);
 
     else if (generatingNextTurnMessageRegExp.test(message) === true)
         handleGeneratingNextTurn(game, message);
@@ -221,86 +223,105 @@ function isIgnorableMessage(message)
 
 function handleFailedToCreateTmpDir(game, message)
 {
-    log.general(log.getVerboseLevel(), `Handling failedToCreateTmpDir error ${message}`);
-    debounce(game, `Dominions reported an error: the game instance could not be started because it failed to create a temp dir. Try killing it and launching it again.`);
+    const logMessage = `Handling failedToCreateTmpDir error ${message}`;
+    const channelMessage = `Dominions reported an error: the game instance could not be started because it failed to create a temp dir. Try killing it and launching it again.`;
+    debounce(game, logMessage, () => log.general(log.getVerboseLevel(), logMessage));
+    debounce(game, channelMessage, sendWarning);
 }
 
 function handleAddressInUse(game, message)
 {
-    log.general(log.getVerboseLevel(), `Handling addressInUse error ${message}`);
-    debounce(game, `The game's port busy. Most likely the game failed to shut down properly, so killing it and relaunching it should work.`);
+    const logMessage = `Handling addressInUse error ${message}`;
+    const channelMessage = `The game's port busy. Most likely the game failed to shut down properly, so killing it and relaunching it should work.`;
+    debounce(game, logMessage, () => log.general(log.getVerboseLevel(), logMessage));
+    debounce(game, channelMessage, sendWarning);
 }
 
 function handleNetworkError(game, message)
 {
-    log.general(log.getVerboseLevel(), `Handling networkError error ${message}`);
-    debounce(game, `The game reported a network error.`);
+    const logMessage = `Handling networkError error ${message}`;
+    const channelMessage = `The game reported a network error.`;
+    debounce(game, logMessage, () => log.general(log.getVerboseLevel(), logMessage));
+    debounce(game, channelMessage, sendWarning);
 }
 
 function handleTerminated(game, message)
 {
-    log.general(log.getVerboseLevel(), `Ignoring terminated error ${message}`);
+    const logMessage = `Ignoring terminated error ${message}`;
+    debounce(game, logMessage, () => log.general(log.getVerboseLevel(), logMessage));
 }
 
 function handleNagotGickFel(game, message)
 {
-    log.general(log.getVerboseLevel(), `Handling nagotGickFel error ${message}`);
-    debounce(game, `Dominions crashed due to an error: ${message}`);
+    const logMessage = `Handling nagotGickFel error ${message}`;
+    const channelMessage = `Dominions crashed due to an error: ${message}`;
+    debounce(game, logMessage, () => log.general(log.getVerboseLevel(), logMessage));
+    debounce(game, channelMessage, sendWarning);
 }
 
 function handleMapNotFound(game, message)
 {
-    log.general(log.getVerboseLevel(), `Handling mapNotFound error ${message}`);
+    const logMessage = `Handling mapNotFound error ${message}`;
+    debounce(game, logMessage, () => log.general(log.getVerboseLevel(), logMessage));
 
     //this error string is pretty explicit and informative so send it as is
-    debounce(game, message);
+    debounce(game, message, sendWarning);
 }
 
 function handleMapImgNotFound(game, message)
 {
-    log.general(log.getVerboseLevel(), `Handling mapImgNotFound error ${message}`);
-    debounce(game, `Dominions reported an error: One or more of the image files of the selected map could not be found. Make sure they've been uploaded and that the .map file points to the proper names:\n\n${message}`);
+    const logMessage = `Handling mapImgNotFound error ${message}`;
+    const channelMessage = `Dominions reported an error: One or more of the image files of the selected map could not be found. Make sure they've been uploaded and that the .map file points to the proper names:\n\n${message}`;
+    debounce(game, logMessage, () => log.general(log.getVerboseLevel(), logMessage));
+    debounce(game, channelMessage, sendWarning);
 }
 
 function handleModNotFound(game, message)
 {
-    log.general(log.getVerboseLevel(), `Handling modNotFound error ${message}`);
+    const logMessage = `Handling modNotFound error ${message}`;
+    debounce(game, logMessage, () => log.general(log.getVerboseLevel(), logMessage));
 
     //this error string is pretty explicit and informative so send it as is
-    debounce(sendWarning(game, message));
+    debounce(game, message, sendWarning);
 }
 
 function handleModNotInstalled(game, message)
 {
-    log.general(log.getVerboseLevel(), `Handling modNotInstalled error ${message}`);
-
-    //this error string is pretty explicit and informative so send it as is
-    debounce(sendWarning(game, "One of the mods chosen is not installed on the server. Did it get deleted after the game was hosted?"));
+    const logMessage = `Handling modNotInstalled error ${message}`;
+    const channelMessage = "One of the mods chosen is not installed on the server. Did it get deleted after the game was hosted?";
+    debounce(game, logMessage, () => log.general(log.getVerboseLevel(), logMessage));
+    debounce(game, channelMessage, sendWarning);
 }
 
 function handleSoundNotFound(game, message)
 {
-    log.general(log.getVerboseLevel(), `Handling soundNotFound error ${message}`);
+    const logMessage = `Handling soundNotFound error ${message}`;
+    debounce(game, logMessage, () => log.general(log.getVerboseLevel(), logMessage));
 
     //this error string is pretty explicit and informative so send it as is
-    debounce(game, message);
+    debounce(game, message, sendWarning);
 }
 
 function handleThroneInCapital(game, message)
 {
-    log.general(log.getVerboseLevel(), `Handling throneInCapital error ${message}`);
-    debounce(game, `Dominions reported an error: A throne was probably forced to start on a player's capital. Check the pre-set starts and thrones in the .map file (original error is: bc: king has throne in capital (p43 c385 h160 vp2) [new game created])`);
+    const logMessage = `Handling throneInCapital error ${message}`;
+    const channelMessage = `Dominions reported an error: A throne was probably forced to start on a player's capital. Check the pre-set starts and thrones in the .map file (original error is: bc: king has throne in capital (p43 c385 h160 vp2) [new game created])`;
+    debounce(game, logMessage, () => log.general(log.getVerboseLevel(), logMessage));
+    debounce(game, channelMessage, sendWarning);
 }
 
 function handleBadAiPlayer(game, message)
 {
-    log.general(log.getVerboseLevel(), `Handling badAiPlayer error ${message}`);
-    debounce(game, `Dominions reported an error: one of the AI players has an invalid nation number.`);
+    const logMessage = `Handling badAiPlayer error ${message}`;
+    const channelMessage = `Dominions reported an error: one of the AI players has an invalid nation number.`;
+    debounce(game, logMessage, () => log.general(log.getVerboseLevel(), logMessage));
+    debounce(game, channelMessage, sendWarning);
 }
 
 function handleCoreDumped(game, message)
 {
-    log.general(log.getVerboseLevel(), `Ignoring codeDumped error ${message}`);
+    const logMessage = `Ignoring codeDumped error ${message}`;
+    debounce(game, logMessage, () => log.general(log.getVerboseLevel(), logMessage));
     //don't send error here as this comes coupled with other more explicit errors
 }
 
@@ -308,32 +329,41 @@ function handleDom6PretenderSubmittedToDom5Game(game, message)
 {
     const offendingNationNumber = +message.match(nationNumberGroup)[0].replace(nationNumberGroup, "$1");
     const offendingNation = getNation(offendingNationNumber, config.dom6GameTypeName);
-
-    log.general(log.getVerboseLevel(), `Handling dom6PretenderSubmittedToDom5Game error ${message}`);
-    debounce(game, `This is a Dominions 5 game, but someone submitted a Dominions 6 pretender (**${offendingNation.getFullName()}**), which is making it crash. Remove this pretender to fix it.`);
+    const logMessage = `Handling dom6PretenderSubmittedToDom5Game error ${message}`;
+    const channelMessage = `This is a Dominions 5 game, but someone submitted a Dominions 6 pretender (**${offendingNation.getFullName()}**), which is making it crash. Remove this pretender to fix it.`;
+    debounce(game, logMessage, () => log.general(log.getVerboseLevel(), logMessage));
+    debounce(game, channelMessage, sendWarning);
 }
 
 function handleVersionTooOld(game, message)
 {
-    log.general(log.getVerboseLevel(), `Handling versionTooOld error ${message}`);
-    debounce(game, `The game has crashed because a new Dominions version is available. Please be patient while the admins update the servers :)`);
+    const logMessage = `Handling versionTooOld error ${message}`;
+    const channelMessage = `The game has crashed because a new Dominions version is available. Please be patient while the admins update the servers :)`;
+    debounce(game, logMessage, () => log.general(log.getVerboseLevel(), logMessage));
+    debounce(game, channelMessage, sendWarning);
 }
 
 function handleItemForgingErr(game, message)
 {
-    log.general(log.getVerboseLevel(), `Handling itemForging error ${message}`);
-    debounce(game, `The game has crashed on turn generation due to an error caused by forging a bad item. This should theoretically not happen.`);
+    const logMessage = `Handling itemForging error ${message}`;
+    const channelMessage = `The game has crashed on turn generation due to an error caused by forging a bad item. This should theoretically not happen.`;
+    debounce(game, logMessage, () => log.general(log.getVerboseLevel(), logMessage));
+    debounce(game, channelMessage, sendWarning);
 }
 
 function handleFileCreationErr(game, message)
 {
-    log.general(log.getVerboseLevel(), `Ignoring fileCreation error ${message}`);
+    const logMessage = `Ignoring fileCreation error ${message}`;
+    debounce(game, logMessage, () => log.general(log.getVerboseLevel(), logMessage));
 }
 
-function handleReplacedThroneErr(game, message)
+function handleRemoveSiteErr(game, message)
 {
-    log.general(log.getVerboseLevel(), `Handling replacedThrone error ${message}`);
-    debounce(game, `A site was replaced in this mod but Dominions considers it an error. This has no impact in the game other than this warning message:\n\n\`\`\`     ${message}\`\`\``);
+    const removedSiteName = message.match(removeSiteErrRegexp)[0].replace(removeSiteErrRegexp, "$1").trim();
+    const logMessage = `Handling replacedThrone error: ${message}`;
+    const channelMessage = `A modded event tried to remove a site that does not exist anymore: ${removedSiteName}`;
+    debounce(game, logMessage, () => log.general(log.getVerboseLevel(), logMessage));
+    debounce(game, channelMessage, sendWarning);
 }
 
 function handleGeneratingNextTurn(game)
@@ -344,27 +374,30 @@ function handleGeneratingNextTurn(game)
 
 function handleTooManySpritesErr(game, message)
 {
-    log.general(log.getVerboseLevel(), `Handling tooManySprites error ${message}`);
+    const logMessage = `Handling tooManySprites error ${message}`;
+    debounce(game, logMessage, () => log.general(log.getVerboseLevel(), logMessage));
 
     //this error string is pretty explicit and informative so send it as is
-    debounce(game, message);
+    debounce(game, message, sendWarning);
 }
 
 
 function handleUnknownMessage(game, message)
 {
     // Don't send channel warnings if this is an unidentified message; could just clutter things up
-    log.general(log.getNormalLevel(), `Game ${game.getName()} reported an unknown message`, message);
-    debounce(game, `The game encountered an unknown error:\n\n    ${message}`);
+    const logMessage = `Game ${game.getName()} reported an unknown message`;
+    const channelMessage = `The game encountered an unknown error:\n\n    ${message}`;
+    debounce(game, logMessage, () => log.general(log.getVerboseLevel(), logMessage));
+    debounce(game, channelMessage, sendWarning);
 }
 
-function debounce(game, message)
+function debounce(game, message, sendMessageFn)
 {
-    if (wasLastErrorSentRecently(game.getName(), message) === true)
+    if (wasLastMessageSentRecently(game.getName(), message) === true)
         return;
 
     addToHistory(game.getName(), message);
-    sendWarning(game, message);
+    sendMessageFn(game, message);
 }
 
 function isRunningInSilentLaunchMode() {
@@ -391,7 +424,7 @@ function addToHistory(gameName, message)
     messageHistory[gameName][message] = Date.now();
 }
 
-function wasLastErrorSentRecently(gameName, message)
+function wasLastMessageSentRecently(gameName, message)
 {
     if (messageHistory[gameName] == null || messageHistory[gameName][message] == null)
         return false;
@@ -406,7 +439,6 @@ function sendWarning(game, warning)
 
     if (channel != null)
     {
-        log.general(log.getVerboseLevel(), `Sending error warning to ${game.getName()}'s channel`);
         return new MessagePayload(warning).send(channel)
         .catch((err) => log.error(log.getVerboseLevel(), `ERROR sending warning`, err));
     }
