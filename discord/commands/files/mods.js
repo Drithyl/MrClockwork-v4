@@ -29,7 +29,7 @@ async function behaviour(commandContext)
     const gameType = commandContext.options.getString(GAME_TYPE_OPTION);
     const payload = new MessagePayload(`Attached below is the list of ${gameType} mods available:\n\n`);
     const mods = await hostServerStore.getMods(gameType);
-    const modList = mods.map((mod) => mod.name);
+    const modList = mods.map((mod) => mod.relativePath);
 
     if (modList.length <= 0)
         return commandContext.respondToCommand(new MessagePayload(`No ${gameType} mods are available. You'll have to upload some with the corresponding command.`));
