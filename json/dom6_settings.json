@@ -113,7 +113,7 @@
     "independentsStrength":
     {
         "name": "Independents' Strength",
-        "defaultInput": "5",
+        "defaultInput": "4",
         "description": "An integer from 0 to 9 (inclusive).",
         "expectedInputFormatRegexp": "^\\d$",
         "canBeChanged": true,

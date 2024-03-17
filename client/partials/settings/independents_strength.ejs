@@ -4,7 +4,13 @@
     
     <div class="col-sm-9">
         <input class="form-control w-auto"  type="number" id="input_independents_strength" name="independentsStrength" min="0" max="9" pattern="\d"
-            <% if (typeof gameSettings === "object" && typeof gameSettings.independentsStrength === "number") { %> value=<%=gameSettings.independentsStrength %> <% } else { %> value="5" <% } %>
+            <% if (typeof gameSettings === "object" && typeof gameSettings.independentsStrength === "number") { %>
+                value=<%=gameSettings.independentsStrength %>
+            <% } else if (typeof gameType === "string" && gameType === "dom6") { %> 
+                value="4" 
+            <% } else { %>
+                value="5"
+            <% } %>
         >
     </div>
     
