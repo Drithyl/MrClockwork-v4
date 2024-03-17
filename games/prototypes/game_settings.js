@@ -75,7 +75,12 @@ function GameSettings(parentGame)
             if (loadedValue !== undefined)
                 settingObject.fromJSON(loadedValue, needsPatching);
 
-            else throw new Error(`${settingKey} is undefined.`);
+            else if (settingObject.canBeChanged() === true) {
+                settingObject.setValue(settingObject.getDefault());
+                log.general(log.getNormalLevel(), `Setting ${settingKey} is not present; using default value`);
+            }
+
+            else throw new Error(`Crucial setting ${settingKey} is undefined in this game`);
         });
     };
 

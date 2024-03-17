@@ -1,0 +1,27 @@
+<div class="row mb-2">
+
+    <legend class="col-form-label col-sm-3 pt-0">Level 9 Research</legend>
+    
+    <div class="col-sm-9">
+        
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="level9Research" id="level_9_research_radio_0" value="0"
+                <% if (typeof gameSettings !== "object" || (typeof gameSettings === "object" && gameSettings.level9Research == 0)) { %> checked <% } %>
+            >
+            <label class="form-check-label" for="level_9_research_radio_0">
+                Level 9 spells need to be researched separately
+            </label>
+        </div>
+        
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="level9Research" id="level_9_research_radio_1" value="1"
+                <% if (typeof gameSettings === "object" && gameSettings.level9Research == 1) { %> checked <% } %>
+            >
+            <label class="form-check-label" for="level_9_research_radio_1">
+                Level 9 spells are researched individually
+            </label>
+        </div>
+        
+    </div>
+
+</div>

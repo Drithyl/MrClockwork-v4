@@ -120,6 +120,16 @@
         "isPublic": true
     },
 
+    "level9Research":
+    {
+        "name": "Level 9 Research",
+        "defaultInput": "0",
+        "description": "0 = level 9 spells need to be researched separately\n1 = level 9 spells are researched normally",
+        "expectedInputFormatRegexp": "^\\d$",
+        "canBeChanged": true,
+        "isPublic": true
+    },
+
     "magicSites":
     {
         "name": "Magic Sites",
@@ -148,6 +158,16 @@
         "expectedInputFormatRegexp": "^\\w{3,20}$",
         "canBeChanged": false,
         "isPublic": false
+    },
+
+    "mercenaries":
+    {
+        "name": "Maximum Number of Mercenaries",
+        "defaultInput": "5",
+        "description": "An integer from 0 to 10 (inclusive).",
+        "expectedInputFormatRegexp": "^\\d?\\d$",
+        "canBeChanged": true,
+        "isPublic": true
     },
 
     "mods":

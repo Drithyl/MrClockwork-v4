@@ -1,0 +1,11 @@
+<div class="row mb-2">
+    
+    <legend class="col-form-label col-sm-3 pt-0">Mercenary Slots</legend>
+    
+    <div class="col-sm-9">
+        <input class="form-control w-auto"  type="number" id="input_mercenaries" name="mercenaries" min="0" max="10" pattern="\d\d?"
+            <% if (typeof gameSettings === "object" && typeof gameSettings.mercenaries === "number") { %> value=<%=gameSettings.mercenaries %> <% } else { %> value="5" <% } %>
+        >
+    </div>
+    
+</div>

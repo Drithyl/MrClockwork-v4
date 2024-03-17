@@ -13,9 +13,11 @@ const GlobalSlots = require("../../game_settings/dom6/prototypes/global_slots.js
 const GoldModifier = require("../../game_settings/dom6/prototypes/gold_modifier.js");
 const HallOfFame = require("../../game_settings/dom6/prototypes/hall_of_fame.js");
 const IndependentsStrength = require("../../game_settings/dom6/prototypes/independents_strength.js");
+const Level9Research = require("../../game_settings/dom6/prototypes/level_9_research.js");
 const MagicSites = require("../../game_settings/dom6/prototypes/magic_sites.js");
 const Map = require("../../game_settings/dom6/prototypes/map.js");
 const MasterPassword = require("../../game_settings/dom6/prototypes/master_password.js");
+const Mercenaries = require("../../game_settings/dom6/prototypes/mercenaries.js");
 const Mods = require("../../game_settings/dom6/prototypes/mods.js");
 const Name = require("../../game_settings/dom6/prototypes/name.js");
 const RecruitmentModifier = require("../../game_settings/dom6/prototypes/recruitment_modifier.js");
@@ -34,7 +36,6 @@ module.exports = Dominions5Settings;
 function Dominions5Settings(parentGameObject)
 {
     const _parentGame = parentGameObject;
-    const _gameType = _parentGame.getType();
     const _gameSettingsObject = new GameSettings(parentGameObject);
 
     const _aiNations = new AiNations(_parentGame);
@@ -49,9 +50,11 @@ function Dominions5Settings(parentGameObject)
     const _goldModifier = new GoldModifier(_parentGame);
     const _hallOfFame = new HallOfFame(_parentGame);
     const _independentsStrength = new IndependentsStrength(_parentGame);
+    const _level9Research = new Level9Research(_parentGame);
     const _magicSites = new MagicSites(_parentGame);
     const _map = new Map(_parentGame);
     const _masterPassword = new MasterPassword(_parentGame);
+    const _mercenaries = new Mercenaries(_parentGame);
     const _mods = new Mods(_parentGame);
     const _name = new Name(_parentGame);
     const _recruitmentModifier = new RecruitmentModifier(_parentGame);
@@ -85,8 +88,10 @@ function Dominions5Settings(parentGameObject)
         _recruitmentModifier,
         _hallOfFame,
         _independentsStrength,
+        _level9Research,
         _magicSites,
         _masterPassword,
+        _mercenaries,
         _researchSpeed,
         _scoregraphs,
         _startingProvinces,
@@ -108,9 +113,11 @@ function Dominions5Settings(parentGameObject)
     _gameSettingsObject.getGoldModifierSetting = () => _goldModifier;
     _gameSettingsObject.getHallOfFameSetting = () => _hallOfFame;
     _gameSettingsObject.getIndependentsStrengthSetting = () => _independentsStrength;
+    _gameSettingsObject.getLevel9ResearchSetting = () => _level9Research;
     _gameSettingsObject.getMagicSitesSetting = () => _magicSites;
     _gameSettingsObject.getMapSetting = () => _map;
     _gameSettingsObject.getMasterPasswordSetting = () => _masterPassword;
+    _gameSettingsObject.getMercenariesSetting = () => _mercenaries;
     _gameSettingsObject.getModsSetting = () => _mods;
     _gameSettingsObject.getNameSetting = () => _name;
     _gameSettingsObject.getRecruitmentModifierSetting = () => _recruitmentModifier;
