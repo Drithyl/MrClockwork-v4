@@ -31,9 +31,9 @@ const SuppliesModifier = require("../../game_settings/dom6/prototypes/supplies_m
 const Thrones = require("../../game_settings/dom6/prototypes/thrones.js");
 const TimerSetting = require("../../game_settings/dom6/prototypes/timer.js");
 
-module.exports = Dominions5Settings;
+module.exports = Dominions6Settings;
 
-function Dominions5Settings(parentGameObject)
+function Dominions6Settings(parentGameObject)
 {
     const _parentGame = parentGameObject;
     const _gameSettingsObject = new GameSettings(parentGameObject);
