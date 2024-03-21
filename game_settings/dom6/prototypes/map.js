@@ -7,6 +7,7 @@ const SemanticError = require("../../../errors/custom_errors.js").SemanticError;
 const { appendDominionsMapExtension } = require("../../../helper_functions.js");
 
 const key = "map";
+const mapExtensionRegex = /\.map$/;
 
 module.exports = Map;
 
@@ -28,8 +29,8 @@ function Map(parentGameObject)
         return _parentGame.emitPromiseToServer("VERIFY_MAP", { filename: validatedValue, gameType: config.dom6GameTypeName })
         .then(() => 
         {
-            if (/(\.map)|(\.d6m)$/.test(validatedValue) === false)
-                validatedValue += appendDominionsMapExtension(config.dom6GameTypeName);
+            if (mapExtensionRegex.test(validatedValue) === false)
+                validatedValue = appendDominionsMapExtension(validatedValue, config.dom6GameTypeName);
                 
             _value = validatedValue;
             log.general(log.getNormalLevel(), `${parentGameObject.getName()}: Changed setting ${this.getName()} to ${this.getReadableValue()}`);
@@ -41,8 +42,8 @@ function Map(parentGameObject)
         if (typeof value !== "string")
             throw new Error(`Expected string; got ${value}`);
 
-        if (/.map$/i.test(value) === false)
-            value += ".d6m";
+        if (mapExtensionRegex.test(value) === false)
+            value = appendDominionsMapExtension(value, config.dom6GameTypeName);
 
         _value = value;
     };

@@ -38,14 +38,14 @@ module.exports.getDominionsMapsPath = function(gameType) {
 
 module.exports.getDominionsMapExtension = function(gameType) {
     if (asserter.isDom6GameType(gameType) === true)
-        return ".d6m";
+        return ".map";
     else if (asserter.isDom5GameType(gameType) === true)
         return ".map";
 };
 
 module.exports.appendDominionsMapExtension = function(filename, gameType) {
     const mapExtension = module.exports.getDominionsMapExtension(gameType);
-    const hasExtension = filename.lastIndexOf(mapExtension) === -1;
+    const hasExtension = filename.lastIndexOf(mapExtension) !== -1;
 
     if (hasExtension === true)
         return filename;
