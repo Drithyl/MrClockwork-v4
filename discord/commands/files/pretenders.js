@@ -21,21 +21,21 @@ async function behaviour(commandContext)
     
     const listAsArray = await game.fetchSubmittedNations();
     const humanPretenders = listAsArray.filter((pretender) => pretender.isSubmitted === true);
-    const formattedString = _formatSubmittedPretenders(humanPretenders);
+
 
     if (humanPretenders.length <= 0)
         return commandContext.respondToCommand(new MessagePayload(`There are no submitted pretenders.`));
 
-    return commandContext.respondToCommand(new MessagePayload(formattedString));
+
+    const headerContentPair = _formatPretenders(humanPretenders);
+    return commandContext.respondToCommand(new MessagePayload(headerContentPair[0], headerContentPair[1], true, "```"));
 }
 
-function _formatSubmittedPretenders(humanPretenderList)
+function _formatPretenders(humanPretenderList)
 {
     let totalClaimed = 0;
-    let formattedStr = "";
-    let livingNationsString = "";
-    let deadNationsString  = "";
-    let justDeadNationsString  = "";
+    let headerStr = "";
+    let contentStr = "";
 
     humanPretenderList.forEach((pretender) =>
     {
@@ -44,33 +44,24 @@ function _formatSubmittedPretenders(humanPretenderList)
             totalClaimed++;
 
         if (pretender.isHuman === true)
-            livingNationsString += _formatSubmittedPretenderLine(pretender);
-
-        else if (pretender.isDead === true)
-            deadNationsString += _formatSubmittedPretenderLine(pretender);
-
-        else if (pretender.hasJustDied === true)
-            justDeadNationsString += _formatSubmittedPretenderLine(pretender);
+            contentStr += _formatSubmittedPretenderLine(pretender);
     });
 
-    formattedStr = `Total Submitted: ${humanPretenderList.length}\nTotal Claimed: ${totalClaimed}\n`;
-
-    if (livingNationsString.length > 0)
-        formattedStr += `\n**Living nations**:\n${livingNationsString.toBox()}\n`;
-        
-    if (deadNationsString.length > 0)
-        formattedStr += `\n**Dead nations** (use \`/unclaim X\` to have the game removed from your played games list):\n${deadNationsString.toBox()}`;
-        
-    if (justDeadNationsString.length > 0)
-        formattedStr += `\n**Nations that died this turn** (use \`/unclaim X\` to have the game removed from your played games list):\n${justDeadNationsString.toBox()}`;
-
-    return formattedStr;
+    headerStr = `Total Submitted: ${humanPretenderList.length}\nTotal Claimed: ${totalClaimed}\n`;
+    return [headerStr, contentStr];
 }
 
 function _formatSubmittedPretenderLine(pretenderData)
 {
     const indexString = `${pretenderData.nationNumber}. `;
-    let pretenderStr = pretenderData.fullName.width(40);
+    let pretenderStr = pretenderData.fullName;
+    
+    if (pretenderData.isDead === true) {
+        pretenderStr += ' (DEAD)';
+    }
+
+    // Space out the nation name before the owner
+    pretenderStr = pretenderStr.width(47);
 
     // If .owner property is a string, just add it
     if (assert.isString(pretenderData.owner) === true)
@@ -78,7 +69,7 @@ function _formatSubmittedPretenderLine(pretenderData)
 
     // If owner property would be a GuildMemberWrapper, use getUsername()
     else if (pretenderData.owner != null)
-        pretenderStr = `${pretenderData.fullName.width(40)} ${pretenderData.owner.getUsername()}`;
+        pretenderStr += pretenderData.owner.getUsername();
 
     return indexString.width(5) + pretenderStr + "\n";
 }
