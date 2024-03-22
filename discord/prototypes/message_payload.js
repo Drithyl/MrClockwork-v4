@@ -169,7 +169,7 @@ function MessagePayload(header, content = "", splitContent = true, splitWrapper 
             });
 
             // Add header to content after having split the content itself
-            _contentArray.unshift(...headerLines);
+            _contentArray.unshift(...headerLines.filter((l) => l != null && l !== ''));
         }
 
         // If the length is more than allowed but splitContent is false,
