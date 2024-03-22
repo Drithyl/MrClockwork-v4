@@ -56,47 +56,53 @@ exports.assertGameHasNotStarted = async (commandContext) =>
 
 exports.assertMemberIsTrusted = async (commandContext) =>
 {
-    if (commandContext.isMemberDev === true)
-        return true;
+    if (commandContext.isMemberDev === true) {
+        return;
+    }
 
-    const isDev = commandContext.isDev;
     const memberWrapper = commandContext.memberWrapper;
     const guild = commandContext.guildWrapper;
     const trustedRole = await guild.fetchTrustedRole();
     const isTrustedOrAbove = await guild.checkMemberHasRoleOrAbove(memberWrapper, trustedRole);
 
-    if (isDev == false && isTrustedOrAbove === false)
+    if (isTrustedOrAbove !== true)
         throw new Error(`You must have this community's Trusted role to use this command.`);
 };
 
 exports.assertMemberIsGameMaster = async (commandContext) =>
 {
-    const isDev = commandContext.isDev;
+    if (commandContext.isMemberDev === true) {
+        return;
+    }
+
     const memberWrapper = commandContext.memberWrapper;
     const guild = commandContext.guildWrapper;
     const gameMasterRole = await guild.fetchGameMasterRole();
     const isGameMasterOrAbove = await guild.checkMemberHasRoleOrAbove(memberWrapper, gameMasterRole);
 
-    if (isDev === false && isGameMasterOrAbove === false)
+    if (isGameMasterOrAbove !== true)
         throw new Error(`You must be a Game Master or higher to use this command.`);
 };
 
 exports.assertMemberIsGuildOwner = (commandContext) =>
 {
-    if (commandContext.isMemberGuildOwner === false)
+    if (commandContext.isMemberGuildOwner !== true)
         throw new PermissionsError(`Only the owner of this guild can use this command.`);
 };
 
 exports.assertMemberIsOrganizer = async (commandContext) =>
 {
-    const isDev = commandContext.isDev;
+    if (commandContext.isMemberDev === true) {
+        return;
+    }
+
     const isOrganizer = commandContext.isMemberOrganizer;
     const memberWrapper = commandContext.memberWrapper;
     const guild = commandContext.guildWrapper;
     const gameMasterRole = await guild.fetchGameMasterRole();
     const isGameMasterOrAbove = await guild.checkMemberHasRoleOrAbove(memberWrapper, gameMasterRole);
 
-    if (isDev === false && isOrganizer === false && isGameMasterOrAbove === false)
+    if (isOrganizer !== true && isGameMasterOrAbove !== true)
         throw new Error(`You must be the game's organizer or a Game Master to use this command.`);
 };
 
