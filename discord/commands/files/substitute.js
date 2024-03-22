@@ -13,7 +13,7 @@ module.exports = {
 		.setDescription("[Game-organizer-only] Transfers the claim on a pretender to another player.")
         .addIntegerOption(option =>
             option.setName(NATION_OPTION_NAME)
-            .setDescription("A nation number that matches the pretender's index displayed by the pretenders command.")
+            .setDescription("The name of the nation to substitute.")
             .setRequired(true)
             .setMinValue(0)
             .setAutocomplete(true)

@@ -12,7 +12,7 @@ module.exports = {
 		.setDescription("Removes your claim from your submitted pretender (without deleting the submitted pretender).")
         .addIntegerOption(option =>
             option.setName(NATION_OPTION_NAME)
-            .setDescription("A number that matches the pretender's index displayed; a.k.a. the nation_number.")
+            .setDescription("The name of the nation to unclaim.")
             .setMinValue(0)
             .setRequired(true)
             .setAutocomplete(true)
@@ -35,7 +35,6 @@ async function behaviour(commandContext)
     const nations = status.getPlayers();
     const memberWrapper = commandContext.memberWrapper;
     const nationNumber = commandContext.options.getInteger(NATION_OPTION_NAME);
-    let nationData;
 
 
     if (nations == null)
@@ -45,16 +44,15 @@ async function behaviour(commandContext)
         return commandContext.respondToCommand(new MessagePayload(`You must specify a nation identifier to unclaim.`));
 
         
-    nationData = nations.find((nation) => nation.nationNumber === nationNumber);
+    const nationData = nations.find((nation) => nation.nationNumber === nationNumber);
+    const hasPermissions = commandContext.isMemberOrganizer === true ||
+        gameObject.isPlayerControllingNation(memberWrapper.getId(), nationData.filename) === true;
     
 
     if (nationData == null)
         throw new new SemanticError(`Invalid nation selected. Number does not match any submitted nation.`);
 
-    if (gameObject.isPlayerControllingNation(memberWrapper.getId(), nationData.filename) === false)
-        return Promise.reject(new Error(`Only the game organizer or the owner of this nation can do this.`));
-    
-    if (commandContext.isMemberOrganizer === false)
+    if (hasPermissions === false)
         return Promise.reject(new Error(`Only the game organizer or the owner of this nation can do this.`));
 
     

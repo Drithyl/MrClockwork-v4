@@ -12,7 +12,7 @@ module.exports = {
 		.setDescription("[Game-organizer-only] Change game settings, provided the game hasn't started yet.")
         .addIntegerOption(option =>
             option.setName(NATION_OPTION_NAME)
-            .setDescription("A number that matches the pretender's index displayed by the `pretenders` command.")
+            .setDescription("The name of the nation to claim.")
             .setRequired(true)
             .setAutocomplete(true)
         )
