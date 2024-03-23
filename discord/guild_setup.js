@@ -27,7 +27,8 @@ class GuildSetup
                     id: guildId,
                     allow: [
                         PermissionFlagsBits.ViewChannel,
-                        PermissionFlagsBits.ReadMessageHistory
+                        PermissionFlagsBits.ReadMessageHistory,
+                        PermissionFlagsBits.CreatePublicThreads
                     ],
                     deny: [
                         PermissionFlagsBits.UseExternalEmojis,
