@@ -269,9 +269,6 @@ function DominionsGame(type)
         return _gameObject.emitPromiseWithGameDataToServer("START_GAME")
         .then(() =>
         {
-            if (channel == null)
-                return Promise.resolve();
-
             _status.setMsToDefaultTimer(_gameObject);
             return channel.setParent(guildStore.getOngoingCategoryId(guildId));
         });
