@@ -1,4 +1,4 @@
-
+const os = require("os");
 const fs = require("fs");
 const path = require("path");
 const stream = require("stream");
@@ -114,15 +114,19 @@ function _log(logLevel, header, ...data)
 {
     let logStr = `${_getTimestamp()}\t${header}\n`;
 
-    data.forEach((line) =>
+    data.forEach((input) =>
     {
-        if (assert.isObject(line) === true)
-            logStr += "\n" + _indentJSON(line);
+        if (assert.isString(input) === true) {
+            input.split(/\r?\n/).forEach((l) => logStr += `\t${l}${os.EOL}`);
+        }
 
-        else logStr += `\n\t${line}`;
+        else if (assert.isObject(input) === true)
+            logStr += os.EOL + _indentJSON(input);
+
+        else logStr += `${os.EOL}\t${input}`;
     });
 
-    logStr += "\n";
+    logStr += os.EOL;
 
     if (logLevel <= currentLogLevel)
         console.log(logStr);
@@ -196,8 +200,8 @@ function _indentJSON(obj)
     }, 4);
 
     // Split the resulting JSON string by newlines and/or escaped newlines
-    const split = jsonStr.split(/\n|\\n/g);
+    const split = jsonStr.split(/\r?\n/);
 
     // Rejoin them with added indentation
-    return "\t" + split.join("\n\t") + "\n";
+    return "\t" + split.join(os.EOL + "\t") + os.EOL;
 }
