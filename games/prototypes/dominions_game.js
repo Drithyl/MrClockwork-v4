@@ -257,6 +257,7 @@ function DominionsGame(type)
 
     _gameObject.launch = () => _gameObject.emitPromiseWithGameDataToServer("LAUNCH_GAME");
     _gameObject.kill = () => _gameObject.emitPromiseWithGameDataToServer("KILL_GAME", null, 130000);
+    _gameObject.refresh = () => _gameObject.emitPromiseWithGameDataToServer("REFRESH_GAME");
 
     _gameObject.fetchStatusDump = () => _gameObject.emitPromiseWithGameDataToServer("GET_STATUS_DUMP");
     _gameObject.consumeStatusDump = () => _gameObject.emitPromiseWithGameDataToServer("CONSUME_STATUS_DUMP");
