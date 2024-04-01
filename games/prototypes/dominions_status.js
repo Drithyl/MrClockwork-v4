@@ -138,7 +138,7 @@ function DominionsStatus()
 
         // Less than 1 second
         if (timeLeft.getMsLeft() <= 999)
-            return `The new turn should be processing shortly. Otherwise, you can !forcehost it`;
+            return `The new turn should be processing shortly. Otherwise, you can use /force_host it`;
 
         return `**${timeLeft.printTimeLeft()}**` + offlineStr;
     };
