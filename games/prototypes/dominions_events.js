@@ -58,6 +58,10 @@ function DominionsEvents(lastKnownStatus, newStatusSnapshot)
         return  _lastTurnNumber === -1 && _currentTurnNumber === 1;
     };
 
+    this.didGameRestart = () => {
+        return  _currentTurnNumber === -1 && _lastTurnNumber > 0;
+    };
+
     this.areAllTurnsDone = () => {
         if (assert.isArray(_currentNationData) === false || _currentNationData.length <= 0)
             return false;
@@ -98,24 +102,3 @@ function DominionsEvents(lastKnownStatus, newStatusSnapshot)
                 _currentTurnNumber > 0;
     };
 }
-
-
-// function _checkIfAllTurnsAreDone(game)
-// {
-//     return game.emitPromiseWithGameDataToServer("GET_UNDONE_TURNS")
-//     .then((undoneTurns) =>
-//     {
-//         if (assert.isArray(undoneTurns) === false)
-//             return Promise.reject(new Error("No nation turn data available"));
-
-//         if (undoneTurns.length <= 0)
-//             return Promise.resolve(true);
-
-//         else return Promise.resolve(false);
-//     })
-//     .catch((err) => 
-//     {
-//         log.error(log.getLeanLevel(), `${gameName}\tError checking if all turns are done`, err);
-//         return Promise.resolve(false);
-//     });
-// }
