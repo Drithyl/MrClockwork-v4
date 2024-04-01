@@ -13,7 +13,7 @@ module.exports = {
 
 async function behaviour(commandContext)
 {
-    await commandPermissions.assertMemberIsTrusted(commandContext);(commandContext);
+    await commandPermissions.assertMemberIsTrusted(commandContext);
 
     return commandContext.respondToCommand(
         new MessagePayload(

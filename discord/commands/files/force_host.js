@@ -14,11 +14,11 @@ module.exports = {
 
 async function behaviour(commandContext)
 {
-    await commandPermissions.assertCommandIsUsedInGameChannel(commandContext);(commandContext);
-    await commandPermissions.assertMemberIsOrganizer(commandContext);(commandContext);
-    await commandPermissions.assertServerIsOnline(commandContext);(commandContext);
-    await commandPermissions.assertGameIsOnline(commandContext);(commandContext);
-    await commandPermissions.assertGameHasStarted(commandContext);(commandContext);
+    await commandPermissions.assertCommandIsUsedInGameChannel(commandContext);
+    await commandPermissions.assertMemberIsOrganizer(commandContext);
+    await commandPermissions.assertServerIsOnline(commandContext);
+    await commandPermissions.assertGameIsOnline(commandContext);
+    await commandPermissions.assertGameHasStarted(commandContext);
 
     const gameObject = commandContext.targetedGame;
 

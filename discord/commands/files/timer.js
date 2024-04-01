@@ -47,15 +47,15 @@ module.exports = {
 
 async function behaviour(commandContext)
 {
-    await commandPermissions.assertGameHasStarted(commandContext);(commandContext);
-    await commandPermissions.assertCommandIsUsedInGameChannel(commandContext);(commandContext);
+    await commandPermissions.assertGameHasStarted(commandContext);
+    await commandPermissions.assertCommandIsUsedInGameChannel(commandContext);
 
     
     if (commandContext.options.getSubcommand() === CHECK_SUBCOMMAND_NAME)
         return onCheckSubcommand(commandContext);
 
 
-    await commandPermissions.assertMemberIsOrganizer(commandContext);(commandContext);
+    await commandPermissions.assertMemberIsOrganizer(commandContext);
     
 
     if (commandContext.options.getSubcommand() === SET_SUBCOMMAND_NAME)

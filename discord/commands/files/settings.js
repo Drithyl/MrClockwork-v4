@@ -15,11 +15,11 @@ module.exports = {
 
 async function behaviour(commandContext)
 {
-    await commandPermissions.assertCommandIsUsedInGameChannel(commandContext);(commandContext);
-    await commandPermissions.assertServerIsOnline(commandContext);(commandContext);
-    await commandPermissions.assertMemberIsTrusted(commandContext);(commandContext);
-    await commandPermissions.assertMemberIsOrganizer(commandContext);(commandContext);
-    await commandPermissions.assertGameHasNotStarted(commandContext);(commandContext);
+    await commandPermissions.assertCommandIsUsedInGameChannel(commandContext);
+    await commandPermissions.assertServerIsOnline(commandContext);
+    await commandPermissions.assertMemberIsTrusted(commandContext);
+    await commandPermissions.assertMemberIsOrganizer(commandContext);
+    await commandPermissions.assertGameHasNotStarted(commandContext);
 
     await commandContext.respondToCommand(
         new MessagePayload(`A DM was sent to you to change your settings.`)

@@ -25,7 +25,7 @@ module.exports = {
 
 async function behaviour(commandContext)
 {
-    await commandPermissions.assertMemberIsDev(commandContext);(commandContext);
+    await commandPermissions.assertMemberIsDev(commandContext);
 
     const gameName = commandContext.options.getString(GAME_NAME_OPTION);
     const payload = new MessagePayload("Below is the game's state:");

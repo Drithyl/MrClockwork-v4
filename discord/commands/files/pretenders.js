@@ -14,8 +14,8 @@ module.exports = {
 
 async function behaviour(commandContext)
 {
-    await commandPermissions.assertCommandIsUsedInGameChannel(commandContext);(commandContext);
-    await commandPermissions.assertServerIsOnline(commandContext);(commandContext);
+    await commandPermissions.assertCommandIsUsedInGameChannel(commandContext);
+    await commandPermissions.assertServerIsOnline(commandContext);
 
     let game = commandContext.targetedGame;
     

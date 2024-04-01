@@ -13,9 +13,9 @@ module.exports = {
 
 async function behaviour(commandContext, client)
 {
-    await commandPermissions.assertMemberIsGuildOwner(commandContext);(commandContext);
-    await commandPermissions.assertBotHasPermissionToManageRoles(commandContext);(commandContext);
-    await commandPermissions.assertBotHasPermissionToManageChannels(commandContext);(commandContext);
+    await commandPermissions.assertMemberIsGuildOwner(commandContext);
+    await commandPermissions.assertBotHasPermissionToManageRoles(commandContext);
+    await commandPermissions.assertBotHasPermissionToManageChannels(commandContext);
 
     const targetedGuild = commandContext.guildWrapper;
 

@@ -24,9 +24,9 @@ module.exports = {
 
 async function behaviour(commandContext)
 {
-    await commandPermissions.assertMemberIsTrusted(commandContext);(commandContext);
-    await commandPermissions.assertMemberIsOrganizer(commandContext);(commandContext);
-    await commandPermissions.assertCommandIsUsedInGameChannel(commandContext);(commandContext);
+    await commandPermissions.assertMemberIsTrusted(commandContext);
+    await commandPermissions.assertMemberIsOrganizer(commandContext);
+    await commandPermissions.assertCommandIsUsedInGameChannel(commandContext);
 
     const gameObject = commandContext.targetedGame;
     const shouldDeleteChannel = commandContext.options.getBoolean(DELETE_CHANNEL_OPTION);
