@@ -218,7 +218,7 @@ async function _getDom6Mapfiles()
     {
         const mapFolderPath = path.resolve(mapFolder.path, mapFolder.name);
         const filenames = await fsp.readdir(mapFolderPath);
-        const mapFilename = filenames.find((f) => path.extname(f) === ".map" || path.extname(f) === ".d6m");
+        const mapFilename = filenames.find((f) => path.extname(f) === getDominionsMapExtension(gameType));
 
         if (mapFilename != null) {
             mapFilepaths.push(path.resolve(mapFolderPath, mapFilename));
