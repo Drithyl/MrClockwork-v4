@@ -22,7 +22,6 @@ async function behaviour(commandContext)
 {
     await commandPermissions.assertCommandIsUsedInGameChannel(commandContext);
     await commandPermissions.assertServerIsOnline(commandContext);
-    await commandPermissions.assertGameIsOnline(commandContext);
     await commandPermissions.assertMemberIsTrusted(commandContext);
     await commandPermissions.assertMemberIsOrganizer(commandContext);
 
