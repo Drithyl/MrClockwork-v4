@@ -35,6 +35,10 @@
   "pathToDom6Exe": "C:/SteamLibrary/steamapps/common/Dominions6/Dominions6.exe",
   "pathToDom6Data": "C:/Users/MyUsername/AppData/Roaming/Dominions6",
 
+  "pathToSteamcmd": "C:/steamcmd/",
+  "pathToWorkshopDownloads": "C:/steamcmd/steamapps/workshop/",
+  "steamcmdUsername": "",
+
   "gameMasterRoleName": "GameMaster",
   "blitzerRoleName": "Blitzer",
   "trustedRoleName": "Trusted",
