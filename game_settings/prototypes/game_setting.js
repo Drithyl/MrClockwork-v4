@@ -20,6 +20,7 @@ function GameSetting(key, settingData)
     this.getName = () => _name;
     this.getDefault = () => _defaultValue;
     this.getDescription = () => _description;
+    this.getExpectedInputFormatRegexp = () => _expectedInputFormatRegexp;
     this.getPrompt = () => `**${this.getName()}:**\n\n${this.getDescription()}`;
 
     this.canBeChanged = () => _canBeChanged;

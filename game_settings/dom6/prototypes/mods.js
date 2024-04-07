@@ -1,4 +1,5 @@
 const path = require("path");
+const assert = require("../../../asserter.js");
 const config = require("../../../config/config.json");
 const GameSetting = require("../../prototypes/game_setting.js");
 const dom6SettingsData = require("../../../json/dom6_settings.json");
@@ -68,19 +69,26 @@ function Mods(parentGameObject)
     {
         var modFilenames = [];
 
-        if (Mods.prototype.isExpectedFormat(input) === false)
-            return Promise.reject(new SemanticError(`Invalid value format for the mods.`));
+        if (assert.isString(input) === false)
+            return Promise.reject(new SemanticError(`Expected mods string; got <${input}>`));
 
         if (input.toLowerCase() === "none")
             return Promise.resolve(modFilenames);
 
-        input.split(",").forEach((modFilename) =>
-        {
+        const inputModFilenames = input.split(/,\s*/);
+
+        for (let i = 0; i < inputModFilenames.length; i++) {
+            const modFilename = inputModFilenames[i];
+
+            if (Mods.prototype.isExpectedFormat(modFilename) === false)
+                return Promise.reject(new SemanticError(`Invalid value format for modfile <${modFilename}>`));
+
+            
             if (/\.dm$/.test(modFilename) === false)
                 modFilenames.push(modFilename.trim() + ".dm");
 
             else modFilenames.push(modFilename.trim());
-        });
+        }
 
         return _parentGame.emitPromiseToServer("VERIFY_MODS", { filenames: modFilenames, gameType: config.dom6GameTypeName})
         .then(() => Promise.resolve(modFilenames));

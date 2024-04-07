@@ -7,7 +7,7 @@
     <% const modsAlreadyIncluded = []; %>
     <% mods.forEach((mod) => {%>
         <option value="<%=mod.relativePath %>" 
-            <% if (typeof gameSettings === "object" && typeof gameSettings.mods === "object" && Array.isArray(gameSettings.mods) === true && gameSettings.mods.includes(mod.name) === true && modsAlreadyIncluded.includes(mod.name) === false) { modsAlreadyIncluded.push(mod.name); %> selected <% } %> 
+            <% if (typeof gameSettings === "object" && typeof gameSettings.mods === "object" && Array.isArray(gameSettings.mods) === true && gameSettings.mods.includes(mod.relativePath) === true && modsAlreadyIncluded.includes(mod.name) === false) { modsAlreadyIncluded.push(mod.name); %> selected <% } %> 
         ><%=mod.name %></option>
     <% }); %>
 <% } else { %>

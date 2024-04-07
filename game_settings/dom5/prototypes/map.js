@@ -70,3 +70,4 @@ function Map(parentGameObject)
 //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf
 Map.prototype = new GameSetting(key, dom5SettingsData[key]);
 Map.prototype.constructor = Map;
+                     

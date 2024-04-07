@@ -181,14 +181,13 @@ exports.getMaps = async (gameType) =>
         mapFilepaths = await _getDom6Mapfiles();
     }
 
-    await mapFilepaths.forAllPromises(async (filepath) =>
+    await mapFilepaths.forAllPromises(async (mapfile) =>
     {
-        const filename = path.basename(filepath);
-        const content = await fsp.readFile(filepath, "utf-8");
-        const provs = parseProvinceCount(content, filename);
+        const content = await fsp.readFile(mapfile.path, "utf-8");
+        const provs = parseProvinceCount(content, mapfile.name);
 
         if (provs != null)
-            mapsWithProvinceCount.push({name: filename, ...provs});
+            mapsWithProvinceCount.push(Object.assign(mapfile, provs));
     });
 
     // Sort map objects alphabetically by the filename
@@ -202,7 +201,9 @@ async function _getDom5Mapfiles()
     const mapsDirPath = path.resolve(getDominionsMapsPath(gameType));
     const filenames = await fsp.readdir(mapsDirPath);
     const mapFilenames = filenames.filter((filename) => path.extname(filename) === getDominionsMapExtension(gameType));
-    const mapFilepaths = mapFilenames.map((filename) => path.resolve(mapsDirPath, filename));
+    const mapFilepaths = mapFilenames.map((mappath) => {
+        return { name: path.basename(mappath), path: mappath, relativePath: path.basename(mappath) };
+    });
     return mapFilepaths;
 }
 
@@ -221,7 +222,13 @@ async function _getDom6Mapfiles()
         const mapFilename = filenames.find((f) => path.extname(f) === getDominionsMapExtension(gameType));
 
         if (mapFilename != null) {
-            mapFilepaths.push(path.resolve(mapFolderPath, mapFilename));
+            const mappath = path.resolve(mapFolderPath, mapFilename);
+
+            // The folder right above the map's .map file, which should be a wrapping subdir below "maps"
+            const mapWrappingFolder = path.basename(path.dirname(mappath));
+
+            // relativePath is the last two elements in the path chain - the folder containing the map, and its filename
+            mapFilepaths.push({ name: mapFilename, path: mappath, relativePath: path.join(mapWrappingFolder, mapFilename) });
         }
     }
 
