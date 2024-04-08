@@ -201,8 +201,8 @@ async function _getDom5Mapfiles()
     const mapsDirPath = path.resolve(getDominionsMapsPath(gameType));
     const filenames = await fsp.readdir(mapsDirPath);
     const mapFilenames = filenames.filter((filename) => path.extname(filename) === getDominionsMapExtension(gameType));
-    const mapFilepaths = mapFilenames.map((mappath) => {
-        return { name: path.basename(mappath), path: mappath, relativePath: path.basename(mappath) };
+    const mapFilepaths = mapFilenames.map((filename) => {
+        return { name: filename, relativePath: filename, path: path.resolve(mapsDirPath, filename) };
     });
     return mapFilepaths;
 }
