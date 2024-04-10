@@ -13,7 +13,7 @@ module.exports = {
 
         .addBooleanOption(option =>
             option.setName(DELETE_CHANNEL_OPTION)
-            .setDescription("Do you want to keep the game's channel intact?")
+            .setDescription("Set to False if you would like to keep the game's channel.")
             .setRequired(true)
         )
         .setDMPermission(false),
