@@ -90,7 +90,7 @@ function Mods(parentGameObject)
             else modFilenames.push(modFilename.trim());
         }
 
-        return _parentGame.emitPromiseToServer("VERIFY_MODS", { filenames: modFilenames, gameType: config.dom6GameTypeName})
+        return _parentGame.emitPromiseToServer("VERIFY_MODS", { filenames: modFilenames, gameType: config.dom5GameTypeName})
         .then(() => Promise.resolve(modFilenames));
     }
 
