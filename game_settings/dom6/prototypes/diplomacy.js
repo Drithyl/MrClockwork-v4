@@ -52,10 +52,11 @@ function Diplomacy()
         if (value == dom6SettingFlags.DISABLED_DIPLOMACY)
             return ["--nodiplo"];
     
-        else if (value == dom6SettingFlags.NON_BINDING_DIPLOMACY)
-            return [`--weakdiplo`];
+        else if (value == dom6SettingFlags.BINDING_DIPLOMACY)
+            return [];
 
-        else return [];
+        // Make non-binding diplomacy the default
+        else return [`--weakdiplo`];
     };
 
     function _validateInputFormatOrThrow(input)
