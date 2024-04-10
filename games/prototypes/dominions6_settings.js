@@ -6,6 +6,7 @@ const ArtifactForging = require("../../game_settings/dom6/prototypes/artifact_fo
 const AscensionPoints = require("../../game_settings/dom6/prototypes/ascension_points.js");
 const Cataclysm = require("../../game_settings/dom6/prototypes/cataclysm.js");
 const DefaultAiLevel = require("../../game_settings/dom6/prototypes/default_ai_level.js");
+const Diplomacy = require("../../game_settings/dom6/prototypes/diplomacy.js");
 const Disciples = require("../../game_settings/dom6/prototypes/disciples.js");
 const Era = require("../../game_settings/dom6/prototypes/era.js");
 const EventRarity = require("../../game_settings/dom6/prototypes/event_rarity.js");
@@ -43,6 +44,7 @@ function Dominions6Settings(parentGameObject)
     const _ascensionPoints = new AscensionPoints(_parentGame);
     const _cataclysm = new Cataclysm(_parentGame);
     const _defaultAiLevel = new DefaultAiLevel(_parentGame);
+    const _diplomacy = new Diplomacy(_parentGame);
     const _disciples = new Disciples(_parentGame);
     const _era = new Era(_parentGame);
     const _eventRarity = new EventRarity(_parentGame);
@@ -76,6 +78,7 @@ function Dominions6Settings(parentGameObject)
         _era,
         _aiNations,
         _defaultAiLevel,
+        _diplomacy,
         _artifactForging,
         _ascensionPoints,
         _cataclysm,
@@ -106,6 +109,7 @@ function Dominions6Settings(parentGameObject)
     _gameSettingsObject.getAscensionPointsSetting = () => _ascensionPoints;
     _gameSettingsObject.getCataclysmSetting = () => _cataclysm;
     _gameSettingsObject.getDefaultAiLevelSetting = () => _defaultAiLevel;
+    _gameSettingsObject.getDiplomacySetting = () => _diplomacy;
     _gameSettingsObject.getDisciplesSetting = () => _disciples;
     _gameSettingsObject.getEraSetting = () => _era;
     _gameSettingsObject.getEventRaritySetting = () => _eventRarity;

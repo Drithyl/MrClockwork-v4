@@ -50,6 +50,16 @@
         "isPublic": true
     },
 
+    "diplomacy":
+    {
+        "name": "Diplomacy",
+        "defaultInput": "1",
+        "description": "0 = disabled\n1 = non-binding\n2 = binding",
+        "expectedInputFormatRegexp": "^\\d$",
+        "canBeChanged": true,
+        "isPublic": true
+    },
+
     "disciples":
     {
         "name": "Disciples",

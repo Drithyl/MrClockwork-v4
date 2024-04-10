@@ -1,0 +1,36 @@
+<div class="row mb-2">
+
+        <legend class="col-form-label col-sm-3 pt-0">Diplomacy</legend>
+        
+        <div class="col-sm-9">
+            
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="diplomacy" id="diplomacy_radio_0" value="0"
+                    <% if (typeof gameSettings === "object" && gameSettings.diplomacy == 0) { %> checked <% } %>
+                >
+                <label class="form-check-label" for="diplomacy_radio_0">
+                    Disabled
+                </label>
+            </div>
+            
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="diplomacy" id="diplomacy_radio_1" value="1"
+                    <% if (typeof gameSettings !== "object" || (typeof gameSettings === "object" && gameSettings.diplomacy == 1)) { %> checked <% } %>
+                >
+                <label class="form-check-label" for="diplomacy_radio_1">
+                    Non-binding
+                </label>
+            </div>
+            
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="diplomacy" id="diplomacy_radio_2" value="2"
+                    <% if (typeof gameSettings === "object" && gameSettings.diplomacy == 2) { %> checked <% } %>
+                >
+                <label class="form-check-label" for="diplomacy_radio_2">
+                    Binding
+                </label>
+            </div>
+            
+        </div>
+
+</div>
