@@ -3,6 +3,7 @@ const GameSettings = require("./game_settings.js");
 
 const AiNations = require("../../game_settings/dom6/prototypes/ai_nations.js");
 const ArtifactForging = require("../../game_settings/dom6/prototypes/artifact_forging.js");
+const ArtifactYearning = require("../../game_settings/dom6/prototypes/artifact_yearning.js");
 const AscensionPoints = require("../../game_settings/dom6/prototypes/ascension_points.js");
 const Cataclysm = require("../../game_settings/dom6/prototypes/cataclysm.js");
 const DefaultAiLevel = require("../../game_settings/dom6/prototypes/default_ai_level.js");
@@ -41,6 +42,7 @@ function Dominions6Settings(parentGameObject)
 
     const _aiNations = new AiNations(_parentGame);
     const _artifactForging = new ArtifactForging(_parentGame);
+    const _artifactYearning = new ArtifactYearning(_parentGame);
     const _ascensionPoints = new AscensionPoints(_parentGame);
     const _cataclysm = new Cataclysm(_parentGame);
     const _defaultAiLevel = new DefaultAiLevel(_parentGame);
@@ -80,6 +82,7 @@ function Dominions6Settings(parentGameObject)
         _defaultAiLevel,
         _diplomacy,
         _artifactForging,
+        _artifactYearning,
         _ascensionPoints,
         _cataclysm,
         _disciples,
@@ -106,6 +109,7 @@ function Dominions6Settings(parentGameObject)
 
     _gameSettingsObject.getAiNationsSetting = () => _aiNations;
     _gameSettingsObject.getArtifactForgingSetting = () => _artifactForging;
+    _gameSettingsObject.getArtifactYearningSetting = () => _artifactYearning;
     _gameSettingsObject.getAscensionPointsSetting = () => _ascensionPoints;
     _gameSettingsObject.getCataclysmSetting = () => _cataclysm;
     _gameSettingsObject.getDefaultAiLevelSetting = () => _defaultAiLevel;

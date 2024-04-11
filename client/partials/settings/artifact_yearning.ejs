@@ -1,0 +1,11 @@
+<div class="row mb-2">
+    
+    <legend class="col-form-label col-sm-3 pt-0">Artifact Yearning</legend>
+    
+    <div class="col-sm-9">
+        <input class="form-control w-auto"  type="number" id="input_artifact_yearning" name="artifactYearning" min="0" max="75" pattern="\d\d?"
+            <% if (typeof gameSettings === "object" && typeof gameSettings.artifactYearning === "number") { %> value=<%=gameSettings.artifactYearning %> <% } else { %> value="60" <% } %>
+        >
+    </div>
+    
+</div>
