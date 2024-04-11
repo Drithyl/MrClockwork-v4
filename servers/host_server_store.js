@@ -219,16 +219,27 @@ async function _getDom6Mapfiles()
     {
         const mapFolderPath = path.resolve(mapFolder.path, mapFolder.name);
         const filenames = await fsp.readdir(mapFolderPath);
-        const mapFilename = filenames.find((f) => path.extname(f) === getDominionsMapExtension(gameType));
+        const mapFilenames = filenames.filter((f) => path.extname(f) === getDominionsMapExtension(gameType));
 
-        if (mapFilename != null) {
-            const mappath = path.resolve(mapFolderPath, mapFilename);
+        for (const mapFilename of mapFilenames)
+        {
+            if (mapFilename == null) 
+            continue;
 
-            // The folder right above the map's .map file, which should be a wrapping subdir below "maps"
-            const mapWrappingFolder = path.basename(path.dirname(mappath));
+            // This is a planeX mapfile, which Dominions 6 automatically loads as a plane for a base map.
+            // These should not really be useable on their own, so ignore them.
+            if (new RegExp(`plane\\d+${getDominionsMapExtension(gameType)}$`).test(mapFilename) === true)
+                continue;
 
-            // relativePath is the last two elements in the path chain - the folder containing the map, and its filename
-            mapFilepaths.push({ name: mapFilename, path: mappath, relativePath: path.join(mapWrappingFolder, mapFilename) });
+            if (mapFilename != null) {
+                const mappath = path.resolve(mapFolderPath, mapFilename);
+
+                // The folder right above the map's .map file, which should be a wrapping subdir below "maps"
+                const mapWrappingFolder = path.basename(path.dirname(mappath));
+
+                // relativePath is the last two elements in the path chain - the folder containing the map, and its filename
+                mapFilepaths.push({ name: mapFilename, path: mappath, relativePath: path.join(mapWrappingFolder, mapFilename) });
+            }
         }
     }
 
