@@ -25,8 +25,8 @@ function Mods(parentGameObject)
 
     this.setValue = (input) =>
     {
-        return _validateInputFormatOrThrow(input)
-        .then((validatedValue) => _value = validatedValue);
+        const _validatedValue = _validateInputFormatOrThrow(input);
+        _value = _validatedValue;
     };
 
     this.fromJSON = (value, needsPatching = false) =>
@@ -70,10 +70,10 @@ function Mods(parentGameObject)
         var modFilenames = [];
 
         if (assert.isString(input) === false)
-            return Promise.reject(new SemanticError(`Expected mods string; got <${input}>`));
+            throw new SemanticError(`Expected mods string; got <${input}>`);
 
         if (input.toLowerCase() === "none")
-            return Promise.resolve(modFilenames);
+            return modFilenames;
 
         const inputModFilenames = input.split(/,\s*/);
 
@@ -81,7 +81,7 @@ function Mods(parentGameObject)
             const modFilename = inputModFilenames[i];
 
             if (Mods.prototype.isExpectedFormat(modFilename) === false)
-                return Promise.reject(new SemanticError(`Invalid value format for modfile <${modFilename}>`));
+                throw new SemanticError(`Invalid value format for modfile <${modFilename}>`);
 
             
             if (/\.dm$/.test(modFilename) === false)
@@ -90,8 +90,7 @@ function Mods(parentGameObject)
             else modFilenames.push(modFilename.trim());
         }
 
-        return _parentGame.emitPromiseToServer("VERIFY_MODS", { filenames: modFilenames, gameType: config.dom6GameTypeName})
-        .then(() => Promise.resolve(modFilenames));
+        return modFilenames;
     }
 
     function _patchFromV3(value)

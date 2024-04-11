@@ -14,7 +14,6 @@ module.exports = Map;
 function Map(parentGameObject)
 {
     var _value;
-    const _parentGame = parentGameObject;
 
     this.getValue = () => _value;
     this.getReadableValue = () =>
@@ -26,15 +25,11 @@ function Map(parentGameObject)
     {
         var validatedValue = _validateInputFormatOrThrow(input);
 
-        return _parentGame.emitPromiseToServer("VERIFY_MAP", { filename: validatedValue, gameType: config.dom6GameTypeName })
-        .then(() => 
-        {
-            if (mapExtensionRegex.test(validatedValue) === false)
-                validatedValue = appendDominionsMapExtension(validatedValue, config.dom6GameTypeName);
-                
-            _value = validatedValue;
-            log.general(log.getNormalLevel(), `${parentGameObject.getName()}: Changed setting ${this.getName()} to ${this.getReadableValue()}`);
-        });
+        if (mapExtensionRegex.test(validatedValue) === false)
+            validatedValue = appendDominionsMapExtension(validatedValue, config.dom6GameTypeName);
+            
+        _value = validatedValue;
+        log.general(log.getNormalLevel(), `${parentGameObject.getName()}: Changed setting ${this.getName()} to ${this.getReadableValue()}`);
     };
 
     this.fromJSON = (value) =>
