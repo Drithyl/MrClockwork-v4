@@ -63,12 +63,12 @@ function _formatLastHostedString(game)
     const guildName = guild.getName();
 
     const lastKnownStatus = game.getLastKnownStatus();
-    const lastTurnTimestampDate = new Date(lastKnownStatus.getLastTurnTimestamp()).toDateString();
+    const lastTurnUnixTimestamp = (parseInt(lastKnownStatus.getLastTurnTimestamp()) / 1000).toFixed(0);
 
     const server = game.getServer();
     const serverName = server.getName();
 
-    return `${gameName.width(32)} ${guildName.width(20)} ${serverName.width(10)} ${ip.width(23)} ${lastTurnTimestampDate}\n`;
+    return `${gameName.width(32)} ${guildName.width(20)} ${serverName.width(10)} ${ip.width(23)} <t:${lastTurnUnixTimestamp}:f>\n`;
 }
 
 function _embedSortedGuildGames(sortedGamesArray, guild)

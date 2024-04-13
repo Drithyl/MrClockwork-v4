@@ -32,12 +32,15 @@ async function behaviour(commandContext)
 
     unfinishedTurns = status.getUnfinishedTurns();
     uncheckedTurns = status.getUncheckedTurns();
-    latestTimestamp = _getLatestUpdateTimestamp(status);
+    latestTimestamp = (parseInt(_getLatestUpdateTimestamp(status)) / 1000).toFixed(0);
 
-    if (uncheckedTurns == null || unfinishedTurns == null || assert.isInteger(latestTimestamp) === false)
+    if (unfinishedTurns == null && uncheckedTurns == null)
         return commandContext.respondToCommand(new MessagePayload(`Undone turn data is currently unavailable`));
 
-    messageString = `Current time left: ${status.printTimeLeft()}. Below is the list of undone turns (last successful check: **${new Date(latestTimestamp).toTimeString()}**):\n\n`;
+    if (assert.isInteger(+latestTimestamp) === false)
+        return commandContext.respondToCommand(new MessagePayload(`Could not verify the last update time of undone turns`));
+
+    messageString = `Current time left: ${status.printTimeLeft()}. Below is the list of undone turns (last successful check: <t:${latestTimestamp}:f>):\n\n`;
 
     if (unfinishedTurns.length > 0)
     {
