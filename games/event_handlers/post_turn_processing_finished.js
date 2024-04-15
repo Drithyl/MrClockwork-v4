@@ -48,7 +48,7 @@ function _processStaleData(statusdump)
 function _calculateStales(nationStatuses = [])
 {
     const stales = nationStatuses.filter((s) => {
-        return s.isSubmitted === true && s.wasTurnChecked === false;
+        return s.isHuman === true && s.wasTurnChecked === false;
     });
 
     return stales;
