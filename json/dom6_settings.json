@@ -104,7 +104,7 @@
     {
         "name": "Global Slots",
         "defaultInput": "5",
-        "description": "An integer from 3 to 9 (inclusive).",
+        "description": "An integer from 3 to 15 (inclusive).",
         "expectedInputFormatRegexp": "^\\d$",
         "canBeChanged": true,
         "isPublic": true

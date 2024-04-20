@@ -3,7 +3,7 @@
     <legend class="col-form-label col-sm-3 pt-0">Global Slots</legend>
     
     <div class="col-sm-9">
-        <input class="form-control w-auto"  type="number" id="input_global_slots" name="globalSlots" min="3" max="9" pattern="\d"
+        <input class="form-control w-auto"  type="number" id="input_global_slots" name="globalSlots" min="3" max="15" pattern="\d"
             <% if (typeof gameSettings === "object" && typeof gameSettings.globalSlots === "number") { %> value=<%=gameSettings.globalSlots %> <% } else { %> value="5" <% } %>>
     </div>
     

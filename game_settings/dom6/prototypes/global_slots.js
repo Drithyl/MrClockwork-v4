@@ -47,7 +47,7 @@ function GlobalSlots()
         if (GlobalSlots.prototype.isExpectedFormat(input) === false)
             throw new SemanticError(`Invalid value format for global slots.`);
 
-        if (assert.isInteger(+input) === true && +input >= 3 && +input <= 9)
+        if (assert.isInteger(+input) === true && +input >= 3 && +input <= 15)
             return +input;
 
         else throw new SemanticError(`Unexpected value for the global slots: ${input}`);
