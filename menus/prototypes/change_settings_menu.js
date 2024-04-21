@@ -2,11 +2,10 @@
 const log = require("../../logger.js");
 const assert = require("../../asserter.js");
 const MenuScreen = require("./menu_screen.js");
-const config = require("../../config/config.json");
 const MenuStructure = require("./menu_structure.js");
 const MessagePayload = require("../../discord/prototypes/message_payload.js");
 
-const INTRO_MESSAGE = `Choose a number from the menu below to change a setting, or type \`${config.commandPrefix}finish\` to finish changing settings.:\n\n`;
+const INTRO_MESSAGE = `Choose a number from the menu below to change a setting:\n\n`;
 
 module.exports = ChangeSettingsMenu;
 
