@@ -36,6 +36,7 @@
     "discord.js": "^14.14.1",
     "dotenv": "^10.0.0",
     "ejs": "^3.0.2",
+    "event-stream": "^4.0.1",
     "express": "^4.17.1",
     "googleapis": "^100.0.0",
     "socket.io": "^4.4.1",

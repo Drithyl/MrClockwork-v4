@@ -4,6 +4,7 @@ const path = require("path");
 const fsp = require("fs").promises;
 const log = require("../logger.js");
 const asserter = require("../asserter.js");
+const dissectMod = require("./mod_dissecter");
 const config = require("../config/config.json");
 const { getDominionsMapsPath, getDominionsModsPath } = require("../helper_functions.js");
 
@@ -58,15 +59,55 @@ module.exports.downloadFileFromDrive = async (driveLink, gameType) => {
 
     // Ensure zipfile contents are adequate
     _validateZipfile(zipfile);
-    
-    // Generate the path to unzip the zipfile based on its contents
-    const extractPath = await _generateExtractPath(zipfile, gameType);
 
-    // Extract the files to the generated location
-    await _extractZipfile(zipfile, extractPath);
+    // If it's a Dom6 mod, a new wrapping folder for the mod will be created in a temp
+    // location. dissectMod() will then parse however many .dm files it contains and
+    // move and rename them and their assets to the proper mods location.
+    if (zipfile.containsMod === true && asserter.isDom6GameType(gameType) === true) {
+        const extractPath = path.resolve(TMP_PATH, path.parse(zipfile.name).name);
+
+        if (fs.existsSync(extractPath) === false) {
+            await fsp.mkdir(extractPath);
+        }
+
+        // Extract the files to the generated location
+        await _extractZipfile(zipfile, extractPath);
+        
+        const result = await dissectMod(extractPath, getDominionsModsPath(gameType));
+
+        try {
+            // Delete the leftover modfiles after extracting it, since they got copied
+            // and moved elsewhere under a more suitable name with versioning in dissectMod()
+            await fsp.rm(extractPath, { recursive: true, force: true });
     
-    // Delete the leftover zipfile after extracting it
-    await _cleanupTmpFiles(zipfile.zipfilePath);
+            // Delete the leftover zipfile after extracting it
+            await _removeDownloadedZipfile(zipfile.zipfilePath);
+        }
+
+        catch(error) {
+            log.error(`Could not remove temp dom6 mod data`, error);
+        }
+
+        // Return a detailed result of the mod dissection
+        return result;
+    }
+
+    else {
+        // Generate the path to unzip the zipfile based on its contents
+        const extractPath = await _generateExtractPath(zipfile, gameType);
+
+        // Extract the files to the generated location
+        await _extractZipfile(zipfile, extractPath);
+        
+        try {
+            // Delete the leftover zipfile after extracting it
+            await _removeDownloadedZipfile(zipfile.zipfilePath);
+        }
+
+        catch(error) {
+            log.error(`Could not remove temp upload data`, error);
+        }
+    }
 };
 
 
@@ -100,7 +141,7 @@ async function _generateExtractPath(zipfile, gameType) {
         // Dom6 stores every mod in their own mod folder inside of the general mods folder.
         // Check for this folder's existence with the same name as the .dm file, and create it if it doesn't exist.
         if (asserter.isDom6GameType(gameType) === true) {
-            extractPath = path.resolve(extractPath, path.parse(zipfile.keyFileName).name);
+            extractPath = path.resolve(TMP_PATH, path.parse(zipfile.keyFileName).name);
 
             if (fs.existsSync(extractPath) === false)
                 await fsp.mkdir(extractPath);
@@ -204,7 +245,7 @@ function _filterModEntry(entry, extractPath) {
 
 //We're not using a callback because if the execution fails, we'll just print it
 //to the bot log; the user doesn't need to know about it.
-function _cleanupTmpFiles(filepath)
+function _removeDownloadedZipfile(filepath)
 {
     log.upload(log.getNormalLevel(), `Deleting temp zipfile "${filepath}"...`);
 
@@ -222,4 +263,8 @@ function _cleanupTmpFiles(filepath)
     return fsp.unlink(filepath)
     .then(() => log.upload(log.getNormalLevel(), `Temp zipfile "${filepath}" was successfully deleted.`))
     .catch((err) => log.error(log.getNormalLevel(), `FAILED TO DELETE TMP ZIPFILE "${filepath}"`, err));
+}
+
+function _cleanLeftoverModfiles(modExtractPath) {
+
 }

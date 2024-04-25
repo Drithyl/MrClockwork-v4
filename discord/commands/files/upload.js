@@ -44,6 +44,70 @@ async function behaviour(commandContext)
 
 
     await commandContext.respondToCommand(new MessagePayload(`Sending request to server...`));
-    await fileDownloader.downloadFileFromDrive(googleDriveLink, gameType);
-    await commandContext.respondToCommand(new MessagePayload(`Upload completed successfuly! Keep in mind that files that already existed on the server will **not** have been overwritten.`));
+    const results = await fileDownloader.downloadFileFromDrive(googleDriveLink, gameType);
+
+    if (results == null) {
+        return await commandContext.respondToCommand(new MessagePayload(`Upload completed successfuly! Keep in mind that files that already existed on the server will **not** have been overwritten.`));
+    }
+
+    return commandContext.respondToCommand(parseResults(results));
+}
+
+function parseResults(results) {
+    const resultsMessage = new MessagePayload('');
+    const modsFullyInstalled = results.filter((modResult) => modResult.totalFiles === modResult.installedFiles.length).map((modResult) => modResult.modfile);
+    const modsFullyRedundant = results.filter((modResult) => modResult.totalFiles === modResult.skippedFiles.length).map((modResult) => modResult.modfile);
+    const modsPartiallyRedundant = results.filter((modResult) =>
+            modResult.totalFiles > modResult.installedFiles.length && modResult.installedFiles.length > 0
+        )
+        .map((modResult) => modResult.modfile);
+
+    if (results.length === 0) {
+        resultsMessage.setHeader(`There were no mods to install in the uploaded file.`);
+    }
+    
+    if (modsFullyInstalled.length === results.length) {
+        resultsMessage.setHeader(`**All mods installed successfully**:\n${results.map((m) => `\n\t>\`${m.modfile}\``).join('')}`);
+    }
+
+    else if (modsFullyRedundant.length === results.length) {
+        resultsMessage.setHeader(`All of the uploaded mods' versions already exist on the server. No file was installed.`);
+    }
+
+    else {
+        // Some mods were fully installed
+        if (modsFullyInstalled.length > 0) {
+            resultsMessage.addContent(
+                "**The following mods were installed successfully**:" +
+                modsFullyInstalled.map((m) => `\n\t> \`${m}\``).join('') + "\n\n"
+            );
+        }
+
+        // Some mods were fully redundant and none of their files was copied
+        if (modsFullyRedundant.length > 0) {
+            resultsMessage.addContent(
+                "**The following mods already existed** with the same version on the server and were not installed:" +
+                modsFullyRedundant.map((m) => `\n\t> \`${m}\``).join('') + "\n\n"
+            );
+        }
+
+        // Some mods were only partially installed, i.e. some files were copied but others already existed
+        if (modsPartiallyRedundant.length > 0) {
+            const partiallyRedundantResults = results.filter((modResult) => modsPartiallyRedundant.includes(modResult.modfile));
+            const stringifiedResults = JSON.stringify(partiallyRedundantResults.map((r) => {
+                return { modfile: r.modfile, installedFiles: r.installedFiles };
+            
+            }), null, 2);
+
+            resultsMessage.addContent(
+                "**Some files in the following mods already existed**:" +
+                modsPartiallyRedundant.map((m) => `\n\t> \`${m}\``).join('') + "\n\n" +
+                "Check the attached file for details on which mods only had some files installed."
+            );
+
+            resultsMessage.setAttachment("installed_files.json", Buffer.from(stringifiedResults));
+        }
+    }
+
+    return resultsMessage;
 }

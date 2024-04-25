@@ -12,15 +12,23 @@ function MessagePayload(header, content = "", splitContent = true, splitWrapper 
     assert.isStringOrThrow(header);
     assert.isStringOrThrow(content);
 
-    const _header = header;
+    let _header = header;
+    let _content = content;
+    let _contentArray = [];
     const _payloadObject = {};
     const _attachments = [];
     const _splitContent = splitContent;
-    let _content = content;
-    let _contentArray = [];
 
     _ensureContentIsUnderMaxLimit();
 
+    this.setHeader = (header) =>
+    {
+        if (assert.isString(header) === true)
+        {
+            _header = header;
+            _ensureContentIsUnderMaxLimit();
+        }
+    };
 
     this.addContent = (content) =>
     {
