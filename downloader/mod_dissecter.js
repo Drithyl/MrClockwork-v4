@@ -46,7 +46,7 @@ module.exports = async function dissectMod(readModDirPath, targetBaseModsDir) {
         // LucidsThematicGemGenV20
         const newModTrimmedFilename = path.parse(filename).name.replace(/_?v?\d+(\.|_)?\d*$/i, "");
 
-        const newModDirName = `${newModTrimmedFilename}_v${version}`;
+        const newModDirName = `${newModTrimmedFilename}-clockwork_v${version}`;
         const newModDirPath = path.resolve(targetBaseModsDir, newModDirName);
 
         const newModfileName = `${newModDirName}.dm`;
