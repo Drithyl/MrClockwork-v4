@@ -104,23 +104,26 @@ async function parseDom6Modfile(dmFilepath, listOfAssetTagsToFind) {
             // Add a space after the tag in the RegExp to avoid matching
             // mod tags that resemble our tags, such as #springpower,
             // which can give a false positive when looking for #spr tags
-            const versionTagRegexp = new RegExp("^#version\\s+");
-            const assetTagRegexp = new RegExp(`${tag}\\s+`);
+            const versionRegex = /#version\s+(\d\.\d{1,2})/;
+            const assetPathRegex = new RegExp(`^${tag}\\s+"(.+\\.\\w+)"`);
 
             if (modLine[0] !== "#") {
                 continue;
             }
 
-            if (versionTagRegexp.test(modLine) === true) {
-                const isolateVersionRegexp = /^#version\s+(\d\.\d{1,2})$/;
-                const isolatedVersion = modLine.replace(isolateVersionRegexp, "$1");
-                returnData.version = isolatedVersion;
+            const versionMatch = versionRegex.exec(modLine);
+
+            // If we match a version tag, get the capture group at index 1 to extract the version
+            if (versionMatch != null) {
+                returnData.version = versionMatch[1];
+                continue;
             }
 
-            else if (assetTagRegexp.test(modLine) === true) {
-                const isolateAssetRegexp = new RegExp(`^${tag}\\s+"(.+\\.\\w+)"$`);
-                const isolatedAssetPath = modLine.replace(isolateAssetRegexp, "$1");
-                relAssetPathSet.add(isolatedAssetPath);
+            const assetPathMatch = assetPathRegex.exec(modLine);
+
+            // If we match an asset tag, get the capture group at index 1 to extract the filepath
+            if (assetPathMatch != null) {
+                relAssetPathSet.add(assetPathMatch[1]);
             }
         }
     });
