@@ -113,9 +113,6 @@ function GameSettings(parentGame)
             }
         });
 
-        // Add name at the very start of the flags
-        flags.push(_parentGame.getName());
-
         return flags;
     };
 
