@@ -73,9 +73,9 @@ function DominionsEvents(lastKnownStatus, newStatusSnapshot)
     // rolling; we don't want to force it several times
     this.didTimerRunOut = () => {
         return  assert.isNumber(_currentMsLeft) === true &&
-                lastKnownStatus.isTurnProcessing() === false &&
+                lastKnownStatus.isTurnProcessing() !== true &&
                 _currentMsLeft < 0 &&
-                _isPaused === false;
+                _isPaused !== true;
     };
 
     this.didHourPass = () => {
