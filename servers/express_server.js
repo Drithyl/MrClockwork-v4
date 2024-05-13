@@ -114,7 +114,7 @@ function _handleSocketConnection(socketWrapper)
             return socketWrapper.terminate();
         }
 
-        _initializeHostServer(socketWrapper, id, capacity);
+        _initializeHostServer(socketWrapper, id, +capacity);
     });
 }
 
@@ -123,7 +123,7 @@ function _isTrustedSlave(slaveId, capacity)
     if (slaveId == null)
         return false;
 
-    if (assert.isInteger(capacity) === false || capacity <= 0)
+    if (assert.isInteger(+capacity) === false || +capacity <= 0)
         return false;
 
     if (_hostServerStore.hasHostServerById(slaveId) === false)
