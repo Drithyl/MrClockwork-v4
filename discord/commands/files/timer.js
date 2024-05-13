@@ -47,6 +47,7 @@ module.exports = {
 
 async function behaviour(commandContext)
 {
+    await commandPermissions.assertCommandIsUsedInGameChannel(commandContext);
     await commandPermissions.assertGameHasStarted(commandContext);
     await commandPermissions.assertCommandIsUsedInGameChannel(commandContext);
 
