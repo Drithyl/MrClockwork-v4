@@ -17,7 +17,7 @@ function TimeLeft(ms)
 {
     assert.isIntegerOrThrow(ms);
 
-    let _ms = ms;
+    let _ms = (ms > 0) ? ms : 0;
     let _days;
     let _hours;
     let _minutes;
@@ -74,6 +74,13 @@ function TimeLeft(ms)
     str += (minutes < 10) ? `:0${minutes}` : `:${minutes}`;
     str += (seconds < 10) ? `:0${seconds}` : `:${seconds}`;
     return str;
+  };
+
+  this.toDateObject = () =>
+  {
+    const now = new Date();
+    const msWhenTurnWillRoll = now.getTime() + _ms;
+    return new Date(msWhenTurnWillRoll);
   };
 
     this.toJSON = () => this.getMsLeft();
