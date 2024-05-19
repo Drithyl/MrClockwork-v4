@@ -204,26 +204,44 @@ function Game()
         _settingsObject = settingsObject;
     };
 
-    this.sendMessageToChannel = (text) =>
+    this.sendMessageToChannel = (textOrPayload) =>
     {
         const channel = this.getChannel();
+        let payload;
+
+        if (assert.isInstanceOfPrototype(textOrPayload, MessagePayload) === true) {
+            payload = textOrPayload;
+        }
+        
+        else {
+            payload = new MessagePayload(textOrPayload);
+        }
 
         if (channel != null)
-            return new MessagePayload(text).send(channel);
+            return payload.send(channel);
 
-        else return this.sendMessageToOrganizer(`No channel for game ${this.getName()} was found to send the annoucement below. You can use commands to create a new one for the game:\n\n${text}`);
+        else return this.sendMessageToOrganizer(`No channel for game ${this.getName()} was found to send the annoucement below. You can use commands to create a new one for the game:\n\n${textOrPayload}`);
     };
 
-    this.sendGameAnnouncement = (text) => 
+    this.sendGameAnnouncement = (textOrPayload) => 
     {
-        const channel = this.getChannel();
         const role = this.getRole();
+        const channel = this.getChannel();
         const roleStr = (role != null) ? role.toString() : "`[No game role found to mention]`";
+        let payload;
+
+        if (assert.isInstanceOfPrototype(textOrPayload, MessagePayload) === true) {
+            payload = textOrPayload.prependToHeader(`${roleStr} `);
+        }
+        
+        else {
+            payload = new MessagePayload(`${roleStr} ${textOrPayload}`);
+        }
 
         if (channel != null)
-            return new MessagePayload(`${roleStr} ${text}`).send(channel);
+            return payload.send(channel);
 
-        else return this.sendMessageToOrganizer(`No channel for game ${this.getName()} was found to send the annoucement below. You can use commands to create a new one for the game:\n\n${text}`);
+        else return this.sendMessageToOrganizer(`No channel for game ${this.getName()} was found to send the annoucement below. You can use commands to create a new one for the game:\n\n${textOrPayload}`);
     };
 
 

@@ -2,12 +2,13 @@
 const assert = require("../../asserter.js");
 const MessageWrapper = require("../wrappers/message_wrapper.js");
 const MessageEmbedBuilder = require("../wrappers/message_embed_builder.js");
+const { EmbedBuilder } = require("@discordjs/builders");
 
 const MAX_MESSAGE_CHARACTERS = 2000;
 
 module.exports = MessagePayload;
 
-function MessagePayload(header, content = "", splitContent = true, splitWrapper = "")
+function MessagePayload(header = "", content = "", splitContent = true, splitWrapper = "")
 {
     assert.isStringOrThrow(header);
     assert.isStringOrThrow(content);
@@ -28,6 +29,12 @@ function MessagePayload(header, content = "", splitContent = true, splitWrapper 
             _header = header;
             _ensureContentIsUnderMaxLimit();
         }
+        return this;
+    };
+
+    this.prependToHeader = (text) => {
+        this.setHeader(`${text}${_header}`);
+        return this;
     };
 
     this.addContent = (content) =>
@@ -37,6 +44,21 @@ function MessagePayload(header, content = "", splitContent = true, splitWrapper 
             _content += content;
             _ensureContentIsUnderMaxLimit();
         }
+        return this;
+    };
+
+    this.addEmbeds = (embeds) =>
+    {
+        if (Array.isArray(embeds) === false) {
+            embeds = [embeds];
+        }
+
+        for (const embed of embeds) {
+            assert.isInstanceOfPrototypeOrThrow(embed, EmbedBuilder);
+        }
+
+        _payloadObject.embeds = embeds;
+        return this;
     };
 
     this.setEmbed = (embed) =>

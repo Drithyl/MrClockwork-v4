@@ -1,11 +1,14 @@
 
 const log = require("../../logger.js");
+const { EmbedBuilder } = require("discord.js");
+const MessagePayload = require("../../discord/prototypes/message_payload.js");
 
 
-module.exports = async (game, statusdump, error) =>
+module.exports = (game, statusdump, error) =>
 {
     const status = game.getLastKnownStatus();
-    let announcementText = "";
+    const channel = game.getChannel();
+    const embeds = [];
 
     // Update the game's status to reflect the new turn
     status.setHasStarted(true);
@@ -14,13 +17,15 @@ module.exports = async (game, statusdump, error) =>
     status.setIsTurnProcessing(false);
     status.setIsCurrentTurnRollback(false);
 
-    announcementText += _processBackup(game, statusdump, error);
+    embeds.push(_processBackup(game, statusdump, error));
 
     if (error == null && statusdump != null) {
-        announcementText += "\n\n" + _processStaleData(statusdump);
+        embeds.push(_processStaleData(statusdump));
     }
 
-    await game.sendMessageToChannel(announcementText);
+    new MessagePayload()
+            .addEmbeds(embeds)
+            .send(channel);
 };
 
 function _processBackup(game, statusdump, error)
@@ -30,11 +35,18 @@ function _processBackup(game, statusdump, error)
     if (error)
     {
         log.error(log.getLeanLevel(), `${gameName}: Post-turn backup encountered error`, error);
-        return `**__Post-turn backup encountered an error__**. If the next pre-turn backup fails, rollback to this turn might not be available. Stale data won't be available for this turn either.\n\n\`\`\`     ${error}\`\`\``;
+        return new EmbedBuilder()
+            .setColor(0xff0404)
+            .setDescription(`**__Post-turn backup encountered an error__**. If the next pre-turn backup fails, rollback to this turn might not be available. Stale data won't be available for this turn either.\n\n\`\`\`     ${error}\`\`\``);
     }
 
-    log.general(log.getNormalLevel(), `${gameName}: Post-turn ${statusdump.turnNumber} backup finished!`);
-    return `Post-turn backup successful.`;
+    else
+    {
+        log.general(log.getNormalLevel(), `${gameName}: Post-turn ${statusdump.turnNumber} backup finished!`);
+        return new EmbedBuilder()
+                .setColor(0x80cd21)
+                .setDescription("Post-turn backup successful.");
+    }
 }
 
 function _processStaleData(statusdump)
@@ -42,7 +54,9 @@ function _processStaleData(statusdump)
     const nationStatuses = statusdump.nationStatuses;
     const stales = _calculateStales(nationStatuses);
     const formattedStaleData = _formatStaleDataIntoString(stales);
-    return `__**Stales this turn:**__\n\n${formattedStaleData}`;
+    return new EmbedBuilder()
+            .setColor(0xff0404)
+            .setDescription(`__**Stales this turn:**__\n\n${formattedStaleData}`);
 }
 
 function _calculateStales(nationStatuses = [])

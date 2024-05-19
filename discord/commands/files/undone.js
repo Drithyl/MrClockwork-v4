@@ -1,7 +1,8 @@
-const { SlashCommandBuilder } = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const MessagePayload = require("../../prototypes/message_payload.js");
 const commandPermissions = require("../../command_permissions.js");
 const assert = require("../../../asserter.js");
+const { dateToUnixTimestamp, unixTimestampToDynamicDisplay } = require("../../../utilities/formatting-utilities.js");
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -18,49 +19,68 @@ async function behaviour(commandContext)
     await commandPermissions.assertCommandIsUsedInGameChannel(commandContext);
     await commandPermissions.assertGameHasStarted(commandContext);
 
-    let latestTimestamp;
-    let messageString;
-    let listString = "";
-    let unfinishedTurns;
-    let uncheckedTurns;
-
     const gameObject = commandContext.targetedGame;
     const status = gameObject.getLastKnownStatus();
+    const latestTimestamp = _getLatestUpdateTimestamp(status);
 
     if (status == null)
         return commandContext.respondToCommand(new MessagePayload(`Game status is currently unavailable`));
 
-    unfinishedTurns = status.getUnfinishedTurns();
-    uncheckedTurns = status.getUncheckedTurns();
-    latestTimestamp = (parseInt(_getLatestUpdateTimestamp(status)) / 1000).toFixed(0);
-
-    if (unfinishedTurns == null && uncheckedTurns == null)
-        return commandContext.respondToCommand(new MessagePayload(`Undone turn data is currently unavailable`));
-
     if (assert.isInteger(+latestTimestamp) === false)
         return commandContext.respondToCommand(new MessagePayload(`Could not verify the last update time of undone turns`));
 
-    messageString = `Current time left: ${status.printTimeLeft()}. Below is the list of undone turns (last successful check: <t:${latestTimestamp}:f>):\n\n`;
+    return commandContext.respondToCommand(
+        new MessagePayload()
+            .addEmbeds(
+                _buildEmbeds(status, latestTimestamp)
+            )
+    );
+}
 
-    if (unfinishedTurns.length > 0)
-    {
-        listString = "**Unfinished:**\n\n```";
-        listString += unfinishedTurns.reduce((finalStr, nationName) => finalStr + `${nationName}\n`, "\n");
-        listString += "```\n";
+function _buildEmbeds(status, latestTimestamp) {
+    const embeds = [];
+    const turnNumber = status.getTurnNumber();
+    const timeLeft = status.getTimeLeft();
+    const dateWhenTurnWillRoll = timeLeft.toDateObject();
+    const unixTimestamp = dateToUnixTimestamp(dateWhenTurnWillRoll);
+    const unfinishedTurns = status.getUnfinishedTurns();
+    const uncheckedTurns = status.getUncheckedTurns();
+    
+    embeds.push(
+        new EmbedBuilder()
+            .setColor(0x6bb5f9)
+            .setTitle(`__Turn ${turnNumber} Status__`)
+            .setDescription(`Next Turn:\n\n${unixTimestampToDynamicDisplay(unixTimestamp)}\n(in ${timeLeft.printTimeLeft()})`)
+            .setFooter({ text: "Last checked" })
+            .setTimestamp(latestTimestamp)
+    );
+
+    if (assert.isArray(unfinishedTurns) === true && unfinishedTurns.length > 0) {
+        embeds.push(
+            new EmbedBuilder()
+                .setColor(0xd0bd2c)
+                .setTitle("Unfinished Turns")
+                .setDescription(unfinishedTurns.join("\n"))
+        );
     }
 
-    if (uncheckedTurns.length > 0)
-    {
-        listString += "**Unchecked:**\n\n```";
-        listString += uncheckedTurns.reduce((finalStr, nationName) => finalStr + `${nationName}\n`, "\n");
-        listString += "```\n";
+    if (assert.isArray(uncheckedTurns) === true && uncheckedTurns.length > 0) {
+        embeds.push(
+            new EmbedBuilder()
+                .setColor(0xff0404)
+                .setTitle("Unchecked Turns")
+                .setDescription(uncheckedTurns.join("\n"))
+        );
     }
 
-    return commandContext.respondToCommand(new MessagePayload(messageString, listString, false));
+    return embeds;
 }
 
 function _getLatestUpdateTimestamp(lastKnownStatus)
 {
+    if (lastKnownStatus == null)
+        return null;
+
     const lastUpdateTimestamp = lastKnownStatus.getLastUpdateTimestamp();
     const successfulCheckTimestamp = lastKnownStatus.getSuccessfulCheckTimestamp();
     

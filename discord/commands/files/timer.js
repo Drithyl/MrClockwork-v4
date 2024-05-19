@@ -1,7 +1,8 @@
-const { SlashCommandBuilder } = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const commandPermissions = require("../../command_permissions.js");
 const TimeLeft = require("../../../games/prototypes/time_left.js");
 const MessagePayload = require("../../prototypes/message_payload.js");
+const { dateToUnixTimestamp, unixTimestampToDynamicDisplay } = require("../../../utilities/formatting-utilities.js");
 
 const CHECK_SUBCOMMAND_NAME = "check";
 const SET_SUBCOMMAND_NAME = "set";
@@ -70,35 +71,67 @@ function onCheckSubcommand(commandContext)
 {
     const gameObject = commandContext.targetedGame;
     const lastKnownStatus = gameObject.getLastKnownStatus();
+    const timeLeft = lastKnownStatus.getTimeLeft();
+    const dateWhenTurnWillRoll = timeLeft.toDateObject();
+    const unixTimestamp = dateToUnixTimestamp(dateWhenTurnWillRoll);
 
     return commandContext.respondToCommand(
-        new MessagePayload(`Current time left: ${lastKnownStatus.printTimeLeft()}.`)
+        new MessagePayload()
+            .addEmbeds(
+                new EmbedBuilder()
+                    .setColor(0x6bb5f9)
+                    .setDescription(`Next Turn:\n\n${unixTimestampToDynamicDisplay(unixTimestamp)},\nin ${timeLeft.printTimeLeft()}.`)
+            )
     );
 }
 
 async function onSetSubcommand(commandContext)
 {
     const gameObject = commandContext.targetedGame;
+    const role = gameObject.getRole();
+    const roleStr = (role != null) ? role.toString() : "`[No game role found to mention]`";
     const lastKnownStatus = gameObject.getLastKnownStatus();
     const hours = commandContext.options.getInteger(HOURS_OPTION);
     const msToSet = TimeLeft.hoursToMs(hours);
 
     await gameObject.changeTimer(msToSet);
+
+    const timeLeft = lastKnownStatus.getTimeLeft();
+    const dateWhenTurnWillRoll = timeLeft.toDateObject();
+    const unixTimestamp = dateToUnixTimestamp(dateWhenTurnWillRoll);
+
     return commandContext.respondToCommand(
-        new MessagePayload(`The timer was changed. New timer: ${lastKnownStatus.printTimeLeft()}.`)
+        new MessagePayload(roleStr)
+            .addEmbeds(
+                new EmbedBuilder()
+                    .setColor(0x6bb5f9)
+                    .setDescription(`The timer was changed. Next Turn will now process on:\n\n${unixTimestampToDynamicDisplay(unixTimestamp)},\nin ${timeLeft.printTimeLeft()}.`)
+            )
     );
 }
 
 async function onAddSubcommand(commandContext)
 {
     const gameObject = commandContext.targetedGame;
+    const role = gameObject.getRole();
+    const roleStr = (role != null) ? role.toString() : "`[No game role found to mention]`";
     const lastKnownStatus = gameObject.getLastKnownStatus();
     const msLeft = lastKnownStatus.getMsLeft();
     const hours = commandContext.options.getInteger(HOURS_OPTION);
     const msToAdd = TimeLeft.hoursToMs(hours);
 
     await gameObject.changeTimer(msLeft + msToAdd);
+
+    const timeLeft = lastKnownStatus.getTimeLeft();
+    const dateWhenTurnWillRoll = timeLeft.toDateObject();
+    const unixTimestamp = dateToUnixTimestamp(dateWhenTurnWillRoll);
+
     return commandContext.respondToCommand(
-        new MessagePayload(`The time was added. New timer: ${lastKnownStatus.printTimeLeft()}.`)
+        new MessagePayload(roleStr)
+            .addEmbeds(
+                new EmbedBuilder()
+                    .setColor(0x6bb5f9)
+                    .setDescription(`The timer was changed. Next Turn will now process on:\n\n${unixTimestampToDynamicDisplay(unixTimestamp)},\nin ${timeLeft.printTimeLeft()}.`)
+            )
     );
 }

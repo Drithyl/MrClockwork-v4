@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const commandPermissions = require("../../command_permissions.js");
 const TimeLeft = require("../../../games/prototypes/time_left.js");
 const MessagePayload = require("../../prototypes/message_payload.js");
@@ -71,14 +71,27 @@ function onCheckSubcommand(commandContext)
     const gameSettings = gameObject.getSettingsObject();
     const timerSetting = gameSettings.getTimerSetting();
     const defaultTimeLeftObject = timerSetting.getValue();
-    
+    let payload;
 
-    if (defaultTimeLeftObject.getMsLeft() === 0)
-        return commandContext.respondToCommand(new MessagePayload(`Default timer: **paused**.`));
+    if (defaultTimeLeftObject.getMsLeft() === 0) {
+        payload = new MessagePayload()
+            .addEmbeds(
+                new EmbedBuilder()
+                    .setColor(0x6bb5f9)
+                    .setDescription(`New turns have no time limit (paused).`)
+            );
+    }
 
-    return commandContext.respondToCommand(new MessagePayload(
-        `Default timer: ${defaultTimeLeftObject.printTimeLeft()}.`
-    ));
+    else {
+        payload = new MessagePayload()
+            .addEmbeds(
+                new EmbedBuilder()
+                    .setColor(0x6bb5f9)
+                    .setDescription(`New turns have a timer of: ${defaultTimeLeftObject.printTimeLeft()}.`)
+            );
+    }
+
+    return commandContext.respondToCommand(payload);
 }
 
 async function onSetSubcommand(commandContext)
@@ -91,12 +104,28 @@ async function onSetSubcommand(commandContext)
 
     await gameObject.changeTimer(msToSet, msToSet);
 
-    if (hours == 0)
-        return commandContext.respondToCommand(new MessagePayload(`The time per turn has been paused. It may take a minute to update.`));
+    const defaultTimeLeftObject = timerSetting.getValue();
+    let payload;
 
-    else return commandContext.respondToCommand(new MessagePayload(
-            `The time per turn was changed. New turns will now have ${timerSetting.getValue().printTimeLeft()}.`
-    ));
+    if (hours == 0) {
+        payload = new MessagePayload()
+            .addEmbeds(
+                new EmbedBuilder()
+                    .setColor(0x6bb5f9)
+                    .setDescription(`The time per turn has been paused.`)
+            );
+    }
+
+    else {
+        payload = new MessagePayload()
+            .addEmbeds(
+                new EmbedBuilder()
+                    .setColor(0x6bb5f9)
+                    .setDescription(`New turns will be set to: ${defaultTimeLeftObject.printTimeLeft()}.`)
+            );
+    }
+
+    return commandContext.respondToCommand(payload);
 }
 
 async function onAddSubcommand(commandContext)
@@ -111,10 +140,26 @@ async function onAddSubcommand(commandContext)
 
     await gameObject.changeTimer(finalMsToSet, finalMsToSet);
 
-    if (hours == 0)
-        return commandContext.respondToCommand(new MessagePayload(`The time per turn has been paused. It may take a minute to update.`));
+    const defaultTimeLeftObject = timerSetting.getValue();
+    let payload;
 
-    else return commandContext.respondToCommand(new MessagePayload(
-            `The time per turn was changed. New turns will now have ${timerSetting.getValue().printTimeLeft()}.`
-    ));
+    if (hours == 0) {
+        payload = new MessagePayload()
+            .addEmbeds(
+                new EmbedBuilder()
+                    .setColor(0x6bb5f9)
+                    .setDescription(`The time per turn has been paused.`)
+            );
+    }
+
+    else {
+        payload = new MessagePayload()
+            .addEmbeds(
+                new EmbedBuilder()
+                    .setColor(0x6bb5f9)
+                    .setDescription(`New turns will be set to: ${defaultTimeLeftObject.printTimeLeft()}.`)
+            );
+    }
+
+    return commandContext.respondToCommand(payload);
 }

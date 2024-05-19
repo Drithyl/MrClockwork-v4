@@ -1,17 +1,29 @@
 
 const log = require("../../logger.js");
 const assert = require("../../asserter.js");
+const { EmbedBuilder } = require("discord.js");
+const config = require("../../config/config.json");
+const { SEASONS } = require("../../constants/dominions-constants.js");
 const dom5SettingFlags = require("../../json/dominions5_setting_flags.json");
 const dom6SettingFlags = require("../../json/dominions6_setting_flags.json");
 const MessagePayload = require("../../discord/prototypes/message_payload.js");
+const { unixTimestampToDynamicDisplay, dateToUnixTimestamp } = require("../../utilities/formatting-utilities.js");
 
 
 module.exports = (game, domEvents) =>
 {
     const gameName = game.getName();
     const status = game.getLastKnownStatus();
+    const timeLeft = status.getTimeLeft();
+    const dateWhenTurnWillRoll = timeLeft.toDateObject();
+    const unixTimestamp = dateToUnixTimestamp(dateWhenTurnWillRoll);
     const turnNumber = domEvents.getTurnNumber();
-    const announcement = `**Turn ${turnNumber}** has arrived. The new timer is set to: ${status.printTimeLeft()}.`;
+
+    // Starting season at turn 1 is Midspring.
+    const turnSeason = SEASONS[(turnNumber-1) % SEASONS.length];
+
+    // Year starts at 0, and turn 11 is year 1. Every 12 turns thereafter is a new year, i.e. turn 23 is year 2
+    const turnYear = Math.floor((turnNumber + 1) / 12);
     
     try
     {
@@ -23,7 +35,15 @@ module.exports = (game, domEvents) =>
         status.setIsCurrentTurnRollback(false);
 
         // Announce the new turn in the game's channel
-        game.sendGameAnnouncement(announcement);
+        game.sendGameAnnouncement(
+            new MessagePayload()
+            .addEmbeds(
+                new EmbedBuilder()
+                    .setColor(turnSeason.colour)
+                    .setAuthor({ name: `TURN ${turnNumber} - YEAR ${turnYear}, ${turnSeason.name.toUpperCase()}`, iconURL: `${config.fullSecureUrl}/img/${turnSeason.icon}` })
+                    .setDescription(`Next Turn:\n\n${unixTimestampToDynamicDisplay(unixTimestamp)},\nin ${timeLeft.printTimeLeft()}.`)
+            )
+        );
 
         // Process players' preferences on new turns
         _processNewTurnPreferences(game);
