@@ -50,7 +50,7 @@ function _buildEmbeds(status, latestTimestamp) {
         new EmbedBuilder()
             .setColor(0x6bb5f9)
             .setTitle(`__Turn ${turnNumber} Status__`)
-            .setDescription(`Next Turn:\n\n${unixTimestampToDynamicDisplay(unixTimestamp)}\n(in ${timeLeft.printTimeLeft()})`)
+            .setDescription(`Next Turn:\n\n${unixTimestampToDynamicDisplay(unixTimestamp)},\nin ${timeLeft.printTimeLeft()}.`)
             .setFooter({ text: "Last checked" })
             .setTimestamp(latestTimestamp)
     );
