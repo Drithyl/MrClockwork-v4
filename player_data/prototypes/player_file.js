@@ -41,19 +41,13 @@ function PlayerFile(playerId)
     this.getGamePreferences = (gameName) => _preferencesByGameName[gameName];
     this.getAllGamePreferences = () => 
     {
-        // Fill up empty game preferences in games where the player controls nations
-        for (let gameName in _gameDataByGameName)
-        {
-            if (this.hasGamePreferences(gameName) === false)
-            {
-                if (this.getControlledNationFilenamesInGame(gameName).length > 0)
-                {
-                    this.setGamePreferences(gameName, new DominionsPreferences(_playerId));
-                }
-            }
-        }
+        const preferences = {};
 
-        return _preferencesByGameName;
+        _gameDataByGameName.forEach((gameName) => {
+            preferences[gameName] = this.getEffectiveGamePreferences(gameName);
+        });
+
+        return preferences;
     };
 
     this.getEffectiveGamePreferences = (gameName) => 
@@ -95,9 +89,6 @@ function PlayerFile(playerId)
     {
         if (this.hasGameData(gameName) === false)
             this.addNewGameData(gameName);
-
-        if (this.hasGamePreferences(gameName) === false)
-            this.setGamePreferences(gameName, new DominionsPreferences(_playerId));
 
         const gameData = this.getGameData(gameName);
         gameData.addControlledNation(nationFilename);
