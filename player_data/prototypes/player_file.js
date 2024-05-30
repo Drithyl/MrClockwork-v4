@@ -43,9 +43,9 @@ function PlayerFile(playerId)
     {
         const preferences = {};
 
-        _gameDataByGameName.forEach((gameName) => {
+        for (const gameName in _gameDataByGameName) {
             preferences[gameName] = this.getEffectiveGamePreferences(gameName);
-        });
+        }
 
         return preferences;
     };
