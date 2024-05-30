@@ -38,7 +38,7 @@ function DominionsGame(type)
         const nationArray = await _gameObject.emitPromiseWithGameDataToServer("GET_SUBMITTED_PRETENDERS");
 
         if (assert.isArray(nationArray) === false)
-            return Promise.reject(new Error(`List of pretenders is unavailable; try again later.`));
+            return null;
 
         await nationArray.forEachPromise(async (nation, i, nextPromise) =>
         {
@@ -371,6 +371,42 @@ function DominionsGame(type)
         log.general(log.getLeanLevel(), `${jsonData.name}: finished loading all JSON data`);
 
         return _gameObject;
+    };
+
+    _gameObject.debug = async () =>
+    {
+        const nations = await _gameObject.fetchSubmittedNations();
+
+        return {
+            name: _gameObject.getName(),
+            guild: _gameObject.getGuild()?.getName(),
+            guildId: _gameObject.getGuildId(),
+            organizer: _gameObject.getOrganizer()?.getNameInGuild(),
+            organizerId: _gameObject.getOrganizerId(),
+            channel: _gameObject.getChannel()?.name,
+            channelId: _gameObject.getChannelId(),
+            role: _gameObject.getRole()?.name,
+            roleId: _gameObject.getRoleId(),
+            server: _gameObject.getServer()?.getName(),
+            address: `${_gameObject.getIp()}:${_gameObject.getPort()}`,
+            status: {
+                isServerOnline: _gameObject.isServerOnline(),
+                isOnline: _status.isOnline(),
+                hasStarted: _status.hasStarted(),
+                isCurrentTurnRollback: _status.isCurrentTurnRollback(),
+                isTurnProcessing: _status.isTurnProcessing(),
+                areAllTurnsDone: _status.areAllTurnsDone(),
+                isPaused: _status.isPaused(),
+                turnNumber: _status.getTurnNumber(),
+                msLeft: _status.getMsLeft(),
+                successfulCheckTimestamp: _status.getSuccessfulCheckTimestamp(),
+                lastUpdateTimestamp: _status.getLastUpdateTimestamp(),
+                lastTurnTimestamp: _status.getLastTurnTimestamp(),
+            },
+            settings: _gameObject.getSettingsObject(),
+            players: _status.getPlayers(),
+            nations
+        };
     };
 
     _gameObject.toJSON = () =>

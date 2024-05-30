@@ -62,6 +62,11 @@ async function autocompletePretenders(autocompleteContext)
     }
 
     const nations = await gameObject.fetchSubmittedNations();
+
+    if (Array.isArray(nations) === false) {
+        return;
+    }
+
     const humanPretenders = nations.filter((pretender) => {
         return pretender.isSubmitted === true;
     });

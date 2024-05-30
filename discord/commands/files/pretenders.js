@@ -19,13 +19,16 @@ async function behaviour(commandContext)
 
     let game = commandContext.targetedGame;
     
-    const listAsArray = await game.fetchSubmittedNations();
-    const humanPretenders = listAsArray.filter((pretender) => pretender.isSubmitted === true);
+    const nations = await game.fetchSubmittedNations();
 
+    if (nations == null) {
+        return commandContext.respondToCommand(new MessagePayload(`Submitted pretender data is currently unavailable.`));
+    }
+
+    const humanPretenders = nations.filter((pretender) => pretender.isSubmitted === true);
 
     if (humanPretenders.length <= 0)
         return commandContext.respondToCommand(new MessagePayload(`There are no submitted pretenders.`));
-
 
     const headerContentPair = _formatPretenders(humanPretenders);
     return commandContext.respondToCommand(new MessagePayload(headerContentPair[0], headerContentPair[1], true, "```"));

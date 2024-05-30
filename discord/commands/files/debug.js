@@ -25,14 +25,10 @@ module.exports = {
 
 async function behaviour(commandContext)
 {
-    await commandPermissions.assertMemberIsDev(commandContext);
-
+    commandPermissions.assertMemberIsDev(commandContext);
     const gameName = commandContext.options.getString(GAME_NAME_OPTION);
-    const payload = new MessagePayload("Below is the game's state:");
 
     let game;
-    let status;
-    let nations;
     let debugInfo;
     
 
@@ -41,42 +37,17 @@ async function behaviour(commandContext)
 
 
     game = ongoingGamesStore.getOngoingGameByName(gameName);
-    status = game.getLastKnownStatus();
+    debugInfo = await game.debug();
 
-    await commandContext.respondToCommand(new MessagePayload(`Getting info...`));
-
-    nations = await game.fetchSubmittedNations();
-
-    debugInfo = {
-        guild: `${game.getGuild()?.getName()} (${game.getGuildId()})`,
-        organizer: `${game.getOrganizer()?.getNameInGuild()} (${game.getOrganizerId()})`,
-        channel: `${game.getChannel()?.name} (${game.getChannelId()})`,
-        role: `${game.getRole()?.name} (${game.getRoleId()})`,
-        server: game.getServer()?.getName(),
-        address: `${game.getIp()}:${game.getPort()}`,
-        statusEmbed: game.getStatusEmbedId(),
-        status: {
-            isServerOnline: game.isServerOnline(),
-            isOnline: status.isOnline(),
-            hasStarted: status.hasStarted(),
-            isCurrentTurnRollback: status.isCurrentTurnRollback(),
-            isTurnProcessing: status.isTurnProcessing(),
-            areAllTurnsDone: status.areAllTurnsDone(),
-            isPaused: status.isPaused(),
-            turnNumber: status.getTurnNumber(),
-            msLeft: status.getMsLeft(),
-            successfulCheckTimestamp: status.getSuccessfulCheckTimestamp(),
-            lastUpdateTimestamp: status.getLastUpdateTimestamp(),
-            lastTurnTimestamp: status.getLastTurnTimestamp(),
-            players: status.getPlayers()
-        },
-        
-        settings: game.getSettingsObject(),
-        nations
-    };
-
-    payload.setAttachment("state.json", Buffer.from(JSON.stringify(debugInfo, null, 2)));
-    await commandContext.respondByDm(payload);
+    await commandContext.respondToCommand(
+        new MessagePayload("Debug data attached:")
+            .setAttachment(
+                "debug.json",
+                Buffer.from(
+                    JSON.stringify(debugInfo, null, 2)
+                )
+            )
+    );
 }
 
 async function autocompleteGameNames(autocompleteContext)
