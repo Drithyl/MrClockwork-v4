@@ -8,7 +8,7 @@ const GAME_NAME_OPTION = "game_name";
 
 module.exports = {
 	data: new SlashCommandBuilder()
-		.setName("refresh")
+		.setName("refresh_game")
 		.setDescription("Force a game to refresh its last known status.")
         .addStringOption(option =>
             option.setName(GAME_NAME_OPTION)
