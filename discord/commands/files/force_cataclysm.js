@@ -3,7 +3,7 @@ const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const commandPermissions = require("../../command_permissions.js");
 const MessagePayload = require("../../prototypes/message_payload.js");
 const { EMBED_COLOURS } = require("../../../constants/discord-constants.js");
-const { DOOM_ICON } = require("../../../constants/discord-constants.js");
+const { DOOM_ICON } = require("../../../constants/dominions-constants.js");
 const { dateToUnixTimestamp, unixTimestampToDynamicDisplay } = require("../../../utilities/formatting-utilities.js");
 
 const CATACLYSM_TURN = "cataclysm_turn";
