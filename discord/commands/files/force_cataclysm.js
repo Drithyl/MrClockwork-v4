@@ -36,7 +36,7 @@ async function behaviour(commandContext)
     
     await game.forceCataclysmTurnNumber(cataclysmTurn);
 
-    if (cataclysmTurn + 1 <= currentTurn) {
+    if (cataclysmTurn <= currentTurn + 1) {
         const timeLeft = status.getTimeLeft();
         const dateWhenTurnWillRoll = timeLeft.toDateObject();
         const unixTimestamp = dateToUnixTimestamp(dateWhenTurnWillRoll);
