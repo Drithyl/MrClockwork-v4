@@ -44,6 +44,15 @@ class CommandContext extends InteractionContext
         return messagePayload.send(this);
     }
 
+    respondWithGameAnnouncement(messagePayload){
+        if (this.targetedGame == null) {
+            return this.respondToCommand(messagePayload);
+        }
+
+        const role = this.targetedGame.getRole();
+        return messagePayload.prependToHeader(`${role} `).send(this);
+    }
+
     async respondToSender(messagePayload) {
         await this.respondToCommand(new MessagePayload(`Check your DMs.`));
         return this.userWrapper.sendMessage(messagePayload);

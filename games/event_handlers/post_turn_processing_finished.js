@@ -2,6 +2,7 @@
 const log = require("../../logger.js");
 const { EmbedBuilder } = require("discord.js");
 const MessagePayload = require("../../discord/prototypes/message_payload.js");
+const { EMBED_COLOURS } = require("../../constants/discord-constants.js");
 
 
 module.exports = (game, statusdump, error) =>
@@ -36,7 +37,7 @@ function _processBackup(game, statusdump, error)
     {
         log.error(log.getLeanLevel(), `${gameName}: Post-turn backup encountered error`, error);
         return new EmbedBuilder()
-            .setColor(0xff0404)
+            .setColor(EMBED_COLOURS.ERROR)
             .setDescription(`**__Post-turn backup encountered an error__**. If the next pre-turn backup fails, rollback to this turn might not be available. Stale data won't be available for this turn either.\n\n\`\`\`     ${error}\`\`\``);
     }
 
@@ -44,7 +45,7 @@ function _processBackup(game, statusdump, error)
     {
         log.general(log.getNormalLevel(), `${gameName}: Post-turn ${statusdump.turnNumber} backup finished!`);
         return new EmbedBuilder()
-                .setColor(0x80cd21)
+                .setColor(EMBED_COLOURS.SUCCESS)
                 .setDescription("Post-turn backup successful.");
     }
 }
@@ -55,7 +56,7 @@ function _processStaleData(statusdump)
     const stales = _calculateStales(nationStatuses);
     const formattedStaleData = _formatStaleDataIntoString(stales);
     return new EmbedBuilder()
-            .setColor(0xff0404)
+            .setColor((stales.length > 0) ? EMBED_COLOURS.ERROR : EMBED_COLOURS.SUCCESS)
             .setDescription(`__**Stales this turn:**__\n\n${formattedStaleData}`);
 }
 

@@ -255,6 +255,16 @@ function DominionsGame(type)
         return _gameObject.emitPromiseWithGameDataToServer("FORCE_HOST");
     };
 
+    _gameObject.forceApRequiredToWin = (ap) => 
+    {
+        return _gameObject.emitPromiseWithGameDataToServer("FORCE_AP", { ap: ap });
+    };
+
+    _gameObject.forceCataclysmTurnNumber = (cataclysmTurn) => 
+    {
+        return _gameObject.emitPromiseWithGameDataToServer("FORCE_CATACLYSM", { cataclysmTurn: cataclysmTurn });
+    };
+
     _gameObject.launch = () => _gameObject.emitPromiseWithGameDataToServer("LAUNCH_GAME");
     _gameObject.kill = () => _gameObject.emitPromiseWithGameDataToServer("KILL_GAME", null, 130000);
     _gameObject.refresh = () => _gameObject.emitPromiseWithGameDataToServer("REFRESH_GAME");

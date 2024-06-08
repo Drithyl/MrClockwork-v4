@@ -3,6 +3,7 @@ const MessagePayload = require("../../prototypes/message_payload.js");
 const commandPermissions = require("../../command_permissions.js");
 const assert = require("../../../asserter.js");
 const { dateToUnixTimestamp, unixTimestampToDynamicDisplay } = require("../../../utilities/formatting-utilities.js");
+const { EMBED_COLOURS } = require("../../../constants/discord-constants.js");
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -48,7 +49,7 @@ function _buildEmbeds(status, latestTimestamp) {
     
     embeds.push(
         new EmbedBuilder()
-            .setColor(0x6bb5f9)
+            .setColor(EMBED_COLOURS.INFO)
             .setTitle(`__Turn ${turnNumber} Status__`)
             .setDescription(`Next Turn:\n\n${unixTimestampToDynamicDisplay(unixTimestamp)},\nin ${timeLeft.printTimeLeft()}.`)
             .setFooter({ text: "Last checked" })
@@ -58,7 +59,7 @@ function _buildEmbeds(status, latestTimestamp) {
     if (assert.isArray(unfinishedTurns) === true && unfinishedTurns.length > 0) {
         embeds.push(
             new EmbedBuilder()
-                .setColor(0xd0bd2c)
+                .setColor(EMBED_COLOURS.WARNING)
                 .setTitle("Unfinished Turns")
                 .setDescription(unfinishedTurns.join("\n"))
         );
@@ -67,7 +68,7 @@ function _buildEmbeds(status, latestTimestamp) {
     if (assert.isArray(uncheckedTurns) === true && uncheckedTurns.length > 0) {
         embeds.push(
             new EmbedBuilder()
-                .setColor(0xff0404)
+                .setColor(EMBED_COLOURS.ERROR)
                 .setTitle("Unchecked Turns")
                 .setDescription(uncheckedTurns.join("\n"))
         );

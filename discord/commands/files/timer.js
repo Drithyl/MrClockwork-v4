@@ -3,11 +3,13 @@ const commandPermissions = require("../../command_permissions.js");
 const TimeLeft = require("../../../games/prototypes/time_left.js");
 const MessagePayload = require("../../prototypes/message_payload.js");
 const { dateToUnixTimestamp, unixTimestampToDynamicDisplay } = require("../../../utilities/formatting-utilities.js");
+const { EMBED_COLOURS } = require("../../../constants/discord-constants.js");
 
 const CHECK_SUBCOMMAND_NAME = "check";
 const SET_SUBCOMMAND_NAME = "set";
 const ADD_SUBCOMMAND_NAME = "add";
 const HOURS_OPTION = "hours";
+const MINUTES_OPTION = "minutes";
 
 
 module.exports = {
@@ -26,8 +28,14 @@ module.exports = {
                 .addIntegerOption(option =>
                     option.setName(HOURS_OPTION)
                     .setDescription("Hours to add to the current turn timer.")
-                    .setMinValue(1)
+                    .setMinValue(0)
                     .setRequired(true)
+                )
+                .addIntegerOption(option =>
+                    option.setName(MINUTES_OPTION)
+                    .setDescription("Minutes to add to the current turn timer.")
+                    .setMinValue(1)
+                    .setRequired(false)
                 )
         )
         .addSubcommand(subcommand =>
@@ -37,8 +45,14 @@ module.exports = {
                 .addIntegerOption(option =>
                     option.setName(HOURS_OPTION)
                     .setDescription("Hours for a new turn to roll.")
-                    .setMinValue(1)
+                    .setMinValue(0)
                     .setRequired(true)
+                )
+                .addIntegerOption(option =>
+                    option.setName(MINUTES_OPTION)
+                    .setDescription("Minutes for a new turn to roll.")
+                    .setMinValue(5)
+                    .setRequired(false)
                 )
         )
         .setDMPermission(false),
@@ -50,7 +64,6 @@ async function behaviour(commandContext)
 {
     await commandPermissions.assertCommandIsUsedInGameChannel(commandContext);
     await commandPermissions.assertGameHasStarted(commandContext);
-    await commandPermissions.assertCommandIsUsedInGameChannel(commandContext);
 
     
     if (commandContext.options.getSubcommand() === CHECK_SUBCOMMAND_NAME)
@@ -79,7 +92,7 @@ function onCheckSubcommand(commandContext)
         new MessagePayload()
             .addEmbeds(
                 new EmbedBuilder()
-                    .setColor(0x6bb5f9)
+                    .setColor(EMBED_COLOURS.INFO)
                     .setDescription(`Next Turn:\n\n${unixTimestampToDynamicDisplay(unixTimestamp)},\nin ${timeLeft.printTimeLeft()}.`)
             )
     );
@@ -92,7 +105,12 @@ async function onSetSubcommand(commandContext)
     const roleStr = (role != null) ? role.toString() : "`[No game role found to mention]`";
     const lastKnownStatus = gameObject.getLastKnownStatus();
     const hours = commandContext.options.getInteger(HOURS_OPTION);
-    const msToSet = TimeLeft.hoursToMs(hours);
+    const minutes = commandContext.options.getInteger(MINUTES_OPTION);
+    const msToSet = TimeLeft.hoursToMs(hours) + TimeLeft.minutesToMs(minutes);
+
+    if (msToSet <= 0) {
+        return commandContext.respondToCommand("Why are you trying to set a timer of 0 or less? Use `/pause` if you'd like to pause the timer.");
+    }
 
     await gameObject.changeTimer(msToSet);
 
@@ -104,7 +122,7 @@ async function onSetSubcommand(commandContext)
         new MessagePayload(roleStr)
             .addEmbeds(
                 new EmbedBuilder()
-                    .setColor(0x6bb5f9)
+                    .setColor(EMBED_COLOURS.INFO)
                     .setDescription(`The timer was changed. Next Turn will now process on:\n\n${unixTimestampToDynamicDisplay(unixTimestamp)},\nin ${timeLeft.printTimeLeft()}.`)
             )
     );
@@ -118,7 +136,13 @@ async function onAddSubcommand(commandContext)
     const lastKnownStatus = gameObject.getLastKnownStatus();
     const msLeft = lastKnownStatus.getMsLeft();
     const hours = commandContext.options.getInteger(HOURS_OPTION);
-    const msToAdd = TimeLeft.hoursToMs(hours);
+    const minutes = commandContext.options.getInteger(MINUTES_OPTION);
+    const msToAdd = TimeLeft.hoursToMs(hours) + TimeLeft.minutesToMs(minutes);
+
+    if (msToAdd <= 0) {
+        return commandContext.respondToCommand("You need to add at least one minute to the timer.");
+    }
+
 
     await gameObject.changeTimer(msLeft + msToAdd);
 
@@ -130,7 +154,7 @@ async function onAddSubcommand(commandContext)
         new MessagePayload(roleStr)
             .addEmbeds(
                 new EmbedBuilder()
-                    .setColor(0x6bb5f9)
+                    .setColor(EMBED_COLOURS.INFO)
                     .setDescription(`The timer was changed. Next Turn will now process on:\n\n${unixTimestampToDynamicDisplay(unixTimestamp)},\nin ${timeLeft.printTimeLeft()}.`)
             )
     );

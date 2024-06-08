@@ -2,11 +2,13 @@ const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const commandPermissions = require("../../command_permissions.js");
 const TimeLeft = require("../../../games/prototypes/time_left.js");
 const MessagePayload = require("../../prototypes/message_payload.js");
+const { EMBED_COLOURS } = require("../../../constants/discord-constants.js");
 
 const CHECK_SUBCOMMAND_NAME = "check";
 const SET_SUBCOMMAND_NAME = "set";
 const ADD_SUBCOMMAND_NAME = "add";
 const HOURS_OPTION = "hours";
+const MINUTES_OPTION = "minutes";
 
 
 module.exports = {
@@ -25,8 +27,14 @@ module.exports = {
                 .addIntegerOption(option =>
                     option.setName(HOURS_OPTION)
                     .setDescription("Hours to add to the default turn timer.")
-                    .setMinValue(1)
+                    .setMinValue(0)
                     .setRequired(true)
+                )
+                .addIntegerOption(option =>
+                    option.setName(MINUTES_OPTION)
+                    .setDescription("Minutes to add to the default turn timer.")
+                    .setMinValue(1)
+                    .setRequired(false)
                 )
         )
         .addSubcommand(subcommand =>
@@ -36,8 +44,14 @@ module.exports = {
                 .addIntegerOption(option =>
                     option.setName(HOURS_OPTION)
                     .setDescription("Hours for a new turn to roll.")
-                    .setMinValue(1)
+                    .setMinValue(0)
                     .setRequired(true)
+                )
+                .addIntegerOption(option =>
+                    option.setName(MINUTES_OPTION)
+                    .setDescription("Minutes for a new turn to roll.")
+                    .setMinValue(5)
+                    .setRequired(false)
                 )
         )
         .setDMPermission(false),
@@ -77,7 +91,7 @@ function onCheckSubcommand(commandContext)
         payload = new MessagePayload()
             .addEmbeds(
                 new EmbedBuilder()
-                    .setColor(0x6bb5f9)
+                    .setColor(EMBED_COLOURS.INFO)
                     .setDescription(`New turns have no time limit (paused).`)
             );
     }
@@ -86,7 +100,7 @@ function onCheckSubcommand(commandContext)
         payload = new MessagePayload()
             .addEmbeds(
                 new EmbedBuilder()
-                    .setColor(0x6bb5f9)
+                    .setColor(EMBED_COLOURS.INFO)
                     .setDescription(`New turns have a timer of: ${defaultTimeLeftObject.printTimeLeft()}.`)
             );
     }
@@ -100,18 +114,19 @@ async function onSetSubcommand(commandContext)
     const settingsObject = gameObject.getSettingsObject();
     const timerSetting = settingsObject.getTimerSetting();
     const hours = commandContext.options.getInteger(HOURS_OPTION);
-    const msToSet = TimeLeft.hoursToMs(hours);
+    const minutes = commandContext.options.getInteger(MINUTES_OPTION);
+    const msToSet = TimeLeft.hoursToMs(hours) + TimeLeft.minutesToMs(minutes);
 
     await gameObject.changeTimer(msToSet, msToSet);
 
     const defaultTimeLeftObject = timerSetting.getValue();
     let payload;
 
-    if (hours == 0) {
+    if (msToSet <= 0) {
         payload = new MessagePayload()
             .addEmbeds(
                 new EmbedBuilder()
-                    .setColor(0x6bb5f9)
+                    .setColor(EMBED_COLOURS.INFO)
                     .setDescription(`The time per turn has been paused.`)
             );
     }
@@ -120,7 +135,7 @@ async function onSetSubcommand(commandContext)
         payload = new MessagePayload()
             .addEmbeds(
                 new EmbedBuilder()
-                    .setColor(0x6bb5f9)
+                    .setColor(EMBED_COLOURS.INFO)
                     .setDescription(`New turns will be set to: ${defaultTimeLeftObject.printTimeLeft()}.`)
             );
     }
@@ -135,7 +150,8 @@ async function onAddSubcommand(commandContext)
     const timerSetting = settingsObject.getTimerSetting();
     const defaultMsLeft = timerSetting.getValue().getMsLeft();
     const hours = commandContext.options.getInteger(HOURS_OPTION);
-    const msToAdd = TimeLeft.hoursToMs(hours);
+    const minutes = commandContext.options.getInteger(MINUTES_OPTION);
+    const msToAdd = TimeLeft.hoursToMs(hours) + TimeLeft.minutesToMs(minutes);
     const finalMsToSet = defaultMsLeft + msToAdd;
 
     await gameObject.changeTimer(finalMsToSet, finalMsToSet);
@@ -143,11 +159,11 @@ async function onAddSubcommand(commandContext)
     const defaultTimeLeftObject = timerSetting.getValue();
     let payload;
 
-    if (hours == 0) {
+    if (finalMsToSet <= 0) {
         payload = new MessagePayload()
             .addEmbeds(
                 new EmbedBuilder()
-                    .setColor(0x6bb5f9)
+                    .setColor(EMBED_COLOURS.INFO)
                     .setDescription(`The time per turn has been paused.`)
             );
     }
@@ -156,7 +172,7 @@ async function onAddSubcommand(commandContext)
         payload = new MessagePayload()
             .addEmbeds(
                 new EmbedBuilder()
-                    .setColor(0x6bb5f9)
+                    .setColor(EMBED_COLOURS.INFO)
                     .setDescription(`New turns will be set to: ${defaultTimeLeftObject.printTimeLeft()}.`)
             );
     }
