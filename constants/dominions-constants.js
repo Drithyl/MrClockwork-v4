@@ -1,5 +1,5 @@
 module.exports = Object.freeze({
-    DOOM_ICON: "unsurroundable.png",
+    DOOM_ICON: "doom.png",
     SEASONS: [
         {
             name: "Midspring",
