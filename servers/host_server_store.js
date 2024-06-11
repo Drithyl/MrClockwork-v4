@@ -169,16 +169,16 @@ async function _getDom6Modfiles()
     return modFilepaths;
 }
 
-exports.getMaps = async (gameType) =>
+exports.getMapsWithProvCount = async (gameType) =>
 {
     const mapsWithProvinceCount = [];
     let mapFilepaths;
 
     if (asserter.isDom5GameType(gameType) === true) {
-        mapFilepaths = await _getDom5Mapfiles();
+        mapFilepaths = await exports.getDom5Mapfiles();
     }
     else if (asserter.isDom6GameType(gameType) === true) {
-        mapFilepaths = await _getDom6Mapfiles();
+        mapFilepaths = await exports.getDom6Mapfiles();
     }
 
     await mapFilepaths.forAllPromises(async (mapfile) =>
@@ -195,7 +195,7 @@ exports.getMaps = async (gameType) =>
     return mapsWithProvinceCount;
 };
 
-async function _getDom5Mapfiles()
+exports.getDom5Mapfiles = async() =>
 {
     const gameType = config.dom5GameTypeName;
     const mapsDirPath = path.resolve(getDominionsMapsPath(gameType));
@@ -205,9 +205,9 @@ async function _getDom5Mapfiles()
         return { name: filename, relativePath: filename, path: path.resolve(mapsDirPath, filename) };
     });
     return mapFilepaths;
-}
+};
 
-async function _getDom6Mapfiles()
+exports.getDom6Mapfiles = async () =>
 {
     const gameType = config.dom6GameTypeName;
     const mapsDirPath = path.resolve(getDominionsMapsPath(gameType));
@@ -244,7 +244,7 @@ async function _getDom6Mapfiles()
     }
 
     return mapFilepaths;
-}
+};
 
 function _populateStore()
 {

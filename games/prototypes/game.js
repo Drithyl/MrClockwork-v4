@@ -382,7 +382,7 @@ function Game()
             log.general(log.getLeanLevel(), `${jsonData.name}: no role found`);
         }
 
-        _settingsObject.loadJSONData(jsonData.settings, jsonData.needsPatching);
+        await _settingsObject.loadJSONData(jsonData.settings, jsonData.needsPatching);
         log.general(log.getLeanLevel(), `${jsonData.name}: finished loadJSONDataSuper()`);
         return this;
     };

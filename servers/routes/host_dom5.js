@@ -31,7 +31,7 @@ exports.set = (expressApp) =>
 
         const userId = session.getUserId();
         const sessionId = session.getSessionId();
-        const maps = await hostServerStore.getMaps(config.dom5GameTypeName);
+        const maps = await hostServerStore.getMapsWithProvCount(config.dom5GameTypeName);
         const mods = await hostServerStore.getMods(config.dom5GameTypeName);
         availableServers = hostServerStore.getAvailableServersClientData();
         guildsWhereUserIsTrusted = await guildStore.getGuildsWhereUserIsTrusted(userId);

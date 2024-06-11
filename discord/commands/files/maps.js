@@ -28,7 +28,7 @@ async function behaviour(commandContext)
 {
     const gameType = commandContext.options.getString(GAME_TYPE_OPTION);
     const payload = new MessagePayload(`Attached below is the list of ${gameType} maps available:\n\n`);
-    const maps = await hostServerStore.getMaps(gameType);
+    const maps = await hostServerStore.getMapsWithProvCount(gameType);
     let stringList = "";
 
 

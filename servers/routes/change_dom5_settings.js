@@ -49,7 +49,7 @@ exports.set = (expressApp) =>
         })
         .then(async () =>
         {
-            const maps = await hostServerStore.getMaps(config.dom5GameTypeName);
+            const maps = await hostServerStore.getMapsWithProvCount(config.dom5GameTypeName);
             const mods = await hostServerStore.getMods(config.dom5GameTypeName);
 
             log.general(log.getVerboseLevel(), "Final organized dom5 games data rendered", organizedGames);

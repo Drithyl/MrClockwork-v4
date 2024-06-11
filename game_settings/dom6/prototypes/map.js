@@ -3,6 +3,7 @@ const log = require("../../../logger.js");
 const config = require("../../../config/config.json");
 const GameSetting = require("../../prototypes/game_setting.js");
 const dom6SettingsData = require("../../../json/dom6_settings.json");
+const { getDom6Mapfiles } = require("../../../servers/host_server_store.js");
 const SemanticError = require("../../../errors/custom_errors.js").SemanticError;
 const { appendDominionsMapExtension } = require("../../../helper_functions.js");
 
@@ -21,12 +22,14 @@ function Map(parentGameObject)
         return this.getValue();
     };
     
-    this.setValue = (input) =>
+    this.setValue = async (input) =>
     {
-        var validatedValue = _validateInputFormatOrThrow(input);
+        let validatedValue = _validateInputFormatOrThrow(input);
 
         if (mapExtensionRegex.test(validatedValue) === false)
             validatedValue = appendDominionsMapExtension(validatedValue, config.dom6GameTypeName);
+
+        await _checkIfMapExistsOrThrow(validatedValue);
             
         _value = validatedValue;
         log.general(log.getNormalLevel(), `${parentGameObject.getName()}: Changed setting ${this.getName()} to ${this.getReadableValue()}`);
@@ -56,6 +59,15 @@ function Map(parentGameObject)
             throw new SemanticError(`Invalid value format for the map.`);
 
         return input;
+    }
+
+    async function _checkIfMapExistsOrThrow(filename)
+    {
+        const filepaths = await getDom6Mapfiles();
+        const filenames = filepaths.map((mapfile) => mapfile.name);
+        if (filenames.includes(filename) === false) {
+            throw new Error(`The mapfile '${filename}' cannot be found. Make sure it's spelled correctly (capitalization matters)`);
+        }
     }
 }
 

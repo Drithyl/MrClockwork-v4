@@ -49,7 +49,7 @@ exports.set = (expressApp) =>
         })
         .then(async () =>
         {
-            const maps = await hostServerStore.getMaps(config.dom6GameTypeName);
+            const maps = await hostServerStore.getMapsWithProvCount(config.dom6GameTypeName);
             const mods = await hostServerStore.getMods(config.dom6GameTypeName);
 
             log.general(log.getVerboseLevel(), "Final organized dom6 games data rendered", organizedGames);
