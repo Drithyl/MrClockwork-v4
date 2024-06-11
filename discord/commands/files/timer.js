@@ -51,7 +51,7 @@ module.exports = {
                 .addIntegerOption(option =>
                     option.setName(MINUTES_OPTION)
                     .setDescription("Minutes for a new turn to roll.")
-                    .setMinValue(5)
+                    .setMinValue(1)
                     .setRequired(false)
                 )
         )
