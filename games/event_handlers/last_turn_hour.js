@@ -30,13 +30,13 @@ module.exports = async (game) =>
         }
 
         else {
-            await game.sendGameAnnouncement(new MessagePayload().addEmbeds(
+            await game.sendGameAnnouncement(new MessagePayload().addEmbeds([
                 mainEmbed,
                 new EmbedBuilder()
                     .setColor(EMBED_COLOURS.ERROR)
                     .setAuthor({ name: `Unchecked Turns` })
                     .setDescription(uncheckedTurns.join("\n"))
-            ));
+            ]));
         }
     }
 
