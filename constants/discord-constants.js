@@ -6,5 +6,6 @@ module.exports = Object.freeze({
         SUCCESS: 0x80cd21,
         ERROR: 0xff0404,
         WARNING: 0xd0bd2c
-    })
+    }),
+    LAST_HOUR_ICON: "fear.png"
 });
