@@ -139,8 +139,6 @@ function _formatPostValues(values)
 
 
     values.thrones = `${values.level1Thrones}, ${values.level2Thrones}, ${values.level3Thrones}`;
-    values.timer = `${values.timerDays}d${values.timerHours}h${values.timerMinutes}m`;
-
     log.general(log.getNormalLevel(), `change_game_settings formatted POST values`, values);
     return values;
 }
