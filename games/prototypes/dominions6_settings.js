@@ -72,7 +72,8 @@ function Dominions6Settings(parentGameObject)
     const _thrones = new Thrones(_parentGame);
     const _timerSetting = new TimerSetting(_parentGame);
 
-    //ORDER MATTERS! era has to come before aiNations, for example!
+    // ORDER MATTERS! era has to come before aiNations, for example, and thrones before AP
+    // (otherwise when changing AP/thrones settings, AP might be too high for thrones)
     _gameSettingsObject.addSettingObjects(
         _name,
         _map,
@@ -83,6 +84,7 @@ function Dominions6Settings(parentGameObject)
         _diplomacy,
         _artifactForging,
         _artifactYearning,
+        _thrones,
         _ascensionPoints,
         _cataclysm,
         _disciples,
@@ -103,7 +105,6 @@ function Dominions6Settings(parentGameObject)
         _startingProvinces,
         _startingResearch,
         _storyEvents,
-        _thrones,
         _timerSetting
     );
 
