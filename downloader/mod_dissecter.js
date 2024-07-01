@@ -105,7 +105,10 @@ async function parseDom6Modfile(dmFilepath, listOfAssetTagsToFind) {
             // mod tags that resemble our tags, such as #springpower,
             // which can give a false positive when looking for #spr tags
             const versionRegex = /#version\s+(\d\.\d{1,2})/;
-            const assetPathRegex = new RegExp(`^${tag}\\s+"(.+\\.\\w+)"`);
+            const assetPathRegex = new RegExp(`${tag}\\s+"(.+\\.\\w+)"`);
+
+            // Remove unnecessary whitespace from the front of the line
+            modLine = modLine.trim();
 
             if (modLine[0] !== "#") {
                 continue;
