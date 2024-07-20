@@ -42,7 +42,7 @@ async function behaviour(commandContext)
 {
     await commandPermissions.assertMemberIsDev(commandContext);
 
-    const subcommandName = commandContext.options.getSubcommand() === MAPS_SUBCOMMAND_NAME;
+    const subcommandName = commandContext.options.getSubcommand();
     const shouldDeleteFiles = commandContext.options.getBoolean(FORCE_OPTION_NAME);
 
     const unusedFilesList = await cleanUnusedFiles(subcommandName, shouldDeleteFiles);
