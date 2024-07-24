@@ -73,9 +73,6 @@ function Thrones(parentGameObject)
         if (thrones[2] < 0 || thrones[2] > 10)
             throw new SemanticError(`Level 3 thrones must be between 0 and 10`);
 
-        if (thrones[0] + thrones[1] + thrones[2] <= 0)
-            throw new SemanticError(`At least one throne is required`);
-
         const throneSum = thrones[0] + (thrones[1] * 2) + (thrones[2] * 3);
 
         // If all thrones are 0, the map chosen might actually have hardcoded thrones that will spawn in the game.
