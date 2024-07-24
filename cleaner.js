@@ -7,6 +7,7 @@ const rw = require("./reader_writer.js");
 const config = require("./config/config.json");
 const ongoingGamesStore = require("./games/ongoing_games_store.js");
 const { getDominionsMapsPath, getDominionsModsPath } = require("./helper_functions.js");
+const { DominionsMapFile, DominionsModFile } = require("./games/prototypes/DominionsFile.js");
 
 const UTC_DAYS_TO_CLEAN = [3, 6];
 const UTC_HOUR_TO_CLEAN = 22;
@@ -58,74 +59,31 @@ module.exports.startCleaningInterval = () =>
 
 module.exports.cleanUnusedMaps = async (force = false) =>
 {
-    try
-    {
-        const dom5MapsInUse = _getListOfMapsInUse(config.dom5GameTypeName);
-        const dom6MapsInUse = _getListOfMapsInUse(config.dom6GameTypeName);
-        const dom5Results = await _cleanUnusedFiles(dom5MapsInUse, DOM5_MAP_PATH, force);
-        const dom6Results = await _cleanUnusedFiles(dom6MapsInUse, DOM6_MAP_PATH, force);
-        log.general(log.getLeanLevel(), `Dom5 map cleaning finished. Cleaned ${dom5Results.length} map files.`);
-        log.general(log.getLeanLevel(), `Dom6 map cleaning finished. Cleaned ${dom6Results.length} map files.`);
-        return [...dom5Results, ...dom6Results];
-    }
-
-    catch(err)
-    {
-        log.error(log.getLeanLevel(), `Map cleaning ERROR`, err);
-    }
+    const dom5MapsInUse = _getListOfMapsInUse(config.dom5GameTypeName);
+    const dom6MapsInUse = _getListOfMapsInUse(config.dom6GameTypeName);
+    const dom5Results = await _cleanUnusedFiles(dom5MapsInUse, DOM5_MAP_PATH, force);
+    const dom6Results = await _cleanUnusedFiles(dom6MapsInUse, DOM6_MAP_PATH, force);
+    log.general(log.getLeanLevel(), `Dom5 map cleaning finished. Cleaned ${dom5Results.length} map files.`);
+    log.general(log.getLeanLevel(), `Dom6 map cleaning finished. Cleaned ${dom6Results.length} map files.`);
+    return [...dom5Results, ...dom6Results];
 };
 
 module.exports.cleanUnusedMods = async (force = false) =>
 {
-    try
-    {
-        const dom5ModsInUse = _getListOfModsInUse(config.dom5GameTypeName);
-        const dom6ModsInUse = _getListOfModsInUse(config.dom6GameTypeName);
-        const dom5Results = await _cleanUnusedFiles(dom5ModsInUse, DOM5_MOD_PATH, force);
-        const dom6Results = await _cleanUnusedFiles(dom6ModsInUse, DOM6_MOD_PATH, force);
-        log.general(log.getLeanLevel(), `Dom5 mod cleaning finished. Cleaned ${dom5Results.length} mod files.`);
-        log.general(log.getLeanLevel(), `Dom6 mod cleaning finished. Cleaned ${dom6Results.length} mod files.`);
-        return [...dom5Results, ...dom6Results];
-    }
-
-    catch(err)
-    {
-        log.error(log.getLeanLevel(), `Mod cleaning ERROR`, err);
-    }
+    const dom5ModsInUse = _getListOfModsInUse(config.dom5GameTypeName);
+    const dom6ModsInUse = _getListOfModsInUse(config.dom6GameTypeName);
+    const dom5Results = await _cleanUnusedFiles(dom5ModsInUse, DOM5_MOD_PATH, force);
+    const dom6Results = await _cleanUnusedFiles(dom6ModsInUse, DOM6_MOD_PATH, force);
+    log.general(log.getLeanLevel(), `Dom5 mod cleaning finished. Cleaned ${dom5Results.length} mod files.`);
+    log.general(log.getLeanLevel(), `Dom6 mod cleaning finished. Cleaned ${dom6Results.length} mod files.`);
+    return [...dom5Results, ...dom6Results];
 };
 
-
-async function _cleanUnusedFiles(filesInUse, dirPath, force = false)
-{
-    let finalFilesInUse = [];
-    
-    if (Array.isArray(filesInUse) === false)
-        return Promise.reject(new Error(`Expected filesInUse to be an array, got ${typeof filesInUse} instead.`), []);
-
-    log.general(log.getLeanLevel(), `Begin cleaning unused files...`);
-
-    try
-    {
-        const relatedFiles = await _getListOfRelatedFilesInUse(filesInUse, dirPath);
-        finalFilesInUse = finalFilesInUse.concat(relatedFiles);
-    
-        const dirFiles = await rw.walkDir(dirPath);
-        const deletedFiles = await _deleteUnusedFiles(dirFiles, finalFilesInUse, force);
-
-        log.general(log.getLeanLevel(), `In ${dirPath}, deleted ${deletedFiles.length} unused files`);
-        return deletedFiles;
-    }
-
-    catch(err)
-    {
-        log.general(log.getLeanLevel(), `Error occurred when deleting unused files in ${dirPath}`, err);
-        return Promise.reject(err);
-    }
-}
 
 function _getListOfMapsInUse(gameType)
 {
     const usedMaps = [];
+    const mapsDir = getDominionsMapsPath(gameType);
     const games = ongoingGamesStore.getArrayOfGames();
 
     games.forEach((game) =>
@@ -134,7 +92,16 @@ function _getListOfMapsInUse(gameType)
         {
             const settingsObject = game.getSettingsObject();
             const mapSetting = settingsObject.getMapSetting();
-            usedMaps.push(mapSetting.getValue());
+            const mapPath = path.join(mapsDir, mapSetting.getValue());
+
+            if (fs.existsSync(mapPath) === true) {
+                const mapFile = new DominionsMapFile(mapPath);
+                usedMaps.push(mapFile);
+            }
+            
+            else {
+                log.general(`${game.getName()}'s mapfile does not exist: "${mapPath}"`);
+            }
         }
     });
 
@@ -144,6 +111,7 @@ function _getListOfMapsInUse(gameType)
 function _getListOfModsInUse(gameType)
 {
     const usedMods = [];
+    const modsDir = getDominionsModsPath(gameType);
     const games = ongoingGamesStore.getArrayOfGames();
 
     games.forEach((game) =>
@@ -154,80 +122,58 @@ function _getListOfModsInUse(gameType)
             const modSetting = settingsObject.getModsSetting();
             const modsInUse = modSetting.getValue();
 
-            if (Array.isArray(modsInUse) === true && modsInUse.length > 0)
-                usedMods.push(...modSetting.getValue());
+            if (Array.isArray(modsInUse) === true && modsInUse.length > 0) {
+                modsInUse.forEach(modName => {
+                    const modPath = path.join(modsDir, modName);
+
+                    if (fs.existsSync(modPath) === true) {
+                        usedMods.push(new DominionsModFile(modPath));
+                    }
+            
+                    else {
+                        log.general(`${game.getName()}'s modfile does not exist: "${modPath}"`);
+                    }
+                });
+            }
         }
     });
 
     return usedMods;
 }
 
-/** uses the list of filenames in use to check the file contents and add the
- *  related asset files to the list as well, so they do not get deleted
- */
- function _getListOfRelatedFilesInUse(filesInUse, dirPath)
- {
-    let list = [];
+async function _cleanUnusedFiles(filesInUse, dirPath, force = false)
+{
+    const allDependenciesInUse = [];
+    const deletedFiles = [];
 
-    return filesInUse.forAllPromises((filename) =>
-    {
-        let assetTagssMatch;
-        const filePath = path.resolve(dirPath, filename);
+    log.general(log.getLeanLevel(), `Begin cleaning unused files...`);
 
-        if (fs.existsSync(filePath) === false)
-            return;
+    for (const domFile of filesInUse) {
+        log.general(log.getLeanLevel(), `Searching all dependencies of ${domFile.filename}...`);
+        const dependencies = await domFile.parseDependencies();
+        log.general(log.getLeanLevel(), `Found ${dependencies.size} related files`);
+        allDependenciesInUse.push(domFile.path, ...Array.from(dependencies));
+    }
 
-        list.push(filePath);
+    const existingFiles = await rw.walkDir(dirPath);
+    const existingFilesSet = existingFiles;
+    const usedFilesSet = allDependenciesInUse;
+    const unusedFiles = existingFilesSet.filter(x => !usedFilesSet.includes(x));
 
-        return fsp.readFile(filePath, "utf8")
-        .then((fileContent) =>
-        {
-            assetTagssMatch = fileContent.match(/\#(spr|spr1|spr2|icon|flag|indepflag|sample|imagefile|winterimagefile)\s*"?.+"?/ig);
+    for (const unusedFile of unusedFiles) {
+        try {
+            if (force === true) {
+                await fsp.unlink(unusedFile);
+                log.general(log.getLeanLevel(), `Deleted file "${unusedFile}"`);
+            }
+    
+            deletedFiles.push(unusedFile);
+        }
+        
+        catch(err) {
+            log.general(log.getLeanLevel(), `Failed to delete file ${unusedFile}`, err);
+        }
+    }
 
-            if (Array.isArray(assetTagssMatch) === false)
-                return;
-
-            assetTagssMatch.forEach((assetTag) =>
-            {
-                const relPath = assetTag.replace(/^#\w+\s*("?.+"?)$/i, "$1").replace(/"/ig, "");
-                const absolutePath = path.resolve(dirPath, relPath);
-
-                if (fs.existsSync(absolutePath) === true)
-                {
-                    log.general(log.getNormalLevel(), `Found related file in use at ${absolutePath}`);
-                    list.push(absolutePath);
-                }
-
-                else log.general(log.getLeanLevel(), `Related file in use found at path ${absolutePath} does not exist?`);
-            });
-        });
-    })
-    .then(() => Promise.resolve(list));
- }
- 
- function _deleteUnusedFiles(filePaths, filesInUse, force)
- {
-     let deletedFiles = [];
-     log.general(log.getLeanLevel(), "Total related files to check for cleaning", filePaths.length);
- 
-     if (filePaths.length <= 0)
-         return Promise.resolve(deletedFiles);
- 
-     return filePaths.forAllPromises((filePath) =>
-     {
-         if (filesInUse.includes(filePath) === false)
-         {
-             return Promise.resolve()
-             .then(() =>
-             {
-                 if (force === true)
-                     return fsp.unlink(filePath);
- 
-                 else return Promise.resolve();
-             })
-             .then(() => deletedFiles.push(filePath))
-             .catch((err) => log.general(log.getLeanLevel(), `Failed to delete file ${filePath}`, err));
-         }
-     })
-     .then(() => Promise.resolve(deletedFiles));
- }
+    return deletedFiles;
+}

@@ -48,7 +48,7 @@ async function behaviour(commandContext)
     const unusedFilesList = await cleanUnusedFiles(subcommandName, shouldDeleteFiles);
     const unusedFilesStringList = unusedFilesList.join("\n");
 
-    const payload = new MessagePayload(`A total of ${unusedFilesList.length} map-related files were deleted.`);
+    const payload = new MessagePayload(`A total of ${unusedFilesList.length} related files were deleted.`);
     payload.setAttachment("deleted_files.txt", Buffer.from(unusedFilesStringList, "utf8"));
     
     return commandContext.respondToCommand(payload);
