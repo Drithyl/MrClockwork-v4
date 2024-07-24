@@ -51,9 +51,6 @@ function AscensionPoints(parentGameObject)
         if (points <= 0 || points > 80)
             throw new SemanticError(`Ascension Points required must be between 1 and 80`);
 
-        if (assert.isArray(thrones) === true && thrones[0] + (thrones[1] * 2) + (thrones[2] * 3) < points)
-            throw new SemanticError(`Sum of the throne points must be at least as high as the ascension points required; instead got ${points} (${typeof points}) AP and ${thrones.join(",")} thrones`);
-
         return points;
     }
 }
