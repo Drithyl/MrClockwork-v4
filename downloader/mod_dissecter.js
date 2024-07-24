@@ -1,11 +1,9 @@
 const fs = require("fs");
 const fsp = fs.promises;
 const path = require("path");
-const es = require("event-stream");
 const logger = require("../logger");
 const { performance } = require("perf_hooks");
-
-const ASSET_TAGS = require("../json/dom6_modding_asset_tags.json");
+const { DominionsModFile } = require("../games/prototypes/DominionsFile");
 
 /**
  * Reads a mod's directory in search of multiple .dm files that may exist.
@@ -31,10 +29,11 @@ module.exports = async function dissectMod(readModDirPath, targetBaseModsDir) {
         };
 
         const dmFilepath = path.resolve(readModDirPath, filename);
-        const { version, relAssetPaths } = await parseDom6Modfile(dmFilepath, ASSET_TAGS);
+        const dominionsModFile = new DominionsModFile(dmFilepath);
+        const dependencies = await dominionsModFile.parseDependencies();
 
-        resultData.totalFiles += relAssetPaths.length;
-        logger.upload(logger.getLeanLevel(), `Unique asset tags found for mod ${filename}: ${relAssetPaths.length}\n`);
+        resultData.totalFiles += dependencies.size;
+        logger.upload(logger.getLeanLevel(), `Found ${dependencies.size} dependencies for ${filename}\n`);
         
         // Trim any versioning that users might have added to the mod's .dm file, so as to
         // append our own without it being redundant. The regexp will catch most formats, such as:
@@ -46,7 +45,7 @@ module.exports = async function dissectMod(readModDirPath, targetBaseModsDir) {
         // LucidsThematicGemGenV20
         const newModTrimmedFilename = path.parse(filename).name.replace(/_?v?\d+(\.|_)?\d*$/i, "");
 
-        const newModDirName = `${newModTrimmedFilename}-clockwork_v${version}`;
+        const newModDirName = `${newModTrimmedFilename}-clockwork_v${dominionsModFile.version}`;
         const newModDirPath = path.resolve(targetBaseModsDir, newModDirName);
 
         const newModfileName = `${newModDirName}.dm`;
@@ -64,9 +63,9 @@ module.exports = async function dissectMod(readModDirPath, targetBaseModsDir) {
             resultData.skippedFiles.push(newModfileName);
         }
 
-        for (const relAssetPath of relAssetPaths) {
-            const originalAsset = path.resolve(readModDirPath, relAssetPath);
-            const newAssetFilePath = path.join(newModDirPath, relAssetPath);
+        for (const absoluteAssetPath of Array.from(dependencies)) {
+            const relativeAssetPath = path.relative(dominionsModFile.dirPath, absoluteAssetPath);
+            const newAssetFilePath = path.join(newModDirPath, relativeAssetPath);
             const newAssetDirPath = path.dirname(newAssetFilePath);
 
             if (fs.existsSync(newAssetDirPath) === false) {
@@ -74,11 +73,11 @@ module.exports = async function dissectMod(readModDirPath, targetBaseModsDir) {
             }
 
             if (fs.existsSync(newAssetFilePath) === false) {
-                await copyFile(originalAsset, newAssetFilePath);
-                resultData.installedFiles.push(relAssetPath);
+                await copyFile(absoluteAssetPath, newAssetFilePath);
+                resultData.installedFiles.push(relativeAssetPath);
             }
             else {
-                resultData.skippedFiles.push(relAssetPath);
+                resultData.skippedFiles.push(relativeAssetPath);
             }
         }
 
@@ -89,88 +88,6 @@ module.exports = async function dissectMod(readModDirPath, targetBaseModsDir) {
     logger.upload(logger.getLeanLevel(), `Finished dissecting submods. Total time taken: ${(end - start).toFixed(2)}ms.`);
     return results;
 };
-
-async function parseDom6Modfile(dmFilepath, listOfAssetTagsToFind) {
-    const relAssetPathSet = new Set();
-    const returnData = {
-        version: null,
-        relAssetPaths: [],
-        absAssetPaths: []
-    };
-
-    await parseFileByLines(dmFilepath, (modLine) => {
-        // Process line here and call stream.resume() when ready for next line
-        for (const tag of listOfAssetTagsToFind) {
-            // Add a space after the tag in the RegExp to avoid matching
-            // mod tags that resemble our tags, such as #springpower,
-            // which can give a false positive when looking for #spr tags
-            const versionRegex = /#version\s+(\d\.\d{1,2})/;
-            const assetPathRegex = new RegExp(`${tag}\\s+"(.+\\.\\w+)"`);
-
-            // Remove unnecessary whitespace from the front of the line
-            modLine = modLine.trim();
-
-            if (modLine[0] !== "#") {
-                continue;
-            }
-
-            const versionMatch = versionRegex.exec(modLine);
-
-            // If we match a version tag, get the capture group at index 1 to extract the version
-            if (versionMatch != null) {
-                returnData.version = versionMatch[1];
-                continue;
-            }
-
-            const assetPathMatch = assetPathRegex.exec(modLine);
-
-            // If we match an asset tag, get the capture group at index 1 to extract the filepath
-            if (assetPathMatch != null) {
-                relAssetPathSet.add(assetPathMatch[1]);
-            }
-        }
-    });
-
-    const setArray = Array.from(relAssetPathSet);
-    returnData.relAssetPaths = setArray;
-    returnData.absAssetPaths = setArray.map((p) => path.resolve(path.dirname(dmFilepath), p));
-    return returnData;
-}
-
-function parseFileByLines(filepath, lineProcessingFunction) {
-    
-    // Start measuring amount of ms to parse the whole file
-    const start = performance.now();
-    
-    return new Promise((resolve, reject) => {
-        // Start a read stream on file
-        const stream = fs.createReadStream(filepath)
-            // Use event-stream module to break up every stream chunk into a line
-            .pipe(es.split())
-            // Iterate through every line in the file
-            .pipe(es.mapSync(async (line) => {
-        
-                // Pause the readstream
-                stream.pause();
-
-                // Perform processing for this line
-                await lineProcessingFunction(line);
-        
-                // Resume the readstream to get the next line
-                stream.resume();
-            })
-            .on("error", function(err){
-                reject(err);
-            })
-            // Finished parsing whole file; do post-processing here
-            .on("end", function(){
-                const end = performance.now();
-                logger.upload(logger.getLeanLevel(), `\nFinished parsing lines. Total time taken: ${(end - start).toFixed(2)}ms.`);
-                resolve();
-            })
-        );
-    });
-}
 
 async function copyFile(sourceFilePath, destFilePath) {
     const destDirPath = path.dirname(destFilePath);
