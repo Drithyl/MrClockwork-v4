@@ -1,9 +1,12 @@
 const fs = require("fs");
 const path = require("path");
 const log = require("../../logger.js");
+const { isString } = require("../../asserter.js");
 const { parseFileByLines } = require("../../utilities/file-utilities.js");
 
 const MAP_TERRAIN_FILE_TAGS = require("../../json/dom6_map_terrain_file_tags.json");
+const COMMAND_TAG_CAPTURE_REGEXP = new RegExp(/(#\w+)(\s+\w*)?/);
+const ASSET_PATH_CAPTURE_REGEXP = new RegExp(/#\w+\s+"?(.+\.\w+)"?/);
 
 
 class DominionsFile {
@@ -32,50 +35,65 @@ class DominionsMetadataFile extends DominionsFile {
             return;
         }
 
-        const command = new DominionsCommand(line);
+        console.log(`${this.filename} - parsing next tag...`);
 
-        if (command.tag === "#version") {
-            const versionMatch = /#version\s+(\d\.?\d*)/.exec(command.string);
-
-            if (versionMatch != null && versionMatch[1] != null){
-                this.version = versionMatch[1];
+        try {
+            const command = new DominionsCommand(line);
+    
+            if (command.tag === "#version") {
+                const versionMatch = /#version\s+(\d\.?\d*)/.exec(command.string);
+    
+                if (versionMatch != null && versionMatch[1] != null){
+                    this.version = versionMatch[1];
+                }
+    
+                else {
+                    log.general(log.getLeanLevel(), `#version tag for ${this.filename} could not be parsed: "${command.string}"`);
+                }
             }
-
-            else {
-                log.general(log.getLeanLevel(), `#version tag for ${this.filename} could not be parsed: "${command.string}"`);
+    
+            else if (command.isAssetTag() === true) {
+                const assetPath = path.join(this.dirPath, command.asset);
+    
+                if (fs.existsSync(assetPath) === true) {
+                    this.dependencies.add(assetPath);
+                }
             }
         }
 
-        else if (command.isAssetTag() === true) {
-            const assetPath = path.join(this.dirPath, command.asset);
-
-            if (fs.existsSync(assetPath) === true) {
-                this.dependencies.add(assetPath);
-            }
+        catch(error) {
+            throw new Error(`${this.filename} - failed parsing line "${line}" with the following error: ${error.message}`);
         }
     }
 }
 
 class DominionsCommand {
     constructor(parsedData) {
-        if (DominionsCommand.isDominionsCommand(parsedData) === false) {
-            throw new Error(`Expected DominionsCommand to be a string starting with #`);
+        this.string = parsedData.trim();
+
+        const commandTagMatch = COMMAND_TAG_CAPTURE_REGEXP.exec(this.string);
+        const assetPathMatch = ASSET_PATH_CAPTURE_REGEXP.exec(this.string);
+
+        if (commandTagMatch != null && commandTagMatch[1] != null) {
+            this.tag = commandTagMatch[1];
+            console.log(`\tParsed tag: "${this.tag}"`);
         }
 
-        this.string = parsedData.trim();
-        
-        const commandTagMatch = new RegExp(/(#\w+)(\s+\w*)?/).exec(this.string);
-        const assetPathMatch = new RegExp(/#\w+\s+"?(.+\.\w+)"?/).exec(this.string);
-
-        this.tag = commandTagMatch[1];
+        else throw new Error(`Parsing tag failed in line: "${this.string}"`);
 
         if (assetPathMatch != null && assetPathMatch[1] != null) {
             this.asset = path.join(assetPathMatch[1]);
+            console.log(`\tParsed asset path: "${this.asset}"`);
         }
     }
 
     static isDominionsCommand(parsedLine) {
-        return typeof parsedLine === "string" && parsedLine.trim()[0] === "#";
+        if (isString(parsedLine) === false) {
+            return false;
+        }
+
+        const commandTagMatch = COMMAND_TAG_CAPTURE_REGEXP.exec(parsedLine.trim());
+        return commandTagMatch != null && commandTagMatch[1] != null;
     }
 
     isAssetTag() {
