@@ -63,9 +63,9 @@ module.exports.cleanUnusedMaps = async (force = false) =>
     const dom6MapsInUse = _getListOfMapsInUse(config.dom6GameTypeName);
     const dom5Results = await _cleanUnusedFiles(dom5MapsInUse, DOM5_MAP_PATH, force);
     const dom6Results = await _cleanUnusedFiles(dom6MapsInUse, DOM6_MAP_PATH, force);
-    log.general(log.getLeanLevel(), `Dom5 map cleaning finished. Cleaned ${dom5Results.length} map files.`);
-    log.general(log.getLeanLevel(), `Dom6 map cleaning finished. Cleaned ${dom6Results.length} map files.`);
-    return [...dom5Results, ...dom6Results];
+    log.general(log.getLeanLevel(), `Dom5 map cleaning finished. Cleaned ${dom5Results.deletedFiles.length} map files.`);
+    log.general(log.getLeanLevel(), `Dom6 map cleaning finished. Cleaned ${dom6Results.deletedFiles.length} map files.`);
+    return _formatResults(dom5Results, dom6Results);
 };
 
 module.exports.cleanUnusedMods = async (force = false) =>
@@ -76,7 +76,7 @@ module.exports.cleanUnusedMods = async (force = false) =>
     const dom6Results = await _cleanUnusedFiles(dom6ModsInUse, DOM6_MOD_PATH, force);
     log.general(log.getLeanLevel(), `Dom5 mod cleaning finished. Cleaned ${dom5Results.length} mod files.`);
     log.general(log.getLeanLevel(), `Dom6 mod cleaning finished. Cleaned ${dom6Results.length} mod files.`);
-    return [...dom5Results, ...dom6Results];
+    return _formatResults(dom5Results, dom6Results);
 };
 
 
@@ -156,9 +156,7 @@ async function _cleanUnusedFiles(filesInUse, dirPath, force = false)
     }
 
     const existingFiles = await rw.walkDir(dirPath);
-    const existingFilesSet = existingFiles;
-    const usedFilesSet = allDependenciesInUse;
-    const unusedFiles = existingFilesSet.filter(x => !usedFilesSet.includes(x));
+    const unusedFiles = existingFiles.filter(x => !allDependenciesInUse.includes(x));
 
     for (const unusedFile of unusedFiles) {
         try {
@@ -175,5 +173,28 @@ async function _cleanUnusedFiles(filesInUse, dirPath, force = false)
         }
     }
 
-    return deletedFiles;
+    return {
+        existingFiles,
+        usedFiles: allDependenciesInUse,
+        unusedFiles,
+        deletedFiles,
+    };
+}
+
+function _formatResults(dom5Results, dom6Results) {
+    const existingFiles = [...(dom5Results?.existingFiles || []), ...(dom6Results?.existingFiles || [])];
+    const usedFiles = [...(dom5Results?.usedFiles || []), ...(dom6Results?.usedFiles || [])];
+    const unusedFiles = [...(dom5Results?.unusedFiles || []), ...(dom6Results?.unusedFiles || [])];
+    const deletedFiles = [...(dom5Results?.deletedFiles || []), ...(dom6Results?.deletedFiles || [])];
+
+    return {
+        totalExistingFiles: existingFiles.length,
+        totalUsedFiles: usedFiles.length,
+        totalUnusedFiles: unusedFiles.length,
+        totalDeletedFiles: deletedFiles.length,
+        existingFiles,
+        usedFiles,
+        unusedFiles,
+        deletedFiles
+    };
 }

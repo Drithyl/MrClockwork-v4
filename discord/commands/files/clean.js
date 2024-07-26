@@ -45,20 +45,26 @@ async function behaviour(commandContext)
     const subcommandName = commandContext.options.getSubcommand();
     const shouldDeleteFiles = commandContext.options.getBoolean(FORCE_OPTION_NAME);
 
-    const unusedFilesList = await cleanUnusedFiles(subcommandName, shouldDeleteFiles);
-    const unusedFilesStringList = unusedFilesList.join("\n");
+    const results = await cleanUnusedFiles(subcommandName, shouldDeleteFiles);
+    const resultsJSON = JSON.stringify(results, null, 2);
 
-    const payload = new MessagePayload(`A total of ${unusedFilesList.length} related files were deleted.`);
-    payload.setAttachment("deleted_files.txt", Buffer.from(unusedFilesStringList, "utf8"));
+    const payload = new MessagePayload(`A total of ${results.deletedFiles.length} related files were deleted.`);
+    payload.setAttachment("deleted_files.json", Buffer.from(resultsJSON, "utf8"));
     
     return commandContext.respondToCommand(payload);
 }
 
 function cleanUnusedFiles(commandName, shouldDeleteFiles)
 {
-    if (commandName === MAPS_SUBCOMMAND_NAME)
+    if (commandName === MAPS_SUBCOMMAND_NAME) {
         return cleaner.cleanUnusedMaps(shouldDeleteFiles);
+    }
 
-    else if (commandName === MODS_SUBCOMMAND_NAME)
+    else if (commandName === MODS_SUBCOMMAND_NAME) {
         return cleaner.cleanUnusedMods(shouldDeleteFiles);
+    }
+
+    else {
+        throw new Error(`Could not find the right subcommand to execute; got ${commandName}`);
+    }
 }
