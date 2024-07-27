@@ -146,7 +146,7 @@ class DominionsMapFile extends DominionsMetadataFile {
             else return regexp += `(${tag})`;
         }, '');
 
-        const relatedTerrainFileRegExp = new RegExp(`^${this.name}_(${terrainTagRegExp})\\.tga$`, 'i');
+        const relatedTerrainFileRegExp = new RegExp(`^${this.name}_(${terrainTagRegExp})\\.(tga|png|d6m)$`, 'i');
         const terrainFiles = filesInDir.filter((filename) => {
             return relatedTerrainFileRegExp.test(filename) === true;
         });
