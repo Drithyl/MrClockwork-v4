@@ -129,7 +129,9 @@ class DominionsMapFile extends DominionsMetadataFile {
                 await planeFile.loadDependencies();
     
                 this.extraPlanes.push(planeFile);
-                this.dependencies.add(planeFile.path, ...Array.from(planeFile.dependencies));
+
+                // Add this file and its dependencies to the set of all dependencies
+                [planeFile.path, ...Array.from(planeFile.dependencies)].forEach(d => this.dependencies.add(d));
             }
         }
     }
