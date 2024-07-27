@@ -30,7 +30,7 @@ module.exports = async function dissectMod(readModDirPath, targetBaseModsDir) {
 
         const dmFilepath = path.resolve(readModDirPath, filename);
         const dominionsModFile = new DominionsModFile(dmFilepath);
-        const dependencies = await dominionsModFile.parseDependencies();
+        const dependencies = await dominionsModFile.loadDependencies();
 
         resultData.totalFiles += dependencies.size;
         logger.upload(logger.getLeanLevel(), `Found ${dependencies.size} dependencies for ${filename}\n`);
