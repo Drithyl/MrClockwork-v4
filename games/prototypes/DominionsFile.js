@@ -111,8 +111,6 @@ class DominionsMapFile extends DominionsMetadataFile {
         await this.loadPlaneFileDependencies();
         await this.loadTerrainFileDependencies();
         await parseFileByLines(this.path, (line) => this.processLine(line));
-
-        this.dependencies.add(this.path);
         return this.dependencies;
     }
 
@@ -131,7 +129,7 @@ class DominionsMapFile extends DominionsMetadataFile {
                 await planeFile.loadDependencies();
     
                 this.extraPlanes.push(planeFile);
-                this.dependencies.add(...Array.from(planeFile.dependencies));
+                this.dependencies.add(planeFile.path, ...Array.from(planeFile.dependencies));
             }
         }
     }
@@ -166,7 +164,6 @@ class DominionsPlaneFile extends DominionsMapFile {
     async loadDependencies() {
         await this.loadTerrainFileDependencies();
         await parseFileByLines(this.path, (line) => this.processLine(line));
-        this.dependencies.add(this.path);
     }
 }
 
@@ -177,7 +174,6 @@ class DominionsModFile extends DominionsMetadataFile {
 
     async loadDependencies() {
         await parseFileByLines(this.path, (line) => this.processLine(line));
-        this.dependencies.add(this.path);
         return this.dependencies;
     }
 }

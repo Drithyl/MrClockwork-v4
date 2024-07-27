@@ -152,7 +152,7 @@ async function _cleanUnusedFiles(filesInUse, dirPath, force = false)
         log.general(log.getLeanLevel(), `Searching all dependencies of ${domFile.filename}...`);
         const dependencies = await domFile.loadDependencies();
         log.general(log.getLeanLevel(), `Found ${dependencies.size} related files`);
-        allDependenciesInUse.add(...Array.from(dependencies));
+        allDependenciesInUse.add(domFile.path, ...Array.from(dependencies));
     }
 
     const usedFiles = Array.from(allDependenciesInUse);
