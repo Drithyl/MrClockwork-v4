@@ -1,12 +1,22 @@
 [
     "border",
-    "winter",
-    "forest",
-    "waste",
     "farm",
-    "swamp",
+    "farmw",
+    "forest",
+    "forestw",
     "highland",
-    "plain",
+    "highlandw",
     "kelp",
-    "water"
+    "kelpw",
+    "plain",
+    "plainw",
+    "sea",
+    "seaw",
+    "swamp",
+    "swampw",
+    "waste",
+    "wastew",
+    "water",
+    "waterw",
+    "winter"
 ]
