@@ -10,9 +10,6 @@ const assert = require("../asserter.js");
 const GAME_DATA_DIR = path.resolve(config.dataPath, config.gameDataFolder);
 const PLAYER_DATA_DIR = path.resolve(config.dataPath, config.playerDataFolder);
 
-if (Array.prototype.forAllPromises == null)
-    require("../helper_functions.js").extendPrototypes();
-
 /**
  * The patcher module will check the games' data path for game files that seem
  * like games from the v3 bot. If it finds any, it will patch them up to be
@@ -26,9 +23,8 @@ module.exports = async () =>
     const failed = [];
     const success = [];
     const filePaths = await rw.walkDir(GAME_DATA_DIR);
-    
-    await filePaths.forEachPromise(async (dataPath, i, nextPromise) =>
-    {
+
+    for (const dataPath of filePaths) {
         let jsonData;
         let patchedJson;
 
@@ -36,14 +32,14 @@ module.exports = async () =>
         const stat = await fsp.stat(dataPath);
 
         if (stat.isDirectory() === true || path.extname(dataPath) !== ".json")
-            return nextPromise();
+            continue;
 
         
         log.general(log.getLeanLevel(), `Game data found, reading json...`);
         jsonData = require(dataPath);
 
         if (jsonData.version === "4" || jsonData.needsPatching === true)
-            return nextPromise();
+            continue;
 
         log.general(log.getLeanLevel(), `Read v3 game data: ${jsonData.name}; patching it to v4...`);
         
@@ -53,17 +49,15 @@ module.exports = async () =>
             await fsp.writeFile(dataPath, rw.JSONStringify(patchedJson));
             log.general(log.getLeanLevel(), `${jsonData.name} was patched successfully.`);
             success.push(jsonData.name);
-            return nextPromise();
+            continue;
         }
 
         catch(err)
         {
             log.error(log.getLeanLevel(), `Error while patching ${jsonData.name}:`, err);
             failed.push(`${jsonData.name}:${"".width(34)}${err.message}`);
-            return nextPromise();
         }
-    });
-
+    }
 
     log.general(log.getLeanLevel(), `\n\nTotal games:\t${failed.length + success.length}\n\nSuccessful:\t${success.length}\nFailed:\t\t${failed.length}`);
 
@@ -134,13 +128,14 @@ async function _patchV3Game(jsonData)
         if (assert.isObject(jsonData.players) === false)
             return v4Data;
 
-        await jsonData.players.forAllPromises(async (oldPlayerData, playerId) =>
-        {
+        for (const playerId of Object.keys(jsonData)) {
+            const oldPlayerData = jsonData[playerId];
+
             await _patchPlayerData(oldPlayerData, playerId);
 
             if (v4Data.playerData.includes(playerId) === false)
                 v4Data.playerData.push(playerId);
-        });
+        }
 
         return v4Data;
     }

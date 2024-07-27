@@ -26,14 +26,11 @@ function GameSettings(parentGame)
         _settingObjectsArray.forEach((settingObject) => fnToCallOnSettings(settingObject, settingObject.getKey()));
     };
 
-    this.forEachSettingPromise = (fnToCallOnSettings) =>
+    this.forEachSettingPromise = async (fnToCallOnSettings) =>
     {
-        return _settingObjectsArray.forEachPromise((settingObject, index, nextPromise) =>
-        {
-            return Promise.resolve(fnToCallOnSettings(settingObject, settingObject.getKey()))
-            .then(() => nextPromise())
-            .catch((err) => Promise.reject(err));
-        });
+        for (const settingObject of _settingObjectsArray) {
+            await fnToCallOnSettings(settingObject, settingObject.getKey());
+        }
     };
 
     this.forEachPublicSetting = (fnToCallOnSettings) =>

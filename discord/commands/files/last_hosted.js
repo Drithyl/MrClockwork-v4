@@ -11,7 +11,7 @@ module.exports = {
 	execute: behaviour
 };
 
-function behaviour(commandContext)
+async function behaviour(commandContext)
 {
     const guild = commandContext.guildWrapper;
     const sortedGames = _getGamesSortedByLastHosted();
@@ -23,13 +23,11 @@ function behaviour(commandContext)
         return commandContext.respondToCommand(new MessagePayload(stringList, _printAllSortedGames(sortedGames), true, "```"));
         
     sortedGuildGamesEmbeds = _embedSortedGuildGames(sortedGames, guild);
-    
-    return sortedGuildGamesEmbeds.forEachPromise(async (embed, i, nextPromise) => 
-    {
+
+    for (const embed of sortedGuildGamesEmbeds) {
         const payload = new MessagePayload(stringList).setEmbed(embed);
         await commandContext.respondToCommand(payload);
-        return await nextPromise();
-    });
+    }
 }
 
 function _getGamesSortedByLastHosted()

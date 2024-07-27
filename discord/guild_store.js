@@ -118,12 +118,13 @@ module.exports.forEachGuild = (fnToCall) =>
     }
 };
 
-module.exports.forAllGuilds = (promiseToCall) =>
+module.exports.forAllGuilds = async (promiseToCall) =>
 {
-    return guildWrappers.forAllPromises((guildWrapper, index, arr) =>
-    {
-        return promiseToCall(guildWrapper, index, arr);
-    });
+    let index = 0;
+    for (const guildWrapper of guildWrappers) {
+        await promiseToCall(guildWrapper, index, guildWrappers);
+        index++;
+    }
 };
 
 module.exports.addGuild = (discordJsGuild) =>
@@ -280,20 +281,23 @@ exports.undeployBotOnGuild = (guildId) =>
     return Promise.resolve();
 };
 
-exports.updateHelpChannels = (payload, idOfGuildToUpdate = "") =>
+exports.updateHelpChannels = async (payload, idOfGuildToUpdate = "") =>
 {
     let guildToUpdate = this.getGuildWrapperById(idOfGuildToUpdate);
 
     if (guildToUpdate != null)
         return guildToUpdate.updateHelpChannel(payload);
 
-    return guildWrappers.forAllPromises((wrapper) =>
-    {
+    for (const wrapper of guildWrappers) {
         log.general(log.getNormalLevel(), `Updating guild ${wrapper.getName()}...`);
 
-        return wrapper.updateHelpChannel(payload)
-        .then(() => log.general(log.getNormalLevel(), `${wrapper.getName()} help channel updated.`))
-        .catch((err) => log.error(log.getLeanLevel(), `ERROR UPDATING ${wrapper.getName()} HELP CHANNEL`, err));
-
-    }, false);
+        try {
+            await wrapper.updateHelpChannel(payload);
+            log.general(log.getNormalLevel(), `${wrapper.getName()} help channel updated.`);
+        }
+        
+        catch(err) {
+            log.error(log.getLeanLevel(), `ERROR UPDATING ${wrapper.getName()} HELP CHANNEL`, err);
+        }
+    }
 };

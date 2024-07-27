@@ -1,9 +1,9 @@
 
 const fs = require("fs");
+const path = require("path");
 const fsp = require("fs").promises;
 const log = require("../logger.js");
 const assert = require("../asserter.js");
-const rw = require("../reader_writer.js");
 const config = require("../config/config.json");
 
 
@@ -24,7 +24,7 @@ const TRUSTED_ROLE_ID_KEY = "trustedRoleId";
 
 module.exports.populateGuildDataStore = () =>
 {
-    const guildDataPath = `${config.dataPath}/${config.guildDataFolder}`;
+    const guildDataPath = path.join(config.dataPath, config.guildDataFolder);
     log.general(log.getNormalLevel(), "Populating guild data store...");
 
     if (fs.existsSync(guildDataPath) === false)
@@ -35,14 +35,15 @@ module.exports.populateGuildDataStore = () =>
 
     else
     {
-        let guildDirs = rw.getAllDirFilenamesSync(guildDataPath);
+        let guildDirs = fs.readdirSync(guildDataPath);
 
         guildDirs.forEach((dirName) =>
         {
             let jsonData;
             let parsedData;
+            const dataPath = path.join(guildDataPath, dirName, "data.json");
 
-            if (fs.existsSync(`${guildDataPath}/${dirName}/data.json`) === false)
+            if (fs.existsSync(dataPath) === false)
             {
                 log.general(log.getLeanLevel(), `Guild data dir exists for ${dirName}, but no data found; probably a recently added guild.`);
                 loadedGuildData[dirName] = {};
@@ -50,7 +51,7 @@ module.exports.populateGuildDataStore = () =>
 
             else
             {
-                jsonData = fs.readFileSync(`${guildDataPath}/${dirName}/data.json`);
+                jsonData = fs.readFileSync(dataPath);
                 parsedData = JSON.parse(jsonData);
 
                 loadedGuildData[dirName] = parsedData;
@@ -112,32 +113,22 @@ module.exports.createGuildData = (guildWrapper) =>
     return guildData;
 };
 
-module.exports.removeGuildData = (guildId) =>
+module.exports.removeGuildData = async (guildId) =>
 {
-    const pathToGuildData = `${config.dataPath}/${config.guildDataFolder}`;
+    const pathToGuildDataDir = path.join(config.dataPath, config.guildDataFolder);
+    const pathToGuildDataSubDir = path.join(pathToGuildDataDir, guildId);
+    const pathToGuildData = path.join(pathToGuildDataSubDir, "data.json");
 
     log.general(log.getNormalLevel(), "Removing guild data...");
     delete loadedGuildData[guildId];
 
-    return Promise.resolve()
-    .then(() =>
-    {
-        if (fs.existsSync(`${pathToGuildData}/${guildId}/data.json`) === true)
-            return fsp.unlink(`${pathToGuildData}/${guildId}/data.json`);
+    if (fs.existsSync(pathToGuildData) === true)
+        await fsp.unlink(pathToGuildData);
 
-        else return Promise.resolve();
-    })
-    .then(() => 
-    {
-        if (fs.existsSync(`${pathToGuildData}/${guildId}`) === true)
-            return fsp.rmdir(`${pathToGuildData}/${guildId}`);
+    if (fs.existsSync(pathToGuildDataSubDir) === true)
+        await fsp.rmdir(pathToGuildDataSubDir);
 
-        else return Promise.resolve();
-    })
-    .then(() => 
-    {
-        log.general(log.getNormalLevel(), `Data for guild ${guildId} removed.`);
-    });
+    log.general(log.getNormalLevel(), `Data for guild ${guildId} removed.`);
 };
 
 module.exports.getNewsChannelId = (guildId) => _getFieldId(guildId, NEWS_CHANNEL_ID_KEY);
@@ -217,21 +208,17 @@ function _setFieldId(guildId, fieldKey, id)
     return _saveGuildData(guildId);
 }
 
-function _saveGuildData(guildId)
+async function _saveGuildData(guildId)
 {
-    const pathToGuildData = `${config.dataPath}/${config.guildDataFolder}`;
+    const pathToGuildDataDir = path.join(config.dataPath, config.guildDataFolder);
+    const pathToGuildDataSubDir = path.join(pathToGuildDataDir, guildId);
+    const pathToGuildData = path.join(pathToGuildDataSubDir, "data.json");
     const stringifiedData = JSON.stringify(loadedGuildData[guildId], null, 2);
 
-    return Promise.resolve()
-    .then(() =>
-    {
-        if (fs.existsSync(`${pathToGuildData}/${guildId}`) === false)
-        {
-            log.general(log.getVerboseLevel(), `Directory for guild data does not exist, creating it.`);
-            return fsp.mkdir(`${pathToGuildData}/${guildId}`);
-        }
+    if (fs.existsSync(pathToGuildDataSubDir) === false) {
+        log.general(log.getVerboseLevel(), `Directory for guild data does not exist, creating it.`);
+        await fsp.mkdir(`${pathToGuildData}/${guildId}`);
+    }
 
-        else return Promise.resolve();
-    })
-    .then(() => fsp.writeFile(`${pathToGuildData}/${guildId}/data.json`, stringifiedData));
+    await fsp.writeFile(pathToGuildData, stringifiedData);
 }

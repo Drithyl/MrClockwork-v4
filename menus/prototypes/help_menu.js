@@ -9,20 +9,16 @@ function HelpMenu(userWrapper)
     const _userWrapper = userWrapper;
     const _helpIntro = _composeHelpIntro();
     
-    this.startMenu = () =>
+    this.startMenu = async () =>
     {
-        return _userWrapper.sendMessage(new MessagePayload(_helpIntro))
-        .then((messageWrapper) => 
-        {
-            return helpMenuEntries.forEachPromise((entry, i, nextPromise) =>
-            {
-                if (entry.EMOJI == null)
-                    return nextPromise();
+        const messageWrapper = await _userWrapper.sendMessage(new MessagePayload(_helpIntro));
 
-                return messageWrapper.react(entry.EMOJI)
-                .then(() => nextPromise());
-            });
-        });
+        for (const entry of helpMenuEntries) {
+            if (entry.EMOJI == null)
+                continue;
+
+            await messageWrapper.react(entry.EMOJI);
+        }
     };
 
     this.handleReaction = (emoji, reactedMessageWrapper) =>

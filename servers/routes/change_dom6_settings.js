@@ -9,7 +9,7 @@ const gameStore = require("../../games/ongoing_games_store.js");
 
 exports.set = (expressApp) => 
 {
-    expressApp.get("/change_dom6_settings", (req, res) =>
+    expressApp.get("/change_dom6_settings", async (req, res) =>
     {
         var ongoingGames;
         const organizedGames = {};
@@ -24,31 +24,30 @@ exports.set = (expressApp) =>
         const sessionId = session.getSessionId();
         ongoingGames = gameStore.getGamesWhereUserIsOrganizer(userId);
 
-        return ongoingGames.forAllPromises((game) =>
-        {
-            var hostServer;
-            var gameSettings;
+        try {
+            for (const game of ongoingGames) {
+                var hostServer;
+                var gameSettings;
 
-            hostServer = game.getServer();
+                hostServer = game.getServer();
 
-            if (asserter.isDom5GameType(game.getType()) === true)
-                return;
+                if (asserter.isDom5GameType(game.getType()) === true)
+                    return;
 
-            if (hostServer.isOnline() === false)
-                return;
+                if (hostServer.isOnline() === false)
+                    return;
 
-            if (game.hasGameStarted() === true)
-                return;
+                if (game.hasGameStarted() === true)
+                    return;
 
-            gameSettings = game.getSettingsObject();
-                
-            organizedGames[game.getName()] = { 
-                serverName: hostServer.getName(), 
-                settings: gameSettings.toEjsData()
-            };
-        })
-        .then(async () =>
-        {
+                gameSettings = game.getSettingsObject();
+                    
+                organizedGames[game.getName()] = { 
+                    serverName: hostServer.getName(), 
+                    settings: gameSettings.toEjsData()
+                };
+            }
+
             const maps = await hostServerStore.getMapsWithProvCount(config.dom6GameTypeName);
             const mods = await hostServerStore.getMods(config.dom6GameTypeName);
 
@@ -61,11 +60,14 @@ exports.set = (expressApp) =>
                 maps,
                 mods
             }));
-        })
-        .catch((err) => res.render("results_screen.ejs", { result: `Error occurred while fetching dom6 game's data: ${err.message}` }));
+        }
+        
+        catch(err) {
+            res.render("results_screen.ejs", { result: `Error occurred while fetching dom6 game's data: ${err.message}` });
+        }
     });
 
-    expressApp.post("/change_dom6_settings", (req, res) =>
+    expressApp.post("/change_dom6_settings", async (req, res) =>
     {
         var game;
         var settingsObject;
@@ -89,34 +91,33 @@ exports.set = (expressApp) =>
 
         _formatPostValues(values);
 
-        return changeableSettingsArray.forAllPromises((setting) =>
-        {
-            var key = setting.getKey();
-            var loadedValue = values[key];
-
-            if (loadedValue == undefined)
-                return log.error(log.getLeanLevel(), `Change settings: Expected value for setting ${key} is undefined.`);
-
-            return setting.setValue(loadedValue);
-        })
-        .then(() =>
-        {
+        try {
+            for (const setting of changeableSettingsArray) {
+                var key = setting.getKey();
+                var loadedValue = values[key];
+    
+                if (loadedValue == undefined)
+                    return log.error(log.getLeanLevel(), `Change settings: Expected value for setting ${key} is undefined.`);
+    
+                await setting.setValue(loadedValue);
+            }
+    
             session.storeSessionData("Settings were changed.");
             session.redirectTo("result", res);
             
             // Delete ftherlnd so that some settings that get
             // encoded in it (like maps) are cleared properly
-            return game.overwriteSettings();
-        })
-        .then(() => game.save())
-        .then(() => game.kill())
-        .then(() => game.launch())
-        .catch((err) =>
-        {
+            await game.overwriteSettings();
+            await game.save();
+            await game.kill();
+            await game.launch();
+        }
+        
+        catch(err) {
             log.error(log.getLeanLevel(), `CHANGE GAME SETTINGS ERROR:`, err);
             session.storeSessionData(`Error occurred while changing dom6 game settings: ${err.message}`);
             session.redirectTo("result", res);
-        });
+        }
     });
 };
 

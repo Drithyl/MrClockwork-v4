@@ -1,6 +1,7 @@
 
 
 const path = require("path");
+const fsp = require("fs").promises;
 const log = require("../logger.js");
 const assert = require("../asserter.js");
 const rw = require("../reader_writer.js");
@@ -13,38 +14,35 @@ const activeMenuStore = require("../menus/active_menu_store.js");
 const _ongoingGamesByName = {};
 
 
-exports.loadAll = function()
+exports.loadAll = async function()
 {
     const pathToGameDataDir = path.resolve(config.dataPath, config.gameDataFolder);
     const gameDirNames = rw.getDirSubfolderNamesSync(pathToGameDataDir);
     const initializedGames = [];
     
-    return gameDirNames.forEachPromise((gameDirName, i, nextPromise) =>
+    const promises = gameDirNames.map(async (gameDirName, i) =>
     {
         const gameJSONDataPath = path.resolve(pathToGameDataDir, gameDirName, "data.json");
         log.general(log.getLeanLevel(), `Loading ${gameDirName} (${i+1}/${gameDirNames.length})...`);
         
-        return gameFactory.loadGame(gameJSONDataPath)
-        .then((loadedGame) => 
-        {
+        try {
+            const loadedGame = await gameFactory.loadGame(gameJSONDataPath);
             log.general(log.getLeanLevel(), `${gameDirName} loaded, adding to store (${i+1}/${gameDirNames.length})...`);
             _ongoingGamesByName[loadedGame.getName()] = loadedGame;
             initializedGames.push(loadedGame);
-            return nextPromise();
-        })
-        .catch((err) => 
+        }
+
+        catch(err)
         {
             log.error(log.getLeanLevel(), `Error loading game (${i}/${gameDirNames.length})`, err);
-            return nextPromise();
-        });
-    })
-    .then(() => 
-    {
-        log.general(log.getLeanLevel(), `All games loaded, starting monitoring...`);
-        gameMonitor.monitorDomGames(initializedGames);
-        log.general(log.getLeanLevel(), `Monitoring started!`);
-        return Promise.resolve();
+        }
     });
+
+    await Promise.allSettled(promises);
+
+    log.general(log.getLeanLevel(), `All games loaded, starting monitoring...`);
+    gameMonitor.monitorDomGames(initializedGames);
+    log.general(log.getLeanLevel(), `Monitoring started!`);
 };
 
 exports.getGameDataForHostServer = function(hostServer)
@@ -88,7 +86,7 @@ exports.addOngoingGame = function(game)
     gameMonitor.monitorDomGame(game);
 };
 
-exports.deleteGame = function(gameName)
+exports.deleteGame = async function(gameName)
 {
     const game = exports.getOngoingGameByName(gameName);
     const pathToBotData = `${config.dataPath}/${config.gameDataFolder}/${gameName}`;
@@ -99,24 +97,24 @@ exports.deleteGame = function(gameName)
     if (game != null)
         gameMonitor.stopMonitoringDomGame(game);
 
-    return rw.deleteDir(pathToBotData)
-    .then(() =>
-    {
+    try {
+        await fsp.rm(pathToBotData, { recursive: true} );
+
         if (game == null)
         {
             log.general(log.getLeanLevel(), `Game ${gameName} to delete is already null on the store`);
             return Promise.resolve();
         }
-
+    
         delete _ongoingGamesByName[gameName];
         log.general(log.getNormalLevel(), `Deleted ${gameName}'s bot data.`);
-        return Promise.resolve();
-    })
-    .catch((err) => 
+    }
+    
+    catch(err)
     {
         log.error(log.getLeanLevel(), `ERROR: Could not remove ${gameName} from the store`, err);
-        return Promise.reject(err);
-    });
+        throw err;
+    }
 };
 
 exports.getOngoingGameByName = function(nameToFind) 

@@ -13,34 +13,6 @@ module.exports.copyFile = function(source, target)
     .catch((err) => Promise.reject(err));
 };
 
-module.exports.copyDir = function(source, target, deepCopy, extensionFilter = null)
-{
-	if (fs.existsSync(source) === false)
-		return Promise.reject(new Error(`The source path ${source} does not exist.`));
-
-	return fsp.readdir(source)
-	.then((filenames) => 
-	{
-		return filenames.forAllPromises((filename) =>
-		{
-			return Promise.resolve()
-			.then(() =>
-			{
-				//if there's a directory inside our directory and no extension filter, copy its contents too
-				if (deepCopy === true && fs.lstatSync(`${source}/${filename}`).isDirectory() === true)
-					return exports.copyDir(`${source}/${filename}`, `${target}/${filename}`, deepCopy, extensionFilter);
-
-				else if (_doesExtensionMatchFilter(filename, extensionFilter) === true)
-					return exports.copyFile(`${source}/${filename}`, `${target}/${filename}`);
-
-				//ignore file and loop
-				else return Promise.resolve();
-			});
-		});
-    })
-    .catch((err) => Promise.reject(err));
-};
-
 module.exports.walkDir = function(dir)
 {
 	const results = [];
@@ -96,57 +68,14 @@ module.exports.walkDir = function(dir)
 	}
 };
 
-module.exports.deleteDir = function(path)
-{
-    if (fs.existsSync(path) === false)
-	{
-		log.general(log.getLeanLevel(), `deleteDir(): Dir does not exist, no need to delete`, path);
-		return Promise.resolve();
-	}
-
-	log.general(log.getLeanLevel(), `Deleting dir at path ${path}...`);
-        
-    return fsp.readdir(path)
-    .then((filenames) =>
-    {
-		log.general(log.getLeanLevel(), `Filenames read, iterating through...`);
-        return filenames.forAllPromises((filename) =>
-        {
-            const filepath = `${path}/${filename}`;
-			log.general(log.getLeanLevel(), `Deleting file at ${filepath}...`);
-
-            return fsp.stat(filepath)
-            .then((stats) =>
-            {
-                if (stats.isDirectory() === true)
-                    return exports.deleteDir(filepath);
-
-                return fsp.unlink(filepath);
-            })
-            .then(() => 
-			{
-				log.general(log.getLeanLevel(), `File deleted.`);
-				return Promise.resolve();
-			})
-			.catch((err) => Promise.reject(err));
-        });
-    })
-    .then(() => fsp.rmdir(path))
-    .catch((err) => 
-	{
-		log.error(log.getLeanLevel(), `deleteDir() ERROR`, err);
-		return Promise.reject(err)
-	});
-};
-
 //If the dir path up to a filename does not exist, this will create it
-module.exports.checkAndCreateFilePath = function(filePath)
+module.exports.checkAndCreateFilePath = async function(filePath)
 {
     let directories = [];
     let currentPath = path.dirname(filePath);
 
 	if (fs.existsSync(currentPath) === true)
-		return Promise.resolve();
+		return;
 
     while (currentPath !== path.dirname(currentPath))
     {
@@ -154,17 +83,12 @@ module.exports.checkAndCreateFilePath = function(filePath)
         currentPath = path.dirname(currentPath);
     }
 
-    return directories.forEachPromise((dir, index, nextPromise) =>
-    {
-        if (fs.existsSync(dir) === false)
-        {
-            return fsp.mkdir(dir)
-            .then(() => nextPromise());
-        }
-            
-        else return nextPromise();
-    })
-    .catch((err) => Promise.reject(err));
+	for (const dir of directories) {
+		if (fs.existsSync(dir) === false)
+		{
+			await fsp.mkdir(dir);
+		}
+	}
 };
 
 module.exports.getDirFilenames = async function(dirPath, extensionFilter = "")
@@ -186,21 +110,15 @@ module.exports.getDirFilenames = async function(dirPath, extensionFilter = "")
 	return readFilenames;
 };
 
-//gets an array with all the filenames inside a directory, folders or not
-exports.getAllDirFilenamesSync = (path) =>
-{
-	return fs.readdirSync(path, "utf8");
-};
-
 //gets an array with all the filenames inside a directory, NOT including folders
-exports.getOnlyDirFilenamesSync = (path) =>
+exports.getOnlyDirFilenamesSync = (dirPath) =>
 {
-	let filenames = exports.getAllDirFilenamesSync(path);
+	let filenames = fs.readdirSync(dirPath);
 	let onlyFilenames = [];
 	
 	filenames.forEach((filename) =>
 	{
-		let stat = fs.statSync(`${path}/${filename}`);
+		let stat = fs.statSync(`${dirPath}/${filename}`);
 		let isDirectory = stat.isDirectory();
 
 		if (isDirectory === false)
@@ -211,14 +129,14 @@ exports.getOnlyDirFilenamesSync = (path) =>
 };
 
 //gets an array with all the folder names inside a directory
-exports.getDirSubfolderNamesSync = (path) =>
+exports.getDirSubfolderNamesSync = (dirPath) =>
 {
-	let filenames = exports.getAllDirFilenamesSync(path);
+	let filenames = fs.readdirSync(dirPath);
 	let subfolderNames = [];
 	
 	filenames.forEach((filename) =>
 	{
-		let stat = fs.statSync(`${path}/${filename}`);
+		let stat = fs.statSync(path.join(dirPath, filename));
 		let isDirectory = stat.isDirectory();
 
 		if (isDirectory === true)
@@ -228,17 +146,17 @@ exports.getDirSubfolderNamesSync = (path) =>
 	return subfolderNames;
 };
 
-module.exports.append = (filePath, stringData) =>
+module.exports.append = async (filePath, stringData) =>
 {
 	const dirPath = filePath.replace(/\/.+$/, "");
 
 	if (fs.existsSync(dirPath) === false)
-		return Promise.reject(new Error(`Directory ${dirPath} does not exist.`));
+		throw new Error(`Directory ${dirPath} does not exist.`);
 
 	if (fs.existsSync(filePath) === false)
-		return fsp.writeFile(filePath, stringData);
+		await fsp.writeFile(filePath, stringData);
 		
-	else return fsp.appendFile(filePath, stringData);
+	else await fsp.appendFile(filePath, stringData);
 };
 
 //Stringify that prevents circular references taken from https://antony.fyi/pretty-printing-javascript-objects-as-json/

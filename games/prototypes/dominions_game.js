@@ -40,13 +40,12 @@ function DominionsGame(type)
         if (assert.isArray(nationArray) === false)
             return null;
 
-        await nationArray.forEachPromise(async (nation, i, nextPromise) =>
-        {
+        for (const nation of nationArray) {
             const ownerId = _gameObject.getPlayerIdControllingNationInGame(nation.filename);
             const data = _playerData[ownerId];
 
             if (data == null)
-                return nextPromise();
+                continue;
             
             try
             {
@@ -66,8 +65,7 @@ function DominionsGame(type)
 
             nation.owner = data.username;
             nation.ownerId = ownerId;
-            return nextPromise();
-        });
+        }
 
         return nationArray;
     };
@@ -168,12 +166,11 @@ function DominionsGame(type)
         });
     };
 
-    _gameObject.removeNationClaims = () =>
+    _gameObject.removeNationClaims = async () =>
     {
-        return _playerData.forAllPromises((playerData) =>
-        {
-            return playerData.file.removeControlOfAllNationsInGame(_gameObject.getName());
-        });
+        for (const data of _playerData) {
+            await data.file.removeControlOfAllNationsInGame(_gameObject.getName());
+        }
     };
 
     _gameObject.overwriteSettings = () => _gameObject.emitPromiseWithGameDataToServer("OVERWRITE_SETTINGS", null, 130000);
@@ -190,20 +187,23 @@ function DominionsGame(type)
         .then(() => _gameObject.emitPromiseWithGameDataToServer("DELETE_GAME", null, 130000));
     };
 
-    _gameObject.removeAllPlayerData = () =>
+    _gameObject.removeAllPlayerData = async () =>
     {
-        return _playerData.forAllPromises((playerData, playerId) =>
-        {
-            playerData.file.removeGameData(_gameObject.getName());
-            playerData.file.removeGamePreferences(_gameObject.getName());
-            log.general(log.getNormalLevel(), `Deleted ${playerData.username} (${playerId})'s ${_gameObject.getName()} data.`);
-            return playerData.file.save();
-        })
-        .catch((err) =>
+        try {
+            for (const playerId of Object.keys(_playerData)) {
+                const data = _playerData[playerId];
+                data.file.removeGameData(_gameObject.getName());
+                data.file.removeGamePreferences(_gameObject.getName());
+                log.general(log.getNormalLevel(), `Deleted ${data.username} (${playerId})'s ${_gameObject.getName()} data.`);
+                await data.file.save();
+            }
+        }
+
+        catch(err)
         {
             log.error(log.getLeanLevel(), `ERROR: Could not delete some of ${_gameObject.getName()}'s player's data`, err);
-            return Promise.reject(err);
-        });
+            throw err;
+        }
     };
 
     _gameObject.substitutePlayerControllingNation = (guildMemberWrapperOfNewPlayer, nationFilename) =>

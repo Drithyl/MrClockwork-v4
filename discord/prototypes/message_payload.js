@@ -91,8 +91,7 @@ function MessagePayload(header = "", content = "", splitContent = true, splitWra
     {
         let sentMessage;
 
-        await _contentArray.forEachPromise(async (contentChunk, i, nextPromise) =>
-        {
+        const promises = _contentArray.map(async (contentChunk, i) => {
             let payload = (i === 0) ? Object.assign(_payloadObject, { content: contentChunk }) : { content: contentChunk };
 
             if (options.ephemeral === true)
@@ -122,19 +121,16 @@ function MessagePayload(header = "", content = "", splitContent = true, splitWra
             }
 
             else throw new Error(`Invalid target for message payload.`);
-
-            return nextPromise();
         });
+
+        await Promise.allSettled(promises);
 
         if (sentMessage != null && options.pin === true && assert.isFunction(sentMessage.pin) === true)
             sentMessage.pin();
 
-
-        await _attachments.forEachPromise(async (attachment, i, nextPromise) => 
-        {
+        for (const attachment of _attachments) {
             await target.send({files: [ attachment ]});
-            return nextPromise();
-        });
+        }
 
         return new MessageWrapper(sentMessage);
     };

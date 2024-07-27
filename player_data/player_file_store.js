@@ -1,4 +1,5 @@
 
+const path = require("path");
 const fsp = require("fs").promises;
 const log = require("../logger.js");
 const asserter = require("../asserter.js");
@@ -9,32 +10,25 @@ const gameStore = require("../games/ongoing_games_store.js");
 const _playerFileStore = {};
 
 
-exports.populate = () =>
+exports.populate = async () =>
 {
-    return fsp.readdir(`${config.dataPath}/${config.playerDataFolder}`)
-    .then((filenames) =>
-    {
-        return filenames.forAllPromises((filename) =>
-        {
-            fsp.readFile(`${config.dataPath}/${config.playerDataFolder}/${filename}`, "utf8")
-            .then((fileData) =>
-            {
-                const parsedJSON = JSON.parse(fileData);
-                const playerFile = PlayerFile.loadFromJSON(parsedJSON);
-                _playerFileStore[playerFile.getId()] = playerFile;
-            })
-            .catch((err) => Promise.reject(err));
-        });
-    })
-    .catch((err) => Promise.reject(err));
+    const filenames = await fsp.readdir(`${config.dataPath}/${config.playerDataFolder}`);
+
+    for (const filename of filenames) {
+        const filePath = path.join(config.dataPath, config.playerDataFolder, filename);
+        const fileData = await fsp.readFile(filePath, "utf8");
+        const parsedJSON = JSON.parse(fileData);
+        const playerFile = PlayerFile.loadFromJSON(parsedJSON);
+        _playerFileStore[playerFile.getId()] = playerFile;
+    }
 };
 
-exports.clearObsoleteData = () =>
+exports.clearObsoleteData = async () =>
 {
-    return _playerFileStore.forAllPromises((playerFile, playerId) =>
-    {
-        let wasDataCleared = false;
+    for (const playerId of Object.keys(_playerFileStore)) {
+        const playerFile = _playerFileStore[playerId];
         const gameDataList = playerFile.getAllGameData();
+        let wasDataCleared = false;
 
         gameDataList.forEachItem((gameData, gameName) =>
         {
@@ -47,11 +41,16 @@ exports.clearObsoleteData = () =>
         });
 
         if (wasDataCleared === false)
-            return;
+            continue;
         
-        return exports.savePlayerFile(playerId)
-        .catch((err) => log.error(log.getLeanLevel(), `ERROR SAVING PRUNED PLAYER FILE ${playerId}`, err));
-    });
+        try {
+            await exports.savePlayerFile(playerId);
+        }
+        
+        catch(err) {
+            log.error(log.getLeanLevel(), `ERROR SAVING PRUNED PLAYER FILE ${playerId}`, err);
+        }
+    }
 };
 
 exports.addPlayerFile = (playerId) =>

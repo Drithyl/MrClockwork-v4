@@ -181,14 +181,13 @@ exports.getMapsWithProvCount = async (gameType) =>
         mapFilepaths = await exports.getDom6Mapfiles();
     }
 
-    await mapFilepaths.forAllPromises(async (mapfile) =>
-    {
-        const content = await fsp.readFile(mapfile.path, "utf-8");
-        const provs = parseProvinceCount(content, mapfile.name);
+    for (const mapFile of mapFilepaths) {
+        const content = await fsp.readFile(mapFile.path, "utf-8");
+        const provs = parseProvinceCount(content, mapFile.name);
 
         if (provs != null)
-            mapsWithProvinceCount.push(Object.assign(mapfile, provs));
-    });
+            mapsWithProvinceCount.push(Object.assign(mapFile, provs));
+    }
 
     // Sort map objects alphabetically by the filename
     mapsWithProvinceCount.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
