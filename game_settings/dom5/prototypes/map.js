@@ -21,6 +21,7 @@ function Map(parentGameObject)
     {
         return this.getValue();
     };
+    this.getValueWithDir = () => this.getValue();
     
     this.setValue = async (input) =>
     {

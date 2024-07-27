@@ -1,7 +1,8 @@
 const fs = require("fs");
+const fsp = fs.promises;
 const path = require("path");
 const log = require("../../logger.js");
-const { isString } = require("../../asserter.js");
+const { isString, isDom6GameType } = require("../../asserter.js");
 const { parseFileByLines } = require("../../utilities/file-utilities.js");
 
 const MAP_TERRAIN_FILE_TAGS = require("../../json/dom6_map_terrain_file_tags.json");
@@ -35,7 +36,7 @@ class DominionsMetadataFile extends DominionsFile {
             return;
         }
 
-        console.log(`${this.filename} - parsing next tag...`);
+        //console.log(`${this.filename} - parsing next tag...`);
 
         try {
             const command = new DominionsCommand(line);
@@ -76,14 +77,12 @@ class DominionsCommand {
 
         if (commandTagMatch != null && commandTagMatch[1] != null) {
             this.tag = commandTagMatch[1];
-            console.log(`\tParsed tag: "${this.tag}"`);
         }
 
         else throw new Error(`Parsing tag failed in line: "${this.string}"`);
 
         if (assetPathMatch != null && assetPathMatch[1] != null) {
             this.asset = path.join(assetPathMatch[1]);
-            console.log(`\tParsed asset path: "${this.asset}"`);
         }
     }
 
@@ -102,14 +101,25 @@ class DominionsCommand {
 }
 
 class DominionsMapFile extends DominionsMetadataFile {
-    constructor(filePath) {
+    constructor(filePath, gameType) {
         super(filePath);
+        this.gameType = gameType;
         this.extraPlanes = [];
-        this.isPlaneFile = /_plane\d.map$/i.test(this.name);
+    }
 
-        const filesInDir = fs.readdirSync(this.dirPath);
+    async loadDependencies() {
+        await this.loadPlaneFileDependencies();
+        await this.loadTerrainFileDependencies();
+        await parseFileByLines(this.path, (line) => this.processLine(line));
+
+        this.dependencies.add(this.path);
+        return this.dependencies;
+    }
+
+    async loadPlaneFileDependencies() {
+        const filesInDir = await fsp.readdir(this.dirPath);
         
-        if (this.isPlaneFile === false) {
+        if (isDom6GameType(this.gameType) === true) {
             const relatedPlaneRegExp = new RegExp(`^${this.name}_plane\\d\\.map$`, 'i');
             const planeFiles = filesInDir.filter((filename) => {
                 return relatedPlaneRegExp.test(filename) === true;
@@ -117,11 +127,17 @@ class DominionsMapFile extends DominionsMetadataFile {
 
             for (const filename of planeFiles) {
                 const planeFilePath = path.join(this.dirPath, filename);
+                const planeFile = new DominionsPlaneFile(planeFilePath, this.gameType);
+                await planeFile.loadDependencies();
     
-                this.extraPlanes.push(new DominionsMapFile(planeFilePath));
-                this.dependencies.add(planeFilePath);
+                this.extraPlanes.push(planeFile);
+                this.dependencies.add(...Array.from(planeFile.dependencies));
             }
         }
+    }
+
+    async loadTerrainFileDependencies() {
+        const filesInDir = await fsp.readdir(this.dirPath);
 
         const terrainTagRegExp = MAP_TERRAIN_FILE_TAGS.reduce((regexp, tag, i) => {
             if (i < MAP_TERRAIN_FILE_TAGS.length - 1) {
@@ -140,20 +156,17 @@ class DominionsMapFile extends DominionsMetadataFile {
             this.dependencies.add(terrainFilePath);
         }
     }
+}
 
-    async parseDependencies() {
-        const mapFiles = [...this.extraPlanes];
+class DominionsPlaneFile extends DominionsMapFile {
+    constructor(filePath, gameType) {
+        super(filePath, gameType);
+    }
 
-        // A plane file will already be part of the list through the main file
-        if (this.isPlaneFile === false) {
-            mapFiles.push(this);
-        }
-
-        for (const mapFile of mapFiles) {
-            await parseFileByLines(mapFile.path, (line) => this.processLine(line));
-        }
-
-        return this.dependencies;
+    async loadDependencies() {
+        await this.loadTerrainFileDependencies();
+        await parseFileByLines(this.path, (line) => this.processLine(line));
+        this.dependencies.add(this.path);
     }
 }
 
@@ -162,8 +175,9 @@ class DominionsModFile extends DominionsMetadataFile {
         super(filePath);
     }
 
-    async parseDependencies() {
+    async loadDependencies() {
         await parseFileByLines(this.path, (line) => this.processLine(line));
+        this.dependencies.add(this.path);
         return this.dependencies;
     }
 }

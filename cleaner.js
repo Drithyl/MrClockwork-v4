@@ -86,24 +86,24 @@ function _getListOfMapsInUse(gameType)
     const mapsDir = getDominionsMapsPath(gameType);
     const games = ongoingGamesStore.getArrayOfGames();
 
-    games.forEach((game) =>
-    {
-        if (game.getType() === gameType) 
-        {
-            const settingsObject = game.getSettingsObject();
-            const mapSetting = settingsObject.getMapSetting();
-            const mapPath = path.join(mapsDir, mapSetting.getValue());
-
-            if (fs.existsSync(mapPath) === true) {
-                const mapFile = new DominionsMapFile(mapPath);
-                usedMaps.push(mapFile);
-            }
-            
-            else {
-                log.general(`${game.getName()}'s mapfile does not exist: "${mapPath}"`);
-            }
+    for (const game of games) {
+        if (game.getType() !== gameType)  {
+            continue;
         }
-    });
+
+        const settingsObject = game.getSettingsObject();
+        const mapSetting = settingsObject.getMapSetting();
+        const mapPath = path.join(mapsDir, mapSetting.getValueWithDir());
+
+        if (fs.existsSync(mapPath) === true) {
+            const mapFile = new DominionsMapFile(mapPath, gameType);
+            usedMaps.push(mapFile);
+        }
+        
+        else {
+            log.general(`${game.getName()}'s mapfile does not exist: "${mapPath}"`);
+        }
+    }
 
     return usedMaps;
 }
@@ -143,20 +143,21 @@ function _getListOfModsInUse(gameType)
 
 async function _cleanUnusedFiles(filesInUse, dirPath, force = false)
 {
-    const allDependenciesInUse = [];
+    const allDependenciesInUse = new Set();
     const deletedFiles = [];
 
     log.general(log.getLeanLevel(), `Begin cleaning unused files...`);
 
     for (const domFile of filesInUse) {
         log.general(log.getLeanLevel(), `Searching all dependencies of ${domFile.filename}...`);
-        const dependencies = await domFile.parseDependencies();
+        const dependencies = await domFile.loadDependencies();
         log.general(log.getLeanLevel(), `Found ${dependencies.size} related files`);
-        allDependenciesInUse.push(domFile.path, ...Array.from(dependencies));
+        allDependenciesInUse.add(...Array.from(dependencies));
     }
 
+    const usedFiles = Array.from(allDependenciesInUse);
     const existingFiles = await rw.walkDir(dirPath);
-    const unusedFiles = existingFiles.filter(x => !allDependenciesInUse.includes(x));
+    const unusedFiles = existingFiles.filter(x => !usedFiles.includes(x));
 
     for (const unusedFile of unusedFiles) {
         try {
@@ -175,17 +176,18 @@ async function _cleanUnusedFiles(filesInUse, dirPath, force = false)
 
     return {
         existingFiles,
-        usedFiles: allDependenciesInUse,
+        usedFiles,
         unusedFiles,
-        deletedFiles,
+        deletedFiles
     };
 }
 
 function _formatResults(dom5Results, dom6Results) {
-    const existingFiles = [...(dom5Results?.existingFiles || []), ...(dom6Results?.existingFiles || [])];
-    const usedFiles = [...(dom5Results?.usedFiles || []), ...(dom6Results?.usedFiles || [])];
-    const unusedFiles = [...(dom5Results?.unusedFiles || []), ...(dom6Results?.unusedFiles || [])];
-    const deletedFiles = [...(dom5Results?.deletedFiles || []), ...(dom6Results?.deletedFiles || [])];
+    // Merge arrays from dom5 and dom6 as Sets, to remove any duplicate files (there should not be any, but this makes it safe)
+    const existingFiles = Array.from(new Set([...(dom5Results?.existingFiles || []), ...(dom6Results?.existingFiles || [])]));
+    const usedFiles = Array.from(new Set([...(dom5Results?.usedFiles || []), ...(dom6Results?.usedFiles || [])]));
+    const unusedFiles = Array.from(new Set([...(dom5Results?.unusedFiles || []), ...(dom6Results?.unusedFiles || [])]));
+    const deletedFiles = Array.from(new Set([...(dom5Results?.deletedFiles || []), ...(dom6Results?.deletedFiles || [])]));
 
     return {
         totalExistingFiles: existingFiles.length,

@@ -1,7 +1,8 @@
+const cleaner = require("../../../cleaner.js");
 const { SlashCommandBuilder } = require("discord.js");
 const commandPermissions = require("../../command_permissions.js");
 const MessagePayload = require("../../prototypes/message_payload.js");
-const cleaner = require("../../../cleaner.js");
+const { getSizeInMB } = require("../../../utilities/file-utilities.js");
 
 
 const MAPS_SUBCOMMAND_NAME = "maps";
@@ -46,11 +47,23 @@ async function behaviour(commandContext)
     const shouldDeleteFiles = commandContext.options.getBoolean(FORCE_OPTION_NAME);
 
     const results = await cleanUnusedFiles(subcommandName, shouldDeleteFiles);
-    const resultsJSON = JSON.stringify(results, null, 2);
 
-    const payload = new MessagePayload(`A total of ${results.deletedFiles.length} related files were deleted.`);
-    payload.setAttachment("deleted_files.json", Buffer.from(resultsJSON, "utf8"));
-    
+    // Trim down results data if it gets over 8 MB, Discord's attachment limit
+    if (getSizeInMB(results) >= 8) {
+        delete results.existingFiles;
+        delete results.unusedFiles;
+    }
+
+    if (getSizeInMB(results) >= 8) {
+        delete results.deletedFiles;
+    }
+
+    if (getSizeInMB(results) >= 8) {
+        delete results.usedFiles;
+    }
+
+    const payload = new MessagePayload(`A total of ${results.totalDeletedFiles} related files were deleted.`);
+    payload.setAttachment("deleted_files.json", Buffer.from(JSON.stringify(results, null, 2), "utf8"));
     return commandContext.respondToCommand(payload);
 }
 

@@ -1,4 +1,4 @@
-
+const path = require("path");
 const log = require("../../../logger.js");
 const config = require("../../../config/config.json");
 const GameSetting = require("../../prototypes/game_setting.js");
@@ -20,6 +20,10 @@ function Map(parentGameObject)
     this.getReadableValue = () =>
     {
         return this.getValue();
+    };
+    this.getValueWithDir = () => {
+        const filename = this.getValue();
+        return path.join(path.parse(filename).name, filename);
     };
     
     this.setValue = async (input) =>

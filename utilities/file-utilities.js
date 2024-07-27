@@ -37,3 +37,10 @@ module.exports.parseFileByLines = function(filepath, lineProcessingFunction) {
         );
     });
 };
+
+module.exports.getSizeInMB = function(object) {
+    const size = new TextEncoder().encode(JSON.stringify(object)).length;
+    const kiloBytes = size / 1024;
+    const megaBytes = kiloBytes / 1024;
+    return megaBytes;
+};
