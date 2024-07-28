@@ -204,8 +204,8 @@
     {
         "name": "Game Name",
         "defaultInput": "defaultGame",
-        "description": "Game name must be unique. No spaces or special characters other than underscores allowed. Must be 3 to 32 characters long.",
-        "expectedInputFormatRegexp": "^\\w{3,32}$",
+        "description": "Game name must be unique. No spaces or special characters other than underscores allowed. Must be 3 to 23 characters long.",
+        "expectedInputFormatRegexp": "^\\w{3,23}$",
         "canBeChanged": false,
         "isPublic": true
     },
