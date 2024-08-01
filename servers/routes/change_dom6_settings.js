@@ -32,13 +32,13 @@ exports.set = (expressApp) =>
                 hostServer = game.getServer();
 
                 if (asserter.isDom5GameType(game.getType()) === true)
-                    return;
+                    continue;
 
                 if (hostServer.isOnline() === false)
-                    return;
+                    continue;
 
                 if (game.hasGameStarted() === true)
-                    return;
+                    continue;
 
                 gameSettings = game.getSettingsObject();
                     
@@ -97,7 +97,7 @@ exports.set = (expressApp) =>
                 var loadedValue = values[key];
     
                 if (loadedValue == undefined)
-                    return log.error(log.getLeanLevel(), `Change settings: Expected value for setting ${key} is undefined.`);
+                    throw new Error(`Change settings: Expected value for setting ${key} is undefined.`);
     
                 await setting.setValue(loadedValue);
             }
