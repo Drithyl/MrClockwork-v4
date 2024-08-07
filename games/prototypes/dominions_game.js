@@ -168,7 +168,8 @@ function DominionsGame(type)
 
     _gameObject.removeNationClaims = async () =>
     {
-        for (const data of _playerData) {
+        for (const id of Object.keys(_playerData)) {
+            const data = _playerData[id];
             await data.file.removeControlOfAllNationsInGame(_gameObject.getName());
         }
     };
