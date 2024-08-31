@@ -95,6 +95,11 @@ async function _sendPlayerReminders(game, controlledNationData, preferences, hou
         turnListMsg += `${nationData.fullName}: ${_turnStatusToString(nationData)}\n`;
     }
 
+    // Don't send anything if no controlled nation actually has a reminder to send
+    if (turnListMsg.length === 0) {
+        return;
+    }
+
     await memberWrapper.sendMessage(new MessagePayload(reminderMsg + turnListMsg.toBox()));
 }
 
