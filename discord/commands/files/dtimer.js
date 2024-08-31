@@ -116,8 +116,10 @@ async function onSetSubcommand(commandContext)
     const hours = commandContext.options.getInteger(HOURS_OPTION);
     const minutes = commandContext.options.getInteger(MINUTES_OPTION);
     const msToSet = TimeLeft.hoursToMs(hours) + TimeLeft.minutesToMs(minutes);
+    const lastKnownStatus = gameObject.getLastKnownStatus();
+    const currentMs = lastKnownStatus.getMsLeft();
 
-    await gameObject.changeTimer(msToSet, msToSet);
+    await gameObject.changeTimer(currentMs, msToSet);
 
     const defaultTimeLeftObject = timerSetting.getValue();
     let payload;
@@ -153,8 +155,10 @@ async function onAddSubcommand(commandContext)
     const minutes = commandContext.options.getInteger(MINUTES_OPTION);
     const msToAdd = TimeLeft.hoursToMs(hours) + TimeLeft.minutesToMs(minutes);
     const finalMsToSet = defaultMsLeft + msToAdd;
+    const lastKnownStatus = gameObject.getLastKnownStatus();
+    const currentMs = lastKnownStatus.getMsLeft();
 
-    await gameObject.changeTimer(finalMsToSet, finalMsToSet);
+    await gameObject.changeTimer(currentMs, finalMsToSet);
 
     const defaultTimeLeftObject = timerSetting.getValue();
     let payload;
