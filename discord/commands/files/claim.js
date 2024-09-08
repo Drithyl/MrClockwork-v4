@@ -9,7 +9,7 @@ const NATION_OPTION_NAME = "nation";
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName("claim")
-		.setDescription("[Game-organizer-only] Change game settings, provided the game hasn't started yet.")
+		.setDescription("In a game channel, sets you as controller of a submitted pretender for this game.")
         .addIntegerOption(option =>
             option.setName(NATION_OPTION_NAME)
             .setDescription("The name of the nation to claim.")
