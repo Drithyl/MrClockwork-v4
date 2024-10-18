@@ -27,7 +27,7 @@ function AiNations(parentGameObject)
         Object.keys(aiNations).forEach((nationNumber, i) =>
         {
             let difficulty = aiNations[nationNumber];
-            let nationObject = dom5NationStore.getNation(nationNumber);
+            let nationObject = domNationStore.getNation(nationNumber, _gameType);
 
             if (i > 0)
                 str += ", ";
