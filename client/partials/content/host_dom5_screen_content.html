@@ -25,7 +25,7 @@
                     <div class="row mb-2">
                         <label for="input_game_name" class="col-sm-3 col-form-label">Game Name</label>
                         <div class="col-sm-9">
-                            <input type="name" class="form-control" id="input_game_name" name="name" required minlength="3" maxlength="32" pattern="^[^ !@#$%^&*()+\-=\[\]{};\x27:\x22\\|,.<>\/?]+$">
+                            <input type="name" class="form-control" id="input_game_name" name="name" required minlength="3" maxlength="31" pattern="^[^ !@#$%^&*()+\-=\[\]{};\x27:\x22\\|,.<>\/?]+$">
                         </div>
                     </div>
                     
@@ -83,7 +83,7 @@
     submitButton.addEventListener('click',()=>{
 
         if(gameNameField.validity.patternMismatch){
-            gameNameField.setCustomValidity('Please choose a game name that is between 3 and 32 characters and only has alphanumeric characters and underscores');
+            gameNameField.setCustomValidity('Please choose a game name that is between 3 and 31 characters and only has alphanumeric characters and underscores');
         } else if (gameNameField.validity.valueMissing) {
             gameNameField.setCustomValidity('Please provide a name for the game');
         }else{

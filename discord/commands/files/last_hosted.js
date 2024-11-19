@@ -66,7 +66,7 @@ function _formatLastHostedString(game)
     const server = game.getServer();
     const serverName = server.getName();
 
-    return `${gameName.width(32)} ${guildName.width(20)} ${serverName.width(10)} ${ip.width(23)} <t:${lastTurnUnixTimestamp}:f>\n`;
+    return `${gameName.width(31)} ${guildName.width(20)} ${serverName.width(10)} ${ip.width(23)} <t:${lastTurnUnixTimestamp}:f>\n`;
 }
 
 function _embedSortedGuildGames(sortedGamesArray, guild)
