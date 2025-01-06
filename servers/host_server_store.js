@@ -58,6 +58,13 @@ exports.getOnlineServers = () =>
     return servers;
 };
 
+exports.getOnlineServerWithMostSlots = () =>
+{
+    const onlineServers = module.exports.getOnlineServers();
+    const sortedBySlots = onlineServers.sort((a, b) => b.getAvailableSlots() - a.getAvailableSlots());
+    return (sortedBySlots.length > 0) ? sortedBySlots[0] : null;
+};
+
 exports.forEachServer = (fnToCall) =>
 {
     for (let id in _hostServersById)

@@ -18,7 +18,6 @@ exports.set = (expressApp) =>
     //since they will also be extracted in the client
     expressApp.get("/host_dom5", async (req, res) =>
     {
-        let availableServers;
         let guildsWhereUserIsTrusted;
 
         const guildData = [];
@@ -33,7 +32,6 @@ exports.set = (expressApp) =>
         const sessionId = session.getSessionId();
         const maps = await hostServerStore.getMapsWithProvCount(config.dom5GameTypeName);
         const mods = await hostServerStore.getMods(config.dom5GameTypeName);
-        availableServers = hostServerStore.getAvailableServersClientData();
         guildsWhereUserIsTrusted = await guildStore.getGuildsWhereUserIsTrusted(userId);
         
         
@@ -55,8 +53,7 @@ exports.set = (expressApp) =>
         res.render("host_dom5_screen.ejs", {
             userId,
             sessionId,
-            guilds: guildData, 
-            servers: availableServers,
+            guilds: guildData,
             nations: dom5Nations,
             maps,
             mods
@@ -126,22 +123,24 @@ function _formatPostValues(values)
 function _createGame(userId, values)
 {
     let gameObject;
+    const gameName = values.name;
     const guild = guildStore.getGuildWrapperById(values.guild);
-    const server = hostServerStore.getHostServerByName(values.server);
+    const gameServer = hostServerStore.getOnlineServerWithMostSlots();
     const type = config.dom5GameTypeName;
 
-    if (server == null || server.isOnline() === false)
-        return Promise.reject(new Error(`Selected server is offline; cannot host game.`));
+    if (gameServer == null || gameServer.isOnline() === false)
+        return Promise.reject(new Error(`No server is available; cannot host the game at this time.`));
 
     gameObject = new DominionsGame(type);
     gameObject.setGuild(guild);
-    gameObject.setServer(server);
+    gameObject.setServer(gameServer);
+    log.general(log.getNormalLevel(), `Game ${gameName} will be hosted on ${gameServer.getName()} server`);
 
     return guild.fetchGuildMemberWrapperById(userId)
     .then((memberWrapper) =>
     {
         gameObject.setOrganizer(memberWrapper);
-        return server.reserveGameSlot();
+        return gameServer.reserveGameSlot();
     })
     .then((port) =>
     {
