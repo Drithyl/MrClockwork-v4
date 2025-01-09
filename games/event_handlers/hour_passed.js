@@ -83,7 +83,7 @@ async function _sendPlayerReminders(game, controlledNationData, preferences, hou
 
     for (let nationData of controlledNationData)
     {
-        if (nationData == null)
+        if (nationData == null || nationData.isDead === true)
             continue;
 
         if (nationData.isTurnFinished === true &&
