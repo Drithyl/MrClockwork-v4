@@ -258,7 +258,12 @@ function DominionsGame(type)
 
     _gameObject.forceApRequiredToWin = (ap) => 
     {
-        return _gameObject.emitPromiseWithGameDataToServer("FORCE_AP", { ap: ap });
+        return _gameObject.emitPromiseWithGameDataToServer("FORCE_AP", { ap: ap })
+        .then(() => {
+            const settings = _gameObject.getSettingsObject();
+            const apSettings = settings.getAscensionPointsSetting();
+            return apSettings.setValue(ap.toString());
+        });
     };
 
     _gameObject.forceCataclysmTurnNumber = (cataclysmTurn) => 
