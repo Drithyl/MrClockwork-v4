@@ -116,7 +116,7 @@ exports.printListOfFreeSlots = () =>
         if (hostServerObject.isOnline() === false)
             continue;
 
-        stringList += `${hostServerObject.getName()}: ${hostServerObject.getAvailableSlots()}\n`;
+        stringList += `${hostServerObject.getName()}: ${hostServerObject.getAvailableSlots()} / ${hostServerObject.getTotalCapacity()}\n`;
     }
 
     return stringList;
@@ -250,6 +250,33 @@ exports.getDom6Mapfiles = async () =>
     }
 
     return mapFilepaths;
+};
+
+exports.setCapacity = async (capacity, serverNameOrId = null) => {
+    if (asserter.isInteger(capacity) === false || capacity < 0) {
+        throw new Error(`Expected capacity to be a non-negative integer; got ${capacity} instead`);
+    }
+
+    let wasChangeMade = false;
+
+    for (let id in _hostServersById)
+    {
+        const hostServerObject = _hostServersById[id];
+
+        if (serverNameOrId != null && serverNameOrId !== hostServerObject.getId() && serverNameOrId !== hostServerObject.getName()) {
+            continue;
+        }
+
+        hostServerObject.setCapacity(capacity);
+        trustedServerData[id].capacity = capacity;
+        wasChangeMade = true;
+    }
+
+    if (wasChangeMade === true) {
+        await fsp.writeFile("./config/trusted_server_data.json", JSON.stringify(trustedServerData, null, 2));
+    }
+
+    return wasChangeMade;
 };
 
 function _populateStore()
