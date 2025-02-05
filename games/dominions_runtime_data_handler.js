@@ -5,6 +5,7 @@ const config = require("../config/config.json");
 const gameStore = require("./ongoing_games_store.js");
 const MessagePayload = require("../discord/prototypes/message_payload.js");
 const { getNation } = require("./dominions_nation_store.js");
+const onNewDominionsVersionAvailable = require("./event_handlers/new_dominions_version_available.js");
 
 //Exact error: "Failed to create temp dir 'C:\Users\MistZ\AppData\Local\Temp/dom5_94132'"
 const failedToCreateTmpDirErrRegexp = /Failed\s*to\s*create\s*temp\s*dir/i;
@@ -338,7 +339,10 @@ function handleDom6PretenderSubmittedToDom5Game(game, message)
 function handleVersionTooOld(game, message)
 {
     const logMessage = `Handling versionTooOld error ${message}`;
-    const channelMessage = `The game has crashed because a new Dominions version is available. Please be patient while the admins update the servers :)`;
+    const channelMessage = `The server is automatically updating Dominions to the most recent version. Please wait a few minutes and then launch your game.`;
+
+    onNewDominionsVersionAvailable();
+
     debounce(game, logMessage, () => log.general(log.getVerboseLevel(), logMessage));
     debounce(game, channelMessage, sendWarning);
 }

@@ -279,6 +279,16 @@ exports.setCapacity = async (capacity, serverNameOrId = null) => {
     return wasChangeMade;
 };
 
+exports.updateDominionsVersion = () =>
+{
+    const promises = Object.keys(_hostServersById).map((id) => {
+        const server = _hostServersById[id];
+        return server.updateDominionsVersion();
+    });
+
+    return Promise.allSettled(promises);
+};
+
 function _populateStore()
 {
     log.general(log.getNormalLevel(), "Populating host server store...");

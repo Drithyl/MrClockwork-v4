@@ -159,4 +159,9 @@ function HostServer(id)
         .then((mapList) => Promise.resolve(mapList))
         .catch((err) => Promise.reject(new Error(`Could not retrieve the list of mods: ${err.message}`)));
     };
+
+    this.updateDominionsVersion = () => {
+        return this.emitPromise("UPDATE_DOMINIONS")
+        .catch((error) => log.error(log.getLeanLevel(), `Failed to update Dominions version on server ${this.getName()}`, error));
+    };
 }
