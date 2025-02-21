@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, InteractionContextType } = require("discord.js");
+const { SlashCommandBuilder } = require("discord.js");
 const commandPermissions = require("../../command_permissions.js");
 const MessagePayload = require("../../prototypes/message_payload.js");
 const hostServerStore = require("../../../servers/host_server_store.js");
@@ -21,8 +21,7 @@ module.exports = {
             option.setName(SERVER_OPTION)
             .setDescription("Name or id of the server for which to set the capacity. All servers if not provided.")
             .setRequired(false)
-        )
-        .setContexts([ InteractionContextType.BotDM ]),
+        ),
 
 	execute: behaviour,
 
