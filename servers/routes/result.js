@@ -14,7 +14,7 @@ exports.set = (expressApp) =>
 
         if (session == null)
         {
-            log.error(log.getLeanLevel(), "Session does not exist? Received data from previous endpoint:", sessionData);
+            log.error(log.getLeanLevel(), "Session does not exist?");
             return res.render(SCREEN_PATH, { result: `A problem occurred; this user session could not be found. Your request might still have been fulfilled.` });
         }
 
