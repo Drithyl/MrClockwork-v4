@@ -21,7 +21,7 @@ async function behaviour(commandContext)
     await commandPermissions.assertMemberIsTrusted(commandContext);
     await commandPermissions.assertMemberIsOrganizer(commandContext);
 
-    const ROLLEBACK_REQUEST_TIMEOUT = 150000;
+    const ROLLBACK_REQUEST_TIMEOUT = 150000;
     const targetedGame = commandContext.targetedGame;
     const status = targetedGame.getLastKnownStatus();
     const rollbackTurnNbr = status.getTurnNumber() - 1;
@@ -29,8 +29,8 @@ async function behaviour(commandContext)
     if (assert.isInteger(rollbackTurnNbr) === false || rollbackTurnNbr <= 0)
         return commandContext.respondToCommand(new MessagePayload(`Cannot rollback; turn number '${rollbackTurnNbr}' is incorrect.`));
 
-    await commandContext.respondToCommand(new MessagePayload(`Attempting to roll turn back...`));
-    await targetedGame.emitPromiseWithGameDataToServer("ROLLBACK", { turnNbr: rollbackTurnNbr }, ROLLEBACK_REQUEST_TIMEOUT);
+    await commandContext.respondToCommand(new MessagePayload(`Attempting to roll turn back to turn ${rollbackTurnNbr}...`));
+    await targetedGame.emitPromiseWithGameDataToServer("ROLLBACK", { turnNbr: rollbackTurnNbr }, ROLLBACK_REQUEST_TIMEOUT);
 
     return commandContext.respondToCommand(new MessagePayload(`The turn has been rolled back. It may take a minute or two to update properly.`));
 }
