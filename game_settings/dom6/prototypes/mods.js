@@ -79,15 +79,25 @@ function Mods(parentGameObject)
 
         for (let i = 0; i < inputModFilenames.length; i++) {
             const modFilename = inputModFilenames[i];
+            const modPath = path.parse(modFilename);
+            let fullPath;
 
-            if (Mods.prototype.isExpectedFormat(modFilename) === false)
-                throw new SemanticError(`Invalid value format for modfile <${modFilename}>`);
+            // If mod was given as a filename without its dir, try adding the dir.
+            // The assumption is that the directory is the same name as the mod file
+            // (this is what Dominions 6 expects).
+            if (modPath.dir === "") {
+                modPath.dir = modPath.name;
+            }
 
-            
-            if (/\.dm$/.test(modFilename) === false)
-                modFilenames.push(modFilename.trim() + ".dm");
+            fullPath = modPath.root + modPath.dir + path.sep +  modPath.base;
 
-            else modFilenames.push(modFilename.trim());
+            if (Mods.prototype.isExpectedFormat(fullPath) === false)
+                throw new SemanticError(`Invalid value format for modfile <${fullPath}>`);
+
+            if (/\.dm$/.test(fullPath) === false)
+                modFilenames.push(fullPath.trim() + ".dm");
+
+            else modFilenames.push(fullPath.trim());
         }
 
         return modFilenames;
