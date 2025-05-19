@@ -211,6 +211,11 @@ exports.undeployBotOnGuild = (guildId) =>
 {
     let guildWrapper = this.getGuildWrapperById(guildId);
 
+    if (guildWrapper == null) {
+        log.general(log.getLeanLevel(), "No guild found from which to undeploy");
+        return Promise.resolve();
+    }
+
     const newsChannel = guildWrapper.getNewsChannel();
     const helpChannel = guildWrapper.getHelpChannel();
 

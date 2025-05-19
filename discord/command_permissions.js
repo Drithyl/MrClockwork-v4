@@ -1,3 +1,4 @@
+const { PermissionsBitField } = require("discord.js");
 const { SemanticError, PermissionsError } = require("../errors/custom_errors.js");
 
 //TODO: revise all functions, many were written with an older version of the commandContext
@@ -121,7 +122,7 @@ exports.assertMemberIsDev = (commandContext) =>
 exports.assertBotHasPermissionToManageRoles = (commandContext) =>
 {
     const guildWrapper = commandContext.guildWrapper;
-    const hasPermissions = guildWrapper.doesBotHavePermission("MANAGE_ROLES");
+    const hasPermissions = guildWrapper.doesBotHavePermission(PermissionsBitField.Flags.ManageRoles);
 
     if (hasPermissions === false)
         throw new Error(`The Bot must have the Manage Roles permission to do this.`);
@@ -130,7 +131,7 @@ exports.assertBotHasPermissionToManageRoles = (commandContext) =>
 exports.assertBotHasPermissionToManageChannels = (commandContext) =>
 {
     const guildWrapper = commandContext.guildWrapper;
-    const hasPermissions = guildWrapper.doesBotHavePermission("MANAGE_CHANNELS");
+    const hasPermissions = guildWrapper.doesBotHavePermission(PermissionsBitField.Flags.ManageChannels);
 
     if (hasPermissions === false)
         throw new Error(`The Bot must have the Manage Channels permission to do this.`);

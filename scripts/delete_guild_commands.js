@@ -1,8 +1,13 @@
 const fs = require("fs");
 const path = require("path");
 const { deleteAll } = require("../discord/commands/delete");
+const { devGuildId } = require("../config/config.json");
 
 async function deleteGuildCommands(guildIds) {
+    if (guildIds.length === 0) {
+        return console.log("The array of guildData was empty; no command was deleted");
+    }
+
     const promises = guildIds.map((id) => deleteAll(id));
     const settledPromises = await Promise.allSettled(promises);
 
@@ -26,12 +31,12 @@ function getDeployedGuilds() {
     }
 
     if (fs.existsSync(guildDataPath) === false) {
-        console.log("No guild_data found within the dara dir");
+        console.log("No guild_data found within the data dir");
         return [];
     }
 
-    const guildDataDirFiles = fs.readdirSync(guildDataPath);
-    return guildDataDirFiles;
+    const guildDataDirFilenames = fs.readdirSync(guildDataPath);
+    return [devGuildId, ...guildDataDirFilenames];
 }
 
 const guildsToDelete = getDeployedGuilds();
