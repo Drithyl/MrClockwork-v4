@@ -12,7 +12,7 @@ module.exports = {
 		.setDescription("Force a game to refresh its last known status.")
         .addStringOption(option =>
             option.setName(GAME_NAME_OPTION)
-            .setDescription("The name of the game on which to show debug info.")
+            .setDescription("The name of the game to refresh.")
             .setRequired(true)
             .setAutocomplete(true)
         ),
