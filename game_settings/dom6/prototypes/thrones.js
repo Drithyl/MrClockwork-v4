@@ -64,11 +64,11 @@ function Thrones(parentGameObject)
         if (thrones.length < 3)
             throw new SemanticError(`Throne values missing; expected 3 values, got ${thrones}`);
 
-        if (thrones[0] < 0 || thrones[0] > 20)
-            throw new SemanticError(`Level 1 thrones must be between 0 and 20`);
+        if (thrones[0] < 0 || thrones[0] > 30)
+            throw new SemanticError(`Level 1 thrones must be between 0 and 30`);
 
-        if (thrones[1] < 0 || thrones[1] > 15)
-            throw new SemanticError(`Level 2 thrones must be between 0 and 15`);
+        if (thrones[1] < 0 || thrones[1] > 20)
+            throw new SemanticError(`Level 2 thrones must be between 0 and 20`);
 
         if (thrones[2] < 0 || thrones[2] > 10)
             throw new SemanticError(`Level 3 thrones must be between 0 and 10`);

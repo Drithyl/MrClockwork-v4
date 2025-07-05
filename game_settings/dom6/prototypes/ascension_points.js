@@ -48,8 +48,8 @@ function AscensionPoints(parentGameObject)
 
         const points = +input.replace(/\D*/, "");
 
-        if (points <= 0 || points > 80)
-            throw new SemanticError(`Ascension Points required must be between 1 and 80`);
+        if (points <= 0 || points > 100)
+            throw new SemanticError(`Ascension Points required must be between 1 and 100`);
 
         return points;
     }
