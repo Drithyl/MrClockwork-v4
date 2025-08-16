@@ -27,7 +27,6 @@ module.exports = {
 async function behaviour(commandContext)
 {
     await commandPermissions.assertCommandIsUsedInGameChannel(commandContext);
-    await commandPermissions.assertGameIsOnline(commandContext);
     await commandPermissions.assertGameHasNotStarted(commandContext);
 
     const memberWrapper = commandContext.memberWrapper;
