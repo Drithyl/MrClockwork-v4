@@ -111,6 +111,7 @@
     {"number": 119, "name": "Piconye", "fullName": "Piconye, Legacy of the Prester King", "filename": "late_piconye"},
     {"number": 119, "name": "Andramania", "fullName": "Andramania, Dog Republic", "filename": "late_andramania"},
 
+    {"number": 124, "name": "Zemaitia", "fullName": "Zemaitia, Sylvan Knights", "filename": "late_zemaitia"},
     {"number": 125, "name": "Erytheia", "fullName": "Erytheia, Kingdom of Two Worlds", "filename": "late_erytheia"},
     {"number": 126, "name": "Atlantis", "fullName": "Atlantis, Frozen Sea", "filename": "late_atlantis"},
     {"number": 127, "name": "R'lyeh", "fullName": "R'lyeh, Dreamlands", "filename": "late_rlyeh"}
