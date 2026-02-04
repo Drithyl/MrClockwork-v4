@@ -108,8 +108,9 @@
     {"number": 117, "name": "Utgard", "fullName": "Utgard, Well of Urd", "filename": "late_utgard"},
     {"number": 118, "name": "Vaettiheim", "fullName": "Vaettiheim, Wolf Kin Jarldom", "filename": "late_vaetti"},
     {"number": 119, "name": "Feminie", "fullName": "Feminie, Sage-Queens", "filename": "late_feminie"},
-    {"number": 119, "name": "Piconye", "fullName": "Piconye, Legacy of the Prester King", "filename": "late_piconye"},
-    {"number": 119, "name": "Andramania", "fullName": "Andramania, Dog Republic", "filename": "late_andramania"},
+    {"number": 120, "name": "Piconye", "fullName": "Piconye, Legacy of the Prester King", "filename": "late_piconye"},
+    {"number": 121, "name": "Andramania", "fullName": "Andramania, Dog Republic", "filename": "late_andramania"},
+    {"number": 123, "name": "Pyrène", "fullName": "Pyrène, Cambion Kings", "filename": "late_pyrene"},
 
     {"number": 124, "name": "Zemaitia", "fullName": "Zemaitia, Sylvan Knights", "filename": "late_zemaitia"},
     {"number": 125, "name": "Erytheia", "fullName": "Erytheia, Kingdom of Two Worlds", "filename": "late_erytheia"},
