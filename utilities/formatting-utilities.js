@@ -6,6 +6,10 @@ module.exports.bold = function(string) {
     return `**${string.toString()}**`;
 };
 
+module.exports.codeBlock = function(string, language = "") {
+    return "```" + language + "\n" + string.toString() + "\n```";
+};
+
 module.exports.dateToUnixTimestamp = function(dateObject) {
     const ms = dateObject.getTime();
     return parseInt(ms / 1000).toFixed(0);
