@@ -4,6 +4,7 @@ const path = require("path");
 const logger = require("../logger");
 const { performance } = require("perf_hooks");
 const { DominionsModFile } = require("../games/prototypes/DominionsFile");
+const { renameMod } = require("./mod_renamer");
 
 /**
  * Reads a mod's directory in search of multiple .dm files that may exist.
@@ -35,37 +36,31 @@ module.exports = async function dissectMod(readModDirPath, targetBaseModsDir) {
         resultData.totalFiles += dependencies.size;
         logger.upload(logger.getLeanLevel(), `Found ${dependencies.size} dependencies for ${filename}\n`);
         
-        // Trim any versioning that users might have added to the mod's .dm file, so as to
+        // Trim explicit versioning that users might have added to the mod's .dm file, so as to
         // append our own without it being redundant. The regexp will catch most formats, such as:
         // AI_Auto_Divine_Blessing_v0.1
-        // BalancedArena1.1
-        // bozmod_dom6_0.1
         // CommunityMemesv1.01
         // EA_Omniscience_v1_00
         // LucidsThematicGemGenV20
-        const newModTrimmedFilename = path.parse(filename).name.replace(/_?v?\d+(\.|_)?\d*$/i, "");
+        const newModfilePath = renameMod(dmFilepath, dominionsModFile);
+        const parsedPath = path.parse(newModfilePath);
+        const newModFileName = parsedPath.name + parsedPath.ext;
 
-        const newModDirName = `${newModTrimmedFilename}-clockwork_v${dominionsModFile.version}`;
-        const newModDirPath = path.resolve(targetBaseModsDir, newModDirName);
-
-        const newModfileName = `${newModDirName}.dm`;
-        const newModfilePath = path.join(newModDirPath, newModfileName);
-
-        if (fs.existsSync(newModDirPath) === false) {
-            await fsp.mkdir(newModDirPath, { recursive: true });
+        if (fs.existsSync(parsedPath.dir) === false) {
+            await fsp.mkdir(parsedPath.dir, { recursive: true });
         }
 
         if (fs.existsSync(newModfilePath) === false) {
             await copyFile(dmFilepath, newModfilePath);
-            resultData.installedFiles.push(newModfileName);
+            resultData.installedFiles.push(newModFileName);
         }
         else {
-            resultData.skippedFiles.push(newModfileName);
+            resultData.skippedFiles.push(newModFileName);
         }
 
         for (const absoluteAssetPath of Array.from(dependencies)) {
             const relativeAssetPath = path.relative(dominionsModFile.dirPath, absoluteAssetPath);
-            const newAssetFilePath = path.join(newModDirPath, relativeAssetPath);
+            const newAssetFilePath = path.join(parsedPath.dir, relativeAssetPath);
             const newAssetDirPath = path.dirname(newAssetFilePath);
 
             if (fs.existsSync(newAssetDirPath) === false) {

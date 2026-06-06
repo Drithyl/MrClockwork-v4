@@ -27,7 +27,7 @@ class DominionsFile {
 class DominionsMetadataFile extends DominionsFile {
     constructor(filePath) {
         super(filePath);
-        this.version = '';
+        this.version = null;
         this.dependencies = new Set();
     }
 
