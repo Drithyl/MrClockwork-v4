@@ -1,24 +1,21 @@
 const path = require("path");
 
-module.exports.renameMod = function (dmFilePath, dominionsModFile) {
-    const parsedPath = path.parse(dmFilePath);
-    const dmDirPath = parsedPath.dir;
-    const dmFilename = parsedPath.name;
-    const parsedFilename = parseVersionFromFilename(dmFilename);
-    let newFilename = `${parsedFilename.filename}-clockwork`;
+module.exports.renameMod = function (dominionsModFile) {
+    const dmFilename = dominionsModFile.filename;
+    const filenameVersionInfo = parseVersionFromFilename(dmFilename);
+    const parsedRenamedFilename = path.parse(filenameVersionInfo.filename);
+    let newFilename = `${parsedRenamedFilename.name}-clockwork`;
 
     if (dominionsModFile.version != null) {
         newFilename += `_v${dominionsModFile.version}`;
     }
 
-    else if (parsedFilename.version != null) {
-        newFilename += `_v${parsedFilename.version}`;
+    else if (filenameVersionInfo.version != null) {
+        newFilename += `_v${filenameVersionInfo.version}`;
     }
 
-    // Go up one dir level to replace old dir name with new one (dir and filename have to match)
-    const newDirPath = path.join(dmDirPath, "../", newFilename);
-    const newFilePath = path.join(newDirPath, newFilename + parsedPath.ext);
-    return newFilePath;
+    newFilename += parsedRenamedFilename.ext;
+    return newFilename;
 }
 
 function parseVersionFromFilename(dmFilename) {

@@ -42,25 +42,27 @@ module.exports = async function dissectMod(readModDirPath, targetBaseModsDir) {
         // CommunityMemesv1.01
         // EA_Omniscience_v1_00
         // LucidsThematicGemGenV20
-        const newModfilePath = renameMod(dmFilepath, dominionsModFile);
-        const parsedPath = path.parse(newModfilePath);
-        const newModFileName = parsedPath.name + parsedPath.ext;
+        const newModfileName = renameMod(dominionsModFile);
+        const parsedNewModFilename = path.parse(newModfileName);
 
-        if (fs.existsSync(parsedPath.dir) === false) {
-            await fsp.mkdir(parsedPath.dir, { recursive: true });
+        const newModFilePath = path.resolve(targetBaseModsDir, parsedNewModFilename.name, newModfileName);
+        const parsedNewModFilePath = path.parse(newModFilePath);
+
+        if (fs.existsSync(parsedNewModFilePath.dir) === false) {
+            await fsp.mkdir(parsedNewModFilePath.dir, { recursive: true });
         }
 
-        if (fs.existsSync(newModfilePath) === false) {
-            await copyFile(dmFilepath, newModfilePath);
-            resultData.installedFiles.push(newModFileName);
+        if (fs.existsSync(newModFilePath) === false) {
+            await copyFile(dmFilepath, newModFilePath);
+            resultData.installedFiles.push(newModfileName);
         }
         else {
-            resultData.skippedFiles.push(newModFileName);
+            resultData.skippedFiles.push(newModfileName);
         }
 
         for (const absoluteAssetPath of Array.from(dependencies)) {
             const relativeAssetPath = path.relative(dominionsModFile.dirPath, absoluteAssetPath);
-            const newAssetFilePath = path.join(parsedPath.dir, relativeAssetPath);
+            const newAssetFilePath = path.join(parsedNewModFilePath.dir, relativeAssetPath);
             const newAssetDirPath = path.dirname(newAssetFilePath);
 
             if (fs.existsSync(newAssetDirPath) === false) {
