@@ -1,0 +1,292 @@
+/*
+ * Aims to bring bootstrap-select elements in line with the multiselect elements.
+ *
+ * It does NOT modify multiselect.css - that component is treated as the source
+ * of truth. All values are taken directly from its CSS custom properties.
+ */
+
+ 
+/* ─── 1. TRIGGER BUTTON ──────────────────────────────────────────────────── */
+/*
+ * Multiselect header:  white bg, 1px #dee2e6 border, 0.3125rem radius,
+ *                      0.4375rem top/bottom + 0.75rem left padding,
+ *                      1.875rem right padding (room for the arrow),
+ *                      min-height 2.8125rem, font-size 1rem, color #212529.
+ */
+
+.bootstrap-select > .dropdown-toggle {
+    background-color: var(--ms-bg, #ffffff);
+    border: 1px solid var(--input-border, #dee2e6);
+    border-radius: var(--border-radius, 0.3125rem);
+    padding: var(--spacing-medium, 0.4375rem) var(--icon-space, 1.875rem)
+             var(--spacing-medium, 0.4375rem) var(--spacing-large, 0.75rem);
+    min-height: var(--input-min-height, 2.8125rem);
+    font-size: var(--font-size-larger, 1rem);
+    color: var(--text-color-dark, #212529);
+    line-height: var(--line-height-larger, 1.25rem);
+    box-shadow: none;
+    position: relative;
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    white-space: nowrap;
+    transition: border-color 0.15s ease;
+}
+
+.bootstrap-select > .dropdown-toggle:hover,
+.bootstrap-select > .dropdown-toggle:focus {
+    background-color: var(--ms-bg, #ffffff);
+    color: var(--text-color-dark, #212529);
+    box-shadow: none;
+    outline: none;
+}
+
+/* Active / open state — border darkens, matching multiselect-header-active */
+.bootstrap-select.open  > .dropdown-toggle,
+.bootstrap-select.show  > .dropdown-toggle {
+    border-color: var(--input-border-active, #c1c9d0);
+    background-color: var(--ms-bg, #ffffff);
+    box-shadow: none;
+}
+
+/* Placeholder colour */
+.bootstrap-select > .dropdown-toggle.bs-placeholder,
+.bootstrap-select > .dropdown-toggle.bs-placeholder:hover,
+.bootstrap-select > .dropdown-toggle.bs-placeholder:focus,
+.bootstrap-select > .dropdown-toggle.bs-placeholder:active {
+    color: var(--input-placeholder, #65727e);
+}
+
+
+/* ─── 2. CUSTOM ARROW (replaces Bootstrap's .caret span) ────────────────── */
+
+/* Hide the native Bootstrap caret element */
+.bootstrap-select .bs-caret,
+.bootstrap-select .caret {
+    display: none !important;
+}
+
+/* Inject the same SVG chevron as multiselect uses */
+.bootstrap-select > .dropdown-toggle::after {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    width: var(--icon-size, 0.75rem);
+    height: var(--icon-size, 0.75rem);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23949ba3' viewBox='0 0 16 16'%3E%3Cpath d='M8 13.1l-8-8 2.1-2.2 5.9 5.9 5.9-5.9 2.1 2.2z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: contain;
+    transform: translateY(-50%);
+    transition: transform 0.2s ease;
+    margin: 0; /* reset Bootstrap's caret margin */
+    border: none; /* reset Bootstrap's border-based caret */
+    vertical-align: unset;
+}
+
+/* Flip arrow up when open */
+.bootstrap-select.open > .dropdown-toggle::after,
+.bootstrap-select.show > .dropdown-toggle::after,
+.bootstrap-select > .dropdown-toggle.show::after {
+    transform: translateY(-50%) rotate(180deg) !important;
+}
+
+/* Dropup: arrow starts pointing up, flips down when open */
+.bootstrap-select.dropup > .dropdown-toggle::after {
+    transform: translateY(-50%) rotate(180deg);
+}
+.bootstrap-select.dropup.open > .dropdown-toggle::after,
+.bootstrap-select.dropup.show > .dropdown-toggle::after {
+    transform: translateY(-50%) rotate(0deg);
+}
+
+
+/* ─── 3. DROPDOWN PANEL ──────────────────────────────────────────────────── */
+/*
+ * Multiselect options panel: white bg, 0.3125rem radius,
+ * shadow 0 0.25rem 0.5rem rgba(0,0,0,0.15), 0.3125rem top margin,
+ * 0.3125rem padding, max-height 40dvh, scrollable.
+ */
+
+.bootstrap-select .dropdown-menu {
+    background-color: var(--ms-bg, #ffffff);
+    border: none;
+    border-radius: var(--border-radius, 0.3125rem);
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.15);
+    margin-top: var(--spacing-small, 0.3125rem);
+    padding: var(--spacing-small, 0.3125rem);
+    max-height: var(--options-height, 40dvh);
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-width: 100%;
+    box-sizing: border-box;
+    z-index: 999;
+}
+
+/* Scrollbar — matches multiselect's custom scrollbar */
+.bootstrap-select .dropdown-menu::-webkit-scrollbar {
+    width: 0.3125rem;
+}
+.bootstrap-select .dropdown-menu::-webkit-scrollbar-track {
+    background: var(--input-background, #e9e9ed);
+}
+.bootstrap-select .dropdown-menu::-webkit-scrollbar-thumb {
+    background: var(--border-color, #bebebe);
+}
+.bootstrap-select .dropdown-menu::-webkit-scrollbar-thumb:hover {
+    background: var(--input-placeholder, #65727e);
+}
+
+/* Inner list wrapper bootstrap-select adds */
+.bootstrap-select .dropdown-menu.inner {
+    position: static;
+    float: none;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+    max-height: none; /* outer .dropdown-menu controls height */
+}
+
+
+/* ─── 4. OPTION ITEMS ────────────────────────────────────────────────────── */
+/*
+ * Multiselect options: 0.5rem top/bottom + 0.75rem left/right padding,
+ * full width, flex row, 1rem font, #212529 text, hover gets #f3f4f7 bg.
+ */
+
+.bootstrap-select .dropdown-menu li > a {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.5rem var(--spacing-large, 0.75rem);
+    font-size: var(--font-size-larger, 1rem);
+    line-height: var(--line-height-larger, 1.25rem);
+    color: var(--text-color-dark, #212529);
+    background-color: transparent;
+    border-radius: var(--border-radius, 0.3125rem);
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    user-select: none;
+    text-decoration: none;
+}
+
+.bootstrap-select .dropdown-menu li > a:hover,
+.bootstrap-select .dropdown-menu li > a:focus,
+.bootstrap-select .dropdown-menu li > a:active {
+    background-color: var(--option-background, #f3f4f7);
+    color: var(--text-color-dark, #212529);
+    outline: none;
+    text-decoration: none;
+}
+
+/* Selected item text colour */
+.bootstrap-select .dropdown-menu li.selected > a,
+.bootstrap-select .dropdown-menu li.selected > a:hover {
+    background-color: var(--option-background, #f3f4f7);
+    color: var(--text-color-dark, #212529);
+}
+
+/* Divider between option groups — matches multiselect's border-color-light */
+.bootstrap-select .dropdown-menu .divider {
+    background-color: var(--border-color-light, #f1f3f5);
+    height: 1px;
+    margin: 0;
+}
+
+/* Option group headers — matches multiselect group style */
+.bootstrap-select .dropdown-menu .dropdown-header {
+    font-size: var(--font-size-larger, 1rem);
+    font-weight: 700;
+    color: var(--text-color-dark, #212529);
+    padding: 0.5rem var(--spacing-large, 0.75rem);
+}
+
+
+
+
+/* ─── 5. SEARCH INPUT ────────────────────────────────────────────────────── */
+/*
+ * Multiselect search: same border/radius as header, 1rem font,
+ * white bg, 0.625rem margin, calc(100% - 1.25rem) width.
+ */
+
+.bootstrap-select .bs-searchbox {
+    padding: 0.625rem 0.625rem 0;
+}
+
+.bootstrap-select .bs-searchbox .form-control {
+    padding: var(--spacing-medium, 0.4375rem) var(--spacing-large, 0.75rem);
+    border: 1px solid var(--input-border, #dee2e6);
+    border-radius: var(--border-radius, 0.3125rem);
+    font-size: var(--font-size-larger, 1rem);
+    background-color: var(--ms-bg, #ffffff);
+    color: var(--text-color-dark, #212529);
+    outline: none;
+    box-shadow: none;
+    width: 100%;
+    margin: 0;
+}
+
+.bootstrap-select .bs-searchbox .form-control::placeholder {
+    color: var(--text-color-light, #65727e);
+}
+
+.bootstrap-select .bs-searchbox .form-control:focus {
+    border-color: var(--input-border-active, #c1c9d0);
+    box-shadow: none;
+}
+
+
+/* ─── 6. DISABLED STATE ──────────────────────────────────────────────────── */
+/*
+ * Multiselect disabled: opacity 0.6, pointer-events none, #f7f7f7 bg.
+ */
+
+.bootstrap-select.disabled,
+.bootstrap-select > .disabled {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.bootstrap-select.disabled > .dropdown-toggle,
+.bootstrap-select > .disabled > .dropdown-toggle {
+    background-color: var(--input-disabled, #f7f7f7);
+    cursor: not-allowed;
+}
+
+
+/* ─── 7. INVALID / ERROR STATE ───────────────────────────────────────────── */
+/*
+ * Multiselect invalid: #e44e4e border + rgba(219,138,138,0.5) outline.
+ */
+
+.bootstrap-select.is-invalid > .dropdown-toggle,
+.has-error .bootstrap-select > .dropdown-toggle,
+.was-validated .bootstrap-select select:invalid + .dropdown-toggle {
+    border-color: var(--input-border-invalid, #e44e4e);
+    outline: var(--input-outline-invalid, rgba(219, 138, 138, 0.5)) solid 1px;
+}
+
+
+/* ─── 8. CONTAINER / BODY-APPENDED MODE ─────────────────────────────────── */
+/*
+ * When bootstrap-select appends to <body> via container option,
+ * carry the same panel styles through the .bs-container wrapper.
+ */
+
+.bootstrap-select.bs-container .dropdown-menu {
+    border-radius: var(--border-radius, 0.3125rem);
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.15);
+}
+
+/* ─── 9. MULTI-SELECT TRANSITION ────────────────────────────────────────── */
+.multi-select .multi-select-header::after {
+    transition: transform 0.2s ease;
+}
