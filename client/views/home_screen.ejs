@@ -49,27 +49,8 @@
     {
         const fragment = new URLSearchParams(window.location.hash.slice(1));
 
-        if (fragment.has("access_token") === false)
+        if (fragment.has("access_token"))
         {
-            const randStr = generateRandomString();
-            localStorage.setItem('stateParameter', randStr);
-
-            document.getElementById('login').href += `&state=${encodeURIComponent(btoa(randStr))}`;
-            return document.getElementById('login').style.display = 'block';
-        }
-
-        else
-        {
-            const urlState = fragment.get("state");
-            const stateParameter = localStorage.getItem('stateParameter');
-
-            console.log("urlState: " + urlState);
-            console.log("stateParameter: " + stateParameter);
-
-            if (stateParameter !== atob(decodeURIComponent(urlState)))
-                return console.log("You may have been clicjacked!");
-
-
             const accessToken = fragment.get("access_token");
             const tokenType = fragment.get("token_type");
 
