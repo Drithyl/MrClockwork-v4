@@ -16,6 +16,7 @@ class MultiSelect {
       search: true,
       selectAll: true,
       groupLevelSelect: false,
+      mutuallyExclusiveGroupOptions: true,
       listAll: true,
       closeListOnItemSelect: false,
       name: "",
@@ -183,93 +184,20 @@ class MultiSelect {
         this.element.setAttribute("aria-expanded", "true");
       }
     };
+
     this.element.querySelectorAll(".multi-select-option").forEach((option) => {
       option.onclick = (e) => {
         e.stopPropagation();
-        if (this.element.classList.contains("disabled")) return;
-        let dataItem = this.data.find((d) => String(d.value) === String(option.dataset.value));
-        if (!dataItem || dataItem.disabled) return;
-        let selected = true;
+        if (this.element.classList.contains("disabled")) {
+          return;
+        }
 
-        const dataItemIndex = this.data.findIndex((item) => item.value === dataItem.value);
-
-        // Selecting an option
         if (!option.classList.contains("multi-select-selected")) {
-          // Maximum options selected has already been reached
-          if (this.options.max && this.selectedValues.length >= this.options.max) {
-            if (!this._isBatching) {
-              this.options.onMaxReached(this.options.max);
-            }
-            return;
-          }
-
-          // Remove newly selected item from its normal position
-          this.data.splice(dataItemIndex, 1);
-
-          // Re-add newly selected item at start of list, as it's the only selected so far
-          if (this.lastSelectedIndex === -1) {
-            this.data.splice(0, 0, dataItem);
-          }
-
-          // Re-add newly selected item right after the last selected item to preserve selection order
-          else {
-            this.data.splice(this.lastSelectedIndex + 1, 0, dataItem);
-          }
-
-          // Tag the option as selected
-          option.classList.add("multi-select-selected");
-          option.setAttribute("aria-selected", "true");
-          dataItem.selected = true;
-
-          // De-selecting an option
-        } else {
-          option.classList.remove("multi-select-selected");
-          option.setAttribute("aria-selected", "false");
-          dataItem.selected = false;
-          selected = false;
-
-          this.data.splice(dataItemIndex, 1);
-
-          // Remove all now unselected options
-          this.data.splice(this.lastSelectedIndex + 1);
-
-          // Re-add them again per the original ordering of the widget
-          this.data.push(
-            ...this.originalData.filter(
-              (item) => !this.selectedValues.find((value) => value === item.value),
-            ),
-          );
+          this.selectOption(option);
         }
-        if (!this._isBatching) {
-          this._updateSelected();
-          this._syncOriginalSelect();
-          if (this.options.closeListOnItemSelect) {
-            if (this.options.search) {
-              this.element.querySelector(".multi-select-search").value = "";
-              this.element
-                .querySelectorAll(".multi-select-option, .multi-select-group")
-                .forEach((opt) => (opt.style.display = "flex"));
-            }
-            toggleDropdown(true);
-          }
-        }
-        this.options.onChange(
-          option.dataset.value,
-          option.querySelector(".multi-select-option-text").innerHTML,
-          option,
-        );
-        if (selected) {
-          this.options.onSelect(
-            option.dataset.value,
-            option.querySelector(".multi-select-option-text").innerHTML,
-            option,
-          );
-        } else {
-          this.options.onUnselect(
-            option.dataset.value,
-            option.querySelector(".multi-select-option-text").innerHTML,
-            option,
-          );
+
+        else {
+          this.deselectOption(option);
         }
       };
     });
@@ -476,6 +404,44 @@ class MultiSelect {
         }
       }
     });
+  }
+
+  _propagateClickOnOption(option) {
+    if (!this._isBatching) {
+      this._updateSelected();
+      this._syncOriginalSelect();
+      if (this.options.closeListOnItemSelect) {
+        if (this.options.search) {
+          this.element.querySelector(".multi-select-search").value = "";
+          this.element
+            .querySelectorAll(".multi-select-option, .multi-select-group")
+            .forEach((opt) => (opt.style.display = "flex"));
+        }
+        toggleDropdown(true);
+      }
+    }
+
+    this.options.onChange(
+      option.dataset.value,
+      option.querySelector(".multi-select-option-text").innerHTML,
+      option,
+    );
+
+    if (option.selected) {
+      this.options.onSelect(
+        option.dataset.value,
+        option.querySelector(".multi-select-option-text").innerHTML,
+        option,
+      );
+    }
+    
+    else {
+      this.options.onUnselect(
+        option.dataset.value,
+        option.querySelector(".multi-select-option-text").innerHTML,
+        option,
+      );
+    }
   }
 
   _updateHeader() {
@@ -754,6 +720,118 @@ class MultiSelect {
     this.selectElement.dispatchEvent(new Event("change", { bubbles: true }));
   }
 
+  selectOption(option) {
+    const dataItem = this.getDataItem(option);
+
+    if (dataItem == null || dataItem.disabled) {
+      return;
+    }
+
+    // Maximum options selected has already been reached
+    if (this.options.max && this.selectedValues.length >= this.options.max) {
+      if (!this._isBatching) {
+        this.options.onMaxReached(this.options.max);
+      }
+      return;
+    }
+
+    // De-select all other items from group
+    if (this.options.mutuallyExclusiveGroupOptions) {
+      this.deselectOthersFromSameGroup(option);
+    }
+
+    this.shiftItemToFront(dataItem);
+    this.markAsSelected(option);
+    this._propagateClickOnOption(option);
+  }
+
+  shiftItemToFront(dataItem) {
+    const dataItemIndex = this.data.findIndex((item) => item.value === dataItem.value);
+
+    // Remove newly selected item from its normal position
+    this.data.splice(dataItemIndex, 1);
+
+    // Re-add newly selected item at start of list, as it's the only selected so far
+    if (this.lastSelectedIndex === -1) {
+      this.data.splice(0, 0, dataItem);
+    }
+
+    // Re-add newly selected item right after the last selected item to preserve selection order
+    else {
+      this.data.splice(this.lastSelectedIndex + 1, 0, dataItem);
+    }
+  }
+
+  shiftItemBackToOriginalPosition(dataItem) {
+    const dataItemIndex = this.data.findIndex((item) => item.value === dataItem.value);
+
+    this.data.splice(dataItemIndex, 1);
+
+    // Remove all now unselected options
+    this.data.splice(this.lastSelectedIndex + 1);
+
+    // Re-add them again per the original ordering of the widget
+    this.data.push(
+      ...this.originalData.filter(
+        (item) => !this.selectedValues.find(
+          (value) => value === item.value
+        ),
+      ),
+    );
+  }
+
+  markAsSelected(option) {
+    const dataItem = this.getDataItem(option);
+
+    if (dataItem == null) {
+      console.error(`No data found for option ${option}`);
+      return;
+    }
+
+    option.classList.add("multi-select-selected");
+    option.setAttribute("aria-selected", "true");
+    dataItem.selected = true;
+  }
+
+  removeSelectedMarkers(option) {
+    const dataItem = this.getDataItem(option);
+
+    if (dataItem == null) {
+      console.error(`No data found for option ${option}`);
+      return;
+    }
+    option.classList.remove("multi-select-selected");
+    option.setAttribute("aria-selected", "false");
+    dataItem.selected = false;
+  }
+
+  deselectOption(option) {
+    const dataItem = this.getDataItem(option);
+    const dataItemIndex = this.data.findIndex((item) => item.value === dataItem.value);
+
+    if (dataItem == null || dataItem.disabled) {
+      return;
+    }
+
+    this.removeSelectedMarkers(option);
+    this.shiftItemBackToOriginalPosition(dataItem);
+    this._propagateClickOnOption(option);
+  }
+
+  deselectOthersFromSameGroup(option) {
+    const dataItem = this.getDataItem(option);
+    
+    if (dataItem == null) {
+      return;
+    }
+
+    this.getGroupOptions(dataItem.group)
+      .filter(groupOption => groupOption !== option)
+      .forEach(groupOption => {
+        this.deselectOption(groupOption);
+      });
+  }
+
   deselectAll() {
     let changed = false;
     this.data.forEach((item) => {
@@ -786,6 +864,21 @@ class MultiSelect {
       this.refresh();
       this.selectElement.dispatchEvent(new Event("change", { bubbles: true }));
     }
+  }
+
+  getDataItem(option) {
+    return this.data.find((d) => String(d.value) === String(option.dataset.value));
+  }
+
+  getGroupItems(groupName) {
+    return this.data.filter((d) => d.group === groupName);
+  }
+
+  getGroupOptions(groupName) {
+    return Array.from(this.element
+        .querySelectorAll(".multi-select-option")
+      )
+      .filter((option) => option.dataset.group === groupName);
   }
 
   get selectedValues() {
