@@ -32,6 +32,7 @@ class MultiSelect {
       onUnselect: function () {},
       onMaxReached: function () {},
     };
+    this.groups = [];
     this.options = Object.assign(defaults, options);
     this.selectElement = typeof element === "string" ? document.querySelector(element) : element;
     if (this.selectElement._multiSelect) {
@@ -64,6 +65,11 @@ class MultiSelect {
       for (let i = 0; i < options.length; i++) {
         let parent = options[i].parentElement;
         let group = parent.tagName.toLowerCase() === "optgroup" ? parent.getAttribute("label") : "";
+
+        if (group !== "") {
+          this.groups.push(group);
+        }
+
         this.options.data.push({
           value: options[i].value,
           text: options[i].textContent,
@@ -736,7 +742,7 @@ class MultiSelect {
     }
 
     // De-select all other items from group
-    if (this.options.mutuallyExclusiveGroupOptions) {
+    if (this.options.mutuallyExclusiveGroupOptions && this.hasOptGroups) {
       this.deselectOthersFromSameGroup(option);
     }
 
@@ -881,6 +887,9 @@ class MultiSelect {
       .filter((option) => option.dataset.group === groupName);
   }
 
+  get hasOptGroups() {
+    return this.groups.length > 0;
+  }
   get selectedValues() {
     return this.data.filter((d) => d.selected).map((d) => d.value);
   }
