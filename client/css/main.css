@@ -6,132 +6,132 @@
 
 /* COLOR SCHEME */
 
-    /* Main background color */
-    body {
-        background: #303138;
-    }
+/* Main background color */
+body {
+    background: #303138;
+}
+
+/* accent icon positioning */
+.accentIcon {
+    top: 20px;
+    width:45px;
+    height:45px;
+    border-color: #36353c;
+    background: #095280;
+}
+
+/* colour for the icon in the middle of the qccent icon */
+.accentIcon .bi {
+    color:white;
+    padding-left:.25rem;
+    padding-top:.25rem;
+}
+
+/* styles for the icons in the buttons */
+button .bi {
+    color: #0a639b;
+}
+
+/* Smaller headlines used in the news cards */
+h5 {
+    color: #003166;
+}
+
+/* Headlines used as picture footers */
+h6 {
+    color: #003166;
+}
+
+/* News cards footer text */
+small {
+    color: #003166;
+}
+
+/* Footer padding and color */
+footer {
     
-    /* accent icon positioning */
-    .accentIcon {
-      top: 20px;
-      width:45px;
-      height:45px;
-      border-color: #36353c;
-      background: #095280;
-    }
- 
-    /* colour for the icon in the middle of the qccent icon */
-    .accentIcon .bi {
-      color:white;
-      padding-left:.25rem;
-      padding-top:.25rem;
-    }
+}
+
+/* sidebar background and links*/
+.navBGDark {
+    background: #3c4148;
+}
+
+#sidebarMenu {
+    border-right: solid 2px #2b2f35;
+}
+
+#sidebarMenu .nav-link{
+    color: white;
+}
+
+#sidebarMenu .nav-link:hover{
+    color: rgb(184, 0, 0);
+}
     
-    /* styles for the icons in the buttons */
-   button .bi {
-      color: #0a639b;
-    }
-
-    /* Smaller headlines used in the news cards */
-    h5 {
-        color: #003166;
-    }
-
-    /* Headlines used as picture footers */
-    h6 {
-        color: #003166;
-    }
-
-    /* News cards footer text */
-    small {
-        color: #003166;
-    }
-
-    /* Footer padding and color */
-    footer {
-        
-    }
+#sidebarMenu .active:hover {
+    color: white;
+}
     
-    /* sidebar background and links*/
-    .navBGDark {
-        background: #3c4148;
-    }
-    
-    #sidebarMenu {
-      border-right: solid 2px #2b2f35;
-    }
+#sidebarMenu .active{
+    background: #2c2f35;
+    border-bottom: solid rgb(135, 0, 0) 2px;
+}
 
-    #sidebarMenu .nav-link{
-        color: white;
-    }
-    
-    #sidebarMenu .nav-link:hover{
-         color: rgb(184, 0, 0);
-     }
-     
-     #sidebarMenu .active:hover {
-        color: white;
-     }
-     
-    #sidebarMenu .active{
-        background: #2c2f35;
-        border-bottom: solid rgb(135, 0, 0) 2px;
-    }
-    
-    .bi {
-        margin-right: .125rem;
-        color:grey;
-    }
-    
-    /* text styles for home page */
-    #presentationDiv a {
-        color: white;
-        text-decoration: underline;
-    }
-    
-    #presentationDiv a:hover {
-        color:rgb(135, 0, 0);
-    }
+.bi {
+    margin-right: .125rem;
+    color:grey;
+}
 
-    /* Main section and footer both share this colour */
-    .section {
-        background: #557A95;
-    }
+/* text styles for home page */
+#presentationDiv a {
+    color: white;
+    text-decoration: underline;
+}
 
-    /* Top bar modal color */
-    .modal-content {
-      background: #557A95;
-    }
+#presentationDiv a:hover {
+    color:rgb(135, 0, 0);
+}
 
-    /* Body modal color */
-    .modal-body {
-      background: #7394BF;
-    }
+/* Main section and footer both share this colour */
+.section {
+    background: #557A95;
+}
 
-    /* Color of staff cards in our_staff */
-    .staff_card {
-      background: #719181;
-    }
+/* Top bar modal color */
+.modal-content {
+    background: #557A95;
+}
 
-    /* Color of news cards */
-    .card.flex-row {
-      background: #719181;
-    }
+/* Body modal color */
+.modal-body {
+    background: #7394BF;
+}
 
-    /* Color of key facts in staff cards */
-    .list-group-item {
-      background: #719181;
-    }
+/* Color of staff cards in our_staff */
+.staff_card {
+    background: #719181;
+}
 
-    /* Color of links within the footer */
-    .footerText {
-        font-size: .65rem;
-    }
-    
-    /* image styles */
-    .discordLogo {
-        max-width: 40px;
-    }
+/* Color of news cards */
+.card.flex-row {
+    background: #719181;
+}
+
+/* Color of key facts in staff cards */
+.list-group-item {
+    background: #719181;
+}
+
+/* Color of links within the footer */
+.footerText {
+    font-size: .65rem;
+}
+
+/* image styles */
+.discordLogo {
+    max-width: 40px;
+}
 
 /* styles for Bot Commands listing */
 .botCommands {
