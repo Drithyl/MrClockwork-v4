@@ -29,7 +29,7 @@ class MultiSelect {
       data: [],
       onChange: function () {},
       onSelect: function () {},
-      onUnselect: function () {},
+      onDeselect: function () {},
       onMaxReached: function () {},
     };
     this.groups = [];
@@ -442,7 +442,7 @@ class MultiSelect {
     }
     
     else {
-      this.options.onUnselect(
+      this.options.onDeselect(
         option.dataset.value,
         option.querySelector(".multi-select-option-text").innerHTML,
         option,
@@ -603,7 +603,7 @@ class MultiSelect {
     if (option && !option.classList.contains("multi-select-selected")) option.click();
   }
 
-  unselect(value) {
+  deselect(value) {
     const option = Array.from(this.element.querySelectorAll(".multi-select-option")).find(
       (el) => String(el.dataset.value) === String(value),
     );
@@ -773,7 +773,7 @@ class MultiSelect {
 
     this.data.splice(dataItemIndex, 1);
 
-    // Remove all now unselected options
+    // Remove all now deselected options
     this.data.splice(this.lastSelectedIndex + 1);
 
     // Re-add them again per the original ordering of the widget
@@ -896,10 +896,10 @@ class MultiSelect {
   get selectedItems() {
     return this.data.filter((d) => d.selected);
   }
-  get unselectedValues() {
+  get deselectedValues() {
     return this.data.filter((d) => !d.selected).map((d) => d.value);
   }
-  get unselectedItems() {
+  get deselectedItems() {
     return this.data.filter((d) => !d.selected);
   }
   get lastSelectedIndex() {
