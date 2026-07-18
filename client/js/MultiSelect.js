@@ -770,6 +770,7 @@ class MultiSelect {
 
   shiftItemBackToOriginalPosition(dataItem) {
     const dataItemIndex = this.data.findIndex((item) => item.value === dataItem.value);
+    const originalIndex = this.originalData.findIndex((item) => item.value === dataItem.value);
 
     this.data.splice(dataItemIndex, 1);
 
@@ -777,13 +778,7 @@ class MultiSelect {
     this.data.splice(this.lastSelectedIndex + 1);
 
     // Re-add them again per the original ordering of the widget
-    this.data.push(
-      ...this.originalData.filter(
-        (item) => !this.selectedValues.find(
-          (value) => value === item.value
-        ),
-      ),
-    );
+    this.data.splice(originalIndex, 0, dataItem);
   }
 
   markAsSelected(option) {
