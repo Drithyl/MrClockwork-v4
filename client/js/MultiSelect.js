@@ -7,6 +7,8 @@
  * Slightly modified to preserve order of selection.
  */
 class MultiSelect {
+  static instances = [];
+
   constructor(element, options = {}) {
     let defaults = {
       placeholder: "Select item(s)",
@@ -80,6 +82,7 @@ class MultiSelect {
         });
       }
     }
+
     this.originalData = JSON.parse(JSON.stringify(this.options.data));
     this.element = this._template();
     this.selectElement.insertAdjacentElement("beforebegin", this.element);
@@ -129,6 +132,7 @@ class MultiSelect {
       if (!groupedData[g]) groupedData[g] = [];
       groupedData[g].push(item);
     });
+
     for (const [groupName, items] of Object.entries(groupedData)) {
       if (groupName) {
         let enabledItems = items.filter((i) => !i.disabled);
@@ -151,6 +155,7 @@ class MultiSelect {
         optionsHTML += `</div>`;
       });
     }
+
     let selectAllHTML = "";
     if (this.options.selectAll) {
       let enabledData = this.data.filter((d) => !d.disabled);
@@ -160,6 +165,7 @@ class MultiSelect {
       selectAllHTML += `    <span class="multi-select-option-text">Select all</span>`;
       selectAllHTML += `</div>`;
     }
+
     let template = "";
     template += `<div class="multi-select ${this.name}"${this.selectElement.id ? ' id="ms-' + this._escapeHTML(this.selectElement.id) + '"' : ""} style="${this.width ? "width:" + this.width + ";" : ""}${this.height ? "height:" + this.height + ";" : ""}" role="combobox" aria-haspopup="listbox" aria-expanded="false" data-theme="${this.options.theme}">`;    
     template += `    <div class="multi-select-header" style="${this.width ? "width:" + this.width + ";" : ""}${this.height ? "height:" + this.height + ";" : ""}" tabindex="0">`;
@@ -948,6 +954,17 @@ class MultiSelect {
   get height() {
     return this.options.height;
   }
+
+  static initializeInstances() {
+    document.querySelectorAll("[data-multi-select]").forEach((select) => {
+      const exists = MultiSelect.instances.find(i => i.selectElement.isEqualNode(select));
+
+      if (!exists) {
+        const multiSelect = new MultiSelect(select);
+        MultiSelect.instances.push(multiSelect);
+      }
+    });
+  }
 }
 
-document.querySelectorAll("[data-multi-select]").forEach((select) => new MultiSelect(select));
+MultiSelect.initializeInstances();

@@ -1,0 +1,1 @@
+MultiSelect.initializeInstances();

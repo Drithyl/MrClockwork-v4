@@ -11,5 +11,4 @@ $("#game_select").on("changed.bs.select", function(e, clickedIndex, isSelected, 
 
     $(`div[name=game_container]`).hide();
     $(`#${gameName}_container`).show();
-
 });
