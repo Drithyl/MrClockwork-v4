@@ -1,2 +1,2 @@
-module.exports.deploy = require("./deploy");
-module.exports.fetch = require("./fetch");
+module.exports.deployCommands = require("./deploy");
+module.exports.fetchCommands = require("./fetch");

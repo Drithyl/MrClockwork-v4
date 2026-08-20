@@ -20,7 +20,7 @@ module.exports.create = () =>
 	});
 	
 	events.load(client);
-	client.commands = commands.fetch();
+	client.commands = commands.fetchCommands();
 	return client;
 };
 

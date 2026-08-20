@@ -1,4 +1,4 @@
-const deploy = require("../discord/commands/deploy");
+const deploy = require("../discord/commands/deployCommands");
 const commands = require("../discord/commands/index.js");
 const { devGuildId } = require("../config/config.json");
 

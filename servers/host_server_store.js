@@ -223,7 +223,7 @@ exports.getDom6Mapfiles = async () =>
 
     for (const mapFolder of mapFolders)
     {
-        const mapFolderPath = path.resolve(mapFolder.path, mapFolder.name);
+        const mapFolderPath = path.resolve(mapFolder.path ?? mapFolder.parentPath, mapFolder.name);
         const filenames = await fsp.readdir(mapFolderPath);
         const mapFilenames = filenames.filter((f) => path.extname(f) === getDominionsMapExtension(gameType));
 

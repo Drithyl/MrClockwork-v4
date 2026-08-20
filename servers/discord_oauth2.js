@@ -1,6 +1,4 @@
 
-
-const fetch = require("node-fetch");
 const log = require("../logger.js");
 const config = require("../config/config.json");
 
