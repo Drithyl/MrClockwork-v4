@@ -1,3 +1,5 @@
+const { MessageFlags } = require("discord.js");
+
 module.exports = 
 {
 	name: "interactionCreate",
@@ -58,7 +60,7 @@ async function onCommandHandler(interaction, client)
         console.error(error);
         await commandContext.reply({
             content: `Command failed: ${error.message}`,
-            ephemeral: true
+            flags: MessageFlags.Ephemeral
         });
     }
 }

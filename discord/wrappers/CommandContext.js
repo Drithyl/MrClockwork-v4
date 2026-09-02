@@ -1,3 +1,4 @@
+const { MessageFlags } = require("discord.js");
 const MessagePayload = require("../prototypes/message_payload.js");
 const InteractionContext = require("./InteractionContext.js");
 
@@ -29,7 +30,8 @@ class CommandContext extends InteractionContext
     }
 
     deferReply(isEphemeral = false)  {
-        return this.interactionBase.deferReply({ ephemeral: isEphemeral, fetchReply: true });
+        const flags = (isEphemeral === true) ? MessageFlags.Ephemeral : 0;
+        return this.interactionBase.deferReply({ flags, withResponse: true });
     }
 
     followUp(messageString) {
