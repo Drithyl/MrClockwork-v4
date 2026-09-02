@@ -47,7 +47,9 @@ exports.set = (expressApp) =>
 
             session.redirectTo("user_home_screen", res);
         })
-        .catch((err) => res.render("results_screen.ejs", { result: `Error occurred: ${err.message}` }));
+        .catch((err) => {
+            return res.render("results_screen.ejs", { result: `Error occurred: ${err.message}` })
+        });
     });
 };
 

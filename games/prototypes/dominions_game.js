@@ -36,35 +36,10 @@ function DominionsGame(type)
     {
         const guild = _gameObject.getGuild();
         const nationArray = await _gameObject.emitPromiseWithGameDataToServer("GET_SUBMITTED_PRETENDERS");
+        const updatedNationArray = await _gameObject.updateGameNationsData(nationArray);
 
-        if (assert.isArray(nationArray) === false)
+        if (assert.isArray(updatedNationArray) === false) {
             return null;
-
-        for (const nation of nationArray) {
-            const ownerId = _gameObject.getPlayerIdControllingNationInGame(nation.filename);
-            const data = _playerData[ownerId];
-
-            if (data == null)
-                continue;
-            
-            try
-            {
-                if (data.username == null)
-                {
-                    log.general(log.getNormalLevel(), `Player ${data.id} username not found, fetching...`);
-                    const member = await guild.fetchGuildMemberWrapperById(data.id);
-                    data.username = member.getNameInGuild();
-                    log.general(log.getNormalLevel(), `Username ${data.username} fetched.`);
-                }
-            }
-
-            catch(err)
-            {
-                log.error(log.getNormalLevel(), `Could not fetch ${data.id}'s username`, err);
-            }
-
-            nation.owner = data.username;
-            nation.ownerId = ownerId;
         }
 
         return nationArray;
@@ -82,6 +57,61 @@ function DominionsGame(type)
 
     _gameObject.getPlayerFiles = () => Object.values(_playerData).map((data) => data.file);
     _gameObject.forEachPlayerFile = (fnToCall) => _playerData.forEachItem((data, id) => fnToCall(data.file, id, data.username));
+
+    _gameObject.updatePlayerData = async (playerId) => {
+        const guild = _gameObject.getGuild();
+        const member = await guild.fetchGuildMemberWrapperById(playerId);
+        const memberNameInGuild = member.getNameInGuild();
+
+        _playerData[playerId] = {
+            file: playerFileStore.getPlayerFile(playerId),
+            id: playerId,
+            username: memberNameInGuild
+        };
+
+        return Object.assign({}, _playerData[playerId]);
+    };
+
+    _gameObject.updatePlayerLeftGuild = (memberId) => 
+    {
+        if (_playerData[memberId] == null)
+            return;
+
+        _playerData[memberId].username += " (left guild)";
+    };
+
+    _gameObject.updateGameNationsData = async (nationArray) => {
+        const guild = _gameObject.getGuild();
+
+        if (assert.isArray(nationArray) === false) {
+            return null;
+        }
+
+        for (const nation of nationArray) {
+            const ownerId = _gameObject.getPlayerIdControllingNationInGame(nation.filename);
+            let playerData = _playerData[ownerId];
+
+            if (ownerId == null) {
+                continue;
+            }
+
+            if (playerData == null || playerData.username == null) {
+                try {
+                    playerData = _gameObject.updatePlayerData(ownerId);
+                }
+
+                catch(err)
+                {
+                    log.error(log.getNormalLevel(), `Could not fetch ${ownerId}'s player data`, err);
+                }
+            }
+
+            nation.owner = playerData.username;
+            nation.ownerId = ownerId;
+        }
+
+        return nationArray;
+    };
 
     _gameObject.getPlayerIdControllingNationInGame = (nationIdentifier) =>
     {
@@ -108,39 +138,15 @@ function DominionsGame(type)
         return playerFile.isControllingNationInGame(nationIdentifier, _gameObject.getName());
     };
 
-    _gameObject.updatePlayerLeftGuild = (memberId) => 
-    {
-        if (_playerData[memberId] == null)
-            return;
-
-        _playerData[memberId].username += " (left guild)";
-    };
-
-    _gameObject.updatePlayerUsername = (memberId, newUsername) => 
-    {
-        if (_playerData[memberId] == null)
-            return;
-
-        _playerData[memberId].username = newUsername;
-    };
-
-    _gameObject.setPlayer = (memberId, newUsername) => 
-    {
-        if (_playerData[memberId] == null)
-            return;
-
-        _playerData[memberId].username = newUsername;
-    };
-
     _gameObject.claimNation = (guildMemberWrapper, nationFilename) => 
     {
         const playerId = guildMemberWrapper.getId();
         const username = guildMemberWrapper.getNameInGuild();
 
-        if (_playerData[playerId] == null)
+        if (_playerData[playerId] == null || _playerData[playerId].username !== username)
         {
             log.general(log.getLeanLevel(), `Player ${playerId} is new to the game; adding to list.`);
-            _playerData[playerId] = { file: playerFileStore.getPlayerFile(playerId), id: playerId, username };
+            _gameObject.updatePlayerData(playerId);
         }
 
         log.general(log.getLeanLevel(), `Player ${playerId} is claiming nation ${nationFilename}...`);
@@ -150,7 +156,8 @@ function DominionsGame(type)
     _gameObject.removeControlOfNation = (nationFilename) => 
     {
         const playerId = _gameObject.getPlayerIdControllingNationInGame(nationFilename);
-        const playerFile = (playerId != null) ? _playerData[playerId].file : null;
+        const playerData = (playerId != null) ? _playerData[playerId] : null;
+        const playerFile = (playerData != null) ? playerData.file : null;
 
         // No player controls the nation, no need to do anything
         if (playerFile == null)

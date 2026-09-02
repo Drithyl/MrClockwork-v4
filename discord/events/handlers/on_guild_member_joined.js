@@ -15,7 +15,7 @@ module.exports =
         const playerGames = gameStore.getGamesWhereUserIsPlayer(guildMemberWrapper.getId());
         const gamesToUpdate = playerGames.filter((game) => game.getGuildId() === guildMemberWrapper.getGuildId());
 
-        gamesToUpdate.forEach((game) => game.updatePlayerUsername(guildMemberWrapper.getId(), guildMemberWrapper.getNameInGuild()));
+        gamesToUpdate.forEach((game) => game.updatePlayerData(guildMemberWrapper.getId()));
         log.general(log.getLeanLevel(), `Player game data updated`);
     }
 };
