@@ -97,7 +97,7 @@ function DominionsGame(type)
 
             if (playerData == null || playerData.username == null) {
                 try {
-                    playerData = _gameObject.updatePlayerData(ownerId);
+                    playerData = await _gameObject.updatePlayerData(ownerId);
                 }
 
                 catch(err)
@@ -138,7 +138,7 @@ function DominionsGame(type)
         return playerFile.isControllingNationInGame(nationIdentifier, _gameObject.getName());
     };
 
-    _gameObject.claimNation = (guildMemberWrapper, nationFilename) => 
+    _gameObject.claimNation = async (guildMemberWrapper, nationFilename) =>
     {
         const playerId = guildMemberWrapper.getId();
         const username = guildMemberWrapper.getNameInGuild();
@@ -146,7 +146,7 @@ function DominionsGame(type)
         if (_playerData[playerId] == null || _playerData[playerId].username !== username)
         {
             log.general(log.getLeanLevel(), `Player ${playerId} is new to the game; adding to list.`);
-            _gameObject.updatePlayerData(playerId);
+            await _gameObject.updatePlayerData(playerId);
         }
 
         log.general(log.getLeanLevel(), `Player ${playerId} is claiming nation ${nationFilename}...`);
