@@ -778,12 +778,15 @@ class MultiSelect {
     const dataItemIndex = this.data.findIndex((item) => item.value === dataItem.value);
     const originalIndex = this.originalData.findIndex((item) => item.value === dataItem.value);
 
+    // Already at original position; no need to shift things around
+    if (dataItemIndex === originalIndex) {
+      return;
+    }
+
+    // Remove from current position
     this.data.splice(dataItemIndex, 1);
 
-    // Remove all now deselected options
-    this.data.splice(this.lastSelectedIndex + 1);
-
-    // Re-add them again per the original ordering of the widget
+    // Re-add again to the original position when the widget was created
     this.data.splice(originalIndex, 0, dataItem);
   }
 
@@ -874,11 +877,13 @@ class MultiSelect {
   }
 
   getDataItem(option) {
-    return this.data.find((d) => String(d.value) === String(option.dataset.value));
+    const dataItem = this.data.find((d) => String(d.value) === String(option.dataset.value));
+    return dataItem;
   }
 
   getGroupItems(groupName) {
-    return this.data.filter((d) => d.group === groupName);
+    const groupItems = this.data.filter((d) => d.group === groupName);
+    return groupItems;
   }
 
   getGroupOptions(groupName) {
